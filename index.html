@@ -24,7 +24,13 @@
                     <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
-            <a href="https://instagram.com/use.gemas" target="_blank" class="btn-secondary">Instagram</a>
+            <div style="display: flex; align-items: center; gap: 1.5rem;">
+                <a href="https://instagram.com/use.gemas" target="_blank" class="btn-secondary">Instagram</a>
+                <!-- Ícone do Carrinho -->
+                <div class="nav-cart-icon" onclick="toggleCart()">
+                    🛒 <span id="cart-count">0</span>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -39,7 +45,7 @@
             </div>
             <div class="hero-media">
                 <div class="media-placeholder">
-                    <video src="estilo/midias/IMG_2563.MOV" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                    <video src="estilo/midias/IMG_2563.MOV" autoplay muted loop playsinline></video>
                 </div>
             </div>
         </div>
@@ -50,7 +56,7 @@
         <div class="container">
             <div class="concept-box">
                 <h2>Essência & Propósito</h2>
-                <p>A Use Gemas nasce do encontro entre a delicateza do microcrochê e a força dos minerais. Cada peça é moldada à mão, combinando o brilho discreto dos cristais com elementos orgânicos como conchas, espelhos e tons terrosos para criar joias únicas que vibram com a sua história.</p>
+                <p>A Use Gemas nasce do encontro entre a delicadeza do microcrochê e a força dos minerais. Cada peça é moldada à mão, combinando o brilho discreto dos cristais com elementos orgânicos como conchas, espelhos e tons terrosos para criar joias únicas que vibram com a sua história.</p>
             </div>
         </div>
     </section>
@@ -63,40 +69,57 @@
                 
                 <div class="product-card">
                     <div class="product-img">
-                        <video src="estilo/midias/IMG_2585.MOV" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                        <video src="estilo/midias/IMG_2585.MOV" autoplay muted loop playsinline></video>
                     </div>
                     <div class="product-info">
                         <h3>Gargantilha Microcrochê</h3>
                         <p class="gem-type">Microcristais & Acessórios Dourados</p>
                         <span class="price">R$ 149,00</span>
+                        <button class="btn-add-cart" onclick="addToCart('Gargantilha Microcrochê', 'UG-GAR01')">Adicionar ao Carrinho</button>
                     </div>
                 </div>
 
                 <div class="product-card">
                     <div class="product-img">
-                        <video src="estilo/midias/IMG_2501.MOV" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                        <video src="estilo/midias/IMG_2501.MOV" autoplay muted loop playsinline></video>
                     </div>
                     <div class="product-info">
                         <h3>Chocker Microcristal</h3>
                         <p class="gem-type">Gargantilha Em Micro-Cristais</p>
                         <span class="price">R$ 189,00</span>
+                        <button class="btn-add-cart" onclick="addToCart('Chocker Microcristal', 'UG-CHO02')">Adicionar ao Carrinho</button>
                     </div>
                 </div>
 
                 <div class="product-card">
                     <div class="product-img">
-                        <video src="estilo/midias/IMG_2559.MOV" autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                        <video src="estilo/midias/IMG_2559.MOV" autoplay muted loop playsinline></video>
                     </div>
                     <div class="product-info">
                         <h3>Linha AàZ Colab UG x AZ</h3>
                         <p class="gem-type">Mix Triade Café, Palha & Ouro Antigo</p>
                         <span class="price">R$ 169,00</span>
+                        <button class="btn-add-cart" onclick="addToCart('Linha AàZ Colab UG x AZ', 'UG-AAZ03')">Adicionar ao Carrinho</button>
                     </div>
                 </div>
 
             </div>
         </div>
     </section>
+
+    <!-- Gaveta do Carrinho (Drawer) -->
+    <div id="cart-drawer" class="cart-drawer">
+        <div class="cart-header">
+            <h3>Seu Carrinho</h3>
+            <button class="close-cart" onclick="toggleCart()">&times;</button>
+        </div>
+        <div id="cart-items" class="cart-items">
+            <!-- Itens inseridos via JS (Exibe Nome e Código REF) -->
+        </div>
+        <div class="cart-footer">
+            <button class="btn-primary" style="width: 100%; text-align: center;" onclick="sendToWhatsApp()">Finalizar no WhatsApp</button>
+        </div>
+    </div>
 
     <!-- Rodapé -->
     <footer id="contato" class="footer">
@@ -107,7 +130,7 @@
             </div>
             <div class="footer-social">
                 <a href="https://instagram.com/use.gemas" target="_blank">@use.gemas</a>
-                <a href="https://wa.me/seunumero" target="_blank">WhatsApp Direct</a>
+                <a href="https://wa.me/5511982053330" target="_blank">WhatsApp Direct</a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -115,6 +138,6 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="estilo/script.js"></script>
 </body>
 </html>
