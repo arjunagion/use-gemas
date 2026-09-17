@@ -94,6 +94,7 @@ a {
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.3s;
+    flex-shrink: 0;
 }
 
 .btn-secondary:hover {
@@ -106,6 +107,7 @@ a {
     font-size: 1.2rem;
     position: relative;
     user-select: none;
+    flex-shrink: 0;
 }
 
 #cart-count {
@@ -173,6 +175,7 @@ a {
     border: none;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
+    flex-shrink: 0;
 }
 
 .btn-primary:hover {
@@ -249,12 +252,14 @@ a {
     align-items: center;
     gap: 0.8rem;
     margin-bottom: 2.5rem;
-    flex-wrap: wrap;
+    position: relative;
+    z-index: 20;
+    width: 100%;
 }
 
 .filter-btn {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.3);
     color: #aaa;
     padding: 0.6rem 1.4rem;
     border-radius: 20px;
@@ -264,12 +269,17 @@ a {
     letter-spacing: 1px;
     text-transform: uppercase;
     transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: max-content;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-.filter-btn:hover {
+.filter-btn:hover, .filter-btn:active {
     color: #f5f5f5;
-    border-color: rgba(212, 175, 55, 0.5);
-    background: rgba(212, 175, 55, 0.05);
+    border-color: rgba(212, 175, 55, 0.6);
+    background: rgba(212, 175, 55, 0.1);
 }
 
 .filter-btn.active {
@@ -284,6 +294,8 @@ a {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
+    position: relative;
+    z-index: 10;
 }
 
 .product-card {
@@ -358,6 +370,7 @@ a {
     letter-spacing: 1px;
     text-transform: uppercase;
     transition: all 0.3s;
+    flex-shrink: 0;
 }
 
 .btn-add-cart:hover {
@@ -425,6 +438,7 @@ a {
     justify-content: center;
     align-items: center;
     transition: all 0.3s;
+    flex-shrink: 0;
 }
 
 .modal-close:hover {
@@ -479,6 +493,7 @@ a {
     justify-content: center;
     align-items: center;
     transition: all 0.3s;
+    flex-shrink: 0;
 }
 
 .modal-nav:hover {
@@ -490,7 +505,7 @@ a {
 .prev-btn { left: 12px; }
 .next-btn { right: 12px; }
 
-/* Indicadores / Bolinhas do Carrossel */
+/* Indicadores do Carrossel */
 .gallery-dots {
     position: absolute;
     bottom: 12px;
@@ -508,6 +523,7 @@ a {
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s;
+    flex-shrink: 0;
 }
 
 .dot.active {
@@ -569,7 +585,7 @@ a {
 }
 
 /* ==========================================================================
-   Gaveta do Carrinho (Drawer)
+   Gaveta do Carrinho (Drawer) & Controles Internos
    ========================================================================== */
 .cart-drawer {
     position: fixed;
@@ -612,11 +628,22 @@ a {
     color: var(--text-muted);
     font-size: 1.8rem;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .cart-items {
     flex: 1;
     overflow-y: auto;
+}
+
+/* Botões de + e - no Carrinho (Prevenção de Espremimento) */
+.cart-item button {
+    min-width: 32px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .cart-footer {
@@ -652,10 +679,12 @@ a {
 .shipping-input-group {
     display: flex;
     gap: 0.6rem;
+    width: 100%;
 }
 
 .shipping-input {
     flex: 1;
+    min-width: 0;
     background: #18181c !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     color: #f5f5f5 !important;
@@ -681,6 +710,8 @@ a {
     font-size: 0.85rem;
     cursor: pointer;
     letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -748,7 +779,7 @@ a {
 }
 
 /* ==========================================================================
-   Ajustes Responsivos Mobile Seguros
+   Ajustes Responsivos Mobile
    ========================================================================== */
 @media (max-width: 768px) {
     .nav-links {
@@ -769,8 +800,35 @@ a {
         height: 300px;
     }
 
+    /* Barra de Filtros no Mobile - Rolagem e Tamanho Protegidos */
+    .filter-container {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 0.8rem 1rem;
+        margin-bottom: 2rem;
+        gap: 0.8rem;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .filter-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filter-btn {
+        flex-shrink: 0;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+        min-width: max-content;
+    }
+
     .products-grid {
         grid-template-columns: 1fr;
+        gap: 2rem;
     }
 
     .cart-drawer {
@@ -778,7 +836,7 @@ a {
         right: -100%;
     }
 
-    /* Modal Mobile sem perder botões */
+    /* Modal Mobile */
     .modal-overlay {
         padding: 0.8rem;
     }

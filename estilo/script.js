@@ -51,7 +51,6 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
     document.getElementById('modal-desc').innerText = description;
     document.getElementById('modal-materials').innerText = materials;
 
-    // Configura Mídias da Galeria
     currentGallery = gallery.length > 0 ? gallery : [];
     currentMediaIndex = 0;
 
@@ -85,7 +84,6 @@ function renderModalMedia() {
         return;
     }
 
-    // Exibe ou oculta setas se houver apenas 1 mídia
     if (currentGallery.length <= 1) {
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
@@ -103,7 +101,6 @@ function renderModalMedia() {
         wrapper.innerHTML = `<img src="${currentSrc}" alt="Detalhe do Produto" />`;
     }
 
-    // Renderiza bolinhas
     if (dotsContainer) {
         dotsContainer.innerHTML = '';
         if (currentGallery.length > 1) {
@@ -114,7 +111,7 @@ function renderModalMedia() {
     }
 }
 
-// Navegação do Carrossel (< e >)
+// Navegação do Carrossel
 function navigateModalGallery(direction) {
     if (currentGallery.length <= 1) return;
 
@@ -139,6 +136,27 @@ function closeProductModal() {
     if (modal) {
         modal.classList.remove('open');
     }
+}
+
+// Função de Filtro por Categoria
+function filterProducts(category, element) {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    
+    if (element) {
+        element.classList.add('active');
+    }
+
+    const products = document.querySelectorAll('.product-card');
+    products.forEach(product => {
+        const productCategory = product.getAttribute('data-category');
+
+        if (category === 'all' || productCategory === category) {
+            product.classList.remove('hide');
+        } else {
+            product.classList.add('hide');
+        }
+    });
 }
 
 // Funções do Carrinho
@@ -172,25 +190,6 @@ function removeFromCart(index) {
 
 function formatCurrency(value) {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
-
-function filterProducts(category, element) {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(btn => btn.classList.remove('active'));
-    if (element) {
-        element.classList.add('active');
-    }
-
-    const products = document.querySelectorAll('.product-card');
-    products.forEach(product => {
-        const productCategory = product.getAttribute('data-category');
-
-        if (category === 'all' || productCategory === category) {
-            product.classList.remove('hide');
-        } else {
-            product.classList.add('hide');
-        }
-    });
 }
 
 // Cálculo de Frete
