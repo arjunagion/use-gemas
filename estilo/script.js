@@ -1,10 +1,14 @@
 // Lista onde os itens do carrinho ficam guardados
 let cart = [];
 
+// Dados do Frete
+let shippingCost = 0;
+let shippingDetails = null; // Guardará o CEP e a Cidade/UF do cliente
+
 // Número do WhatsApp da Use Gemas (+55 11 98205-3330)
 const whatsappNumber = "5511982053330"; 
 
-// Alterna o carrinho entre aberto/fechado (usado pelo ícone da navbar e botão "X")
+// Alterna o carrinho entre aberto/fechado
 function toggleCart() {
     const cartDrawer = document.getElementById('cart-drawer');
     if (cartDrawer) {
@@ -12,7 +16,7 @@ function toggleCart() {
     }
 }
 
-// Força a abertura do carrinho (garante que ele NUNCA feche ao clicar em novos produtos)
+// Força a abertura do carrinho
 function openCart() {
     const cartDrawer = document.getElementById('cart-drawer');
     if (cartDrawer && !cartDrawer.classList.contains('open')) {
@@ -20,7 +24,7 @@ function openCart() {
     }
 }
 
-// Adiciona um item ou incrementa a quantidade se já existir no carrinho
+// Adiciona um item ao carrinho
 function addToCart(name, ref, price) {
     const existingItem = cart.find(item => item.ref === ref);
 
@@ -31,14 +35,13 @@ function addToCart(name, ref, price) {
     }
 
     updateCartUI();
-    openCart(); // Mantém/Abre o carrinho sem risco de fechar involuntariamente
+    openCart();
 }
 
 // Altera a quantidade (+1 ou -1)
 function updateQuantity(index, delta) {
     cart[index].quantity += delta;
 
-    // Se a quantidade for zero ou menor, remove do carrinho
     if (cart[index].quantity <= 0) {
         cart.splice(index, 1);
     }
@@ -46,21 +49,75 @@ function updateQuantity(index, delta) {
     updateCartUI();
 }
 
-// Remove o item diretamente
+// Remove o item do carrinho
 function removeFromCart(index) {
     cart.splice(index, 1);
     updateCartUI();
 }
 
-// Função auxiliar para formatar números para a moeda brasileira (R$)
+// Formatação para Moeda Brasileira (R$)
 function formatCurrency(value) {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Atualiza a visualização do carrinho, os totais e o contador da navbar
+// Consulta de CEP via API ViaCEP
+async function calculateShipping() {
+    const cepInput = document.getElementById('cep-input');
+    const shippingResult = document.getElementById('shipping-result');
+    
+    if (!cepInput || !shippingResult) return;
+
+    const cep = cepInput.value.replace(/\D/g, ''); // Mantém apenas números
+
+    if (cep.length !== 8) {
+        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Digite um CEP válido com 8 dígitos.</span>`;
+        return;
+    }
+
+    shippingResult.innerHTML = `<span style="color: #d4af37;">Buscando localidade...</span>`;
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+
+        if (data.erro) {
+            shippingResult.innerHTML = `<span style="color: #ff6b6b;">CEP não encontrado.</span>`;
+            shippingCost = 0;
+            shippingDetails = null;
+        } else {
+            // Cotação fixa/estimada de frete padrão (exemplo: R$ 20,00)
+            const estimatedFreight = 20.00; 
+            
+            shippingCost = estimatedFreight;
+            shippingDetails = {
+                cep: data.cep,
+                city: data.localidade,
+                uf: data.uf
+            };
+
+            shippingResult.innerHTML = `
+                <div style="color: #6bfbce; font-weight: 500;">📍 ${data.localidade} - ${data.uf}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
+                    <span>Envio Estimado (Correios):</span>
+                    <strong style="color: #d4af37;">${formatCurrency(estimatedFreight)}</strong>
+                </div>
+            `;
+        }
+    } catch (error) {
+        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Erro ao calcular. Tente novamente.</span>`;
+        shippingCost = 0;
+        shippingDetails = null;
+    }
+
+    updateCartUI();
+}
+
+// Atualiza a visualização do carrinho e os totais
 function updateCartUI() {
     const cartItemsContainer = document.getElementById('cart-items');
     const cartCount = document.getElementById('cart-count');
+    const cartSubtotalElement = document.getElementById('cart-subtotal');
+    const cartShippingElement = document.getElementById('cart-shipping-cost');
     const cartTotalElement = document.getElementById('cart-total');
 
     if (!cartItemsContainer) return;
@@ -68,15 +125,21 @@ function updateCartUI() {
     cartItemsContainer.innerHTML = '';
 
     let totalItems = 0;
-    let totalPrice = 0;
+    let subtotalPrice = 0;
 
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `<p style="color: #888; text-align: center; margin-top: 2rem;">Seu carrinho está vazio.</p>`;
+        shippingCost = 0;
+        shippingDetails = null;
+        const shippingResult = document.getElementById('shipping-result');
+        const cepInput = document.getElementById('cep-input');
+        if (shippingResult) shippingResult.innerHTML = '';
+        if (cepInput) cepInput.value = '';
     } else {
         cart.forEach((item, index) => {
             totalItems += item.quantity;
             const itemSubtotal = item.price * item.quantity;
-            totalPrice += itemSubtotal;
+            subtotalPrice += itemSubtotal;
 
             cartItemsContainer.innerHTML += `
                 <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 0.8rem;">
@@ -98,28 +161,44 @@ function updateCartUI() {
         });
     }
 
+    const finalTotal = subtotalPrice + shippingCost;
+
     if (cartCount) cartCount.innerText = totalItems;
-    if (cartTotalElement) cartTotalElement.innerText = formatCurrency(totalPrice);
+    if (cartSubtotalElement) cartSubtotalElement.innerText = formatCurrency(subtotalPrice);
+    if (cartShippingElement) {
+        cartShippingElement.innerText = shippingCost > 0 ? formatCurrency(shippingCost) : 'A calcular';
+    }
+    if (cartTotalElement) cartTotalElement.innerText = formatCurrency(finalTotal);
 }
 
-// Monta e envia a mensagem para o WhatsApp com as quantidades e valor total
+// Envia a mensagem completa para o WhatsApp
 function sendToWhatsApp() {
     if (cart.length === 0) {
         alert("Seu carrinho está vazio!");
         return;
     }
 
-    let totalPrice = 0;
+    let subtotalPrice = 0;
     let message = "Olá! Gostaria de consultar a disponibilidade e finalizar o meu pedido dos seguintes itens da Use Gemas:\n\n";
 
     cart.forEach((item) => {
         const itemSubtotal = item.price * item.quantity;
-        totalPrice += itemSubtotal;
+        subtotalPrice += itemSubtotal;
         message += `• ${item.quantity}x ${item.name} (REF: ${item.ref}) - ${formatCurrency(itemSubtotal)}\n`;
     });
 
-    message += `\n*Valor Total Estimado:* ${formatCurrency(totalPrice)}`;
-    message += "\n\nPor favor, confirme as opções de frete e pagamento!";
+    message += `\n*Subtotal:* ${formatCurrency(subtotalPrice)}`;
+
+    if (shippingDetails) {
+        message += `\n*Entrega para:* ${shippingDetails.city}/${shippingDetails.uf} (CEP: ${shippingDetails.cep})`;
+        message += `\n*Frete Estimado:* ${formatCurrency(shippingCost)}`;
+        message += `\n*Valor Total Estimado:* ${formatCurrency(subtotalPrice + shippingCost)}`;
+    } else {
+        message += `\n*Frete:* Pendente de cotação por CEP`;
+        message += `\n*Valor Total (sem frete):* ${formatCurrency(subtotalPrice)}`;
+    }
+
+    message += "\n\nPor favor, confirme as opções de pagamento e o envio!";
 
     const encodedMessage = encodeURIComponent(message);
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -127,8 +206,19 @@ function sendToWhatsApp() {
     window.open(whatsappURL, '_blank');
 }
 
-// Suavização no Scroll da Navbar
+// Máscara automática de CEP (00000-000) e Scroll suave
 document.addEventListener('DOMContentLoaded', () => {
+    const cepInput = document.getElementById('cep-input');
+    if (cepInput) {
+        cepInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 5) {
+                value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+            }
+            e.target.value = value;
+        });
+    }
+
     const navbar = document.querySelector('.navbar');
     if (navbar) {
         window.addEventListener('scroll', () => {

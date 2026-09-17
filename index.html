@@ -67,9 +67,18 @@
     <section id="colecao" class="collection-section">
         <div class="container">
             <h2 class="section-title">Destaques da Coleção</h2>
+            
+            <!-- Botões de Filtros/Categorias -->
+            <div class="filter-container" style="display: flex; justify-content: center; gap: 0.8rem; margin-bottom: 2.5rem; flex-wrap: wrap;">
+                <button class="filter-btn active" onclick="filterProducts('all', this)">Todos</button>
+                <button class="filter-btn" onclick="filterProducts('gargantilhas', this)">Gargantilhas</button>
+                <button class="filter-btn" onclick="filterProducts('chockers', this)">Chockers</button>
+                <button class="filter-btn" onclick="filterProducts('colabs', this)">Colabs & Lançamentos</button>
+            </div>
+
             <div class="products-grid">
                 
-                <div class="product-card">
+                <div class="product-card" data-category="gargantilhas">
                     <div class="product-img">
                         <video src="estilo/midias/IMG_2585.MOV" autoplay muted loop playsinline></video>
                     </div>
@@ -81,7 +90,7 @@
                     </div>
                 </div>
 
-                <div class="product-card">
+                <div class="product-card" data-category="chockers">
                     <div class="product-img">
                         <video src="estilo/midias/IMG_2501.MOV" autoplay muted loop playsinline></video>
                     </div>
@@ -93,7 +102,7 @@
                     </div>
                 </div>
 
-                <div class="product-card">
+                <div class="product-card" data-category="colabs">
                     <div class="product-img">
                         <video src="estilo/midias/IMG_2559.MOV" autoplay muted loop playsinline></video>
                     </div>
@@ -115,14 +124,38 @@
             <h3>Seu Carrinho</h3>
             <button class="close-cart" onclick="toggleCart()">&times;</button>
         </div>
+        
         <div id="cart-items" class="cart-items">
-            <!-- Itens inseridos via JS com seletor de quantidade -->
+            <!-- Itens inseridos via JS -->
         </div>
+
         <div class="cart-footer">
-            <div id="cart-total-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-top: 0.8rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                <span style="color: #aaa; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px;">Total Estimado:</span>
-                <span id="cart-total" style="color: #d4af37; font-size: 1.3rem; font-weight: bold; font-family: var(--font-title, serif);">R$ 0,00</span>
+            <!-- Seção de Cálculo de Frete -->
+            <div class="shipping-box" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); padding: 0.8rem; border-radius: 8px; margin-bottom: 1rem;">
+                <label style="display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px;">Calcular Entrega / CEP:</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="cep-input" placeholder="00000-000" maxlength="9" style="flex: 1; background: #1a1a1e; border: 1px solid rgba(212, 175, 55, 0.3); color: #fff; padding: 0.5rem; border-radius: 4px; font-size: 0.9rem; outline: none;">
+                    <button onclick="calculateShipping()" style="background: #d4af37; color: #0e0e10; border: none; padding: 0.5rem 0.9rem; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 0.85rem;">OK</button>
+                </div>
+                <div id="shipping-result" style="font-size: 0.85rem; margin-top: 0.5rem; color: #ccc;"></div>
             </div>
+
+            <!-- Resumo dos Valores -->
+            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 0.8rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; margin-bottom: 0.3rem;">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal">R$ 0,00</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; margin-bottom: 0.5rem;">
+                    <span>Frete:</span>
+                    <span id="cart-shipping-cost">A calcular</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; font-weight: bold; color: #d4af37; font-family: var(--font-title, serif);">
+                    <span>Total:</span>
+                    <span id="cart-total">R$ 0,00</span>
+                </div>
+            </div>
+
             <button class="btn-primary" style="width: 100%; text-align: center;" onclick="sendToWhatsApp()">Finalizar no WhatsApp</button>
         </div>
     </div>
@@ -144,7 +177,7 @@
         </div>
     </footer>
 
-    <!-- Importação do JS com Cache Busting (?v=3.0) -->
-    <script src="estilo/script.js?v=3.0"></script>
+    <!-- Importação do JS com Cache Busting (?v=5.0) -->
+    <script src="estilo/script.js?v=5.0"></script>
 </body>
 </html>
