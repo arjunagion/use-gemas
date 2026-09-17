@@ -38,7 +38,7 @@ function addToCart(name, ref) {
 function updateQuantity(index, delta) {
     cart[index].quantity += delta;
 
-    // Se a quantidade for a zero ou menor, remove do carrinho
+    // Se a quantidade for zero ou menor, remove do carrinho
     if (cart[index].quantity <= 0) {
         cart.splice(index, 1);
     }
