@@ -1,14 +1,15 @@
-// Lista onde os itens do carrinho ficam guardados
+// Estado Global
 let cart = [];
-
-// Dados do Frete
 let shippingCost = 0;
-let shippingDetails = null; // Guardará o CEP e a Cidade/UF do cliente
+let shippingDetails = null;
 
-// Número do WhatsApp da Use Gemas (+55 11 98205-3330)
+// Controle do Carrossel do Modal
+let currentGallery = [];
+let currentMediaIndex = 0;
+
 const whatsappNumber = "5511982053330"; 
 
-// Alterna o carrinho entre aberto/fechado
+// Alterna o carrinho
 function toggleCart() {
     const cartDrawer = document.getElementById('cart-drawer');
     if (cartDrawer) {
@@ -16,7 +17,6 @@ function toggleCart() {
     }
 }
 
-// Força a abertura do carrinho
 function openCart() {
     const cartDrawer = document.getElementById('cart-drawer');
     if (cartDrawer && !cartDrawer.classList.contains('open')) {
@@ -24,7 +24,124 @@ function openCart() {
     }
 }
 
-// Adiciona um item ao carrinho
+// Abre o Modal pegando dados do elemento HTML
+function openProductModalFromCard(cardElement) {
+    const name = cardElement.getAttribute('data-name');
+    const ref = cardElement.getAttribute('data-ref');
+    const price = parseFloat(cardElement.getAttribute('data-price'));
+    const gem = cardElement.getAttribute('data-gem');
+    const desc = cardElement.getAttribute('data-desc');
+    const materials = cardElement.getAttribute('data-materials');
+    const galleryRaw = cardElement.getAttribute('data-gallery');
+
+    const gallery = galleryRaw ? galleryRaw.split(',').map(item => item.trim()) : [];
+
+    openProductModal(name, ref, price, gem, desc, materials, gallery);
+}
+
+// Abre o Modal com Carrossel
+function openProductModal(name, ref, price, gemType, description, materials, gallery) {
+    const modal = document.getElementById('product-modal');
+    if (!modal) return;
+
+    document.getElementById('modal-title').innerText = name;
+    document.getElementById('modal-ref').innerText = `REF: ${ref}`;
+    document.getElementById('modal-gem').innerText = gemType;
+    document.getElementById('modal-price').innerText = formatCurrency(price);
+    document.getElementById('modal-desc').innerText = description;
+    document.getElementById('modal-materials').innerText = materials;
+
+    // Configura Mídias da Galeria
+    currentGallery = gallery.length > 0 ? gallery : [];
+    currentMediaIndex = 0;
+
+    renderModalMedia();
+
+    const addBtn = document.getElementById('modal-add-btn');
+    if (addBtn) {
+        addBtn.onclick = () => {
+            addToCart(name, ref, price);
+            closeProductModal();
+        };
+    }
+
+    modal.classList.add('open');
+}
+
+// Renderiza a mídia atual (Vídeo ou Foto)
+function renderModalMedia() {
+    const wrapper = document.getElementById('modal-media-wrapper');
+    const dotsContainer = document.getElementById('gallery-dots');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+
+    if (!wrapper) return;
+
+    if (currentGallery.length === 0) {
+        wrapper.innerHTML = `<p style="color: #666; text-align: center; margin-top: 40%;">Sem mídia disponível</p>`;
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+        if (dotsContainer) dotsContainer.innerHTML = '';
+        return;
+    }
+
+    // Exibe ou oculta setas se houver apenas 1 mídia
+    if (currentGallery.length <= 1) {
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+    } else {
+        if (prevBtn) prevBtn.style.display = 'flex';
+        if (nextBtn) nextBtn.style.display = 'flex';
+    }
+
+    const currentSrc = currentGallery[currentMediaIndex];
+    const isVideo = currentSrc.match(/\.(mov|mp4|webm)$/i);
+
+    if (isVideo) {
+        wrapper.innerHTML = `<video src="${currentSrc}" autoplay muted loop playsinline></video>`;
+    } else {
+        wrapper.innerHTML = `<img src="${currentSrc}" alt="Detalhe do Produto" />`;
+    }
+
+    // Renderiza bolinhas
+    if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        if (currentGallery.length > 1) {
+            currentGallery.forEach((_, idx) => {
+                dotsContainer.innerHTML += `<div class="dot ${idx === currentMediaIndex ? 'active' : ''}" onclick="setModalMediaIndex(${idx})"></div>`;
+            });
+        }
+    }
+}
+
+// Navegação do Carrossel (< e >)
+function navigateModalGallery(direction) {
+    if (currentGallery.length <= 1) return;
+
+    currentMediaIndex += direction;
+
+    if (currentMediaIndex < 0) {
+        currentMediaIndex = currentGallery.length - 1;
+    } else if (currentMediaIndex >= currentGallery.length) {
+        currentMediaIndex = 0;
+    }
+
+    renderModalMedia();
+}
+
+function setModalMediaIndex(index) {
+    currentMediaIndex = index;
+    renderModalMedia();
+}
+
+function closeProductModal() {
+    const modal = document.getElementById('product-modal');
+    if (modal) {
+        modal.classList.remove('open');
+    }
+}
+
+// Funções do Carrinho
 function addToCart(name, ref, price) {
     const existingItem = cart.find(item => item.ref === ref);
 
@@ -38,7 +155,6 @@ function addToCart(name, ref, price) {
     openCart();
 }
 
-// Altera a quantidade (+1 ou -1)
 function updateQuantity(index, delta) {
     cart[index].quantity += delta;
 
@@ -49,28 +165,45 @@ function updateQuantity(index, delta) {
     updateCartUI();
 }
 
-// Remove o item do carrinho
 function removeFromCart(index) {
     cart.splice(index, 1);
     updateCartUI();
 }
 
-// Formatação para Moeda Brasileira (R$)
 function formatCurrency(value) {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Consulta de CEP via API ViaCEP
+function filterProducts(category, element) {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    if (element) {
+        element.classList.add('active');
+    }
+
+    const products = document.querySelectorAll('.product-card');
+    products.forEach(product => {
+        const productCategory = product.getAttribute('data-category');
+
+        if (category === 'all' || productCategory === category) {
+            product.classList.remove('hide');
+        } else {
+            product.classList.add('hide');
+        }
+    });
+}
+
+// Cálculo de Frete
 async function calculateShipping() {
     const cepInput = document.getElementById('cep-input');
     const shippingResult = document.getElementById('shipping-result');
     
     if (!cepInput || !shippingResult) return;
 
-    const cep = cepInput.value.replace(/\D/g, ''); // Mantém apenas números
+    const cep = cepInput.value.replace(/\D/g, ''); 
 
     if (cep.length !== 8) {
-        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Digite um CEP válido com 8 dígitos.</span>`;
+        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Digite um CEP com 8 dígitos.</span>`;
         return;
     }
 
@@ -85,7 +218,6 @@ async function calculateShipping() {
             shippingCost = 0;
             shippingDetails = null;
         } else {
-            // Cotação fixa/estimada de frete padrão (exemplo: R$ 20,00)
             const estimatedFreight = 20.00; 
             
             shippingCost = estimatedFreight;
@@ -98,13 +230,13 @@ async function calculateShipping() {
             shippingResult.innerHTML = `
                 <div style="color: #6bfbce; font-weight: 500;">📍 ${data.localidade} - ${data.uf}</div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
-                    <span>Envio Estimado (Correios):</span>
+                    <span style="color: #aaa;">Entrega Estimada:</span>
                     <strong style="color: #d4af37;">${formatCurrency(estimatedFreight)}</strong>
                 </div>
             `;
         }
     } catch (error) {
-        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Erro ao calcular. Tente novamente.</span>`;
+        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Erro de conexão. Tente novamente.</span>`;
         shippingCost = 0;
         shippingDetails = null;
     }
@@ -112,7 +244,6 @@ async function calculateShipping() {
     updateCartUI();
 }
 
-// Atualiza a visualização do carrinho e os totais
 function updateCartUI() {
     const cartItemsContainer = document.getElementById('cart-items');
     const cartCount = document.getElementById('cart-count');
@@ -171,7 +302,6 @@ function updateCartUI() {
     if (cartTotalElement) cartTotalElement.innerText = formatCurrency(finalTotal);
 }
 
-// Envia a mensagem completa para o WhatsApp
 function sendToWhatsApp() {
     if (cart.length === 0) {
         alert("Seu carrinho está vazio!");
@@ -206,8 +336,17 @@ function sendToWhatsApp() {
     window.open(whatsappURL, '_blank');
 }
 
-// Máscara automática de CEP (00000-000) e Scroll suave
+// Eventos Globais
 document.addEventListener('DOMContentLoaded', () => {
+    const modalOverlay = document.getElementById('product-modal');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeProductModal();
+            }
+        });
+    }
+
     const cepInput = document.getElementById('cep-input');
     if (cepInput) {
         cepInput.addEventListener('input', (e) => {
@@ -216,6 +355,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 value = value.replace(/^(\d{5})(\d)/, '$1-$2');
             }
             e.target.value = value;
+        });
+
+        cepInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                calculateShipping();
+            }
         });
     }
 
