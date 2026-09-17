@@ -32,8 +32,8 @@ function updateCartUI() {
         cartItemsContainer.innerHTML += `
             <div class="cart-item">
                 <div>
-                    <h4 style="font-family: var(--font-title); font-size: 1.1rem; color: var(--text-light);">${item.name}</h4>
-                    <small style="color: var(--accent-gold);">REF: ${item.ref}</small>
+                    <h4 style="font-family: var(--font-title, serif); font-size: 1.1rem; color: #f5f5f5;">${item.name}</h4>
+                    <small style="color: #d4af37;">REF: ${item.ref}</small>
                 </div>
                 <button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ff5555; cursor:pointer; font-size: 0.8rem;">Remover</button>
             </div>
