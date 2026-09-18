@@ -1,50 +1,4 @@
 // ==========================================================================
-// Base de Dados de Produtos em Formato JSON
-// ==========================================================================
-const productsData = [
-    {
-        "id": "UG-GAR01",
-        "name": "Gargantilha Microcrochê",
-        "category": "microcroche",
-        "price": 149.00,
-        "gem": "Microcristais & Acessórios Dourados",
-        "description": "Confeccionada minuciosamente à mão com técnicas exclusivas de microcrochê e acabamento em banho dourado de alta durabilidade. Uma peça leve e sofisticada para destacar qualquer look.",
-        "materials": "Fios de alta resistência, microcristais lapidados e fecho banhado a ouro 18k.",
-        "media": [
-            "estilo/midias/IMG_2585.MOV",
-            "estilo/midias/foto_detalhe1.jpg",
-            "estilo/midias/foto_modelo1.jpg"
-        ]
-    },
-    {
-        "id": "UG-CHO02",
-        "name": "Chocker Microcristal",
-        "category": "pedras",
-        "price": 189.00,
-        "gem": "Gargantilha Em Micro-Cristais",
-        "description": "Design minimalista feito com seleção de microcristais que captam a luz com elegância natural. Ideal para ser usada sozinha ou em composição de mix de colares.",
-        "materials": "Microcristais naturais lapidados, entremeios folheados e extensão ajustável.",
-        "media": [
-            "estilo/midias/IMG_2501.MOV",
-            "estilo/midias/foto_detalhe2.jpg"
-        ]
-    },
-    {
-        "id": "UG-AAZ03",
-        "name": "Linha AàZ Colab UG x AZ",
-        "category": "colab",
-        "price": 169.00,
-        "gem": "Mix Triade Café, Palha & Ouro Antigo",
-        "description": "Uma edição especial collab combinando a fusão de texturas terrosas, palha trançada e detalhes metálicos em Ouro Antigo. Peça autoral e de tiragem limitada.",
-        "materials": "Fios têxteis sustentáveis, elementos em ouro antigo e tramas manuais.",
-        "media": [
-            "estilo/midias/IMG_2559.MOV",
-            "estilo/midias/foto_detalhe3.jpg"
-        ]
-    }
-];
-
-// ==========================================================================
 // Estado Global
 // ==========================================================================
 let cart = [];
@@ -56,59 +10,6 @@ let currentGallery = [];
 let currentMediaIndex = 0;
 
 const whatsappNumber = "5511982053330"; 
-
-// ==========================================================================
-// Renderização Dinâmica dos Produtos a partir do JSON
-// ==========================================================================
-function renderProducts(products = productsData) {
-    const gridContainer = document.getElementById('products-grid');
-    if (!gridContainer) return;
-
-    gridContainer.innerHTML = '';
-
-    products.forEach(product => {
-        const coverMedia = product.media && product.media.length > 0 ? product.media[0] : '';
-        const isVideo = coverMedia.match(/\.(mov|mp4|webm)$/i);
-
-        let mediaElement = '';
-        if (isVideo) {
-            mediaElement = `<video src="${coverMedia}" autoplay muted loop playsinline></video>`;
-        } else {
-            mediaElement = `<img src="${coverMedia}" alt="${product.name}" />`;
-        }
-
-        const productCardHtml = `
-            <div class="product-card" data-category="${product.category}" data-id="${product.id}">
-                <div class="product-img" onclick="triggerProductModal('${product.id}')">
-                    ${mediaElement}
-                </div>
-                <div class="product-info">
-                    <h3 onclick="triggerProductModal('${product.id}')" style="cursor: pointer;">${product.name}</h3>
-                    <p class="gem-type">${product.gem}</p>
-                    <span class="price">${formatCurrency(product.price)}</span>
-                    <button class="btn-add-cart" onclick="addToCart('${product.name}', '${product.id}', ${product.price})">Adicionar ao Carrinho</button>
-                </div>
-            </div>
-        `;
-
-        gridContainer.innerHTML += productCardHtml;
-    });
-}
-
-function triggerProductModal(productId) {
-    const product = productsData.find(p => p.id === productId);
-    if (!product) return;
-
-    openProductModal(
-        product.name,
-        product.id,
-        product.price,
-        product.gem,
-        product.description,
-        product.materials,
-        product.media || []
-    );
-}
 
 // ==========================================================================
 // Controle do Carrinho (Drawer)
@@ -184,6 +85,20 @@ function clearAuthFeedback() {
         feedbackEl.className = 'auth-feedback';
         feedbackEl.innerText = '';
     }
+}
+
+function handleForgotPassword(event) {
+    event.preventDefault();
+    const emailInput = document.getElementById('login-email');
+    const email = emailInput ? emailInput.value.trim() : '';
+    
+    if (!email || !validateEmail(email)) {
+        showAuthFeedback('Informe seu e-mail de cadastro no campo para redefinir a senha.', 'error');
+        if (emailInput) emailInput.focus();
+        return;
+    }
+    
+    showAuthFeedback(`Instruções de redefinição enviadas para ${email}.`, 'success');
 }
 
 // ==========================================================================
@@ -408,7 +323,7 @@ function handleLogout() {
 }
 
 function updateUserSessionUI() {
-    const userBtn = document.getElementById('user-auth-btn');
+    const userBtn = document.getElementById('user-btn');
     const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
 
     if (!userBtn) return;
@@ -438,6 +353,20 @@ function validateEmail(email) {
 // ==========================================================================
 // Controle do Modal de Produtos & Galeria
 // ==========================================================================
+function openProductModalFromCard(cardElement) {
+    const name = cardElement.getAttribute('data-name');
+    const ref = cardElement.getAttribute('data-ref');
+    const price = parseFloat(cardElement.getAttribute('data-price'));
+    const gem = cardElement.getAttribute('data-gem');
+    const desc = cardElement.getAttribute('data-desc');
+    const materials = cardElement.getAttribute('data-materials');
+    const galleryRaw = cardElement.getAttribute('data-gallery');
+
+    const gallery = galleryRaw ? galleryRaw.split(',').map(item => item.trim()) : [];
+
+    openProductModal(name, ref, price, gem, desc, materials, gallery);
+}
+
 function openProductModal(name, ref, price, gemType, description, materials, gallery) {
     const modal = document.getElementById('product-modal');
     if (!modal) return;
@@ -749,16 +678,9 @@ function sendToWhatsApp() {
 // Eventos Globais e Inicialização
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Renderizar os produtos via JSON
-    renderProducts();
-
-    // 2. Inicializar estado do usuário no header
     updateUserSessionUI();
-
-    // 3. Configurar validação visual em tempo real nos campos do formulário
     setupRegisterLiveValidation();
 
-    // Eventos dos Formulários de Autenticação
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
         formLogin.addEventListener('submit', handleLogin);
@@ -769,7 +691,6 @@ document.addEventListener('DOMContentLoaded', () => {
         formRegister.addEventListener('submit', handleRegister);
     }
 
-    // Fechamento da Modal de Produto ao clicar fora
     const modalOverlay = document.getElementById('product-modal');
     if (modalOverlay) {
         modalOverlay.addEventListener('click', (e) => {
@@ -779,7 +700,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fechamento da Modal de Autenticação ao clicar fora
     const authOverlay = document.getElementById('auth-modal');
     if (authOverlay) {
         authOverlay.addEventListener('click', (e) => {
@@ -789,7 +709,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Máscara e Ações do Input de CEP
     const cepInput = document.getElementById('cep-input');
     if (cepInput) {
         cepInput.addEventListener('input', (e) => {
@@ -808,7 +727,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Animação/Transição da Navbar ao rolar
     const navbar = document.querySelector('.navbar');
     if (navbar) {
         window.addEventListener('scroll', () => {
@@ -821,4 +739,87 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+  let currentSlide = 0;
+let autoSlideInterval = null;
+
+// Função para buscar os elementos dinamicamente após o DOM carregar
+function getCarouselElements() {
+    return {
+        slides: document.querySelectorAll('.carousel-slide'),
+        dots: document.querySelectorAll('.carousel-dots .dot')
+    };
+}
+
+function showSlide(index) {
+    const { slides, dots } = getCarouselElements();
+    if (!slides || slides.length === 0) return;
+
+    if (index >= slides.length) currentSlide = 0;
+    else if (index < 0) currentSlide = slides.length - 1;
+    else currentSlide = index;
+
+    slides.forEach((slide, i) => {
+        const isCurrent = i === currentSlide;
+        slide.classList.toggle('active', isCurrent);
+        
+        // Garante que o vídeo do slide ativo rode automaticamente
+        const video = slide.querySelector('video');
+        if (video) {
+            if (isCurrent) {
+                video.currentTime = 0;
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        }
+    });
+
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+    });
+}
+
+function moveSlide(step) {
+    showSlide(currentSlide + step);
+    resetAutoSlide();
+}
+
+function goToSlide(index) {
+    showSlide(index);
+    resetAutoSlide();
+}
+
+function startAutoSlide() {
+    stopAutoSlide();
+    autoSlideInterval = setInterval(() => {
+        showSlide(currentSlide + 1);
+    }, 6000);
+}
+
+function stopAutoSlide() {
+    if (autoSlideInterval) {
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = null;
+    }
+}
+
+function resetAutoSlide() {
+    stopAutoSlide();
+    startAutoSlide();
+}
+
+// Inicialização segura
+document.addEventListener('DOMContentLoaded', () => {
+    const carouselContainer = document.getElementById('infoCarousel');
+    
+    if (carouselContainer) {
+        showSlide(0);
+        startAutoSlide();
+
+        carouselContainer.addEventListener('mouseenter', stopAutoSlide);
+        carouselContainer.addEventListener('mouseleave', startAutoSlide);
+    }
+});
+
 });

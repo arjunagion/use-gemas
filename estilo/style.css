@@ -815,7 +815,6 @@ a {
     overflow-y: auto;
 }
 
-/* Botões de + e - no Carrinho (Prevenção de Espremimento) */
 .cart-item button {
     min-width: 32px;
     min-height: 32px;
@@ -979,7 +978,6 @@ a {
         height: 300px;
     }
 
-    /* Barra de Filtros no Mobile - Rolagem e Tamanho Protegidos */
     .filter-container {
         display: flex;
         justify-content: flex-start;
@@ -1015,7 +1013,6 @@ a {
         right: -100%;
     }
 
-    /* Modal Mobile */
     .modal-overlay {
         padding: 0.8rem;
     }
@@ -1057,4 +1054,292 @@ a {
     .auth-card {
         padding: 1.8rem 1.2rem;
     }
+
+    /* ==========================================================================
+   Seção História & Processo Artesanal
+   ========================================================================== */
+.story-section {
+    padding: 5rem 0;
+    background: rgba(255, 255, 255, 0.015);
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.story-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.story-card h3 {
+    font-family: var(--font-title);
+    color: var(--gold);
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.story-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+/* ==========================================================================
+   Seção Guia de Cuidados
+   ========================================================================== */
+.care-section {
+    padding: 5rem 0;
+}
+
+.care-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.care-box {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 2rem;
+    position: relative;
+    transition: border-color 0.3s;
+}
+
+.care-box:hover {
+    border-color: rgba(212, 175, 55, 0.4);
+}
+
+.care-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.care-box h3 {
+    font-family: var(--font-title);
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.care-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.care-box li {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+    padding-left: 1.2rem;
+    position: relative;
+}
+
+.care-box li::before {
+    content: "•";
+    color: var(--gold);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   Carrossel Dinâmico Corrigido
+   ========================================================================== */
+.carousel-section {
+    padding: 4rem 0;
+    position: relative;
+}
+
+.carousel-container {
+    position: relative;
+    max-width: 950px;
+    min-height: 480px;
+    margin: 2rem auto 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    background-color: #0b0b0b;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Fundo Geral / Overlay */
+.carousel-bg-media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.carousel-bg-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 1;
+}
+
+.carousel-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 480px;
+    z-index: 2;
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.slide-media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.slide-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slide-content {
+    position: relative;
+    z-index: 2;
+    padding: 3rem 2.5rem 2.5rem 2.5rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 20%, rgba(0, 0, 0, 0.6) 70%, transparent 100%);
+    box-sizing: border-box;
+}
+
+.slide-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 20px;
+    margin-bottom: 0.8rem;
+}
+
+.slide-content h3 {
+    font-family: var(--font-title, serif);
+    font-size: 1.8rem;
+    color: #ffffff;
+    margin-bottom: 0.6rem;
+}
+
+.slide-content p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+    max-width: 750px;
+}
+
+/* Botões de Navegação Arrumados */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.carousel-btn:hover {
+    background: #d4af37;
+    color: #000000;
+    border-color: #d4af37;
+}
+
+.prev-btn { left: 20px; }
+.next-btn { right: 20px; }
+
+/* Indicadores / Dots */
+.carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    right: 25px;
+    z-index: 10;
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: #d4af37;
+    transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+    .carousel-container, .carousel-track { min-height: 520px; }
+    .slide-content { padding: 1.5rem; }
+    .carousel-btn { width: 40px; height: 40px; min-width: 40px; min-height: 40px; }
+    .prev-btn { left: 10px; }
+    .next-btn { right: 10px; }
+}
+
 }
