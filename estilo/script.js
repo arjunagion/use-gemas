@@ -754,6 +754,7 @@ function updateCartUI() {
 // ==========================================================================
 // Envio do Pedido via WhatsApp
 // ==========================================================================
+
 function sendToWhatsApp() {
     if (cart.length === 0) {
         alert("Seu carrinho está vazio!");
@@ -761,31 +762,65 @@ function sendToWhatsApp() {
     }
 
     const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
-    let subtotalPrice = 0;
-    let message = "Olá! Gostaria de consultar a disponibilidade e finalizar o meu pedido dos seguintes itens da Use Gemas:\n\n";
+    const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
 
-    if (currentUser) {
-        message = `Olá! Meu nome é *${currentUser.name}* (${currentUser.email}). Gostaria de consultar a disponibilidade e finalizar o meu pedido na Use Gemas:\n\n`;
+    let subtotalPrice = 0;
+    let message = "";
+
+    // Cabeçalho
+    message += "🛍️ *NOVO PEDIDO — USE GEMAS*\n";
+    message += "━━━━━━━━━━━━━━━━━━\n";
+
+    // Dados do cliente
+    if (checkoutData) {
+        message += `👤 *Cliente:* ${checkoutData.name}\n`;
+        if (checkoutData.doc) message += `📄 *CPF/CNPJ:* ${checkoutData.doc}\n`;
+        if (checkoutData.phone) message += `📱 *Telefone:* ${checkoutData.phone}\n`;
+    } else if (currentUser) {
+        message += `👤 *Cliente:* ${currentUser.name}\n`;
+        message += `✉️ *E-mail:* ${currentUser.email}\n`;
     }
 
+    // Endereço
+    if (checkoutData && checkoutData.cep) {
+        message += "\n━━━━━━━━━━━━━━━━━━\n";
+        message += "📍 *ENDEREÇO DE ENTREGA*\n";
+        message += `${checkoutData.street}, ${checkoutData.number}`;
+        if (checkoutData.complement) message += ` - ${checkoutData.complement}`;
+        message += `\n${checkoutData.neighborhood}\n`;
+        message += `${checkoutData.city}/${checkoutData.state}\n`;
+        message += `CEP: ${checkoutData.cep}\n`;
+    }
+
+    // Itens
+    message += "\n━━━━━━━━━━━━━━━━━━\n";
+    message += "*ITENS DO PEDIDO:*\n";
     cart.forEach((item) => {
         const itemSubtotal = item.price * item.quantity;
         subtotalPrice += itemSubtotal;
-        message += `• ${item.quantity}x ${item.name} (REF: ${item.ref}) - ${formatCurrency(itemSubtotal)}\n`;
+        message += `• ${item.quantity}x ${item.name} (REF: ${item.ref}) — ${formatCurrency(itemSubtotal)}\n`;
     });
 
-    message += `\n*Subtotal:* ${formatCurrency(subtotalPrice)}`;
+    // Totais
+    message += "━━━━━━━━━━━━━━━━━━\n";
+    message += `💰 *Subtotal:* ${formatCurrency(subtotalPrice)}\n`;
 
     if (shippingDetails) {
-        message += `\n*Entrega para:* ${shippingDetails.city}/${shippingDetails.uf} (CEP: ${shippingDetails.cep})`;
-        message += `\n*Frete Estimado:* ${formatCurrency(shippingCost)}`;
-        message += `\n*Valor Total Estimado:* ${formatCurrency(subtotalPrice + shippingCost)}`;
+        message += `🚚 *Frete:* ${formatCurrency(shippingCost)}\n`;
+        message += `✅ *TOTAL:* ${formatCurrency(subtotalPrice + shippingCost)}\n`;
     } else {
-        message += `\n*Frete:* Pendente de cotação por CEP`;
-        message += `\n*Valor Total (sem frete):* ${formatCurrency(subtotalPrice)}`;
+        message += `🚚 *Frete:* Pendente (calcular por CEP)\n`;
+        message += `💰 *Total parcial:* ${formatCurrency(subtotalPrice)}\n`;
     }
 
-    message += "\n\nPor favor, confirme as opções de pagamento e o envio!";
+    // Observações
+    if (checkoutData && checkoutData.notes) {
+        message += "\n━━━━━━━━━━━━━━━━━━\n";
+        message += `📝 *Observações:*\n${checkoutData.notes}\n`;
+    }
+
+    message += "\n━━━━━━━━━━━━━━━━━━\n";
+    message += "Aguardo confirmação do pagamento e envio! 🙏";
 
     const encodedMessage = encodeURIComponent(message);
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -1214,6 +1249,310 @@ async function handleTestimonialSubmit(event) {
 }
 
 // ==========================================================================
+// Checkout — Modal de dados de entrega
+// ==========================================================================
+
+function openCheckoutModal() {
+    if (cart.length === 0) {
+        alert('Seu carrinho está vazio.');
+        return;
+    }
+
+    // Fecha outras gavetas
+    const cartDrawer = document.getElementById('cart-drawer');
+    const wishlistDrawer = document.getElementById('wishlist-drawer');
+    if (cartDrawer) cartDrawer.classList.remove('open');
+    if (wishlistDrawer) wishlistDrawer.classList.remove('open');
+
+    loadCheckoutData();
+
+    const modal = document.getElementById('checkout-modal');
+    if (modal) modal.classList.add('open');
+}
+
+function closeCheckoutModal() {
+    const modal = document.getElementById('checkout-modal');
+    if (modal) modal.classList.remove('open');
+    clearCheckoutFeedback();
+    clearCheckoutErrors();
+}
+
+function loadCheckoutData() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+        if (!saved) return;
+
+        const fields = ['name', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
+        fields.forEach(field => {
+            const el = document.getElementById('ck-' + field);
+            if (el && saved[field]) el.value = saved[field];
+        });
+    } catch (e) {
+        // silencioso
+    }
+}
+
+function saveCheckoutData() {
+    const fields = ['name', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
+    const data = {};
+    fields.forEach(field => {
+        const el = document.getElementById('ck-' + field);
+        if (el) data[field] = el.value.trim();
+    });
+    localStorage.setItem('gemas_checkout_data', JSON.stringify(data));
+}
+
+function clearCheckoutFeedback() {
+    const el = document.getElementById('checkout-feedback');
+    if (el) {
+        el.className = 'checkout-feedback';
+        el.innerText = '';
+    }
+}
+
+function showCheckoutFeedback(message, type = 'error') {
+    const el = document.getElementById('checkout-feedback');
+    if (el) {
+        el.className = `checkout-feedback ${type}`;
+        el.innerText = message;
+    }
+}
+
+function clearCheckoutErrors() {
+    document.querySelectorAll('#checkout-form .input-error').forEach(el => {
+        el.classList.remove('input-error');
+    });
+    const cepFeedback = document.getElementById('ck-cep-feedback');
+    if (cepFeedback) {
+        cepFeedback.innerText = '';
+        cepFeedback.style.color = '';
+    }
+}
+
+// — Máscaras —
+
+function maskCpfCnpj(value) {
+    const digits = value.replace(/\D/g, '').slice(0, 14);
+
+    if (digits.length <= 11) {
+        // CPF: 000.000.000-00
+        return digits
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    }
+    // CNPJ: 00.000.000/0000-00
+    return digits
+        .replace(/(\d{2})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1.$2')
+        .replace(/(\d{3})(\d)/, '$1/$2')
+        .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+}
+
+function maskPhone(value) {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 10) {
+        return digits
+            .replace(/(\d{2})(\d)/, '($1) $2')
+            .replace(/(\d{4})(\d{1,4})$/, '$1-$2');
+    }
+    return digits
+        .replace(/(\d{2})(\d)/, '($1) $2')
+        .replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+}
+
+function maskCep(value) {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    return digits.replace(/(\d{5})(\d{1,3})/, '$1-$2');
+}
+
+function setupCheckoutMasks() {
+    const docInput = document.getElementById('ck-doc');
+    const phoneInput = document.getElementById('ck-phone');
+    const cepInput = document.getElementById('ck-cep');
+
+    if (docInput) {
+        docInput.addEventListener('input', (e) => {
+            e.target.value = maskCpfCnpj(e.target.value);
+        });
+    }
+
+    if (phoneInput) {
+        phoneInput.addEventListener('input', (e) => {
+            e.target.value = maskPhone(e.target.value);
+        });
+    }
+
+    if (cepInput) {
+        cepInput.addEventListener('input', (e) => {
+            e.target.value = maskCep(e.target.value);
+        });
+
+        cepInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchCepCheckout();
+            }
+        });
+    }
+}
+
+// — Busca de CEP no checkout —
+
+async function searchCepCheckout() {
+    const cepInput = document.getElementById('ck-cep');
+    const feedback = document.getElementById('ck-cep-feedback');
+
+    if (!cepInput || !feedback) return;
+
+    const cep = cepInput.value.replace(/\D/g, '');
+
+    if (cep.length !== 8) {
+        feedback.style.color = '#ff6b6b';
+        feedback.innerText = 'Digite um CEP com 8 dígitos.';
+        return;
+    }
+
+    feedback.style.color = '#d4af37';
+    feedback.innerText = 'Buscando...';
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+
+        if (data.erro) {
+            feedback.style.color = '#ff6b6b';
+            feedback.innerText = 'CEP não encontrado.';
+            return;
+        }
+
+        // Preenche os campos
+        const streetEl = document.getElementById('ck-street');
+        const neighborhoodEl = document.getElementById('ck-neighborhood');
+        const cityEl = document.getElementById('ck-city');
+        const stateEl = document.getElementById('ck-state');
+
+        if (streetEl) streetEl.value = data.logradouro || '';
+        if (neighborhoodEl) neighborhoodEl.value = data.bairro || '';
+        if (cityEl) cityEl.value = data.localidade || '';
+        if (stateEl) stateEl.value = data.uf || '';
+
+        feedback.style.color = '#6bfbce';
+        feedback.innerText = `📍 ${data.localidade} - ${data.uf}`;
+
+        // Foca no número (próximo campo a preencher)
+        const numberEl = document.getElementById('ck-number');
+        if (numberEl) numberEl.focus();
+
+    } catch (err) {
+        feedback.style.color = '#ff6b6b';
+        feedback.innerText = 'Erro de conexão. Tente novamente.';
+    }
+}
+
+// — Validação e envio —
+
+function validateCheckoutForm() {
+    clearCheckoutErrors();
+
+    const fields = [
+        { id: 'ck-name', message: 'Informe seu nome completo.', validate: v => v.length >= 3 },
+        { id: 'ck-doc', message: 'CPF/CNPJ inválido (mínimo 11 dígitos).', validate: v => v.replace(/\D/g, '').length >= 11 },
+        { id: 'ck-cep', message: 'CEP inválido.', validate: v => v.replace(/\D/g, '').length === 8 },
+        { id: 'ck-street', message: 'Informe a rua/avenida.', validate: v => v.length >= 2 },
+        { id: 'ck-number', message: 'Informe o número.', validate: v => v.length >= 1 },
+        { id: 'ck-neighborhood', message: 'Informe o bairro.', validate: v => v.length >= 2 },
+        { id: 'ck-city', message: 'Informe a cidade.', validate: v => v.length >= 2 },
+        { id: 'ck-state', message: 'Informe a UF.', validate: v => v.length === 2 }
+    ];
+
+    let firstInvalid = null;
+
+    for (const field of fields) {
+        const el = document.getElementById(field.id);
+        if (!el) continue;
+
+        const value = el.value.trim();
+        if (!field.validate(value)) {
+            el.classList.add('input-error');
+            if (!firstInvalid) firstInvalid = el;
+        }
+    }
+
+    if (firstInvalid) {
+        firstInvalid.focus();
+        showCheckoutFeedback('Por favor, corrija os campos destacados em vermelho.', 'error');
+        return false;
+    }
+
+    return true;
+}
+
+function handleCheckoutSubmit(event) {
+    event.preventDefault();
+
+    if (!validateCheckoutForm()) return;
+
+    // Salva os dados
+    saveCheckoutData();
+
+    // Atualiza o frete com base no CEP (reutiliza a lógica existente)
+    const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data'));
+    if (checkoutData && checkoutData.cep) {
+        // Usa a mesma função de frete mas com o CEP do checkout
+        fetchShippingForCheckout(checkoutData.cep).then(() => {
+            closeCheckoutModal();
+            sendToWhatsApp();
+        });
+    } else {
+        closeCheckoutModal();
+        sendToWhatsApp();
+    }
+}
+
+async function fetchShippingForCheckout(cepRaw) {
+    const cep = cepRaw.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+
+        if (!data.erro) {
+            const estimatedFreight = 20.00;
+            shippingCost = estimatedFreight;
+            shippingDetails = {
+                cep: data.cep,
+                city: data.localidade,
+                uf: data.uf
+            };
+            updateCartUI();
+        }
+    } catch (err) {
+        // silencioso — segue sem frete
+    }
+}
+
+// — Botão "Preciso de ajuda" —
+
+function handleDoubtClick() {
+    const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
+    let message = "Olá! 👋 Tenho uma dúvida sobre a Use Gemas.";
+
+    if (currentUser) {
+        message = `Olá! Meu nome é *${currentUser.name}*. Tenho uma dúvida sobre a Use Gemas.`;
+    }
+
+    if (cart.length > 0) {
+        message += "\n\n(Estou com itens no carrinho, mas tenho uma dúvida antes de finalizar.)";
+    }
+
+    const encoded = encodeURIComponent(message);
+    const url = `https://wa.me/${whatsappNumber}?text=${encoded}`;
+    window.open(url, '_blank');
+}
+
+// ==========================================================================
 // Eventos Globais e Inicialização
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1222,6 +1561,22 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFavoritesUI();
     setupRegisterLiveValidation();
     setupStarRating();
+    // Checkout
+    setupCheckoutMasks();
+
+    const checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', handleCheckoutSubmit);
+    }
+
+    const checkoutOverlay = document.getElementById('checkout-modal');
+    if (checkoutOverlay) {
+        checkoutOverlay.addEventListener('click', (e) => {
+            if (e.target === checkoutOverlay) {
+                closeCheckoutModal();
+            }
+        });
+    }
 
     const testimonialForm = document.getElementById('testimonial-form');
     if (testimonialForm) {
