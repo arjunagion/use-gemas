@@ -1,14 +1,114 @@
 // ==========================================================================
+// Base de Dados de Produtos em Formato JSON
+// ==========================================================================
+const productsData = [
+    {
+        "id": "UG-GAR01",
+        "name": "Gargantilha Microcrochê",
+        "category": "microcroche",
+        "price": 149.00,
+        "gem": "Microcristais & Acessórios Dourados",
+        "description": "Confeccionada minuciosamente à mão com técnicas exclusivas de microcrochê e acabamento em banho dourado de alta durabilidade. Uma peça leve e sofisticada para destacar qualquer look.",
+        "materials": "Fios de alta resistência, microcristais lapidados e fecho banhado a ouro 18k.",
+        "media": [
+            "estilo/midias/IMG_2585.MOV",
+            "estilo/midias/foto_detalhe1.jpg",
+            "estilo/midias/foto_modelo1.jpg"
+        ]
+    },
+    {
+        "id": "UG-CHO02",
+        "name": "Chocker Microcristal",
+        "category": "pedras",
+        "price": 189.00,
+        "gem": "Gargantilha Em Micro-Cristais",
+        "description": "Design minimalista feito com seleção de microcristais que captam a luz com elegância natural. Ideal para ser usada sozinha ou em composição de mix de colares.",
+        "materials": "Microcristais naturais lapidados, entremeios folheados e extensão ajustável.",
+        "media": [
+            "estilo/midias/IMG_2501.MOV",
+            "estilo/midias/foto_detalhe2.jpg"
+        ]
+    },
+    {
+        "id": "UG-AAZ03",
+        "name": "Linha AàZ Colab UG x AZ",
+        "category": "colab",
+        "price": 169.00,
+        "gem": "Mix Triade Café, Palha & Ouro Antigo",
+        "description": "Uma edição especial collab combinando a fusão de texturas terrosas, palha trançada e detalhes metálicos em Ouro Antigo. Peça autoral e de tiragem limitada.",
+        "materials": "Fios têxteis sustentáveis, elementos em ouro antigo e tramas manuais.",
+        "media": [
+            "estilo/midias/IMG_2559.MOV",
+            "estilo/midias/foto_detalhe3.jpg"
+        ]
+    }
+];
+
+// ==========================================================================
 // Estado Global
 // ==========================================================================
 let cart = [];
 let shippingCost = 0;
 let shippingDetails = null;
 
+// Controle do Carrossel do Modal
 let currentGallery = [];
 let currentMediaIndex = 0;
 
 const whatsappNumber = "5511982053330"; 
+
+// ==========================================================================
+// Renderização Dinâmica dos Produtos a partir do JSON
+// ==========================================================================
+function renderProducts(products = productsData) {
+    const gridContainer = document.getElementById('products-grid');
+    if (!gridContainer) return;
+
+    gridContainer.innerHTML = '';
+
+    products.forEach(product => {
+        const coverMedia = product.media && product.media.length > 0 ? product.media[0] : '';
+        const isVideo = coverMedia.match(/\.(mov|mp4|webm)$/i);
+
+        let mediaElement = '';
+        if (isVideo) {
+            mediaElement = `<video src="${coverMedia}" autoplay muted loop playsinline></video>`;
+        } else {
+            mediaElement = `<img src="${coverMedia}" alt="${product.name}" />`;
+        }
+
+        const productCardHtml = `
+            <div class="product-card" data-category="${product.category}" data-id="${product.id}">
+                <div class="product-img" onclick="triggerProductModal('${product.id}')">
+                    ${mediaElement}
+                </div>
+                <div class="product-info">
+                    <h3 onclick="triggerProductModal('${product.id}')" style="cursor: pointer;">${product.name}</h3>
+                    <p class="gem-type">${product.gem}</p>
+                    <span class="price">${formatCurrency(product.price)}</span>
+                    <button class="btn-add-cart" onclick="addToCart('${product.name}', '${product.id}', ${product.price})">Adicionar ao Carrinho</button>
+                </div>
+            </div>
+        `;
+
+        gridContainer.innerHTML += productCardHtml;
+    });
+}
+
+function triggerProductModal(productId) {
+    const product = productsData.find(p => p.id === productId);
+    if (!product) return;
+
+    openProductModal(
+        product.name,
+        product.id,
+        product.price,
+        product.gem,
+        product.description,
+        product.materials,
+        product.media || []
+    );
+}
 
 // ==========================================================================
 // Controle do Carrinho (Drawer)
@@ -27,9 +127,9 @@ function openCart() {
     }
 }
 
-// ==========================================================================
-// Controle dos Modais de Autenticação
-// ==========================================================================
+/* ==========================================================================
+   Controle dos Modais de Autenticação (Login / Criar Conta)
+   ========================================================================== */
 function openAuthModal(tab = 'login') {
     const modal = document.getElementById('auth-modal');
     if (modal) {
@@ -86,20 +186,8 @@ function clearAuthFeedback() {
     }
 }
 
-function handleForgotPassword(event) {
-    event.preventDefault();
-    const emailInput = document.getElementById('login-email');
-    const email = emailInput ? emailInput.value.trim() : '';
-
-    if (!email) {
-        showAuthFeedback('Digite seu e-mail no campo acima para redefinir a senha.', 'error');
-    } else {
-        showAuthFeedback(`Instruções de redefinição enviadas para ${email}!`, 'success');
-    }
-}
-
 // ==========================================================================
-// Validações do Cadastro
+// Validações Visuais e Feedback dos Campos do Cadastro
 // ==========================================================================
 function setFieldStatus(inputEl, isValid, message = '') {
     if (!inputEl) return;
@@ -169,7 +257,7 @@ function setupRegisterLiveValidation() {
             if (val.length === 0) {
                 setFieldStatus(emailInput, false, 'O e-mail é obrigatório.');
             } else if (!validateEmail(val)) {
-                setFieldStatus(emailInput, false, 'Informe um e-mail válido.');
+                setFieldStatus(emailInput, false, 'Informe um e-mail válido (ex: nome@dominio.com).');
             } else {
                 setFieldStatus(emailInput, true);
             }
@@ -180,9 +268,9 @@ function setupRegisterLiveValidation() {
         passwordInput.addEventListener('input', () => {
             const val = passwordInput.value;
             if (val.length === 0) {
-                setFieldStatus(passwordInput, false, 'A senha é obrigatória.');
+                setFieldStatus(passwordInput, false, 'A senha é obrigatória (min. 6 caracteres).');
             } else if (val.length < 6) {
-                setFieldStatus(passwordInput, false, `Senha curta (${val.length}/6).`);
+                setFieldStatus(passwordInput, false, `Senha muito curta (${val.length}/6 caracteres).`);
             } else {
                 setFieldStatus(passwordInput, true);
             }
@@ -199,7 +287,7 @@ function setupRegisterLiveValidation() {
             const passVal = passwordInput ? passwordInput.value : '';
 
             if (confirmVal.length === 0) {
-                setFieldStatus(confirmInput, false, 'Confirme a senha.');
+                setFieldStatus(confirmInput, false, 'Confirme a sua senha.');
             } else if (confirmVal !== passVal) {
                 setFieldStatus(confirmInput, false, 'As senhas não coincidem.');
             } else {
@@ -210,7 +298,7 @@ function setupRegisterLiveValidation() {
 }
 
 // ==========================================================================
-// Regras de Autenticação (localStorage)
+// Regras de Negócio de Autenticação (localStorage)
 // ==========================================================================
 function handleRegister(event) {
     event.preventDefault();
@@ -239,7 +327,7 @@ function handleRegister(event) {
     }
 
     if (!password || password.length < 6) {
-        setFieldStatus(passwordInput, false, 'Mínimo 6 caracteres.');
+        setFieldStatus(passwordInput, false, 'A senha deve conter no mínimo 6 caracteres.');
         hasError = true;
     }
 
@@ -249,21 +337,25 @@ function handleRegister(event) {
     }
 
     if (hasError) {
-        showAuthFeedback('Verifique os campos em vermelho.', 'error');
+        showAuthFeedback('Por favor, corrija os campos sinalizados em vermelho.', 'error');
         return;
     }
 
     const users = JSON.parse(localStorage.getItem('gemas_users') || '[]');
-    if (users.some(u => u.email === email)) {
-        setFieldStatus(emailInput, false, 'E-mail já cadastrado.');
-        showAuthFeedback('Este e-mail já está cadastrado.', 'error');
+    const userExists = users.some(u => u.email === email);
+
+    if (userExists) {
+        setFieldStatus(emailInput, false, 'Este e-mail já está cadastrado.');
+        showAuthFeedback('Este e-mail já está cadastrado no sistema.', 'error');
         return;
     }
 
-    users.push({ name, email, password });
+    const newUser = { name, email, password };
+    users.push(newUser);
     localStorage.setItem('gemas_users', JSON.stringify(users));
-    localStorage.setItem('gemas_current_user', JSON.stringify({ name, email }));
 
+    localStorage.setItem('gemas_current_user', JSON.stringify({ name, email }));
+    
     showAuthFeedback('Conta criada com sucesso!', 'success');
     updateUserSessionUI();
 
@@ -300,7 +392,7 @@ function handleLogin(event) {
     }
 
     localStorage.setItem('gemas_current_user', JSON.stringify({ name: user.name, email: user.email }));
-    showAuthFeedback('Login realizado!', 'success');
+    showAuthFeedback('Login realizado com sucesso!', 'success');
     updateUserSessionUI();
 
     setTimeout(() => {
@@ -339,25 +431,13 @@ function updateUserSessionUI() {
 }
 
 function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
 }
 
 // ==========================================================================
-// Modal de Produtos
+// Controle do Modal de Produtos & Galeria
 // ==========================================================================
-function openProductModalFromCard(cardElement) {
-    const name = cardElement.getAttribute('data-name');
-    const ref = cardElement.getAttribute('data-ref');
-    const price = parseFloat(cardElement.getAttribute('data-price'));
-    const gem = cardElement.getAttribute('data-gem');
-    const desc = cardElement.getAttribute('data-desc');
-    const materials = cardElement.getAttribute('data-materials');
-    const galleryRaw = cardElement.getAttribute('data-gallery');
-
-    const gallery = galleryRaw ? galleryRaw.split(',').map(item => item.trim()) : [];
-    openProductModal(name, ref, price, gem, desc, materials, gallery);
-}
-
 function openProductModal(name, ref, price, gemType, description, materials, gallery) {
     const modal = document.getElementById('product-modal');
     if (!modal) return;
@@ -410,10 +490,12 @@ function renderModalMedia() {
     }
 
     const currentSrc = currentGallery[currentMediaIndex];
-    if (currentSrc.match(/\.(mov|mp4|webm)$/i)) {
+    const isVideo = currentSrc.match(/\.(mov|mp4|webm)$/i);
+
+    if (isVideo) {
         wrapper.innerHTML = `<video src="${currentSrc}" autoplay muted loop playsinline></video>`;
     } else {
-        wrapper.innerHTML = `<img src="${currentSrc}" alt="Produto" />`;
+        wrapper.innerHTML = `<img src="${currentSrc}" alt="Detalhe do Produto" />`;
     }
 
     if (dotsContainer) {
@@ -428,9 +510,15 @@ function renderModalMedia() {
 
 function navigateModalGallery(direction) {
     if (currentGallery.length <= 1) return;
+
     currentMediaIndex += direction;
-    if (currentMediaIndex < 0) currentMediaIndex = currentGallery.length - 1;
-    if (currentMediaIndex >= currentGallery.length) currentMediaIndex = 0;
+
+    if (currentMediaIndex < 0) {
+        currentMediaIndex = currentGallery.length - 1;
+    } else if (currentMediaIndex >= currentGallery.length) {
+        currentMediaIndex = 0;
+    }
+
     renderModalMedia();
 }
 
@@ -441,19 +529,27 @@ function setModalMediaIndex(index) {
 
 function closeProductModal() {
     const modal = document.getElementById('product-modal');
-    if (modal) modal.classList.remove('open');
+    if (modal) {
+        modal.classList.remove('open');
+    }
 }
 
 // ==========================================================================
-// Filtros e Carrinho
+// Filtro por Categoria
 // ==========================================================================
 function filterProducts(category, element) {
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-    if (element) element.classList.add('active');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    
+    if (element) {
+        element.classList.add('active');
+    }
 
-    document.querySelectorAll('.product-card').forEach(product => {
-        const cat = product.getAttribute('data-category');
-        if (category === 'all' || cat === category) {
+    const products = document.querySelectorAll('.product-card');
+    products.forEach(product => {
+        const productCategory = product.getAttribute('data-category');
+
+        if (category === 'all' || productCategory === category) {
             product.classList.remove('hide');
         } else {
             product.classList.add('hide');
@@ -461,20 +557,29 @@ function filterProducts(category, element) {
     });
 }
 
+// ==========================================================================
+// Operações do Carrinho de Compras
+// ==========================================================================
 function addToCart(name, ref, price) {
-    const existing = cart.find(item => item.ref === ref);
-    if (existing) {
-        existing.quantity += 1;
+    const existingItem = cart.find(item => item.ref === ref);
+
+    if (existingItem) {
+        existingItem.quantity += 1;
     } else {
         cart.push({ name, ref, price, quantity: 1 });
     }
+
     updateCartUI();
     openCart();
 }
 
 function updateQuantity(index, delta) {
     cart[index].quantity += delta;
-    if (cart[index].quantity <= 0) cart.splice(index, 1);
+
+    if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+    }
+
     updateCartUI();
 }
 
@@ -487,43 +592,56 @@ function formatCurrency(value) {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+// ==========================================================================
+// Cálculo de Frete (ViaCEP API)
+// ==========================================================================
 async function calculateShipping() {
     const cepInput = document.getElementById('cep-input');
     const shippingResult = document.getElementById('shipping-result');
+    
     if (!cepInput || !shippingResult) return;
 
-    const cep = cepInput.value.replace(/\D/g, '');
+    const cep = cepInput.value.replace(/\D/g, ''); 
+
     if (cep.length !== 8) {
-        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Digite um CEP válido.</span>`;
+        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Digite um CEP com 8 dígitos.</span>`;
         return;
     }
 
-    shippingResult.innerHTML = `<span style="color: #d4af37;">Buscando...</span>`;
+    shippingResult.innerHTML = `<span style="color: #d4af37;">Buscando localidade...</span>`;
 
     try {
-        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await res.json();
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
 
         if (data.erro) {
             shippingResult.innerHTML = `<span style="color: #ff6b6b;">CEP não encontrado.</span>`;
             shippingCost = 0;
             shippingDetails = null;
         } else {
-            shippingCost = 20.00;
-            shippingDetails = { cep: data.cep, city: data.localidade, uf: data.uf };
+            const estimatedFreight = 20.00; 
+            
+            shippingCost = estimatedFreight;
+            shippingDetails = {
+                cep: data.cep,
+                city: data.localidade,
+                uf: data.uf
+            };
+
             shippingResult.innerHTML = `
-                <div style="color: #6bfbce;">📍 ${data.localidade} - ${data.uf}</div>
-                <div style="display: flex; justify-content: space-between; margin-top: 0.3rem;">
+                <div style="color: #6bfbce; font-weight: 500;">📍 ${data.localidade} - ${data.uf}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
                     <span style="color: #aaa;">Entrega Estimada:</span>
-                    <strong style="color: #d4af37;">${formatCurrency(shippingCost)}</strong>
+                    <strong style="color: #d4af37;">${formatCurrency(estimatedFreight)}</strong>
                 </div>
             `;
         }
-    } catch (e) {
-        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Erro de conexão.</span>`;
+    } catch (error) {
+        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Erro de conexão. Tente novamente.</span>`;
         shippingCost = 0;
         shippingDetails = null;
     }
+
     updateCartUI();
 }
 
@@ -537,6 +655,7 @@ function updateCartUI() {
     if (!cartItemsContainer) return;
 
     cartItemsContainer.innerHTML = '';
+
     let totalItems = 0;
     let subtotalPrice = 0;
 
@@ -544,8 +663,10 @@ function updateCartUI() {
         cartItemsContainer.innerHTML = `<p style="color: #888; text-align: center; margin-top: 2rem;">Seu carrinho está vazio.</p>`;
         shippingCost = 0;
         shippingDetails = null;
-        const res = document.getElementById('shipping-result');
-        if (res) res.innerHTML = '';
+        const shippingResult = document.getElementById('shipping-result');
+        const cepInput = document.getElementById('cep-input');
+        if (shippingResult) shippingResult.innerHTML = '';
+        if (cepInput) cepInput.value = '';
     } else {
         cart.forEach((item, index) => {
             totalItems += item.quantity;
@@ -553,31 +674,38 @@ function updateCartUI() {
             subtotalPrice += itemSubtotal;
 
             cartItemsContainer.innerHTML += `
-                <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 0.8rem; border-radius: 8px; margin-bottom: 0.8rem;">
+                <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 0.8rem;">
                     <div>
-                        <h4 style="color: #f5f5f5; margin: 0;">${item.name}</h4>
+                        <h4 style="font-family: var(--font-title, serif); font-size: 1.1rem; color: #f5f5f5; margin: 0;">${item.name}</h4>
                         <small style="color: #d4af37;">REF: ${item.ref}</small>
-                        <div style="font-size: 0.85rem; color: #aaa;">${formatCurrency(item.price)} cada</div>
+                        <div style="font-size: 0.85rem; color: #aaa; margin-top: 2px;">${formatCurrency(item.price)} cada</div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.8rem;">
                         <div style="display: flex; align-items: center; background: #222226; border-radius: 4px; border: 1px solid rgba(212, 175, 55, 0.3);">
-                            <button onclick="updateQuantity(${index}, -1)" style="background: none; border: none; color: #d4af37; padding: 0.2rem 0.6rem; cursor: pointer;">-</button>
-                            <span style="color: #f5f5f5; padding: 0 0.3rem;">${item.quantity}</span>
-                            <button onclick="updateQuantity(${index}, 1)" style="background: none; border: none; color: #d4af37; padding: 0.2rem 0.6rem; cursor: pointer;">+</button>
+                            <button onclick="updateQuantity(${index}, -1)" style="background: none; border: none; color: #d4af37; padding: 0.2rem 0.6rem; cursor: pointer; font-size: 1rem; font-weight: bold;">-</button>
+                            <span style="color: #f5f5f5; font-size: 0.9rem; font-weight: 600; padding: 0 0.3rem;">${item.quantity}</span>
+                            <button onclick="updateQuantity(${index}, 1)" style="background: none; border: none; color: #d4af37; padding: 0.2rem 0.6rem; cursor: pointer; font-size: 1rem; font-weight: bold;">+</button>
                         </div>
-                        <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #ff5555; cursor: pointer; font-size: 1.1rem;">&times;</button>
+                        <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #ff5555; cursor: pointer; font-size: 1.1rem; line-height: 1;" title="Remover item">&times;</button>
                     </div>
                 </div>
             `;
         });
     }
 
+    const finalTotal = subtotalPrice + shippingCost;
+
     if (cartCount) cartCount.innerText = totalItems;
     if (cartSubtotalElement) cartSubtotalElement.innerText = formatCurrency(subtotalPrice);
-    if (cartShippingElement) cartShippingElement.innerText = shippingCost > 0 ? formatCurrency(shippingCost) : 'A calcular';
-    if (cartTotalElement) cartTotalElement.innerText = formatCurrency(subtotalPrice + shippingCost);
+    if (cartShippingElement) {
+        cartShippingElement.innerText = shippingCost > 0 ? formatCurrency(shippingCost) : 'A calcular';
+    }
+    if (cartTotalElement) cartTotalElement.innerText = formatCurrency(finalTotal);
 }
 
+// ==========================================================================
+// Envio do Pedido via WhatsApp
+// ==========================================================================
 function sendToWhatsApp() {
     if (cart.length === 0) {
         alert("Seu carrinho está vazio!");
@@ -586,9 +714,11 @@ function sendToWhatsApp() {
 
     const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
     let subtotalPrice = 0;
-    let message = currentUser ? 
-        `Olá! Meu nome é *${currentUser.name}* (${currentUser.email}). Gostaria de finalizar meu pedido:\n\n` : 
-        "Olá! Gostaria de finalizar o meu pedido:\n\n";
+    let message = "Olá! Gostaria de consultar a disponibilidade e finalizar o meu pedido dos seguintes itens da Use Gemas:\n\n";
+
+    if (currentUser) {
+        message = `Olá! Meu nome é *${currentUser.name}* (${currentUser.email}). Gostaria de consultar a disponibilidade e finalizar o meu pedido na Use Gemas:\n\n`;
+    }
 
     cart.forEach((item) => {
         const itemSubtotal = item.price * item.quantity;
@@ -599,49 +729,96 @@ function sendToWhatsApp() {
     message += `\n*Subtotal:* ${formatCurrency(subtotalPrice)}`;
 
     if (shippingDetails) {
-        message += `\n*Entrega:* ${shippingDetails.city}/${shippingDetails.uf} (CEP: ${shippingDetails.cep})`;
-        message += `\n*Frete:* ${formatCurrency(shippingCost)}`;
-        message += `\n*Total:* ${formatCurrency(subtotalPrice + shippingCost)}`;
+        message += `\n*Entrega para:* ${shippingDetails.city}/${shippingDetails.uf} (CEP: ${shippingDetails.cep})`;
+        message += `\n*Frete Estimado:* ${formatCurrency(shippingCost)}`;
+        message += `\n*Valor Total Estimado:* ${formatCurrency(subtotalPrice + shippingCost)}`;
     } else {
-        message += `\n*Frete:* Pendente de cotação`;
+        message += `\n*Frete:* Pendente de cotação por CEP`;
+        message += `\n*Valor Total (sem frete):* ${formatCurrency(subtotalPrice)}`;
     }
 
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    message += "\n\nPor favor, confirme as opções de pagamento e o envio!";
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+    window.open(whatsappURL, '_blank');
 }
 
 // ==========================================================================
-// Inicialização
+// Eventos Globais e Inicialização
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Renderizar os produtos via JSON
+    renderProducts();
+
+    // 2. Inicializar estado do usuário no header
     updateUserSessionUI();
+
+    // 3. Configurar validação visual em tempo real nos campos do formulário
     setupRegisterLiveValidation();
 
+    // Eventos dos Formulários de Autenticação
     const formLogin = document.getElementById('form-login');
-    if (formLogin) formLogin.addEventListener('submit', handleLogin);
+    if (formLogin) {
+        formLogin.addEventListener('submit', handleLogin);
+    }
 
     const formRegister = document.getElementById('form-register');
-    if (formRegister) formRegister.addEventListener('submit', handleRegister);
+    if (formRegister) {
+        formRegister.addEventListener('submit', handleRegister);
+    }
 
+    // Fechamento da Modal de Produto ao clicar fora
     const modalOverlay = document.getElementById('product-modal');
     if (modalOverlay) {
         modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) closeProductModal();
+            if (e.target === modalOverlay) {
+                closeProductModal();
+            }
         });
     }
 
+    // Fechamento da Modal de Autenticação ao clicar fora
     const authOverlay = document.getElementById('auth-modal');
     if (authOverlay) {
         authOverlay.addEventListener('click', (e) => {
-            if (e.target === authOverlay) closeAuthModal();
+            if (e.target === authOverlay) {
+                closeAuthModal();
+            }
         });
     }
 
+    // Máscara e Ações do Input de CEP
     const cepInput = document.getElementById('cep-input');
     if (cepInput) {
         cepInput.addEventListener('input', (e) => {
             let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 5) value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+            if (value.length > 5) {
+                value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+            }
             e.target.value = value;
+        });
+
+        cepInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                calculateShipping();
+            }
+        });
+    }
+
+    // Animação/Transição da Navbar ao rolar
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(14, 14, 16, 0.95)';
+                navbar.style.padding = '0.9rem 0';
+            } else {
+                navbar.style.background = 'rgba(14, 14, 16, 0.85)';
+                navbar.style.padding = '1.2rem 0';
+            }
         });
     }
 });

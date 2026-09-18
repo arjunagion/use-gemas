@@ -85,84 +85,28 @@
                 <button class="filter-btn" onclick="filterProducts('colab', this)">Colabs</button>
             </div>
 
-            <div class="products-grid">
-                
-                <!-- Produto 1 -->
-                <div class="product-card" data-category="microcroche" 
-                     data-name="Gargantilha Microcrochê" 
-                     data-ref="UG-GAR01" 
-                     data-price="149.00" 
-                     data-gem="Microcristais & Acessórios Dourados" 
-                     data-desc="Confeccionada minuciosamente à mão com técnicas exclusivas de microcrochê e acabamento em banho dourado de alta durabilidade. Uma peça leve e sofisticada para destacar qualquer look." 
-                     data-materials="Fios de alta resistência, microcristais lapidados e fecho banhado a ouro 18k."
-                     data-gallery="estilo/midias/IMG_2585.MOV, estilo/midias/foto_detalhe1.jpg, estilo/midias/foto_modelo1.jpg">
-                    
-                    <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2585.MOV" autoplay muted loop playsinline></video>
-                    </div>
-                    <div class="product-info">
-                        <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">Gargantilha Microcrochê</h3>
-                        <p class="gem-type">Microcristais & Acessórios Dourados</p>
-                        <span class="price">R$ 149,00</span>
-                        <button class="btn-add-cart" onclick="addToCart('Gargantilha Microcrochê', 'UG-GAR01', 149.00)">Adicionar ao Carrinho</button>
-                    </div>
-                </div>
-
-                <!-- Produto 2 -->
-                <div class="product-card" data-category="pedras"
-                     data-name="Chocker Microcristal" 
-                     data-ref="UG-CHO02" 
-                     data-price="189.00" 
-                     data-gem="Gargantilha Em Micro-Cristais" 
-                     data-desc="Design minimalista feito com seleção de microcristais que captam a luz com elegância natural. Ideal para ser usada sozinha ou em composição de mix de colares." 
-                     data-materials="Microcristais naturais lapidados, entremeios folheados e extensão ajustável."
-                     data-gallery="estilo/midias/IMG_2501.MOV, estilo/midias/foto_detalhe2.jpg">
-                    
-                    <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2501.MOV" autoplay muted loop playsinline></video>
-                    </div>
-                    <div class="product-info">
-                        <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">Chocker Microcristal</h3>
-                        <p class="gem-type">Gargantilha Em Micro-Cristais</p>
-                        <span class="price">R$ 189,00</span>
-                        <button class="btn-add-cart" onclick="addToCart('Chocker Microcristal', 'UG-CHO02', 189.00)">Adicionar ao Carrinho</button>
-                    </div>
-                </div>
-
-                <!-- Produto 3 -->
-                <div class="product-card" data-category="colab"
-                     data-name="Linha AàZ Colab UG x AZ" 
-                     data-ref="UG-AAZ03" 
-                     data-price="169.00" 
-                     data-gem="Mix Triade Café, Palha & Ouro Antigo" 
-                     data-desc="Uma edição especial collab combinando a fusão de texturas terrosas, palha trançada e detalhes metálicos em Ouro Antigo. Peça autoral e de tiragem limitada." 
-                     data-materials="Fios têxteis sustentáveis, elementos em ouro antigo e tramas manuais."
-                     data-gallery="estilo/midias/IMG_2559.MOV, estilo/midias/foto_detalhe3.jpg">
-                    
-                    <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2559.MOV" autoplay muted loop playsinline></video>
-                    </div>
-                    <div class="product-info">
-                        <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">Linha AàZ Colab UG x AZ</h3>
-                        <p class="gem-type">Mix Triade Café, Palha & Ouro Antigo</p>
-                        <span class="price">R$ 169,00</span>
-                        <button class="btn-add-cart" onclick="addToCart('Linha AàZ Colab UG x AZ', 'UG-AAZ03', 169.00)">Adicionar ao Carrinho</button>
-                    </div>
-                </div>
-
-            </div>
+            <!-- Contêiner Dinâmico de Produtos (Preenchido via JavaScript/JSON) -->
+            <div class="products-grid" id="products-grid"></div>
         </div>
     </section>
 
-    <!-- Modal de Detalhes do Produto -->
+    <!-- Modal de Detalhes do Produto com Carrossel de Mídias -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" onclick="closeProductModal()">&times;</button>
             <div class="modal-body">
+                
+                <!-- ÁREA DA MÍDIA COM NAVEGAÇÃO DE CARROSSEL -->
                 <div class="modal-media-container">
-                    <div id="modal-media-wrapper" class="modal-media-wrapper"></div>
+                    <div id="modal-media-wrapper" class="modal-media-wrapper">
+                        <!-- Renderizado via JS (<video> ou <img>) -->
+                    </div>
+                    
+                    <!-- Botões do Carrossel -->
                     <button class="modal-nav prev-btn" onclick="navigateModalGallery(-1)">&#10094;</button>
                     <button class="modal-nav next-btn" onclick="navigateModalGallery(1)">&#10095;</button>
+                    
+                    <!-- Indicador de Páginas/Fotos -->
                     <div id="gallery-dots" class="gallery-dots"></div>
                 </div>
 
@@ -170,16 +114,16 @@
                     <span id="modal-ref" class="modal-ref-tag">UG-REF</span>
                     <h2 id="modal-title">Nome do Produto</h2>
                     <p id="modal-gem" class="gem-type">Tipo de Gema</p>
-                    <div id="modal-price" class="modal-price-tag" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-gold); margin: 0.5rem 0;">R$ 0,00</div>
+                    <div id="modal-price" class="modal-price-tag">R$ 0,00</div>
                     
-                    <div class="modal-section" style="margin-bottom: 1rem;">
+                    <div class="modal-section">
                         <h4>Descrição</h4>
-                        <p id="modal-desc" style="color: var(--text-muted); font-size: 0.9rem;">Descrição detalhada.</p>
+                        <p id="modal-desc">Descrição detalhada do produto.</p>
                     </div>
 
-                    <div class="modal-section" style="margin-bottom: 1rem;">
+                    <div class="modal-section">
                         <h4>Composição & Materiais</h4>
-                        <p id="modal-materials" style="color: var(--text-muted); font-size: 0.9rem;">Detalhes dos materiais.</p>
+                        <p id="modal-materials">Detalhes dos materiais utilizados.</p>
                     </div>
 
                     <button id="modal-add-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;">Adicionar ao Carrinho</button>
@@ -198,6 +142,7 @@
                 <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Criar Conta</button>
             </div>
 
+            <!-- Div para mensagens dinâmicas de erro ou sucesso -->
             <div id="auth-feedback" class="auth-feedback"></div>
 
             <!-- Formulário de Login -->
@@ -245,16 +190,19 @@
         </div>
     </div>
 
-    <!-- Gaveta do Carrinho -->
+    <!-- Gaveta do Carrinho (Drawer) -->
     <div id="cart-drawer" class="cart-drawer">
         <div class="cart-header">
             <h3>Seu Carrinho</h3>
             <button class="close-cart" onclick="toggleCart()">&times;</button>
         </div>
         
-        <div id="cart-items" class="cart-items"></div>
+        <div id="cart-items" class="cart-items">
+            <!-- Itens inseridos via JS -->
+        </div>
 
         <div class="cart-footer">
+            <!-- Seção de Cálculo de Frete -->
             <div class="shipping-box">
                 <label class="shipping-label" for="cep-input">Calcular Entrega / CEP</label>
                 <div class="shipping-input-group">
@@ -264,6 +212,7 @@
                 <div id="shipping-result" class="shipping-result-info"></div>
             </div>
 
+            <!-- Resumo dos Valores -->
             <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 0.8rem; margin-bottom: 1rem;">
                 <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; margin-bottom: 0.4rem;">
                     <span>Subtotal:</span>
@@ -273,7 +222,7 @@
                     <span>Frete:</span>
                     <span id="cart-shipping-cost">A calcular</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; font-weight: bold; color: var(--primary-gold); font-family: var(--font-title);">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; font-weight: bold; color: #d4af37; font-family: var(--font-title, serif);">
                     <span>Total Estimado:</span>
                     <span id="cart-total">R$ 0,00</span>
                 </div>
@@ -300,8 +249,8 @@
         </div>
     </footer>
 
-    <!-- Importação do JS (Versão v10.0) -->
-    <script src="estilo/script.js?v=10.0"></script>
+    <!-- Importação do JS com Cache Busting (?v=9.0) -->
+    <script src="estilo/script.js?v=9.0"></script>
     
 </body>
 </html>
