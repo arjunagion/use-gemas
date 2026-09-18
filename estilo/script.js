@@ -19,6 +19,25 @@ let currentSlide = 0;
 let autoSlideInterval = null;
 
 // ==========================================================================
+// EMOJIS — construídos via String.fromCodePoint (100% imune a encoding)
+// ==========================================================================
+const EMOJI_BAG      = String.fromCodePoint(0x1F6CD, 0xFE0F); // 🛍️
+const EMOJI_USER     = String.fromCodePoint(0x1F464);         // 👤
+const EMOJI_DOC      = String.fromCodePoint(0x1F4C4);         // 📄
+const EMOJI_PHONE    = String.fromCodePoint(0x1F4F1);         // 📱
+const EMOJI_EMAIL    = String.fromCodePoint(0x2709, 0xFE0F);  // ✉️
+const EMOJI_PIN      = String.fromCodePoint(0x1F4CD);         // 📍
+const EMOJI_MONEY    = String.fromCodePoint(0x1F4B0);         // 💰
+const EMOJI_TRUCK    = String.fromCodePoint(0x1F69A);         // 🚚
+const EMOJI_CHECK    = String.fromCodePoint(0x2705);          // ✅
+const EMOJI_NOTE     = String.fromCodePoint(0x1F4DD);         // 📝
+const EMOJI_PRAY     = String.fromCodePoint(0x1F64F);         // 🙏
+const EMOJI_WAVE     = String.fromCodePoint(0x1F44B);         // 👋
+const EMOJI_HEART    = String.fromCodePoint(0x2764, 0xFE0F);  // ❤️
+const EMOJI_CART     = String.fromCodePoint(0x1F6D2);         // 🛒
+const EMOJI_SPARKLE  = String.fromCodePoint(0x2728);          // ✨
+
+// ==========================================================================
 // Controle do Carrossel de Essência & Cuidados (Escopo Global)
 // ==========================================================================
 function getCarouselElements() {
@@ -45,7 +64,7 @@ function showSlide(index) {
             if (isCurrent) {
                 try {
                     video.currentTime = 0;
-                } catch (e) { /* ignora se metadata ainda não carregou */ }
+                } catch (e) { /* ignora */ }
                 video.play().catch(() => { });
             } else {
                 video.pause();
@@ -503,7 +522,6 @@ function renderModalMedia() {
     const currentSrc = currentGallery[currentMediaIndex];
     const isVideo = currentSrc.match(/\.(mov|mp4|webm|ogg)$/i);
 
-    // Ícone de zoom (lupa)
     const zoomIconSVG = `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
@@ -513,7 +531,6 @@ function renderModalMedia() {
         </svg>
     `;
 
-    // Indicador visual "Ampliar"
     const zoomHintHTML = `
         <div class="zoom-hint" title="Clique para ampliar">
             ${zoomIconSVG}
@@ -535,7 +552,6 @@ function renderModalMedia() {
         `;
     }
 
-    // Adiciona o clique para abrir o PhotoSwipe na mídia atual
     const mediaEl = wrapper.querySelector('video, img');
     if (mediaEl) {
         mediaEl.addEventListener('click', () => {
@@ -573,7 +589,6 @@ function setModalMediaIndex(index) {
 }
 
 function closeProductModal() {
-    // Fecha PhotoSwipe se estiver aberto
     closePhotoSwipeIfOpen();
 
     const modal = document.getElementById('product-modal');
@@ -677,7 +692,7 @@ async function calculateShipping() {
             };
 
             shippingResult.innerHTML = `
-                <div style="color: #6bfbce; font-weight: 500;">📍 ${data.localidade} - ${data.uf}</div>
+                <div style="color: #6bfbce; font-weight: 500;">${EMOJI_PIN} ${data.localidade} - ${data.uf}</div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
                     <span style="color: #aaa;">Entrega Estimada:</span>
                     <strong style="color: #d4af37;">${formatCurrency(estimatedFreight)}</strong>
@@ -754,7 +769,6 @@ function updateCartUI() {
 // ==========================================================================
 // Envio do Pedido via WhatsApp
 // ==========================================================================
-
 function sendToWhatsApp() {
     if (cart.length === 0) {
         alert("Seu carrinho está vazio!");
@@ -768,23 +782,23 @@ function sendToWhatsApp() {
     let message = "";
 
     // Cabeçalho
-    message += "🛍️ *NOVO PEDIDO — USE GEMAS*\n";
+    message += EMOJI_BAG + " *NOVO PEDIDO — USE GEMAS*\n";
     message += "━━━━━━━━━━━━━━━━━━\n";
 
     // Dados do cliente
-    if (checkoutData) {
-        message += `👤 *Cliente:* ${checkoutData.name}\n`;
-        if (checkoutData.doc) message += `📄 *CPF/CNPJ:* ${checkoutData.doc}\n`;
-        if (checkoutData.phone) message += `📱 *Telefone:* ${checkoutData.phone}\n`;
+    if (checkoutData && checkoutData.name) {
+        message += EMOJI_USER + ` *Cliente:* ${checkoutData.name}\n`;
+        if (checkoutData.doc) message += EMOJI_DOC + ` *CPF/CNPJ:* ${checkoutData.doc}\n`;
+        if (checkoutData.phone) message += EMOJI_PHONE + ` *Telefone:* ${checkoutData.phone}\n`;
     } else if (currentUser) {
-        message += `👤 *Cliente:* ${currentUser.name}\n`;
-        message += `✉️ *E-mail:* ${currentUser.email}\n`;
+        message += EMOJI_USER + ` *Cliente:* ${currentUser.name}\n`;
+        message += EMOJI_EMAIL + ` *E-mail:* ${currentUser.email}\n`;
     }
 
     // Endereço
     if (checkoutData && checkoutData.cep) {
         message += "\n━━━━━━━━━━━━━━━━━━\n";
-        message += "📍 *ENDEREÇO DE ENTREGA*\n";
+        message += EMOJI_PIN + " *ENDEREÇO DE ENTREGA*\n";
         message += `${checkoutData.street}, ${checkoutData.number}`;
         if (checkoutData.complement) message += ` - ${checkoutData.complement}`;
         message += `\n${checkoutData.neighborhood}\n`;
@@ -803,24 +817,24 @@ function sendToWhatsApp() {
 
     // Totais
     message += "━━━━━━━━━━━━━━━━━━\n";
-    message += `💰 *Subtotal:* ${formatCurrency(subtotalPrice)}\n`;
+    message += EMOJI_MONEY + ` *Subtotal:* ${formatCurrency(subtotalPrice)}\n`;
 
     if (shippingDetails) {
-        message += `🚚 *Frete:* ${formatCurrency(shippingCost)}\n`;
-        message += `✅ *TOTAL:* ${formatCurrency(subtotalPrice + shippingCost)}\n`;
+        message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(shippingCost)}\n`;
+        message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice + shippingCost)}\n`;
     } else {
-        message += `🚚 *Frete:* Pendente (calcular por CEP)\n`;
-        message += `💰 *Total parcial:* ${formatCurrency(subtotalPrice)}\n`;
+        message += EMOJI_TRUCK + ` *Frete:* Pendente (calcular por CEP)\n`;
+        message += EMOJI_MONEY + ` *Total parcial:* ${formatCurrency(subtotalPrice)}\n`;
     }
 
     // Observações
     if (checkoutData && checkoutData.notes) {
         message += "\n━━━━━━━━━━━━━━━━━━\n";
-        message += `📝 *Observações:*\n${checkoutData.notes}\n`;
+        message += EMOJI_NOTE + ` *Observações:*\n${checkoutData.notes}\n`;
     }
 
     message += "\n━━━━━━━━━━━━━━━━━━\n";
-    message += "Aguardo confirmação do pagamento e envio! 🙏";
+    message += "Aguardo confirmação do pagamento e envio! " + EMOJI_PRAY;
 
     const encodedMessage = encodeURIComponent(message);
     const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -897,7 +911,7 @@ function renderWishlistItems() {
         container.innerHTML = `
             <p class="wishlist-empty">
                 Sua lista de favoritos está vazia.<br>
-                Toque no ❤️ de qualquer peça para salvar aqui.
+                Toque no ${EMOJI_HEART} de qualquer peça para salvar aqui.
             </p>
         `;
         return;
@@ -913,7 +927,7 @@ function renderWishlistItems() {
                     <div class="wishlist-price">${formatCurrency(item.price)}</div>
                 </div>
                 <div class="wishlist-item-actions">
-                    <button onclick="moveFavoriteToCart(${index})" title="Adicionar ao carrinho" aria-label="Adicionar ao carrinho">🛒</button>
+                    <button onclick="moveFavoriteToCart(${index})" title="Adicionar ao carrinho" aria-label="Adicionar ao carrinho">${EMOJI_CART}</button>
                     <button class="btn-remove-fav" onclick="removeFromFavorites(${index})" title="Remover dos favoritos" aria-label="Remover">&times;</button>
                 </div>
             </div>
@@ -985,10 +999,6 @@ function addAllFavoritesToCart() {
 // ==========================================================================
 // PhotoSwipe — Galeria Ampliada com Zoom
 // ==========================================================================
-
-/**
- * Monta o array de dados do PhotoSwipe a partir da galeria do produto atual
- */
 function buildPhotoSwipeData() {
     return currentGallery.map((src) => {
         const isVideo = src.match(/\.(mov|mp4|webm|ogg)$/i);
@@ -1013,13 +1023,9 @@ function buildPhotoSwipeData() {
     });
 }
 
-/**
- * Abre o PhotoSwipe no índice atual da galeria do modal
- */
 function openPhotoSwipeAtCurrentIndex() {
     if (currentGallery.length === 0) return;
 
-    // Destroi instância anterior se existir
     if (photoSwipeLightbox) {
         try {
             photoSwipeLightbox.destroy();
@@ -1029,7 +1035,6 @@ function openPhotoSwipeAtCurrentIndex() {
 
     const dataSource = buildPhotoSwipeData();
 
-    // Garante que o container exista
     let galleryEl = document.getElementById('pswp-gallery');
     if (!galleryEl) {
         galleryEl = document.createElement('div');
@@ -1039,7 +1044,6 @@ function openPhotoSwipeAtCurrentIndex() {
         document.body.appendChild(galleryEl);
     }
 
-    // Importa e inicializa o PhotoSwipe dinamicamente
     Promise.all([
         import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js'),
         import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.esm.min.js')
@@ -1067,14 +1071,10 @@ function openPhotoSwipeAtCurrentIndex() {
         })
         .catch((err) => {
             console.warn('PhotoSwipe não pôde ser carregado:', err);
-            // Fallback: abre a mídia em nova aba
             window.open(currentGallery[currentMediaIndex], '_blank');
         });
 }
 
-/**
- * Fecha o PhotoSwipe se estiver aberto
- */
 function closePhotoSwipeIfOpen() {
     if (photoSwipeLightbox) {
         try {
@@ -1187,7 +1187,6 @@ async function handleTestimonialSubmit(event) {
     const comment = commentInput ? commentInput.value.trim() : '';
     const stars = starsInput ? starsInput.value : '';
 
-    // Validações
     if (!name || name.length < 2) {
         showTestimonialFeedback('Por favor, informe seu nome.', 'error');
         if (nameInput) nameInput.focus();
@@ -1205,7 +1204,6 @@ async function handleTestimonialSubmit(event) {
         return;
     }
 
-    // Bloqueia botão durante envio
     const originalText = submitBtn ? submitBtn.innerText : 'Enviar';
     if (submitBtn) {
         submitBtn.disabled = true;
@@ -1224,7 +1222,7 @@ async function handleTestimonialSubmit(event) {
         const result = await response.json();
 
         if (result.success) {
-            showTestimonialFeedback('✨ Depoimento enviado com sucesso! Obrigado por compartilhar.', 'success');
+            showTestimonialFeedback(EMOJI_SPARKLE + ' Depoimento enviado com sucesso! Obrigado por compartilhar.', 'success');
             form.reset();
             currentTestimonialStars = 0;
             updateStarsUI(0);
@@ -1251,14 +1249,12 @@ async function handleTestimonialSubmit(event) {
 // ==========================================================================
 // Checkout — Modal de dados de entrega
 // ==========================================================================
-
 function openCheckoutModal() {
     if (cart.length === 0) {
         alert('Seu carrinho está vazio.');
         return;
     }
 
-    // Fecha outras gavetas
     const cartDrawer = document.getElementById('cart-drawer');
     const wishlistDrawer = document.getElementById('wishlist-drawer');
     if (cartDrawer) cartDrawer.classList.remove('open');
@@ -1329,19 +1325,15 @@ function clearCheckoutErrors() {
     }
 }
 
-// — Máscaras —
-
 function maskCpfCnpj(value) {
     const digits = value.replace(/\D/g, '').slice(0, 14);
 
     if (digits.length <= 11) {
-        // CPF: 000.000.000-00
         return digits
             .replace(/(\d{3})(\d)/, '$1.$2')
             .replace(/(\d{3})(\d)/, '$1.$2')
             .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
     }
-    // CNPJ: 00.000.000/0000-00
     return digits
         .replace(/(\d{2})(\d)/, '$1.$2')
         .replace(/(\d{3})(\d)/, '$1.$2')
@@ -1397,8 +1389,6 @@ function setupCheckoutMasks() {
     }
 }
 
-// — Busca de CEP no checkout —
-
 async function searchCepCheckout() {
     const cepInput = document.getElementById('ck-cep');
     const feedback = document.getElementById('ck-cep-feedback');
@@ -1426,7 +1416,6 @@ async function searchCepCheckout() {
             return;
         }
 
-        // Preenche os campos
         const streetEl = document.getElementById('ck-street');
         const neighborhoodEl = document.getElementById('ck-neighborhood');
         const cityEl = document.getElementById('ck-city');
@@ -1438,9 +1427,8 @@ async function searchCepCheckout() {
         if (stateEl) stateEl.value = data.uf || '';
 
         feedback.style.color = '#6bfbce';
-        feedback.innerText = `📍 ${data.localidade} - ${data.uf}`;
+        feedback.innerText = EMOJI_PIN + ' ' + data.localidade + ' - ' + data.uf;
 
-        // Foca no número (próximo campo a preencher)
         const numberEl = document.getElementById('ck-number');
         if (numberEl) numberEl.focus();
 
@@ -1449,8 +1437,6 @@ async function searchCepCheckout() {
         feedback.innerText = 'Erro de conexão. Tente novamente.';
     }
 }
-
-// — Validação e envio —
 
 function validateCheckoutForm() {
     clearCheckoutErrors();
@@ -1493,13 +1479,10 @@ function handleCheckoutSubmit(event) {
 
     if (!validateCheckoutForm()) return;
 
-    // Salva os dados
     saveCheckoutData();
 
-    // Atualiza o frete com base no CEP (reutiliza a lógica existente)
     const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data'));
     if (checkoutData && checkoutData.cep) {
-        // Usa a mesma função de frete mas com o CEP do checkout
         fetchShippingForCheckout(checkoutData.cep).then(() => {
             closeCheckoutModal();
             sendToWhatsApp();
@@ -1529,15 +1512,13 @@ async function fetchShippingForCheckout(cepRaw) {
             updateCartUI();
         }
     } catch (err) {
-        // silencioso — segue sem frete
+        // silencioso
     }
 }
 
-// — Botão "Preciso de ajuda" —
-
 function handleDoubtClick() {
     const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
-    let message = "Olá! 👋 Tenho uma dúvida sobre a Use Gemas.";
+    let message = "Olá! " + EMOJI_WAVE + " Tenho uma dúvida sobre a Use Gemas.";
 
     if (currentUser) {
         message = `Olá! Meu nome é *${currentUser.name}*. Tenho uma dúvida sobre a Use Gemas.`;
@@ -1561,6 +1542,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFavoritesUI();
     setupRegisterLiveValidation();
     setupStarRating();
+
     // Checkout
     setupCheckoutMasks();
 
