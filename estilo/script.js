@@ -21,21 +21,21 @@ let autoSlideInterval = null;
 // ==========================================================================
 // EMOJIS — construídos via String.fromCodePoint (100% imune a encoding)
 // ==========================================================================
-const EMOJI_BAG      = String.fromCodePoint(0x1F6CD, 0xFE0F); // 🛍️
-const EMOJI_USER     = String.fromCodePoint(0x1F464);         // 👤
-const EMOJI_DOC      = String.fromCodePoint(0x1F4C4);         // 📄
-const EMOJI_PHONE    = String.fromCodePoint(0x1F4F1);         // 📱
-const EMOJI_EMAIL    = String.fromCodePoint(0x2709, 0xFE0F);  // ✉️
-const EMOJI_PIN      = String.fromCodePoint(0x1F4CD);         // 📍
-const EMOJI_MONEY    = String.fromCodePoint(0x1F4B0);         // 💰
-const EMOJI_TRUCK    = String.fromCodePoint(0x1F69A);         // 🚚
-const EMOJI_CHECK    = String.fromCodePoint(0x2705);          // ✅
-const EMOJI_NOTE     = String.fromCodePoint(0x1F4DD);         // 📝
-const EMOJI_PRAY     = String.fromCodePoint(0x1F64F);         // 🙏
-const EMOJI_WAVE     = String.fromCodePoint(0x1F44B);         // 👋
-const EMOJI_HEART    = String.fromCodePoint(0x2764, 0xFE0F);  // ❤️
-const EMOJI_CART     = String.fromCodePoint(0x1F6D2);         // 🛒
-const EMOJI_SPARKLE  = String.fromCodePoint(0x2728);          // ✨
+const EMOJI_BAG = String.fromCodePoint(0x1F6CD, 0xFE0F); // 🛍️
+const EMOJI_USER = String.fromCodePoint(0x1F464);         // 👤
+const EMOJI_DOC = String.fromCodePoint(0x1F4C4);         // 📄
+const EMOJI_PHONE = String.fromCodePoint(0x1F4F1);         // 📱
+const EMOJI_EMAIL = String.fromCodePoint(0x2709, 0xFE0F);  // ✉️
+const EMOJI_PIN = String.fromCodePoint(0x1F4CD);         // 📍
+const EMOJI_MONEY = String.fromCodePoint(0x1F4B0);         // 💰
+const EMOJI_TRUCK = String.fromCodePoint(0x1F69A);         // 🚚
+const EMOJI_CHECK = String.fromCodePoint(0x2705);          // ✅
+const EMOJI_NOTE = String.fromCodePoint(0x1F4DD);         // 📝
+const EMOJI_PRAY = String.fromCodePoint(0x1F64F);         // 🙏
+const EMOJI_WAVE = String.fromCodePoint(0x1F44B);         // 👋
+const EMOJI_HEART = String.fromCodePoint(0x2764, 0xFE0F);  // ❤️
+const EMOJI_CART = String.fromCodePoint(0x1F6D2);         // 🛒
+const EMOJI_SPARKLE = String.fromCodePoint(0x2728);          // ✨
 
 // ==========================================================================
 // Controle do Carrossel de Essência & Cuidados (Escopo Global)
@@ -837,7 +837,7 @@ function sendToWhatsApp() {
     message += "Aguardo confirmação do pagamento e envio! " + EMOJI_PRAY;
 
     const encodedMessage = encodeURIComponent(message);
-    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    const whatsappURL = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
 
     window.open(whatsappURL, '_blank');
 }
@@ -1529,7 +1529,7 @@ function handleDoubtClick() {
     }
 
     const encoded = encodeURIComponent(message);
-    const url = `https://wa.me/${whatsappNumber}?text=${encoded}`;
+    const url = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encoded}`;
     window.open(url, '_blank');
 }
 
