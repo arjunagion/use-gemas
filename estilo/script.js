@@ -1,4 +1,6 @@
+// ==========================================================================
 // Estado Global
+// ==========================================================================
 let cart = [];
 let shippingCost = 0;
 let shippingDetails = null;
@@ -9,7 +11,9 @@ let currentMediaIndex = 0;
 
 const whatsappNumber = "5511982053330"; 
 
-// Alterna o carrinho
+// ==========================================================================
+// Controle do Carrinho (Drawer)
+// ==========================================================================
 function toggleCart() {
     const cartDrawer = document.getElementById('cart-drawer');
     if (cartDrawer) {
@@ -24,7 +28,332 @@ function openCart() {
     }
 }
 
-// Abre o Modal pegando dados do elemento HTML
+/* ==========================================================================
+   Controle dos Modais de Autenticação (Login / Criar Conta)
+   ========================================================================== */
+function openAuthModal(tab = 'login') {
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+        switchAuthTab(tab);
+        clearAuthFeedback();
+        modal.classList.add('open');
+    }
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+        modal.classList.remove('open');
+        clearAuthFeedback();
+        resetRegisterValidation();
+    }
+}
+
+function switchAuthTab(tabName) {
+    const loginTab = document.getElementById('tab-login');
+    const registerTab = document.getElementById('tab-register');
+    const loginForm = document.getElementById('form-login');
+    const registerForm = document.getElementById('form-register');
+
+    clearAuthFeedback();
+    resetRegisterValidation();
+
+    if (tabName === 'login') {
+        if (loginTab) loginTab.classList.add('active');
+        if (registerTab) registerTab.classList.remove('active');
+        if (loginForm) loginForm.classList.add('active');
+        if (registerForm) registerForm.classList.remove('active');
+    } else {
+        if (registerTab) registerTab.classList.add('active');
+        if (loginTab) loginTab.classList.remove('active');
+        if (registerForm) registerForm.classList.add('active');
+        if (loginForm) loginForm.classList.remove('active');
+    }
+}
+
+// Exibe mensagem geral no modal de autenticação
+function showAuthFeedback(message, type = 'error') {
+    const feedbackEl = document.getElementById('auth-feedback');
+    if (feedbackEl) {
+        feedbackEl.className = `auth-feedback ${type}`;
+        feedbackEl.innerText = message;
+    }
+}
+
+function clearAuthFeedback() {
+    const feedbackEl = document.getElementById('auth-feedback');
+    if (feedbackEl) {
+        feedbackEl.className = 'auth-feedback';
+        feedbackEl.innerText = '';
+    }
+}
+
+// Tratamento do clique no link "Esqueceu a senha?"
+function handleForgotPassword(event) {
+    event.preventDefault();
+    const emailInput = document.getElementById('login-email');
+    const email = emailInput ? emailInput.value.trim() : '';
+
+    if (!email) {
+        showAuthFeedback('Digite seu e-mail no campo acima para redefinir a senha.', 'error');
+    } else {
+        showAuthFeedback(`Instruções de redefinição enviadas para ${email}!`, 'success');
+    }
+}
+
+// ==========================================================================
+// Validações Visuais e Feedback dos Campos do Cadastro
+// ==========================================================================
+
+function setFieldStatus(inputEl, isValid, message = '') {
+    if (!inputEl) return;
+    
+    let msgEl = inputEl.parentNode.querySelector('.field-msg');
+    if (!msgEl) {
+        msgEl = document.createElement('small');
+        msgEl.className = 'field-msg';
+        msgEl.style.fontSize = '0.75rem';
+        msgEl.style.marginTop = '4px';
+        msgEl.style.display = 'block';
+        inputEl.parentNode.appendChild(msgEl);
+    }
+
+    if (isValid === true) {
+        inputEl.classList.remove('input-error');
+        inputEl.classList.add('input-success');
+        msgEl.innerText = '';
+        msgEl.style.color = '#6bfbce';
+    } else if (isValid === false) {
+        inputEl.classList.remove('input-success');
+        inputEl.classList.add('input-error');
+        msgEl.innerText = message;
+        msgEl.style.color = '#ff6b6b';
+    } else {
+        inputEl.classList.remove('input-error', 'input-success');
+        msgEl.innerText = message || '';
+        msgEl.style.color = '#aaa';
+    }
+}
+
+function resetRegisterValidation() {
+    const inputs = ['reg-name', 'reg-email', 'reg-password', 'reg-confirm-password'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            setFieldStatus(el, null);
+            if (id === 'reg-password') {
+                setFieldStatus(el, null, 'Mínimo de 6 caracteres.');
+            }
+        }
+    });
+}
+
+function setupRegisterLiveValidation() {
+    const nameInput = document.getElementById('reg-name');
+    const emailInput = document.getElementById('reg-email');
+    const passwordInput = document.getElementById('reg-password');
+    const confirmInput = document.getElementById('reg-confirm-password');
+
+    if (nameInput) {
+        nameInput.addEventListener('input', () => {
+            const val = nameInput.value.trim();
+            if (val.length === 0) {
+                setFieldStatus(nameInput, false, 'O nome é obrigatório.');
+            } else if (val.length < 3) {
+                setFieldStatus(nameInput, false, 'Digite ao menos 3 caracteres.');
+            } else {
+                setFieldStatus(nameInput, true);
+            }
+        });
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener('input', () => {
+            const val = emailInput.value.trim();
+            if (val.length === 0) {
+                setFieldStatus(emailInput, false, 'O e-mail é obrigatório.');
+            } else if (!validateEmail(val)) {
+                setFieldStatus(emailInput, false, 'Informe um e-mail válido (ex: nome@dominio.com).');
+            } else {
+                setFieldStatus(emailInput, true);
+            }
+        });
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            if (val.length === 0) {
+                setFieldStatus(passwordInput, false, 'A senha é obrigatória (min. 6 caracteres).');
+            } else if (val.length < 6) {
+                setFieldStatus(passwordInput, false, `Senha muito curta (${val.length}/6 caracteres).`);
+            } else {
+                setFieldStatus(passwordInput, true);
+            }
+
+            if (confirmInput && confirmInput.value.length > 0) {
+                confirmInput.dispatchEvent(new Event('input'));
+            }
+        });
+    }
+
+    if (confirmInput) {
+        confirmInput.addEventListener('input', () => {
+            const confirmVal = confirmInput.value;
+            const passVal = passwordInput ? passwordInput.value : '';
+
+            if (confirmVal.length === 0) {
+                setFieldStatus(confirmInput, false, 'Confirme a sua senha.');
+            } else if (confirmVal !== passVal) {
+                setFieldStatus(confirmInput, false, 'As senhas não coincidem.');
+            } else {
+                setFieldStatus(confirmInput, true);
+            }
+        });
+    }
+}
+
+// ==========================================================================
+// Regras de Negócio de Autenticação (localStorage)
+// ==========================================================================
+function handleRegister(event) {
+    event.preventDefault();
+    clearAuthFeedback();
+
+    const nameInput = document.getElementById('reg-name');
+    const emailInput = document.getElementById('reg-email');
+    const passwordInput = document.getElementById('reg-password');
+    const confirmInput = document.getElementById('reg-confirm-password');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+    const password = passwordInput ? passwordInput.value : '';
+    const confirm = confirmInput ? confirmInput.value : '';
+
+    let hasError = false;
+
+    if (!name || name.length < 3) {
+        setFieldStatus(nameInput, false, 'Informe seu nome completo.');
+        hasError = true;
+    }
+
+    if (!email || !validateEmail(email)) {
+        setFieldStatus(emailInput, false, 'E-mail inválido.');
+        hasError = true;
+    }
+
+    if (!password || password.length < 6) {
+        setFieldStatus(passwordInput, false, 'A senha deve conter no mínimo 6 caracteres.');
+        hasError = true;
+    }
+
+    if (!confirm || password !== confirm) {
+        setFieldStatus(confirmInput, false, 'As senhas não coincidem.');
+        hasError = true;
+    }
+
+    if (hasError) {
+        showAuthFeedback('Por favor, corrija os campos sinalizados em vermelho.', 'error');
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('gemas_users') || '[]');
+    const userExists = users.some(u => u.email === email);
+
+    if (userExists) {
+        setFieldStatus(emailInput, false, 'Este e-mail já está cadastrado.');
+        showAuthFeedback('Este e-mail já está cadastrado no sistema.', 'error');
+        return;
+    }
+
+    const newUser = { name, email, password };
+    users.push(newUser);
+    localStorage.setItem('gemas_users', JSON.stringify(users));
+
+    localStorage.setItem('gemas_current_user', JSON.stringify({ name, email }));
+    
+    showAuthFeedback('Conta criada com sucesso!', 'success');
+    updateUserSessionUI();
+
+    setTimeout(() => {
+        closeAuthModal();
+        if (nameInput) nameInput.value = '';
+        if (emailInput) emailInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+        if (confirmInput) confirmInput.value = '';
+    }, 1200);
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    clearAuthFeedback();
+
+    const emailInput = document.getElementById('login-email');
+    const passwordInput = document.getElementById('login-password');
+
+    const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+    const password = passwordInput ? passwordInput.value : '';
+
+    if (!email || !password) {
+        showAuthFeedback('Preencha o e-mail e a senha.', 'error');
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('gemas_users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (!user) {
+        showAuthFeedback('E-mail ou senha incorretos.', 'error');
+        return;
+    }
+
+    localStorage.setItem('gemas_current_user', JSON.stringify({ name: user.name, email: user.email }));
+    showAuthFeedback('Login realizado com sucesso!', 'success');
+    updateUserSessionUI();
+
+    setTimeout(() => {
+        closeAuthModal();
+        if (emailInput) emailInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+    }, 1000);
+}
+
+function handleLogout() {
+    localStorage.removeItem('gemas_current_user');
+    updateUserSessionUI();
+}
+
+function updateUserSessionUI() {
+    const userBtn = document.getElementById('user-auth-btn');
+    const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
+
+    if (!userBtn) return;
+
+    if (currentUser) {
+        const firstName = currentUser.name.split(' ')[0];
+        userBtn.innerHTML = `
+            <span style="font-size: 0.85rem; color: #d4af37; margin-right: 0.4rem; font-weight: 500;">Olá, ${firstName}</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;" title="Sair"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        `;
+        userBtn.onclick = handleLogout;
+        userBtn.title = "Sair da conta";
+    } else {
+        userBtn.innerHTML = `
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        `;
+        userBtn.onclick = () => openAuthModal('login');
+        userBtn.title = "Entrar / Cadastrar";
+    }
+}
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// ==========================================================================
+// Controle do Modal de Produtos & Galeria
+// ==========================================================================
 function openProductModalFromCard(cardElement) {
     const name = cardElement.getAttribute('data-name');
     const ref = cardElement.getAttribute('data-ref');
@@ -39,7 +368,6 @@ function openProductModalFromCard(cardElement) {
     openProductModal(name, ref, price, gem, desc, materials, gallery);
 }
 
-// Abre o Modal com Carrossel
 function openProductModal(name, ref, price, gemType, description, materials, gallery) {
     const modal = document.getElementById('product-modal');
     if (!modal) return;
@@ -67,7 +395,6 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
     modal.classList.add('open');
 }
 
-// Renderiza a mídia atual (Vídeo ou Foto)
 function renderModalMedia() {
     const wrapper = document.getElementById('modal-media-wrapper');
     const dotsContainer = document.getElementById('gallery-dots');
@@ -111,7 +438,6 @@ function renderModalMedia() {
     }
 }
 
-// Navegação do Carrossel
 function navigateModalGallery(direction) {
     if (currentGallery.length <= 1) return;
 
@@ -138,7 +464,9 @@ function closeProductModal() {
     }
 }
 
-// Função de Filtro por Categoria
+// ==========================================================================
+// Filtro por Categoria
+// ==========================================================================
 function filterProducts(category, element) {
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(btn => btn.classList.remove('active'));
@@ -159,7 +487,9 @@ function filterProducts(category, element) {
     });
 }
 
-// Funções do Carrinho
+// ==========================================================================
+// Operações do Carrinho de Compras
+// ==========================================================================
 function addToCart(name, ref, price) {
     const existingItem = cart.find(item => item.ref === ref);
 
@@ -192,7 +522,9 @@ function formatCurrency(value) {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Cálculo de Frete
+// ==========================================================================
+// Cálculo de Frete (ViaCEP API)
+// ==========================================================================
 async function calculateShipping() {
     const cepInput = document.getElementById('cep-input');
     const shippingResult = document.getElementById('shipping-result');
@@ -301,14 +633,22 @@ function updateCartUI() {
     if (cartTotalElement) cartTotalElement.innerText = formatCurrency(finalTotal);
 }
 
+// ==========================================================================
+// Envio do Pedido via WhatsApp
+// ==========================================================================
 function sendToWhatsApp() {
     if (cart.length === 0) {
         alert("Seu carrinho está vazio!");
         return;
     }
 
+    const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
     let subtotalPrice = 0;
     let message = "Olá! Gostaria de consultar a disponibilidade e finalizar o meu pedido dos seguintes itens da Use Gemas:\n\n";
+
+    if (currentUser) {
+        message = `Olá! Meu nome é *${currentUser.name}* (${currentUser.email}). Gostaria de consultar a disponibilidade e finalizar o meu pedido na Use Gemas:\n\n`;
+    }
 
     cart.forEach((item) => {
         const itemSubtotal = item.price * item.quantity;
@@ -335,13 +675,37 @@ function sendToWhatsApp() {
     window.open(whatsappURL, '_blank');
 }
 
-// Eventos Globais
+// ==========================================================================
+// Eventos Globais e Inicialização
+// ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
+    updateUserSessionUI();
+    setupRegisterLiveValidation();
+
+    const formLogin = document.getElementById('form-login');
+    if (formLogin) {
+        formLogin.addEventListener('submit', handleLogin);
+    }
+
+    const formRegister = document.getElementById('form-register');
+    if (formRegister) {
+        formRegister.addEventListener('submit', handleRegister);
+    }
+
     const modalOverlay = document.getElementById('product-modal');
     if (modalOverlay) {
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) {
                 closeProductModal();
+            }
+        });
+    }
+
+    const authOverlay = document.getElementById('auth-modal');
+    if (authOverlay) {
+        authOverlay.addEventListener('click', (e) => {
+            if (e.target === authOverlay) {
+                closeAuthModal();
             }
         });
     }

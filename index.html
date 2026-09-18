@@ -28,6 +28,15 @@
             </nav>
             <div style="display: flex; align-items: center; gap: 1.5rem;">
                 <a href="https://instagram.com/use.gemas" target="_blank" class="btn-secondary">Instagram</a>
+                
+                <!-- Botão de Perfil / Login (ID ajustado para user-auth-btn) -->
+                <button class="btn-icon" id="user-auth-btn" onclick="openAuthModal('login')" title="Minha Conta">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+
                 <!-- Ícone do Carrinho -->
                 <div class="nav-cart-icon" onclick="toggleCart()">
                     🛒 <span id="cart-count">0</span>
@@ -187,6 +196,64 @@
         </div>
     </div>
 
+    <!-- Modal de Autenticação (Login & Criar Conta) -->
+    <div id="auth-modal" class="modal-overlay">
+        <div class="auth-card">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Entrar</button>
+                <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Criar Conta</button>
+            </div>
+
+            <!-- Div para mensagens dinâmicas de erro ou sucesso -->
+            <div id="auth-feedback" class="auth-feedback"></div>
+
+            <!-- Formulário de Login -->
+            <form id="form-login" class="auth-form active" novalidate>
+                <div class="form-group">
+                    <label for="login-email">E-mail</label>
+                    <input type="email" id="login-email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Senha</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                <div class="form-actions">
+                    <a href="#" class="forgot-password" onclick="handleForgotPassword(event)">Esqueceu a senha?</a>
+                </div>
+                <button type="submit" class="btn-primary btn-block">Acessar Conta</button>
+                <p class="auth-switch-text">
+                    Não tem uma conta? <a href="#" onclick="switchAuthTab('register'); return false;">Cadastre-se</a>
+                </p>
+            </form>
+
+            <!-- Formulário de Cadastro -->
+            <form id="form-register" class="auth-form" novalidate>
+                <div class="form-group">
+                    <label for="reg-name">Nome Completo</label>
+                    <input type="text" id="reg-name" placeholder="Seu nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">E-mail</label>
+                    <input type="email" id="reg-email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Senha</label>
+                    <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-confirm-password">Confirmar Senha</label>
+                    <input type="password" id="reg-confirm-password" placeholder="Repita sua senha" required>
+                </div>
+                <button type="submit" class="btn-primary btn-block">Cadastrar</button>
+                <p class="auth-switch-text">
+                    Já possui uma conta? <a href="#" onclick="switchAuthTab('login'); return false;">Entre aqui</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
     <!-- Gaveta do Carrinho (Drawer) -->
     <div id="cart-drawer" class="cart-drawer">
         <div class="cart-header">
@@ -248,5 +315,6 @@
 
     <!-- Importação do JS com Cache Busting (?v=8.0) -->
     <script src="estilo/script.js?v=8.0"></script>
+    
 </body>
 </html>
