@@ -29,7 +29,7 @@
             <div style="display: flex; align-items: center; gap: 1.5rem;">
                 <a href="https://instagram.com/use.gemas" target="_blank" class="btn-secondary">Instagram</a>
                 
-                <!-- Botão de Perfil / Login (ID ajustado para user-auth-btn) -->
+                <!-- Botão de Perfil / Login -->
                 <button class="btn-icon" id="user-auth-btn" onclick="openAuthModal('login')" title="Minha Conta">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -154,23 +154,15 @@
         </div>
     </section>
 
-    <!-- Modal de Detalhes do Produto com Carrossel de Mídias -->
+    <!-- Modal de Detalhes do Produto -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" onclick="closeProductModal()">&times;</button>
             <div class="modal-body">
-                
-                <!-- ÁREA DA MÍDIA COM NAVEGAÇÃO DE CARROSSEL -->
                 <div class="modal-media-container">
-                    <div id="modal-media-wrapper" class="modal-media-wrapper">
-                        <!-- Renderizado via JS (<video> ou <img>) -->
-                    </div>
-                    
-                    <!-- Botões do Carrossel -->
+                    <div id="modal-media-wrapper" class="modal-media-wrapper"></div>
                     <button class="modal-nav prev-btn" onclick="navigateModalGallery(-1)">&#10094;</button>
                     <button class="modal-nav next-btn" onclick="navigateModalGallery(1)">&#10095;</button>
-                    
-                    <!-- Indicador de Páginas/Fotos -->
                     <div id="gallery-dots" class="gallery-dots"></div>
                 </div>
 
@@ -178,16 +170,16 @@
                     <span id="modal-ref" class="modal-ref-tag">UG-REF</span>
                     <h2 id="modal-title">Nome do Produto</h2>
                     <p id="modal-gem" class="gem-type">Tipo de Gema</p>
-                    <div id="modal-price" class="modal-price-tag">R$ 0,00</div>
+                    <div id="modal-price" class="modal-price-tag" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-gold); margin: 0.5rem 0;">R$ 0,00</div>
                     
-                    <div class="modal-section">
+                    <div class="modal-section" style="margin-bottom: 1rem;">
                         <h4>Descrição</h4>
-                        <p id="modal-desc">Descrição detalhada do produto.</p>
+                        <p id="modal-desc" style="color: var(--text-muted); font-size: 0.9rem;">Descrição detalhada.</p>
                     </div>
 
-                    <div class="modal-section">
+                    <div class="modal-section" style="margin-bottom: 1rem;">
                         <h4>Composição & Materiais</h4>
-                        <p id="modal-materials">Detalhes dos materiais utilizados.</p>
+                        <p id="modal-materials" style="color: var(--text-muted); font-size: 0.9rem;">Detalhes dos materiais.</p>
                     </div>
 
                     <button id="modal-add-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;">Adicionar ao Carrinho</button>
@@ -206,7 +198,6 @@
                 <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Criar Conta</button>
             </div>
 
-            <!-- Div para mensagens dinâmicas de erro ou sucesso -->
             <div id="auth-feedback" class="auth-feedback"></div>
 
             <!-- Formulário de Login -->
@@ -254,19 +245,16 @@
         </div>
     </div>
 
-    <!-- Gaveta do Carrinho (Drawer) -->
+    <!-- Gaveta do Carrinho -->
     <div id="cart-drawer" class="cart-drawer">
         <div class="cart-header">
             <h3>Seu Carrinho</h3>
             <button class="close-cart" onclick="toggleCart()">&times;</button>
         </div>
         
-        <div id="cart-items" class="cart-items">
-            <!-- Itens inseridos via JS -->
-        </div>
+        <div id="cart-items" class="cart-items"></div>
 
         <div class="cart-footer">
-            <!-- Seção de Cálculo de Frete -->
             <div class="shipping-box">
                 <label class="shipping-label" for="cep-input">Calcular Entrega / CEP</label>
                 <div class="shipping-input-group">
@@ -276,7 +264,6 @@
                 <div id="shipping-result" class="shipping-result-info"></div>
             </div>
 
-            <!-- Resumo dos Valores -->
             <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 0.8rem; margin-bottom: 1rem;">
                 <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; margin-bottom: 0.4rem;">
                     <span>Subtotal:</span>
@@ -286,7 +273,7 @@
                     <span>Frete:</span>
                     <span id="cart-shipping-cost">A calcular</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; font-weight: bold; color: #d4af37; font-family: var(--font-title, serif);">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; font-weight: bold; color: var(--primary-gold); font-family: var(--font-title);">
                     <span>Total Estimado:</span>
                     <span id="cart-total">R$ 0,00</span>
                 </div>
@@ -313,8 +300,8 @@
         </div>
     </footer>
 
-    <!-- Importação do JS com Cache Busting (?v=8.0) -->
-    <script src="estilo/script.js?v=8.0"></script>
+    <!-- Importação do JS (Versão v10.0) -->
+    <script src="estilo/script.js?v=10.0"></script>
     
 </body>
 </html>
