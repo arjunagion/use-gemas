@@ -46,7 +46,7 @@ function showSlide(index) {
                 try {
                     video.currentTime = 0;
                 } catch (e) { /* ignora se metadata ainda não carregou */ }
-                video.play().catch(() => {});
+                video.play().catch(() => { });
             } else {
                 video.pause();
             }
@@ -1050,6 +1050,170 @@ function closePhotoSwipeIfOpen() {
 }
 
 // ==========================================================================
+// Depoimentos — Envio via Web3Forms
+// ==========================================================================
+const WEB3FORMS_KEY = '69a758b3-d87b-4ea5-a666-424321663f86';
+let currentTestimonialStars = 0;
+
+function toggleTestimonialForm() {
+    const wrapper = document.getElementById('testimonial-form-wrapper');
+    if (!wrapper) return;
+
+    if (wrapper.classList.contains('open')) {
+        wrapper.classList.remove('open');
+        resetTestimonialForm();
+    } else {
+        wrapper.classList.add('open');
+        setTimeout(() => {
+            const nameInput = document.getElementById('t-name');
+            if (nameInput) nameInput.focus();
+            wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 120);
+    }
+}
+
+function setupStarRating() {
+    const starRating = document.getElementById('star-rating');
+    const starsInput = document.getElementById('t-stars');
+    if (!starRating) return;
+
+    const stars = starRating.querySelectorAll('.star');
+
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const value = parseInt(star.getAttribute('data-value'), 10);
+            currentTestimonialStars = value;
+            if (starsInput) starsInput.value = value;
+            updateStarsUI(value);
+        });
+
+        star.addEventListener('mouseenter', () => {
+            const value = parseInt(star.getAttribute('data-value'), 10);
+            highlightStars(value);
+        });
+    });
+
+    starRating.addEventListener('mouseleave', () => {
+        updateStarsUI(currentTestimonialStars);
+    });
+}
+
+function updateStarsUI(value) {
+    const stars = document.querySelectorAll('#star-rating .star');
+    stars.forEach((star, index) => {
+        star.classList.toggle('active', index < value);
+        star.classList.remove('hovered');
+    });
+}
+
+function highlightStars(value) {
+    const stars = document.querySelectorAll('#star-rating .star');
+    stars.forEach((star, index) => {
+        star.classList.toggle('hovered', index < value);
+        star.classList.remove('active');
+    });
+}
+
+function showTestimonialFeedback(message, type = 'error') {
+    const el = document.getElementById('testimonial-feedback');
+    if (!el) return;
+    el.className = `testimonial-feedback ${type}`;
+    el.innerText = message;
+}
+
+function clearTestimonialFeedback() {
+    const el = document.getElementById('testimonial-feedback');
+    if (!el) return;
+    el.className = 'testimonial-feedback';
+    el.innerText = '';
+}
+
+function resetTestimonialForm() {
+    const form = document.getElementById('testimonial-form');
+    if (form) form.reset();
+    currentTestimonialStars = 0;
+    updateStarsUI(0);
+    clearTestimonialFeedback();
+    const starsInput = document.getElementById('t-stars');
+    if (starsInput) starsInput.value = '';
+}
+
+async function handleTestimonialSubmit(event) {
+    event.preventDefault();
+    clearTestimonialFeedback();
+
+    const form = event.target;
+    const nameInput = form.querySelector('#t-name');
+    const commentInput = form.querySelector('#t-comment');
+    const starsInput = form.querySelector('#t-stars');
+    const submitBtn = form.querySelector('#testimonial-submit');
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const comment = commentInput ? commentInput.value.trim() : '';
+    const stars = starsInput ? starsInput.value : '';
+
+    // Validações
+    if (!name || name.length < 2) {
+        showTestimonialFeedback('Por favor, informe seu nome.', 'error');
+        if (nameInput) nameInput.focus();
+        return;
+    }
+
+    if (!stars || parseInt(stars, 10) < 1) {
+        showTestimonialFeedback('Por favor, escolha uma avaliação de 1 a 5 estrelas.', 'error');
+        return;
+    }
+
+    if (!comment || comment.length < 10) {
+        showTestimonialFeedback('Conte um pouco mais sobre sua experiência (mínimo 10 caracteres).', 'error');
+        if (commentInput) commentInput.focus();
+        return;
+    }
+
+    // Bloqueia botão durante envio
+    const originalText = submitBtn ? submitBtn.innerText : 'Enviar';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Enviando...';
+    }
+
+    try {
+        const formData = new FormData(form);
+        formData.set('stars', `${stars} de 5`);
+
+        const response = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showTestimonialFeedback('✨ Depoimento enviado com sucesso! Obrigado por compartilhar.', 'success');
+            form.reset();
+            currentTestimonialStars = 0;
+            updateStarsUI(0);
+
+            setTimeout(() => {
+                const wrapper = document.getElementById('testimonial-form-wrapper');
+                if (wrapper) wrapper.classList.remove('open');
+                clearTestimonialFeedback();
+            }, 3500);
+        } else {
+            showTestimonialFeedback('Não foi possível enviar. Tente novamente em instantes.', 'error');
+        }
+    } catch (err) {
+        console.error('Erro no envio do depoimento:', err);
+        showTestimonialFeedback('Erro de conexão. Tente novamente em instantes.', 'error');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+        }
+    }
+}
+
+// ==========================================================================
 // Eventos Globais e Inicialização
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1057,6 +1221,12 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFavorites();
     updateFavoritesUI();
     setupRegisterLiveValidation();
+    setupStarRating();
+
+    const testimonialForm = document.getElementById('testimonial-form');
+    if (testimonialForm) {
+        testimonialForm.addEventListener('submit', handleTestimonialSubmit);
+    }
 
     const formLogin = document.getElementById('form-login');
     if (formLogin) {
