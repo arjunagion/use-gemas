@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+
     <!-- Link para o CSS -->
     <link rel="stylesheet" href="estilo/style.css">
 </head>
@@ -22,14 +22,14 @@
                 <ul class="nav-links">
                     <li><a href="#hero">Início</a></li>
                     <li><a href="#colecao">Coleções</a></li>
-                    <li><a href="#historia">Nossa História</a></li>
-                    <li><a href="#cuidados">Guia de Cuidados</a></li>
+                    <li><a href="#experiencia">Nossa História</a></li>
+                    <li><a href="#experiencia" onclick="setTimeout(function(){ goToSlide(2); }, 250);">Guia de Cuidados</a></li>
                     <li><a href="#contato">Contato</a></li>
                 </ul>
             </nav>
             <div style="display: flex; align-items: center; gap: 1.5rem;">
                 <a href="https://instagram.com/use.gemas" target="_blank" class="btn-secondary">Instagram</a>
-                
+
                 <button class="btn-icon" id="user-btn" onclick="openAuthModal('login')" title="Minha Conta">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -55,7 +55,7 @@
             </div>
             <div class="hero-media">
                 <div class="media-placeholder">
-                    <video src="estilo/midias/IMG_2563.MOV" autoplay muted loop playsinline></video>
+                    <video src="estilo/midias/IMG_2563.mp4" autoplay muted loop playsinline preload="metadata"></video>
                 </div>
             </div>
         </div>
@@ -84,18 +84,18 @@
             </div>
 
             <div class="products-grid">
-                
-                <div class="product-card" data-category="microcroche" 
-                     data-name="Gargantilha Microcrochê" 
-                     data-ref="UG-GAR01" 
-                     data-price="149.00" 
-                     data-gem="Microcristais & Acessórios Dourados" 
-                     data-desc="Confeccionada minuciosamente à mão com técnicas exclusivas de microcrochê e acabamento em banho dourado de alta durabilidade." 
+
+                <div class="product-card" data-category="microcroche"
+                     data-name="Gargantilha Microcrochê"
+                     data-ref="UG-GAR01"
+                     data-price="149.00"
+                     data-gem="Microcristais & Acessórios Dourados"
+                     data-desc="Confeccionada minuciosamente à mão com técnicas exclusivas de microcrochê e acabamento em banho dourado de alta durabilidade."
                      data-materials="Fios de alta resistência, microcristais lapidados e fecho banhado a ouro 18k."
-                     data-gallery="estilo/midias/IMG_2585.MOV, estilo/midias/foto_detalhe1.jpg, estilo/midias/foto_modelo1.jpg">
-                    
+                     data-gallery="estilo/midias/IMG_2585.mp4, estilo/midias/foto_detalhe1.jpg, estilo/midias/foto_modelo1.jpg">
+
                     <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2585.MOV" autoplay muted loop playsinline></video>
+                        <video src="estilo/midias/IMG_2585.mp4" autoplay muted loop playsinline preload="metadata"></video>
                     </div>
                     <div class="product-info">
                         <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">Gargantilha Microcrochê</h3>
@@ -106,16 +106,16 @@
                 </div>
 
                 <div class="product-card" data-category="pedras"
-                     data-name="Chocker Microcristal" 
-                     data-ref="UG-CHO02" 
-                     data-price="189.00" 
-                     data-gem="Gargantilha Em Micro-Cristais" 
-                     data-desc="Design minimalista feito com seleção de microcristais que captam a luz com elegância natural." 
+                     data-name="Chocker Microcristal"
+                     data-ref="UG-CHO02"
+                     data-price="189.00"
+                     data-gem="Gargantilha Em Micro-Cristais"
+                     data-desc="Design minimalista feito com seleção de microcristais que captam a luz com elegância natural."
                      data-materials="Microcristais naturais lapidados, entremeios folheados e extensão ajustável."
-                     data-gallery="estilo/midias/IMG_2501.MOV, estilo/midias/foto_detalhe2.jpg">
-                    
+                     data-gallery="estilo/midias/IMG_2501.mp4, estilo/midias/foto_detalhe2.jpg">
+
                     <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2501.MOV" autoplay muted loop playsinline></video>
+                        <video src="estilo/midias/IMG_2501.mp4" autoplay muted loop playsinline preload="metadata"></video>
                     </div>
                     <div class="product-info">
                         <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">Chocker Microcristal</h3>
@@ -126,16 +126,16 @@
                 </div>
 
                 <div class="product-card" data-category="colab"
-                     data-name="Linha AàZ Colab UG x AZ" 
-                     data-ref="UG-AAZ03" 
-                     data-price="169.00" 
-                     data-gem="Mix Triade Café, Palha & Ouro Antigo" 
-                     data-desc="Edição especial collab combinando a fusão de texturas terrosas, palha trançada e detalhes metálicos." 
+                     data-name="Linha AàZ Colab UG x AZ"
+                     data-ref="UG-AAZ03"
+                     data-price="169.00"
+                     data-gem="Mix Triade Café, Palha & Ouro Antigo"
+                     data-desc="Edição especial collab combinando a fusão de texturas terrosas, palha trançada e detalhes metálicos."
                      data-materials="Fios têxteis sustentáveis, elementos em ouro antigo e tramas manuais."
-                     data-gallery="estilo/midias/IMG_2559.MOV, estilo/midias/foto_detalhe3.jpg">
-                    
+                     data-gallery="estilo/midias/IMG_2559.mp4, estilo/midias/foto_detalhe3.jpg">
+
                     <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2559.MOV" autoplay muted loop playsinline></video>
+                        <video src="estilo/midias/IMG_2559.mp4" autoplay muted loop playsinline preload="metadata"></video>
                     </div>
                     <div class="product-info">
                         <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">Linha AàZ Colab UG x AZ</h3>
@@ -149,90 +149,92 @@
         </div>
     </section>
 
-   <!-- SEÇÃO DINÂMICA: História & Guia de Cuidados em Carrossel -->
-<section id="experiencia" class="carousel-section">
-    <div class="container">
-        <h2 class="section-title">Nossa Essência & Cuidados</h2>
-        
-        <div class="carousel-container" id="infoCarousel">
-            
-            <!-- Mídia Globale/Fundo Unificado (Opcional se preferir uma só mídia para o container) -->
-            <div class="carousel-bg-media">
-                <video src="estilo/midias/fundo_geral.mp4" autoplay muted loop playsinline></video>
-                <div class="carousel-overlay"></div>
+    <!-- SEÇÃO DINÂMICA: História & Guia de Cuidados em Carrossel -->
+    <section id="experiencia" class="carousel-section">
+        <div class="container">
+            <h2 class="section-title">Nossa Essência & Cuidados</h2>
+
+            <div class="carousel-container" id="infoCarousel">
+
+                <div class="carousel-track">
+
+                    <!-- Slide 1: Processo Manual -->
+                    <div class="carousel-slide active">
+                        <div class="slide-media">
+                            <video src="estilo/midias/IMG_2559.mp4" muted loop playsinline preload="metadata"></video>
+                        </div>
+                        <div class="slide-content">
+                            <span class="slide-badge">Artesanal</span>
+                            <h3>O Processo Manual & Macramé</h3>
+                            <p>Cada nó do microcrochê e do macramé é entrelaçado com paciência e precisão. Não utilizamos processos industriais em massa; cada joia exige horas de dedicação técnica para garantir resistência, leveza e caimento perfeito.</p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: Energia das Pedras -->
+                    <div class="carousel-slide">
+                        <div class="slide-media">
+                            <video src="estilo/midias/IMG_2563.mp4" muted loop playsinline preload="metadata"></video>
+                        </div>
+                        <div class="slide-content">
+                            <span class="slide-badge">Energia</span>
+                            <h3>A Energia dos Minerais</h3>
+                            <p>Acreditamos na força sutil da terra. Nossos minerais são selecionados individualmente não apenas pela estética, mas pelo seu campo vibracional, trazendo intenção, proteção e equilíbrio para quem as usa.</p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Cuidados com Microcrochê -->
+                    <div class="carousel-slide">
+                        <div class="slide-media">
+                            <video src="estilo/midias/IMG_2585.mp4" muted loop playsinline preload="metadata"></video>
+                        </div>
+                        <div class="slide-content">
+                            <span class="slide-badge">Guia de Cuidados</span>
+                            <h3>Como Cuidar do Microcrochê</h3>
+                            <p>• <strong>Evite Umidade:</strong> Retire as peças antes do banho, mar ou piscina.<br>
+                               • <strong>Cosméticos:</strong> Aplique perfumes e cremes minutos antes de vestir a joia.<br>
+                               • <strong>Guarde com Zelo:</strong> Mantenha em local seco e individual para evitar embaraços.</p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: Higienização de Cristais -->
+                    <div class="carousel-slide">
+                        <div class="slide-media">
+                            <video src="estilo/midias/IMG_2585.mp4" muted loop playsinline preload="metadata"></video>
+                        </div>
+                        <div class="slide-content">
+                            <span class="slide-badge">Higienização</span>
+                            <h3>Limpeza das Pedras Naturais</h3>
+                            <p>• <strong>Limpeza Física:</strong> Pano macio de microfibra ligeiramente úmido.<br>
+                               • <strong>Purificação:</strong> Deixe o mineral próximo a uma drusa de quartzo ou à luz do luar.<br>
+                               • <strong>Atenção:</strong> Nunca use álcool ou produtos químicos nas gemas.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Botões de Navegação (com SVG) -->
+                <button type="button" class="carousel-btn prev-btn" onclick="moveSlide(-1)" aria-label="Anterior">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
+                <button type="button" class="carousel-btn next-btn" onclick="moveSlide(1)" aria-label="Próximo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+
+                <!-- Indicadores (Dots) -->
+                <div class="carousel-dots">
+                    <span class="dot active" onclick="goToSlide(0)"></span>
+                    <span class="dot" onclick="goToSlide(1)"></span>
+                    <span class="dot" onclick="goToSlide(2)"></span>
+                    <span class="dot" onclick="goToSlide(3)"></span>
+                </div>
+
             </div>
-
-            <div class="carousel-track">
-                
-                <!-- Slide 1: Processo Manual -->
-                <div class="carousel-slide active">
-                    <div class="slide-media">
-                        <video src="estilo/midias/historia_macrame.mp4" autoplay muted loop playsinline></video>
-                    </div>
-                    <div class="slide-content">
-                        <span class="slide-badge">Artesanal</span>
-                        <h3>O Processo Manual & Macramé</h3>
-                        <p>Cada nó do microcrochê e do macramé é entrelaçado com paciência e precisão. Não utilizamos processos industriais em massa; cada joia exige horas de dedicação técnica para garantir resistência, leveza e caimento perfeito.</p>
-                    </div>
-                </div>
-
-                <!-- Slide 2: Energia das Pedras -->
-                <div class="carousel-slide">
-                    <div class="slide-media">
-                        <video src="estilo/midias/energia_pedras.mp4" autoplay muted loop playsinline></video>
-                    </div>
-                    <div class="slide-content">
-                        <span class="slide-badge">Energia</span>
-                        <h3>A Energia dos Minerais</h3>
-                        <p>Acreditamos na força sutil da terra. Nossos minerais são selecionados individualmente não apenas pela estética, mas pelo seu campo vibracional, trazendo intenção, proteção e equilíbrio para quem as usa.</p>
-                    </div>
-                </div>
-
-                <!-- Slide 3: Cuidados com Microcrochê -->
-                <div class="carousel-slide">
-                    <div class="slide-media">
-                        <video src="estilo/midias/cuidado_croche.mp4" autoplay muted loop playsinline></video>
-                    </div>
-                    <div class="slide-content">
-                        <span class="slide-badge">Guia de Cuidados</span>
-                        <h3>Como Cuidar do Microcrochê</h3>
-                        <p>• <strong>Evite Umidade:</strong> Retire as peças antes do banho, mar ou piscina.<br>
-                           • <strong>Cosméticos:</strong> Aplique perfumes e cremes minutos antes de vestir a joia.<br>
-                           • <strong>Guarde com Zelo:</strong> Mantenha em local seco e individual para evitar embaraços.</p>
-                    </div>
-                </div>
-
-                <!-- Slide 4: Higienização de Cristais -->
-                <div class="carousel-slide">
-                    <div class="slide-media">
-                        <video src="estilo/midias/cuidado_pedras.mp4" autoplay muted loop playsinline></video>
-                    </div>
-                    <div class="slide-content">
-                        <span class="slide-badge">Higienização</span>
-                        <h3>Limpeza das Pedras Naturais</h3>
-                        <p>• <strong>Limpeza Física:</strong> Pano macio de microfibra ligeiramente úmido.<br>
-                           • <strong>Purificação:</strong> Deixe o mineral próximo a uma drusa de quartzo ou à luz do luar.<br>
-                           • <strong>Atenção:</strong> Nunca use álcool ou produtos químicos nas gemas.</p>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Botões de Navegação Corrigidos -->
-            <button type="button" class="carousel-btn prev-btn" onclick="moveSlide(-1)" aria-label="Anterior">&#10094;</button>
-            <button type="button" class="carousel-btn next-btn" onclick="moveSlide(1)" aria-label="Próximo">&#10095;</button>
-
-            <!-- Indicadores (Dots) -->
-            <div class="carousel-dots">
-                <span class="dot active" onclick="goToSlide(0)"></span>
-                <span class="dot" onclick="goToSlide(1)"></span>
-                <span class="dot" onclick="goToSlide(2)"></span>
-                <span class="dot" onclick="goToSlide(3)"></span>
-            </div>
-
         </div>
-    </div>
-</section>
+    </section>
 
     <!-- Modal de Detalhes do Produto -->
     <div id="product-modal" class="modal-overlay">
@@ -241,8 +243,16 @@
             <div class="modal-body">
                 <div class="modal-media-container">
                     <div id="modal-media-wrapper" class="modal-media-wrapper"></div>
-                    <button class="modal-nav prev-btn" onclick="navigateModalGallery(-1)">&#10094;</button>
-                    <button class="modal-nav next-btn" onclick="navigateModalGallery(1)">&#10095;</button>
+                    <button class="modal-nav prev-btn" onclick="navigateModalGallery(-1)" aria-label="Mídia anterior">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="modal-nav next-btn" onclick="navigateModalGallery(1)" aria-label="Próxima mídia">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
                     <div id="gallery-dots" class="gallery-dots"></div>
                 </div>
 
@@ -251,7 +261,7 @@
                     <h2 id="modal-title">Nome do Produto</h2>
                     <p id="modal-gem" class="gem-type">Tipo de Gema</p>
                     <div id="modal-price" class="modal-price-tag">R$ 0,00</div>
-                    
+
                     <div class="modal-section">
                         <h4>Descrição</h4>
                         <p id="modal-desc">Descrição detalhada do produto.</p>
@@ -272,7 +282,7 @@
     <div id="auth-modal" class="modal-overlay">
         <div class="auth-card">
             <button class="modal-close" onclick="closeAuthModal()">&times;</button>
-            
+
             <div class="auth-tabs">
                 <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Entrar</button>
                 <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Criar Conta</button>
@@ -329,7 +339,7 @@
             <h3>Seu Carrinho</h3>
             <button class="close-cart" onclick="toggleCart()">&times;</button>
         </div>
-        
+
         <div id="cart-items" class="cart-items"></div>
 
         <div class="cart-footer">
@@ -379,7 +389,7 @@
     </footer>
 
     <!-- Importação do JS -->
-    <script src="estilo/script.js?v=8.0"></script>
-    
+    <script src="estilo/script.js?v=9.0"></script>
+
 </body>
 </html>

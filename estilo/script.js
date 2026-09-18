@@ -9,7 +9,80 @@ let shippingDetails = null;
 let currentGallery = [];
 let currentMediaIndex = 0;
 
-const whatsappNumber = "5511982053330"; 
+const whatsappNumber = "5511982053330";
+
+// Controle do Carrossel Principal
+let currentSlide = 0;
+let autoSlideInterval = null;
+
+// ==========================================================================
+// Controle do Carrossel de Essência & Cuidados (Escopo Global)
+// ==========================================================================
+function getCarouselElements() {
+    return {
+        slides: document.querySelectorAll('.carousel-slide'),
+        dots: document.querySelectorAll('.carousel-dots .dot')
+    };
+}
+
+function showSlide(index) {
+    const { slides, dots } = getCarouselElements();
+    if (!slides || slides.length === 0) return;
+
+    if (index >= slides.length) currentSlide = 0;
+    else if (index < 0) currentSlide = slides.length - 1;
+    else currentSlide = index;
+
+    slides.forEach((slide, i) => {
+        const isCurrent = i === currentSlide;
+        slide.classList.toggle('active', isCurrent);
+
+        const video = slide.querySelector('video');
+        if (video) {
+            if (isCurrent) {
+                try {
+                    video.currentTime = 0;
+                } catch (e) { /* ignora se metadata ainda não carregou */ }
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        }
+    });
+
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+    });
+}
+
+function moveSlide(step) {
+    showSlide(currentSlide + step);
+    resetAutoSlide();
+}
+
+function goToSlide(index) {
+    showSlide(index);
+    resetAutoSlide();
+}
+
+function startAutoSlide() {
+    stopAutoSlide();
+    autoSlideInterval = setInterval(() => {
+        showSlide(currentSlide + 1);
+    }, 6000);
+}
+
+function stopAutoSlide() {
+    if (autoSlideInterval) {
+        clearInterval(autoSlideInterval);
+        autoSlideInterval = null;
+    }
+}
+
+function resetAutoSlide() {
+    stopAutoSlide();
+    startAutoSlide();
+}
 
 // ==========================================================================
 // Controle do Carrinho (Drawer)
@@ -29,7 +102,7 @@ function openCart() {
 }
 
 /* ==========================================================================
-   Controle dos Modais de Autenticação (Login / Criar Conta)
+   Controle dos Modais de Autenticação
    ========================================================================== */
 function openAuthModal(tab = 'login') {
     const modal = document.getElementById('auth-modal');
@@ -56,7 +129,6 @@ function switchAuthTab(tabName) {
     const registerForm = document.getElementById('form-register');
 
     clearAuthFeedback();
-    resetRegisterValidation();
 
     if (tabName === 'login') {
         if (loginTab) loginTab.classList.add('active');
@@ -64,6 +136,7 @@ function switchAuthTab(tabName) {
         if (loginForm) loginForm.classList.add('active');
         if (registerForm) registerForm.classList.remove('active');
     } else {
+        resetRegisterValidation();
         if (registerTab) registerTab.classList.add('active');
         if (loginTab) loginTab.classList.remove('active');
         if (registerForm) registerForm.classList.add('active');
@@ -91,22 +164,19 @@ function handleForgotPassword(event) {
     event.preventDefault();
     const emailInput = document.getElementById('login-email');
     const email = emailInput ? emailInput.value.trim() : '';
-    
+
     if (!email || !validateEmail(email)) {
         showAuthFeedback('Informe seu e-mail de cadastro no campo para redefinir a senha.', 'error');
         if (emailInput) emailInput.focus();
         return;
     }
-    
+
     showAuthFeedback(`Instruções de redefinição enviadas para ${email}.`, 'success');
 }
 
-// ==========================================================================
-// Validações Visuais e Feedback dos Campos do Cadastro
-// ==========================================================================
 function setFieldStatus(inputEl, isValid, message = '') {
     if (!inputEl) return;
-    
+
     let msgEl = inputEl.parentNode.querySelector('.field-msg');
     if (!msgEl) {
         msgEl = document.createElement('small');
@@ -172,7 +242,7 @@ function setupRegisterLiveValidation() {
             if (val.length === 0) {
                 setFieldStatus(emailInput, false, 'O e-mail é obrigatório.');
             } else if (!validateEmail(val)) {
-                setFieldStatus(emailInput, false, 'Informe um e-mail válido (ex: nome@dominio.com).');
+                setFieldStatus(emailInput, false, 'Informe um e-mail válido.');
             } else {
                 setFieldStatus(emailInput, true);
             }
@@ -183,9 +253,9 @@ function setupRegisterLiveValidation() {
         passwordInput.addEventListener('input', () => {
             const val = passwordInput.value;
             if (val.length === 0) {
-                setFieldStatus(passwordInput, false, 'A senha é obrigatória (min. 6 caracteres).');
+                setFieldStatus(passwordInput, false, 'A senha é obrigatória.');
             } else if (val.length < 6) {
-                setFieldStatus(passwordInput, false, `Senha muito curta (${val.length}/6 caracteres).`);
+                setFieldStatus(passwordInput, false, `Senha muito curta (${val.length}/6).`);
             } else {
                 setFieldStatus(passwordInput, true);
             }
@@ -212,9 +282,6 @@ function setupRegisterLiveValidation() {
     }
 }
 
-// ==========================================================================
-// Regras de Negócio de Autenticação (localStorage)
-// ==========================================================================
 function handleRegister(event) {
     event.preventDefault();
     clearAuthFeedback();
@@ -268,9 +335,8 @@ function handleRegister(event) {
     const newUser = { name, email, password };
     users.push(newUser);
     localStorage.setItem('gemas_users', JSON.stringify(users));
-
     localStorage.setItem('gemas_current_user', JSON.stringify({ name, email }));
-    
+
     showAuthFeedback('Conta criada com sucesso!', 'success');
     updateUserSessionUI();
 
@@ -351,9 +417,11 @@ function validateEmail(email) {
 }
 
 // ==========================================================================
-// Controle do Modal de Produtos & Galeria
+// Controle do Modal de Produtos
 // ==========================================================================
 function openProductModalFromCard(cardElement) {
+    if (!cardElement) return;
+
     const name = cardElement.getAttribute('data-name');
     const ref = cardElement.getAttribute('data-ref');
     const price = parseFloat(cardElement.getAttribute('data-price'));
@@ -397,13 +465,15 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
 function renderModalMedia() {
     const wrapper = document.getElementById('modal-media-wrapper');
     const dotsContainer = document.getElementById('gallery-dots');
-    const prevBtn = document.querySelector('.prev-btn');
-    const nextBtn = document.querySelector('.next-btn');
+    const prevBtn = document.querySelector('#product-modal .modal-nav.prev-btn');
+    const nextBtn = document.querySelector('#product-modal .modal-nav.next-btn');
 
     if (!wrapper) return;
 
+    const fallbackHTML = `<div style="color:#666;text-align:center;padding:2rem;font-size:0.9rem;width:100%;">Mídia indisponível</div>`;
+
     if (currentGallery.length === 0) {
-        wrapper.innerHTML = `<p style="color: #666; text-align: center; margin-top: 40%;">Sem mídia disponível</p>`;
+        wrapper.innerHTML = fallbackHTML;
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
         if (dotsContainer) dotsContainer.innerHTML = '';
@@ -419,12 +489,12 @@ function renderModalMedia() {
     }
 
     const currentSrc = currentGallery[currentMediaIndex];
-    const isVideo = currentSrc.match(/\.(mov|mp4|webm)$/i);
+    const isVideo = currentSrc.match(/\.(mov|mp4|webm|ogg)$/i);
 
     if (isVideo) {
-        wrapper.innerHTML = `<video src="${currentSrc}" autoplay muted loop playsinline></video>`;
+        wrapper.innerHTML = `<video src="${currentSrc}" autoplay muted loop playsinline preload="metadata" onerror="this.parentElement.innerHTML='${fallbackHTML.replace(/'/g, "\\'")}'"></video>`;
     } else {
-        wrapper.innerHTML = `<img src="${currentSrc}" alt="Detalhe do Produto" />`;
+        wrapper.innerHTML = `<img src="${currentSrc}" alt="Detalhe do Produto" onerror="this.parentElement.innerHTML='${fallbackHTML.replace(/'/g, "\\'")}'" />`;
     }
 
     if (dotsContainer) {
@@ -469,7 +539,7 @@ function closeProductModal() {
 function filterProducts(category, element) {
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(btn => btn.classList.remove('active'));
-    
+
     if (element) {
         element.classList.add('active');
     }
@@ -487,7 +557,7 @@ function filterProducts(category, element) {
 }
 
 // ==========================================================================
-// Operações do Carrinho de Compras
+// Operações do Carrinho
 // ==========================================================================
 function addToCart(name, ref, price) {
     const existingItem = cart.find(item => item.ref === ref);
@@ -522,15 +592,15 @@ function formatCurrency(value) {
 }
 
 // ==========================================================================
-// Cálculo de Frete (ViaCEP API)
+// Cálculo de Frete (ViaCEP)
 // ==========================================================================
 async function calculateShipping() {
     const cepInput = document.getElementById('cep-input');
     const shippingResult = document.getElementById('shipping-result');
-    
+
     if (!cepInput || !shippingResult) return;
 
-    const cep = cepInput.value.replace(/\D/g, ''); 
+    const cep = cepInput.value.replace(/\D/g, '');
 
     if (cep.length !== 8) {
         shippingResult.innerHTML = `<span style="color: #ff6b6b;">Digite um CEP com 8 dígitos.</span>`;
@@ -548,8 +618,8 @@ async function calculateShipping() {
             shippingCost = 0;
             shippingDetails = null;
         } else {
-            const estimatedFreight = 20.00; 
-            
+            const estimatedFreight = 20.00;
+
             shippingCost = estimatedFreight;
             shippingDetails = {
                 cep: data.cep,
@@ -740,79 +810,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-  let currentSlide = 0;
-let autoSlideInterval = null;
-
-// Função para buscar os elementos dinamicamente após o DOM carregar
-function getCarouselElements() {
-    return {
-        slides: document.querySelectorAll('.carousel-slide'),
-        dots: document.querySelectorAll('.carousel-dots .dot')
-    };
-}
-
-function showSlide(index) {
-    const { slides, dots } = getCarouselElements();
-    if (!slides || slides.length === 0) return;
-
-    if (index >= slides.length) currentSlide = 0;
-    else if (index < 0) currentSlide = slides.length - 1;
-    else currentSlide = index;
-
-    slides.forEach((slide, i) => {
-        const isCurrent = i === currentSlide;
-        slide.classList.toggle('active', isCurrent);
-        
-        // Garante que o vídeo do slide ativo rode automaticamente
-        const video = slide.querySelector('video');
-        if (video) {
-            if (isCurrent) {
-                video.currentTime = 0;
-                video.play().catch(() => {});
-            } else {
-                video.pause();
-            }
-        }
-    });
-
-    dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === currentSlide);
-    });
-}
-
-function moveSlide(step) {
-    showSlide(currentSlide + step);
-    resetAutoSlide();
-}
-
-function goToSlide(index) {
-    showSlide(index);
-    resetAutoSlide();
-}
-
-function startAutoSlide() {
-    stopAutoSlide();
-    autoSlideInterval = setInterval(() => {
-        showSlide(currentSlide + 1);
-    }, 6000);
-}
-
-function stopAutoSlide() {
-    if (autoSlideInterval) {
-        clearInterval(autoSlideInterval);
-        autoSlideInterval = null;
-    }
-}
-
-function resetAutoSlide() {
-    stopAutoSlide();
-    startAutoSlide();
-}
-
-// Inicialização segura
-document.addEventListener('DOMContentLoaded', () => {
+    // Inicialização do Carrossel de Essência & Cuidados
     const carouselContainer = document.getElementById('infoCarousel');
-    
     if (carouselContainer) {
         showSlide(0);
         startAutoSlide();
@@ -820,6 +819,4 @@ document.addEventListener('DOMContentLoaded', () => {
         carouselContainer.addEventListener('mouseenter', stopAutoSlide);
         carouselContainer.addEventListener('mouseleave', startAutoSlide);
     }
-});
-
 });
