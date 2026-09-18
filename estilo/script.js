@@ -9,6 +9,9 @@ let shippingDetails = null;
 let currentGallery = [];
 let currentMediaIndex = 0;
 
+// Controle do PhotoSwipe (galeria ampliada com zoom)
+let photoSwipeLightbox = null;
+
 const whatsappNumber = "5511982053330";
 
 // Controle do Carrossel Principal
@@ -89,15 +92,24 @@ function resetAutoSlide() {
 // ==========================================================================
 function toggleCart() {
     const cartDrawer = document.getElementById('cart-drawer');
+    const wishlistDrawer = document.getElementById('wishlist-drawer');
     if (cartDrawer) {
+        const willOpen = !cartDrawer.classList.contains('open');
         cartDrawer.classList.toggle('open');
+        if (willOpen && wishlistDrawer) {
+            wishlistDrawer.classList.remove('open');
+        }
     }
 }
 
 function openCart() {
     const cartDrawer = document.getElementById('cart-drawer');
+    const wishlistDrawer = document.getElementById('wishlist-drawer');
     if (cartDrawer && !cartDrawer.classList.contains('open')) {
         cartDrawer.classList.add('open');
+        if (wishlistDrawer) {
+            wishlistDrawer.classList.remove('open');
+        }
     }
 }
 
@@ -491,10 +503,44 @@ function renderModalMedia() {
     const currentSrc = currentGallery[currentMediaIndex];
     const isVideo = currentSrc.match(/\.(mov|mp4|webm|ogg)$/i);
 
+    // Ícone de zoom (lupa)
+    const zoomIconSVG = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+    `;
+
+    // Indicador visual "Ampliar"
+    const zoomHintHTML = `
+        <div class="zoom-hint" title="Clique para ampliar">
+            ${zoomIconSVG}
+            <span>Ampliar</span>
+        </div>
+    `;
+
     if (isVideo) {
-        wrapper.innerHTML = `<video src="${currentSrc}" autoplay muted loop playsinline preload="metadata" onerror="this.parentElement.innerHTML='${fallbackHTML.replace(/'/g, "\\'")}'"></video>`;
+        wrapper.innerHTML = `
+            <video src="${currentSrc}" autoplay muted loop playsinline preload="metadata" 
+                   onerror="this.parentElement.innerHTML='${fallbackHTML.replace(/'/g, "\\'")}'"></video>
+            ${zoomHintHTML}
+        `;
     } else {
-        wrapper.innerHTML = `<img src="${currentSrc}" alt="Detalhe do Produto" onerror="this.parentElement.innerHTML='${fallbackHTML.replace(/'/g, "\\'")}'" />`;
+        wrapper.innerHTML = `
+            <img src="${currentSrc}" alt="Detalhe do Produto" 
+                 onerror="this.parentElement.innerHTML='${fallbackHTML.replace(/'/g, "\\'")}'" />
+            ${zoomHintHTML}
+        `;
+    }
+
+    // Adiciona o clique para abrir o PhotoSwipe na mídia atual
+    const mediaEl = wrapper.querySelector('video, img');
+    if (mediaEl) {
+        mediaEl.addEventListener('click', () => {
+            openPhotoSwipeAtCurrentIndex();
+        });
     }
 
     if (dotsContainer) {
@@ -527,6 +573,9 @@ function setModalMediaIndex(index) {
 }
 
 function closeProductModal() {
+    // Fecha PhotoSwipe se estiver aberto
+    closePhotoSwipeIfOpen();
+
     const modal = document.getElementById('product-modal');
     if (modal) {
         modal.classList.remove('open');
@@ -745,10 +794,268 @@ function sendToWhatsApp() {
 }
 
 // ==========================================================================
+// Favoritos / Lista de Desejos
+// ==========================================================================
+let favorites = [];
+
+function loadFavorites() {
+    try {
+        favorites = JSON.parse(localStorage.getItem('gemas_favorites') || '[]');
+        if (!Array.isArray(favorites)) favorites = [];
+    } catch (e) {
+        favorites = [];
+    }
+}
+
+function saveFavorites() {
+    localStorage.setItem('gemas_favorites', JSON.stringify(favorites));
+}
+
+function isFavorite(ref) {
+    return favorites.some(f => f.ref === ref);
+}
+
+function toggleFavorite(event, name, ref, price) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    const index = favorites.findIndex(f => f.ref === ref);
+
+    if (index >= 0) {
+        favorites.splice(index, 1);
+    } else {
+        favorites.push({ name, ref, price });
+    }
+
+    saveFavorites();
+    updateFavoritesUI();
+}
+
+function updateFavoritesUI() {
+    const countEl = document.getElementById('wishlist-count');
+    if (countEl) countEl.innerText = favorites.length;
+
+    document.querySelectorAll('.product-card').forEach(card => {
+        const ref = card.getAttribute('data-ref');
+        const btn = card.querySelector('.btn-favorite');
+        if (!btn) return;
+
+        if (isFavorite(ref)) {
+            btn.classList.add('active');
+            btn.setAttribute('aria-label', 'Remover dos favoritos');
+        } else {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-label', 'Adicionar aos favoritos');
+        }
+    });
+
+    renderWishlistItems();
+}
+
+function renderWishlistItems() {
+    const container = document.getElementById('wishlist-items');
+    if (!container) return;
+
+    if (favorites.length === 0) {
+        container.innerHTML = `
+            <p class="wishlist-empty">
+                Sua lista de favoritos está vazia.<br>
+                Toque no ❤️ de qualquer peça para salvar aqui.
+            </p>
+        `;
+        return;
+    }
+
+    container.innerHTML = '';
+    favorites.forEach((item, index) => {
+        container.innerHTML += `
+            <div class="wishlist-item">
+                <div class="wishlist-item-info">
+                    <h4>${item.name}</h4>
+                    <small>REF: ${item.ref}</small>
+                    <div class="wishlist-price">${formatCurrency(item.price)}</div>
+                </div>
+                <div class="wishlist-item-actions">
+                    <button onclick="moveFavoriteToCart(${index})" title="Adicionar ao carrinho" aria-label="Adicionar ao carrinho">🛒</button>
+                    <button class="btn-remove-fav" onclick="removeFromFavorites(${index})" title="Remover dos favoritos" aria-label="Remover">&times;</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function removeFromFavorites(index) {
+    if (index < 0 || index >= favorites.length) return;
+    favorites.splice(index, 1);
+    saveFavorites();
+    updateFavoritesUI();
+}
+
+function moveFavoriteToCart(index) {
+    const item = favorites[index];
+    if (!item) return;
+
+    addToCart(item.name, item.ref, item.price);
+
+    favorites.splice(index, 1);
+    saveFavorites();
+    updateFavoritesUI();
+}
+
+function toggleWishlist() {
+    const wishlistDrawer = document.getElementById('wishlist-drawer');
+    const cartDrawer = document.getElementById('cart-drawer');
+    if (wishlistDrawer) {
+        const willOpen = !wishlistDrawer.classList.contains('open');
+        wishlistDrawer.classList.toggle('open');
+        if (willOpen && cartDrawer) {
+            cartDrawer.classList.remove('open');
+        }
+    }
+}
+
+function openWishlist() {
+    const wishlistDrawer = document.getElementById('wishlist-drawer');
+    const cartDrawer = document.getElementById('cart-drawer');
+    if (wishlistDrawer && !wishlistDrawer.classList.contains('open')) {
+        wishlistDrawer.classList.add('open');
+        if (cartDrawer) cartDrawer.classList.remove('open');
+    }
+}
+
+function closeWishlist() {
+    const wishlistDrawer = document.getElementById('wishlist-drawer');
+    if (wishlistDrawer) wishlistDrawer.classList.remove('open');
+}
+
+function addAllFavoritesToCart() {
+    if (favorites.length === 0) {
+        alert('Sua lista de favoritos está vazia.');
+        return;
+    }
+
+    const itemsToAdd = [...favorites];
+    itemsToAdd.forEach(item => {
+        addToCart(item.name, item.ref, item.price);
+    });
+
+    favorites = [];
+    saveFavorites();
+    updateFavoritesUI();
+    closeWishlist();
+}
+
+// ==========================================================================
+// PhotoSwipe — Galeria Ampliada com Zoom
+// ==========================================================================
+
+/**
+ * Monta o array de dados do PhotoSwipe a partir da galeria do produto atual
+ */
+function buildPhotoSwipeData() {
+    return currentGallery.map((src) => {
+        const isVideo = src.match(/\.(mov|mp4|webm|ogg)$/i);
+
+        if (isVideo) {
+            return {
+                src: src,
+                width: 1280,
+                height: 720,
+                type: 'video',
+                videoSrc: src,
+                msrc: src
+            };
+        }
+
+        return {
+            src: src,
+            width: 1200,
+            height: 1600,
+            msrc: src
+        };
+    });
+}
+
+/**
+ * Abre o PhotoSwipe no índice atual da galeria do modal
+ */
+function openPhotoSwipeAtCurrentIndex() {
+    if (currentGallery.length === 0) return;
+
+    // Destroi instância anterior se existir
+    if (photoSwipeLightbox) {
+        try {
+            photoSwipeLightbox.destroy();
+        } catch (e) { /* ignora */ }
+        photoSwipeLightbox = null;
+    }
+
+    const dataSource = buildPhotoSwipeData();
+
+    // Garante que o container exista
+    let galleryEl = document.getElementById('pswp-gallery');
+    if (!galleryEl) {
+        galleryEl = document.createElement('div');
+        galleryEl.id = 'pswp-gallery';
+        galleryEl.className = 'pswp-gallery';
+        galleryEl.style.display = 'none';
+        document.body.appendChild(galleryEl);
+    }
+
+    // Importa e inicializa o PhotoSwipe dinamicamente
+    Promise.all([
+        import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js'),
+        import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.esm.min.js')
+    ])
+        .then(([lightboxModule, pswpModule]) => {
+            const PhotoSwipeLightbox = lightboxModule.default;
+            const PhotoSwipe = pswpModule.default;
+
+            photoSwipeLightbox = new PhotoSwipeLightbox({
+                dataSource: dataSource,
+                pswpModule: () => Promise.resolve(PhotoSwipe),
+                bgOpacity: 0.95,
+                showHideAnimationType: 'zoom',
+                zoomAnimationDuration: 300,
+                wheelToZoom: true,
+                pinchToClose: true,
+                closeOnVerticalDrag: true,
+                escKey: true,
+                arrowKeys: true,
+                clickToCloseNonZoomable: true
+            });
+
+            photoSwipeLightbox.init();
+            photoSwipeLightbox.loadAndOpen(currentMediaIndex);
+        })
+        .catch((err) => {
+            console.warn('PhotoSwipe não pôde ser carregado:', err);
+            // Fallback: abre a mídia em nova aba
+            window.open(currentGallery[currentMediaIndex], '_blank');
+        });
+}
+
+/**
+ * Fecha o PhotoSwipe se estiver aberto
+ */
+function closePhotoSwipeIfOpen() {
+    if (photoSwipeLightbox) {
+        try {
+            photoSwipeLightbox.destroy();
+        } catch (e) { /* ignora */ }
+        photoSwipeLightbox = null;
+    }
+}
+
+// ==========================================================================
 // Eventos Globais e Inicialização
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
     updateUserSessionUI();
+    loadFavorites();
+    updateFavoritesUI();
     setupRegisterLiveValidation();
 
     const formLogin = document.getElementById('form-login');
