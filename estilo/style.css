@@ -631,6 +631,10 @@ a {
     border-color: var(--gold);
 }
 
+/* ⬇️ AQUI ESTAVA O BUG — as duas regras que faltavam */
+.modal-nav.prev-btn { left: 12px; }
+.modal-nav.next-btn { right: 12px; }
+
 .gallery-dots {
     position: absolute;
     bottom: 12px;
