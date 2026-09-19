@@ -313,7 +313,14 @@ function setupRegisterLiveValidation() {
     }
 }
 
-function handleRegister(event) {
+// ==========================================================================
+// Auth com Supabase
+// ==========================================================================
+const SUPABASE_URL = 'https://dytdnemwqbzgrekamwla.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ooUF5efbIvxuRlaxYqP5fw_nP1bs2Su';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function handleRegister(event) {
     event.preventDefault();
     clearAuthFeedback();
 
@@ -333,17 +340,14 @@ function handleRegister(event) {
         setFieldStatus(nameInput, false, 'Informe seu nome completo.');
         hasError = true;
     }
-
     if (!email || !validateEmail(email)) {
         setFieldStatus(emailInput, false, 'E-mail inválido.');
         hasError = true;
     }
-
     if (!password || password.length < 6) {
         setFieldStatus(passwordInput, false, 'A senha deve conter no mínimo 6 caracteres.');
         hasError = true;
     }
-
     if (!confirm || password !== confirm) {
         setFieldStatus(confirmInput, false, 'As senhas não coincidem.');
         hasError = true;
@@ -354,19 +358,22 @@ function handleRegister(event) {
         return;
     }
 
-    const users = JSON.parse(localStorage.getItem('gemas_users') || '[]');
-    const userExists = users.some(u => u.email === email);
+    const btn = event.target.querySelector('button[type="submit"]');
+    const originalText = btn ? btn.innerText : 'Cadastrar';
+    if (btn) { btn.disabled = true; btn.innerText = 'Cadastrando...'; }
 
-    if (userExists) {
-        setFieldStatus(emailInput, false, 'Este e-mail já está cadastrado.');
-        showAuthFeedback('Este e-mail já está cadastrado no sistema.', 'error');
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+        options: { data: { name: name } }
+    });
+
+    if (btn) { btn.disabled = false; btn.innerText = originalText; }
+
+    if (error) {
+        showAuthFeedback(error.message.includes('already') ? 'Este e-mail já está cadastrado.' : 'Erro ao cadastrar. Tente novamente.', 'error');
         return;
     }
-
-    const newUser = { name, email, password };
-    users.push(newUser);
-    localStorage.setItem('gemas_users', JSON.stringify(users));
-    localStorage.setItem('gemas_current_user', JSON.stringify({ name, email }));
 
     showAuthFeedback('Conta criada com sucesso!', 'success');
     updateUserSessionUI();
@@ -380,7 +387,7 @@ function handleRegister(event) {
     }, 1200);
 }
 
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
     clearAuthFeedback();
 
@@ -395,15 +402,22 @@ function handleLogin(event) {
         return;
     }
 
-    const users = JSON.parse(localStorage.getItem('gemas_users') || '[]');
-    const user = users.find(u => u.email === email && u.password === password);
+    const btn = event.target.querySelector('button[type="submit"]');
+    const originalText = btn ? btn.innerText : 'Acessar';
+    if (btn) { btn.disabled = true; btn.innerText = 'Entrando...'; }
 
-    if (!user) {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (btn) { btn.disabled = false; btn.innerText = originalText; }
+
+    if (error) {
         showAuthFeedback('E-mail ou senha incorretos.', 'error');
         return;
     }
 
-    localStorage.setItem('gemas_current_user', JSON.stringify({ name: user.name, email: user.email }));
     showAuthFeedback('Login realizado com sucesso!', 'success');
     updateUserSessionUI();
 
@@ -414,19 +428,27 @@ function handleLogin(event) {
     }, 1000);
 }
 
-function handleLogout() {
-    localStorage.removeItem('gemas_current_user');
+async function handleLogout() {
+    await supabaseClient.auth.signOut();
     updateUserSessionUI();
 }
 
-function updateUserSessionUI() {
+async function updateUserSessionUI() {
     const userBtn = document.getElementById('user-btn');
-    const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
-
     if (!userBtn) return;
 
-    if (currentUser) {
-        const firstName = currentUser.name.split(' ')[0];
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (user) {
+        const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('name')
+            .eq('id', user.id)
+            .single();
+
+        const fullName = profile?.name || user.email.split('@')[0];
+        const firstName = fullName.split(' ')[0];
+
         userBtn.innerHTML = `
             <span style="font-size: 0.85rem; color: #d4af37; margin-right: 0.4rem; font-weight: 500;">Olá, ${firstName}</span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor: pointer;" title="Sair"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
