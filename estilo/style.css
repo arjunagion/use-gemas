@@ -43,6 +43,7 @@ a {
 
 /* Acessibilidade — respeita preferência de menos animação */
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -1289,6 +1290,9 @@ a {
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
+    /* ADICIONA ESSAS DUAS LINHAS */
+    padding: 6px;
+    box-sizing: content-box;
 }
 
 .dot.active {
