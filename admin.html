@@ -33,6 +33,7 @@
             --gold-hover: #f3cf55;
             --danger: #ff5555;
             --success: #51cf66;
+            --warning: #ffc107;
             --font-title: 'Cormorant Garamond', serif;
             --font-body: 'Montserrat', sans-serif;
             --sidebar-width: 260px;
@@ -68,7 +69,6 @@
             display: flex;
         }
 
-        /* TELA: Carregando */
         #screen-loading {
             justify-content: center;
             align-items: center;
@@ -97,7 +97,6 @@
             letter-spacing: 1px;
         }
 
-        /* TELA: Acesso negado */
         #screen-denied {
             justify-content: center;
             align-items: center;
@@ -138,11 +137,18 @@
             border: none;
             cursor: pointer;
             transition: all 0.3s;
+            font-family: var(--font-body);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-ghost {
@@ -166,7 +172,7 @@
             color: var(--text);
         }
 
-        /* TELA: Admin — layout */
+        /* ==================== Admin Layout ==================== */
         #screen-admin {
             display: none;
         }
@@ -175,7 +181,6 @@
             display: flex;
         }
 
-        /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
             background: var(--bg-panel);
@@ -294,7 +299,6 @@
             border-color: var(--danger);
         }
 
-        /* Main */
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
@@ -347,7 +351,6 @@
             flex: 1;
         }
 
-        /* Seções */
         .content-section {
             display: none;
         }
@@ -369,7 +372,7 @@
             }
         }
 
-        /* Grid de métricas */
+        /* ==================== Métricas ==================== */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -409,7 +412,7 @@
             line-height: 1;
         }
 
-        /* Placeholder box */
+        /* ==================== Placeholder ==================== */
         .placeholder-box {
             background: var(--bg-card);
             border: 1px dashed var(--border);
@@ -431,29 +434,540 @@
             margin-bottom: 1.5rem;
         }
 
-        .placeholder-box ul {
-            list-style: none;
-            text-align: left;
-            max-width: 500px;
-            margin: 0 auto;
-            color: var(--text-muted);
+        /* ==================== Produtos ==================== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
             font-size: 0.9rem;
+            font-family: var(--font-body);
+            outline: none;
+            transition: all 0.3s;
+            min-width: 220px;
         }
 
-        .placeholder-box li {
-            padding: 0.6rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .search-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
         }
 
-        .placeholder-box li:last-child {
-            border-bottom: none;
+        .filter-tabs {
+            display: flex;
+            gap: 0.4rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 0.25rem;
+            border-radius: 8px;
         }
 
-        .placeholder-box li strong {
+        .filter-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-tab.active {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+        }
+
+        .filter-tab:hover:not(.active) {
             color: var(--text);
         }
 
-        /* Botão hamburguer mobile */
+        .btn-new-product {
+            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+            color: #0e0e10;
+            border: none;
+            padding: 0.65rem 1.3rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-body);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-new-product:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Grid de produtos */
+        .products-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .product-admin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.3rem;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .product-admin-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .product-admin-card.inactive {
+            opacity: 0.55;
+        }
+
+        .product-admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .product-admin-name {
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.2;
+            flex: 1;
+        }
+
+        .product-admin-ref {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            margin-top: 3px;
+        }
+
+        .stock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .stock-badge.ok {
+            background: rgba(81, 207, 102, 0.12);
+            color: var(--success);
+        }
+
+        .stock-badge.low {
+            background: rgba(255, 193, 7, 0.12);
+            color: var(--warning);
+        }
+
+        .stock-badge.zero {
+            background: rgba(255, 85, 85, 0.12);
+            color: var(--danger);
+        }
+
+        .product-admin-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            font-family: var(--font-title);
+        }
+
+        .product-admin-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-admin-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.4rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .action-btn {
+            flex: 1;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: var(--font-body);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            letter-spacing: 0.5px;
+        }
+
+        .action-btn:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .action-btn.edit:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .action-btn.warn:hover {
+            border-color: var(--warning);
+            color: var(--warning);
+            background: rgba(255, 193, 7, 0.08);
+        }
+
+        .action-btn.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(255, 85, 85, 0.08);
+        }
+
+        .empty-state {
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            opacity: 0.5;
+        }
+
+        /* ==================== Modais ==================== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.open .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-box.narrow {
+            max-width: 420px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            background: var(--gold);
+            color: var(--bg);
+            border-color: var(--gold);
+        }
+
+        .modal-title {
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            padding-right: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            outline: none;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+            line-height: 1.5;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin: 1rem 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .form-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--gold);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .form-check label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            flex-wrap: wrap;
+        }
+
+        .modal-actions button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: var(--text-muted);
+        }
+
+        .btn-cancel:hover {
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            color: var(--text);
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+            color: #0e0e10;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger-confirm {
+            background: linear-gradient(135deg, #ff5555 0%, #cc2222 100%);
+            color: #fff;
+        }
+
+        .btn-danger-confirm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 85, 85, 0.3);
+        }
+
+        .modal-feedback {
+            display: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .modal-feedback.error {
+            display: block;
+            background: rgba(255, 85, 85, 0.12);
+            border: 1px solid rgba(255, 85, 85, 0.4);
+            color: #ff8e8e;
+        }
+
+        .modal-feedback.success {
+            display: block;
+            background: rgba(81, 207, 102, 0.12);
+            border: 1px solid rgba(81, 207, 102, 0.4);
+            color: #7ae096;
+        }
+
+        .confirm-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-text strong {
+            color: var(--text);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem 1.3rem;
+            font-size: 0.9rem;
+            color: var(--text);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            transform: translateY(150%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 340px;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            border-left: 3px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 3px solid var(--danger);
+        }
+
+        /* Menu mobile */
         .menu-toggle {
             display: none;
             background: transparent;
@@ -465,7 +979,6 @@
             margin-right: 0.5rem;
         }
 
-        /* Overlay mobile */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -515,6 +1028,47 @@
             .metric-value {
                 font-size: 1.6rem;
             }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .section-actions {
+                width: 100%;
+            }
+
+            .search-input {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .filter-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .btn-new-product {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-row-2,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-box {
+                padding: 1.5rem 1.2rem;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .modal-actions button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -541,10 +1095,8 @@
     <!-- TELA 3: Admin -->
     <div id="screen-admin" class="screen">
 
-        <!-- Overlay mobile -->
         <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-brand">
                 USE GEMAS
@@ -578,7 +1130,6 @@
             </div>
         </aside>
 
-        <!-- Main -->
         <main class="main-content">
             <header class="main-header">
                 <div style="display: flex; align-items: center;">
@@ -590,48 +1141,59 @@
 
             <div class="main-body">
 
-                <!-- SEÇÃO: Dashboard -->
+                <!-- ==================== DASHBOARD ==================== -->
                 <section class="content-section active" id="section-dashboard">
                     <div class="metrics-grid">
                         <div class="metric-card">
                             <span class="metric-label">Vendas hoje</span>
-                            <span class="metric-value" id="metric-today">R$ 0,00</span>
+                            <span class="metric-value">R$ 0,00</span>
                         </div>
                         <div class="metric-card">
                             <span class="metric-label">Vendas do mês</span>
-                            <span class="metric-value" id="metric-month">R$ 0,00</span>
+                            <span class="metric-value">R$ 0,00</span>
                         </div>
                         <div class="metric-card">
                             <span class="metric-label">Pedidos pendentes</span>
-                            <span class="metric-value" id="metric-pending">0</span>
+                            <span class="metric-value">0</span>
                         </div>
                         <div class="metric-card">
                             <span class="metric-label">Produtos em estoque</span>
-                            <span class="metric-value" id="metric-stock">0</span>
+                            <span class="metric-value" id="metric-stock-total">0</span>
                         </div>
                     </div>
 
                     <div class="placeholder-box">
                         <h2>Bem-vindo ao painel 👋</h2>
-                        <p>O esqueleto do admin está pronto! As funcionalidades serão adicionadas nas próximas fases:</p>
-                        <ul>
-                            <li>📦 <strong>Fase 2:</strong> Cadastro e edição de produtos com controle de estoque</li>
-                            <li>🛒 <strong>Fase 3:</strong> Lista de pedidos com status (novo → pago → enviado)</li>
-                            <li>👥 <strong>Fase 4:</strong> Clientes e histórico de compras</li>
-                            <li>⚙️ <strong>Fase 5:</strong> Configurações da loja</li>
-                        </ul>
+                        <p>Cadastre e gerencie seus produtos na aba <strong>📦 Produtos</strong>.</p>
                     </div>
                 </section>
 
-                <!-- SEÇÃO: Produtos -->
+                <!-- ==================== PRODUTOS ==================== -->
                 <section class="content-section" id="section-produtos">
-                    <div class="placeholder-box">
-                        <h2>📦 Produtos</h2>
-                        <p>Em breve você poderá cadastrar, editar e controlar o estoque por aqui.</p>
+                    <div class="section-header">
+                        <div class="section-actions">
+                            <input type="text" class="search-input" id="product-search"
+                                placeholder="🔍 Buscar por nome ou REF..." oninput="renderProducts()">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" onclick="setProductFilter('all', this)">Todos</button>
+                                <button class="filter-tab" onclick="setProductFilter('active', this)">Ativos</button>
+                                <button class="filter-tab" onclick="setProductFilter('inactive', this)">Esgotados</button>
+                            </div>
+                        </div>
+                        <button class="btn-new-product" onclick="openProductForm()">
+                            <span>+</span> Novo Produto
+                        </button>
+                    </div>
+
+                    <div id="products-container">
+                        <div class="empty-state">
+                            <span class="icon">📦</span>
+                            <p>Carregando produtos...</p>
+                        </div>
                     </div>
                 </section>
 
-                <!-- SEÇÃO: Pedidos -->
+                <!-- ==================== PEDIDOS ==================== -->
                 <section class="content-section" id="section-pedidos">
                     <div class="placeholder-box">
                         <h2>🛒 Pedidos</h2>
@@ -639,7 +1201,7 @@
                     </div>
                 </section>
 
-                <!-- SEÇÃO: Clientes -->
+                <!-- ==================== CLIENTES ==================== -->
                 <section class="content-section" id="section-clientes">
                     <div class="placeholder-box">
                         <h2>👥 Clientes</h2>
@@ -647,7 +1209,7 @@
                     </div>
                 </section>
 
-                <!-- SEÇÃO: Configurações -->
+                <!-- ==================== CONFIGURAÇÕES ==================== -->
                 <section class="content-section" id="section-config">
                     <div class="placeholder-box">
                         <h2>⚙️ Configurações</h2>
@@ -659,6 +1221,105 @@
         </main>
     </div>
 
+    <!-- ==================== MODAL: PRODUTO ==================== -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeProductForm()">&times;</button>
+            <h2 class="modal-title" id="product-form-title">Novo Produto</h2>
+
+            <div id="product-form-feedback" class="modal-feedback"></div>
+
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="prod-id">
+
+                <div class="form-group">
+                    <label for="prod-name">Nome <span class="required">*</span></label>
+                    <input type="text" id="prod-name" required maxlength="120" placeholder="Ex: Gargantilha Microcrochê">
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="prod-ref">Referência (REF) <span class="required">*</span></label>
+                        <input type="text" id="prod-ref" required maxlength="30" placeholder="Ex: UG-GAR01"
+                            style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-category">Categoria <span class="required">*</span></label>
+                        <select id="prod-category" required>
+                            <option value="microcroche">Microcrochê</option>
+                            <option value="pedras">Pedras Naturais</option>
+                            <option value="colab">Colabs</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="prod-price">Preço (R$) <span class="required">*</span></label>
+                        <input type="text" id="prod-price" required placeholder="149.00" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-stock">Estoque <span class="required">*</span></label>
+                        <input type="number" id="prod-stock" required min="0" step="1" value="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-gem">Subtítulo / Tipo de Gema</label>
+                    <input type="text" id="prod-gem" maxlength="120"
+                        placeholder="Ex: Microcristais & Acessórios Dourados">
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-description">Descrição</label>
+                    <textarea id="prod-description" rows="3" maxlength="500"
+                        placeholder="Descreva a peça com carinho..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-materials">Composição & Materiais</label>
+                    <textarea id="prod-materials" rows="2" maxlength="400"
+                        placeholder="Fios, cristais, fecho, etc."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-gallery">Galeria (URLs separadas por vírgula)</label>
+                    <input type="text" id="prod-gallery" maxlength="500"
+                        placeholder="estilo/midias/foto1.jpg, estilo/midias/foto2.jpg">
+                    <small style="font-size: 0.7rem; color: var(--text-dim); margin-top: 3px;">
+                        Upload de imagens será adicionado depois. Por enquanto, cole os caminhos das mídias.
+                    </small>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="prod-active" checked>
+                    <label for="prod-active">Produto ativo (aparece no site)</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeProductForm()">Cancelar</button>
+                    <button type="submit" class="btn-save" id="product-save-btn">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: CONFIRMAÇÃO ==================== -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-box narrow">
+            <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            <h2 class="modal-title" id="confirm-title">Confirmar?</h2>
+            <p class="confirm-text" id="confirm-text"></p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeConfirmModal()">Cancelar</button>
+                <button type="button" class="btn-danger-confirm" id="confirm-btn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
     <script>
         // ==========================================================================
         // Supabase Setup
@@ -668,12 +1329,36 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ==========================================================================
+        // Estado Global
+        // ==========================================================================
+        let allProducts = [];
+        let currentFilter = 'all';
+
+        // ==========================================================================
         // Controle de Telas
         // ==========================================================================
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             const screen = document.getElementById(screenId);
             if (screen) screen.classList.add('active');
+        }
+
+        // ==========================================================================
+        // Toast (Notificações)
+        // ==========================================================================
+        let toastTimeout = null;
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+
+            toast.className = `toast ${type}`;
+            toast.innerHTML = (type === 'success' ? '✅' : '⚠️') + ' ' + message;
+            toast.classList.add('show');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
         }
 
         // ==========================================================================
@@ -688,7 +1373,6 @@
                     return;
                 }
 
-                // Verifica se é admin
                 const { data: adminData, error: adminError } = await supabaseClient
                     .from('admins')
                     .select('user_id')
@@ -700,7 +1384,6 @@
                     return;
                 }
 
-                // Pega nome do admin
                 const { data: profile } = await supabaseClient
                     .from('profiles')
                     .select('name')
@@ -713,6 +1396,9 @@
                 document.getElementById('admin-email').innerText = user.email;
 
                 showScreen('screen-admin');
+
+                // Carrega produtos no primeiro acesso
+                await loadProducts();
 
             } catch (e) {
                 console.error('Erro na verificação:', e);
@@ -750,7 +1436,6 @@
 
             document.getElementById('page-title').innerText = sectionTitles[sectionName] || 'Dashboard';
 
-            // Fecha sidebar no mobile
             if (window.innerWidth <= 900) {
                 closeSidebar();
             }
@@ -770,10 +1455,400 @@
         }
 
         // ==========================================================================
+        // PRODUTOS — Carregar
+        // ==========================================================================
+        async function loadProducts() {
+            const { data, error } = await supabaseClient
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: true });
+
+            if (error) {
+                console.error('Erro ao carregar produtos:', error);
+                showToast('Erro ao carregar produtos.', 'error');
+                return;
+            }
+
+            allProducts = data || [];
+            updateStockMetric();
+            renderProducts();
+        }
+
+        function updateStockMetric() {
+            const totalStock = allProducts
+                .filter(p => p.active)
+                .reduce((sum, p) => sum + (p.stock || 0), 0);
+
+            const el = document.getElementById('metric-stock-total');
+            if (el) el.innerText = totalStock;
+        }
+
+        // ==========================================================================
+        // PRODUTOS — Renderizar
+        // ==========================================================================
+        function setProductFilter(filter, el) {
+            currentFilter = filter;
+            document.querySelectorAll('#section-produtos .filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            if (el) el.classList.add('active');
+            renderProducts();
+        }
+
+        function getStockBadgeClass(stock) {
+            if (stock <= 0) return 'zero';
+            if (stock <= 2) return 'low';
+            return 'ok';
+        }
+
+        function getStockBadgeText(stock) {
+            if (stock <= 0) return '⛔ Esgotado';
+            if (stock === 1) return '⚠️ 1 un.';
+            return '📦 ' + stock + ' un.';
+        }
+
+        function formatBRL(value) {
+            return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getCategoryLabel(cat) {
+            const map = {
+                microcroche: 'Microcrochê',
+                pedras: 'Pedras Naturais',
+                colab: 'Colabs'
+            };
+            return map[cat] || cat;
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            if (!container) return;
+
+            const searchTerm = (document.getElementById('product-search')?.value || '')
+                .trim().toLowerCase();
+
+            let filtered = allProducts.slice();
+
+            // Filtro por status
+            if (currentFilter === 'active') {
+                filtered = filtered.filter(p => p.active);
+            } else if (currentFilter === 'inactive') {
+                filtered = filtered.filter(p => !p.active);
+            }
+
+            // Busca
+            if (searchTerm) {
+                filtered = filtered.filter(p =>
+                    (p.name || '').toLowerCase().includes(searchTerm) ||
+                    (p.ref || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📦</span>
+                        <p>${allProducts.length === 0 ? 'Nenhum produto cadastrado ainda.' : 'Nenhum produto encontrado com esses filtros.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '<div class="products-admin-grid">' +
+                filtered.map(p => {
+                    const stockClass = getStockBadgeClass(p.stock);
+                    const stockText = getStockBadgeText(p.stock);
+                    const inactiveClass = p.active ? '' : 'inactive';
+
+                    return `
+                        <div class="product-admin-card ${inactiveClass}">
+                            <div class="product-admin-header">
+                                <div style="flex: 1; min-width: 0;">
+                                    <div class="product-admin-name">${escapeHTML(p.name)}</div>
+                                    <div class="product-admin-ref">REF: ${escapeHTML(p.ref)}</div>
+                                </div>
+                                <span class="stock-badge ${stockClass}">${stockText}</span>
+                            </div>
+
+                            <div class="product-admin-price">${formatBRL(p.price)}</div>
+                            <div class="product-admin-meta">${getCategoryLabel(p.category)}</div>
+
+                            <div class="product-admin-actions">
+                                <button class="action-btn edit" onclick="openProductForm('${p.id}')" title="Editar">
+                                    ✏️ Editar
+                                </button>
+                                <button class="action-btn warn" onclick="toggleProductActive('${p.id}')" title="${p.active ? 'Esgotar' : 'Reativar'}">
+                                    ${p.active ? '🚫 Esgotar' : '✅ Reativar'}
+                                </button>
+                                <button class="action-btn danger" onclick="confirmDeleteProduct('${p.id}')" title="Excluir">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('') +
+            '</div>';
+        }
+
+        // ==========================================================================
+        // PRODUTOS — Formulário
+        // ==========================================================================
+        function openProductForm(id) {
+            const modal = document.getElementById('product-modal');
+            const form = document.getElementById('product-form');
+            const title = document.getElementById('product-form-title');
+            const feedback = document.getElementById('product-form-feedback');
+
+            form.reset();
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+            document.getElementById('prod-id').value = '';
+
+            if (id) {
+                const p = allProducts.find(x => x.id === id);
+                if (!p) return;
+
+                title.innerText = 'Editar Produto';
+                document.getElementById('prod-id').value = p.id;
+                document.getElementById('prod-name').value = p.name || '';
+                document.getElementById('prod-ref').value = p.ref || '';
+                document.getElementById('prod-category').value = p.category || 'microcroche';
+                document.getElementById('prod-price').value = p.price;
+                document.getElementById('prod-stock').value = p.stock;
+                document.getElementById('prod-gem').value = p.gem || '';
+                document.getElementById('prod-description').value = p.description || '';
+                document.getElementById('prod-materials').value = p.materials || '';
+                document.getElementById('prod-gallery').value = p.gallery || '';
+                document.getElementById('prod-active').checked = p.active;
+            } else {
+                title.innerText = 'Novo Produto';
+                document.getElementById('prod-stock').value = 1;
+                document.getElementById('prod-active').checked = true;
+            }
+
+            modal.classList.add('open');
+            setTimeout(() => {
+                document.getElementById('prod-name').focus();
+            }, 150);
+        }
+
+        function closeProductForm() {
+            document.getElementById('product-modal').classList.remove('open');
+        }
+
+        function normalizePrice(value) {
+            let v = String(value).trim().replace(/\s/g, '');
+            if (v.includes(',')) {
+                v = v.replace(/\./g, '').replace(',', '.');
+            }
+            const num = parseFloat(v);
+            return isNaN(num) ? NaN : num;
+        }
+
+        async function saveProduct(event) {
+            event.preventDefault();
+
+            const feedback = document.getElementById('product-form-feedback');
+            const saveBtn = document.getElementById('product-save-btn');
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            const id = document.getElementById('prod-id').value;
+
+            const name = document.getElementById('prod-name').value.trim();
+            const ref = document.getElementById('prod-ref').value.trim().toUpperCase();
+            const category = document.getElementById('prod-category').value;
+            const priceRaw = document.getElementById('prod-price').value;
+            const stockRaw = document.getElementById('prod-stock').value;
+            const gem = document.getElementById('prod-gem').value.trim();
+            const description = document.getElementById('prod-description').value.trim();
+            const materials = document.getElementById('prod-materials').value.trim();
+            const gallery = document.getElementById('prod-gallery').value.trim();
+            const active = document.getElementById('prod-active').checked;
+
+            // Validações
+            if (!name || name.length < 2) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Informe um nome válido.';
+                return;
+            }
+            if (!ref || ref.length < 2) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Informe uma referência (REF).';
+                return;
+            }
+
+            const price = normalizePrice(priceRaw);
+            if (isNaN(price) || price < 0) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Preço inválido. Use formato 149.00 ou 149,00.';
+                return;
+            }
+
+            const stock = parseInt(stockRaw, 10);
+            if (isNaN(stock) || stock < 0) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Estoque inválido.';
+                return;
+            }
+
+            const payload = {
+                name,
+                ref,
+                category,
+                price,
+                stock,
+                gem,
+                description,
+                materials,
+                gallery,
+                active
+            };
+
+            const originalText = saveBtn.innerText;
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Salvando...';
+
+            try {
+                let result;
+
+                if (id) {
+                    result = await supabaseClient
+                        .from('products')
+                        .update(payload)
+                        .eq('id', id)
+                        .select()
+                        .single();
+                } else {
+                    result = await supabaseClient
+                        .from('products')
+                        .insert(payload)
+                        .select()
+                        .single();
+                }
+
+                if (result.error) {
+                    console.error('Erro ao salvar:', result.error);
+
+                    let msg = 'Erro ao salvar produto.';
+                    if (result.error.code === '23505') {
+                        msg = 'Já existe um produto com essa REF. Escolha outra.';
+                    } else if (result.error.message) {
+                        msg = result.error.message;
+                    }
+
+                    feedback.className = 'modal-feedback error';
+                    feedback.innerText = msg;
+                    return;
+                }
+
+                closeProductForm();
+                await loadProducts();
+                showToast(id ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
+
+            } catch (e) {
+                console.error(e);
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Erro inesperado. Tente novamente.';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = originalText;
+            }
+        }
+
+        // ==========================================================================
+        // PRODUTOS — Ações rápidas
+        // ==========================================================================
+        async function toggleProductActive(id) {
+            const p = allProducts.find(x => x.id === id);
+            if (!p) return;
+
+            const newActive = !p.active;
+
+            const { error } = await supabaseClient
+                .from('products')
+                .update({ active: newActive })
+                .eq('id', id);
+
+            if (error) {
+                console.error(error);
+                showToast('Erro ao atualizar produto.', 'error');
+                return;
+            }
+
+            await loadProducts();
+            showToast(newActive ? 'Produto reativado!' : 'Produto marcado como esgotado.');
+        }
+
+        // ==========================================================================
+        // PRODUTOS — Exclusão
+        // ==========================================================================
+        let pendingDeleteId = null;
+
+        function confirmDeleteProduct(id) {
+            const p = allProducts.find(x => x.id === id);
+            if (!p) return;
+
+            pendingDeleteId = id;
+
+            document.getElementById('confirm-title').innerText = 'Excluir produto?';
+            document.getElementById('confirm-text').innerHTML =
+                `Você está prestes a excluir <strong>${escapeHTML(p.name)}</strong> (REF: ${escapeHTML(p.ref)}).<br><br>Essa ação não pode ser desfeita.`;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.innerText = 'Excluir';
+            confirmBtn.onclick = executeDelete;
+
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        async function executeDelete() {
+            if (!pendingDeleteId) return;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            const originalText = confirmBtn.innerText;
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Excluindo...';
+
+            const { error } = await supabaseClient
+                .from('products')
+                .delete()
+                .eq('id', pendingDeleteId);
+
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = originalText;
+
+            if (error) {
+                console.error(error);
+                showToast('Erro ao excluir produto.', 'error');
+                return;
+            }
+
+            closeConfirmModal();
+            pendingDeleteId = null;
+            await loadProducts();
+            showToast('Produto excluído.');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.remove('open');
+            pendingDeleteId = null;
+        }
+
+        // ==========================================================================
         // Inicialização
         // ==========================================================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Configura navegação
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -781,11 +1856,27 @@
                 });
             });
 
-            // Verifica acesso
+            // Fecha modais ao clicar fora
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.classList.remove('open');
+                    }
+                });
+            });
+
+            // ESC fecha modais
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.open').forEach(m => {
+                        m.classList.remove('open');
+                    });
+                }
+            });
+
             checkAdminAccess();
 
-            // Monitora mudanças de auth (logout em outra aba, etc)
-            supabaseClient.auth.onAuthStateChange((event, session) => {
+            supabaseClient.auth.onAuthStateChange((event) => {
                 if (event === 'SIGNED_OUT') {
                     window.location.href = 'index.html';
                 }
