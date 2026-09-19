@@ -3,6 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Use Gemas | Joias Artesanais e Pedras Naturais</title>
+
     <!-- SEO -->
     <meta name="description"
         content="Joias artesanais em microcrochê e pedras naturais. Cada peça é feita à mão com intenção e energia.">
@@ -29,6 +32,7 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="estilo/midias/favicon.png">
     <link rel="apple-touch-icon" href="estilo/midias/favicon.png">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +41,7 @@
         rel="stylesheet">
 
     <!-- Link para o CSS -->
-    <link rel="stylesheet" href="estilo/style.css?v=17.0">
+    <link rel="stylesheet" href="estilo/style.css?v=18.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css">
@@ -49,7 +53,7 @@
     <header class="navbar">
         <div class="container nav-container">
             <a href="#" class="logo">USE GEMAS</a>
-            <nav>
+            <nav aria-label="Navegação principal">
                 <ul class="nav-links">
                     <li><a href="#hero">Início</a></li>
                     <li><a href="#colecao">Coleções</a></li>
@@ -60,19 +64,19 @@
                 </ul>
             </nav>
             <div class="nav-actions">
-                <a href="https://instagram.com/use.gemas" target="_blank" class="btn-secondary">Instagram</a>
+                <a href="https://instagram.com/use.gemas" target="_blank" rel="noopener" class="btn-secondary">Instagram</a>
 
-                <button class="btn-icon" id="user-btn" onclick="openAuthModal('login')" title="Minha Conta">
+                <button class="btn-icon" id="user-btn" onclick="openAuthModal('login')" title="Minha Conta" aria-label="Minha conta">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="1.8">
+                        stroke-width="1.8" aria-hidden="true">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                         <circle cx="12" cy="7" r="4"></circle>
                     </svg>
                 </button>
 
-                <div class="nav-wishlist-icon" onclick="toggleWishlist()" title="Meus Favoritos">
+                <div class="nav-wishlist-icon" onclick="toggleWishlist()" title="Meus Favoritos" role="button" tabindex="0" aria-label="Meus favoritos">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                        stroke-linecap="round" stroke-linejoin="round">
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path
                             d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
                         </path>
@@ -80,366 +84,376 @@
                     <span id="wishlist-count">0</span>
                 </div>
 
-                <div class="nav-cart-icon" onclick="toggleCart()">
+                <div class="nav-cart-icon" onclick="toggleCart()" role="button" tabindex="0" aria-label="Carrinho de compras">
                     🛒 <span id="cart-count">0</span>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero-section">
-        <div class="container hero-container">
-            <div class="hero-content">
-                <span class="tagline">Microcrochê & Pedras Naturais</span>
-                <h1>A sua vida brilha como um cristal</h1>
-                <p>Joias artesanais em microcristais, minerais selecionados e a energia autêntica das pedras naturais.
-                </p>
-                <a href="#colecao" class="btn-primary">Conheça a Coleção</a>
-            </div>
-            <div class="hero-media">
-                <div class="media-placeholder">
-                    <video src="estilo/midias/IMG_2563.mp4" autoplay muted loop playsinline preload="metadata"></video>
+    <!-- MAIN — Conteúdo principal -->
+    <main>
+
+        <!-- Hero Section -->
+        <section id="hero" class="hero-section">
+            <div class="container hero-container">
+                <div class="hero-content">
+                    <span class="tagline">Microcrochê & Pedras Naturais</span>
+                    <h1>A sua vida brilha como um cristal</h1>
+                    <p>Joias artesanais em microcristais, minerais selecionados e a energia autêntica das pedras naturais.
+                    </p>
+                    <a href="#colecao" class="btn-primary">Conheça a Coleção</a>
+                </div>
+                <div class="hero-media">
+                    <div class="media-placeholder">
+                        <video src="estilo/midias/IMG_2563.mp4" autoplay muted loop playsinline preload="metadata"
+                            aria-label="Vídeo demonstrativo da coleção Use Gemas"></video>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Seção Conceito -->
-    <section id="conceito" class="concept-section">
-        <div class="container">
-            <div class="concept-box">
-                <h2>Essência & Propósito</h2>
-                <p>A Use Gemas nasce do encontro entre a delicadeza do microcrochê e a força dos minerais. Cada peça é
-                    moldada à mão, combinando o brilho discreto dos cristais com elementos orgânicos para criar joias
-                    únicas que vibram com a sua história.</p>
+        <!-- Seção Conceito -->
+        <section id="conceito" class="concept-section">
+            <div class="container">
+                <div class="concept-box">
+                    <h2>Essência & Propósito</h2>
+                    <p>A Use Gemas nasce do encontro entre a delicadeza do microcrochê e a força dos minerais. Cada peça é
+                        moldada à mão, combinando o brilho discreto dos cristais com elementos orgânicos para criar joias
+                        únicas que vibram com a sua história.</p>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Seção Destaques da Coleção -->
-    <section id="colecao" class="collection-section">
-        <div class="container">
-            <h2 class="section-title">Destaques da Coleção</h2>
+        <!-- Seção Destaques da Coleção -->
+        <section id="colecao" class="collection-section">
+            <div class="container">
+                <h2 class="section-title">Destaques da Coleção</h2>
 
-            <div class="filter-container">
-                <button class="filter-btn active" onclick="filterProducts('all', this)">Todos</button>
-                <button class="filter-btn" onclick="filterProducts('microcroche', this)">Microcrochê</button>
-                <button class="filter-btn" onclick="filterProducts('pedras', this)">Pedras Naturais</button>
-                <button class="filter-btn" onclick="filterProducts('colab', this)">Colabs</button>
-            </div>
-
-            <div class="products-grid">
-
-                <div class="product-card" data-category="microcroche" data-name="Gargantilha Microcrochê"
-                    data-ref="UG-GAR01" data-price="149.00" data-gem="Microcristais & Acessórios Dourados"
-                    data-desc="Confeccionada minuciosamente à mão com técnicas exclusivas de microcrochê e acabamento em banho dourado de alta durabilidade."
-                    data-materials="Fios de alta resistência, microcristais lapidados e fecho banhado a ouro 18k."
-                    data-gallery="estilo/midias/IMG_2585.mp4, estilo/midias/foto_detalhe1.jpg, estilo/midias/foto_modelo1.jpg">
-
-                    <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2585.mp4" autoplay muted loop playsinline
-                            preload="metadata"></video>
-                        <button type="button" class="btn-favorite"
-                            onclick="toggleFavorite(event, 'Gargantilha Microcrochê', 'UG-GAR01', 149.00)"
-                            aria-label="Adicionar aos favoritos">
-                            <svg viewBox="0 0 24 24">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                </path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="product-info">
-                        <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
-                            style="cursor: pointer;">Gargantilha Microcrochê</h3>
-                        <p class="gem-type">Microcristais & Acessórios Dourados</p>
-                        <span class="price">R$ 149,00</span>
-                        <button class="btn-add-cart"
-                            onclick="addToCart('Gargantilha Microcrochê', 'UG-GAR01', 149.00)">Adicionar ao
-                            Carrinho</button>
-                    </div>
+                <div class="filter-container">
+                    <button class="filter-btn active" onclick="filterProducts('all', this)">Todos</button>
+                    <button class="filter-btn" onclick="filterProducts('microcroche', this)">Microcrochê</button>
+                    <button class="filter-btn" onclick="filterProducts('pedras', this)">Pedras Naturais</button>
+                    <button class="filter-btn" onclick="filterProducts('colab', this)">Colabs</button>
                 </div>
 
-                <div class="product-card" data-category="pedras" data-name="Chocker Microcristal" data-ref="UG-CHO02"
-                    data-price="189.00" data-gem="Gargantilha Em Micro-Cristais"
-                    data-desc="Design minimalista feito com seleção de microcristais que captam a luz com elegância natural."
-                    data-materials="Microcristais naturais lapidados, entremeios folheados e extensão ajustável."
-                    data-gallery="estilo/midias/IMG_2501.mp4, estilo/midias/foto_detalhe2.jpg">
+                <div class="products-grid">
 
-                    <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2501.mp4" autoplay muted loop playsinline
-                            preload="metadata"></video>
-                        <button type="button" class="btn-favorite"
-                            onclick="toggleFavorite(event, 'Chocker Microcristal', 'UG-CHO02', 189.00)"
-                            aria-label="Adicionar aos favoritos">
-                            <svg viewBox="0 0 24 24">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                </path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="product-info">
-                        <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
-                            style="cursor: pointer;">Chocker Microcristal</h3>
-                        <p class="gem-type">Gargantilha Em Micro-Cristais</p>
-                        <span class="price">R$ 189,00</span>
-                        <button class="btn-add-cart"
-                            onclick="addToCart('Chocker Microcristal', 'UG-CHO02', 189.00)">Adicionar ao
-                            Carrinho</button>
-                    </div>
-                </div>
+                    <div class="product-card" data-category="microcroche" data-name="Gargantilha Microcrochê"
+                        data-ref="UG-GAR01" data-price="149.00" data-gem="Microcristais & Acessórios Dourados"
+                        data-desc="Confeccionada minuciosamente à mão com técnicas exclusivas de microcrochê e acabamento em banho dourado de alta durabilidade."
+                        data-materials="Fios de alta resistência, microcristais lapidados e fecho banhado a ouro 18k."
+                        data-gallery="estilo/midias/IMG_2585.mp4, estilo/midias/foto_detalhe1.jpg, estilo/midias/foto_modelo1.jpg">
 
-                <div class="product-card" data-category="colab" data-name="Linha AàZ Colab UG x AZ" data-ref="UG-AAZ03"
-                    data-price="169.00" data-gem="Mix Triade Café, Palha & Ouro Antigo"
-                    data-desc="Edição especial collab combinando a fusão de texturas terrosas, palha trançada e detalhes metálicos."
-                    data-materials="Fios têxteis sustentáveis, elementos em ouro antigo e tramas manuais."
-                    data-gallery="estilo/midias/IMG_2559.mp4, estilo/midias/foto_detalhe3.jpg">
-
-                    <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                        <video src="estilo/midias/IMG_2559.mp4" autoplay muted loop playsinline
-                            preload="metadata"></video>
-                        <button type="button" class="btn-favorite"
-                            onclick="toggleFavorite(event, 'Linha AàZ Colab UG x AZ', 'UG-AAZ03', 169.00)"
-                            aria-label="Adicionar aos favoritos">
-                            <svg viewBox="0 0 24 24">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                </path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="product-info">
-                        <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
-                            style="cursor: pointer;">Linha AàZ Colab UG x AZ</h3>
-                        <p class="gem-type">Mix Triade Café, Palha & Ouro Antigo</p>
-                        <span class="price">R$ 169,00</span>
-                        <button class="btn-add-cart"
-                            onclick="addToCart('Linha AàZ Colab UG x AZ', 'UG-AAZ03', 169.00)">Adicionar ao
-                            Carrinho</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- SEÇÃO DINÂMICA: História & Guia de Cuidados em Carrossel -->
-    <section id="experiencia" class="carousel-section">
-        <div class="container">
-            <h2 class="section-title">Nossa Essência & Cuidados</h2>
-
-            <div class="carousel-container" id="infoCarousel">
-
-                <div class="carousel-track">
-
-                    <!-- Slide 1: Processo Manual -->
-                    <div class="carousel-slide active">
-                        <div class="slide-media">
-                            <video src="estilo/midias/IMG_2559.mp4" muted loop playsinline preload="metadata"></video>
+                        <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
+                            <video src="estilo/midias/IMG_2585.mp4" autoplay muted loop playsinline
+                                preload="metadata" aria-label="Vídeo da Gargantilha Microcrochê"></video>
+                            <button type="button" class="btn-favorite"
+                                onclick="toggleFavorite(event, 'Gargantilha Microcrochê', 'UG-GAR01', 149.00)"
+                                aria-label="Adicionar Gargantilha Microcrochê aos favoritos">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
                         </div>
-                        <div class="slide-content">
-                            <span class="slide-badge">Artesanal</span>
-                            <h3>O Processo Manual & Macramé</h3>
-                            <p>Cada nó do microcrochê e do macramé é entrelaçado com paciência e precisão. Não
-                                utilizamos processos industriais em massa; cada joia exige horas de dedicação técnica
-                                para garantir resistência, leveza e caimento perfeito.</p>
+                        <div class="product-info">
+                            <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
+                                style="cursor: pointer;">Gargantilha Microcrochê</h3>
+                            <p class="gem-type">Microcristais & Acessórios Dourados</p>
+                            <span class="price">R$ 149,00</span>
+                            <button class="btn-add-cart"
+                                onclick="addToCart('Gargantilha Microcrochê', 'UG-GAR01', 149.00)">Adicionar ao
+                                Carrinho</button>
                         </div>
                     </div>
 
-                    <!-- Slide 2: Energia das Pedras -->
-                    <div class="carousel-slide">
-                        <div class="slide-media">
-                            <video src="estilo/midias/IMG_2563.mp4" muted loop playsinline preload="metadata"></video>
+                    <div class="product-card" data-category="pedras" data-name="Chocker Microcristal" data-ref="UG-CHO02"
+                        data-price="189.00" data-gem="Gargantilha Em Micro-Cristais"
+                        data-desc="Design minimalista feito com seleção de microcristais que captam a luz com elegância natural."
+                        data-materials="Microcristais naturais lapidados, entremeios folheados e extensão ajustável."
+                        data-gallery="estilo/midias/IMG_2501.mp4, estilo/midias/foto_detalhe2.jpg">
+
+                        <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
+                            <video src="estilo/midias/IMG_2501.mp4" autoplay muted loop playsinline
+                                preload="metadata" aria-label="Vídeo do Chocker Microcristal"></video>
+                            <button type="button" class="btn-favorite"
+                                onclick="toggleFavorite(event, 'Chocker Microcristal', 'UG-CHO02', 189.00)"
+                                aria-label="Adicionar Chocker Microcristal aos favoritos">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
                         </div>
-                        <div class="slide-content">
-                            <span class="slide-badge">Energia</span>
-                            <h3>A Energia dos Minerais</h3>
-                            <p>Acreditamos na força sutil da terra. Nossos minerais são selecionados individualmente não
-                                apenas pela estética, mas pelo seu campo vibracional, trazendo intenção, proteção e
-                                equilíbrio para quem as usa.</p>
+                        <div class="product-info">
+                            <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
+                                style="cursor: pointer;">Chocker Microcristal</h3>
+                            <p class="gem-type">Gargantilha Em Micro-Cristais</p>
+                            <span class="price">R$ 189,00</span>
+                            <button class="btn-add-cart"
+                                onclick="addToCart('Chocker Microcristal', 'UG-CHO02', 189.00)">Adicionar ao
+                                Carrinho</button>
                         </div>
                     </div>
 
-                    <!-- Slide 3: Cuidados com Microcrochê -->
-                    <div class="carousel-slide">
-                        <div class="slide-media">
-                            <video src="estilo/midias/IMG_2585.mp4" muted loop playsinline preload="metadata"></video>
-                        </div>
-                        <div class="slide-content">
-                            <span class="slide-badge">Guia de Cuidados</span>
-                            <h3>Como Cuidar do Microcrochê</h3>
-                            <p>• <strong>Evite Umidade:</strong> Retire as peças antes do banho, mar ou piscina.<br>
-                                • <strong>Cosméticos:</strong> Aplique perfumes e cremes minutos antes de vestir a
-                                joia.<br>
-                                • <strong>Guarde com Zelo:</strong> Mantenha em local seco e individual para evitar
-                                embaraços.</p>
-                        </div>
-                    </div>
+                    <div class="product-card" data-category="colab" data-name="Linha AàZ Colab UG x AZ" data-ref="UG-AAZ03"
+                        data-price="169.00" data-gem="Mix Triade Café, Palha & Ouro Antigo"
+                        data-desc="Edição especial collab combinando a fusão de texturas terrosas, palha trançada e detalhes metálicos."
+                        data-materials="Fios têxteis sustentáveis, elementos em ouro antigo e tramas manuais."
+                        data-gallery="estilo/midias/IMG_2559.mp4, estilo/midias/foto_detalhe3.jpg">
 
-                    <!-- Slide 4: Higienização de Cristais -->
-                    <div class="carousel-slide">
-                        <div class="slide-media">
-                            <video src="estilo/midias/IMG_2585.mp4" muted loop playsinline preload="metadata"></video>
+                        <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
+                            <video src="estilo/midias/IMG_2559.mp4" autoplay muted loop playsinline
+                                preload="metadata" aria-label="Vídeo da Linha AàZ Colab"></video>
+                            <button type="button" class="btn-favorite"
+                                onclick="toggleFavorite(event, 'Linha AàZ Colab UG x AZ', 'UG-AAZ03', 169.00)"
+                                aria-label="Adicionar Linha AàZ Colab aos favoritos">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
                         </div>
-                        <div class="slide-content">
-                            <span class="slide-badge">Higienização</span>
-                            <h3>Limpeza das Pedras Naturais</h3>
-                            <p>• <strong>Limpeza Física:</strong> Pano macio de microfibra ligeiramente úmido.<br>
-                                • <strong>Purificação:</strong> Deixe o mineral próximo a uma drusa de quartzo ou à luz
-                                do luar.<br>
-                                • <strong>Atenção:</strong> Nunca use álcool ou produtos químicos nas gemas.</p>
+                        <div class="product-info">
+                            <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
+                                style="cursor: pointer;">Linha AàZ Colab UG x AZ</h3>
+                            <p class="gem-type">Mix Triade Café, Palha & Ouro Antigo</p>
+                            <span class="price">R$ 169,00</span>
+                            <button class="btn-add-cart"
+                                onclick="addToCart('Linha AàZ Colab UG x AZ', 'UG-AAZ03', 169.00)">Adicionar ao
+                                Carrinho</button>
                         </div>
                     </div>
 
                 </div>
+            </div>
+        </section>
 
-                <!-- Botões de Navegação (com SVG) -->
-                <button type="button" class="carousel-btn prev-btn" onclick="moveSlide(-1)" aria-label="Anterior">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                </button>
-                <button type="button" class="carousel-btn next-btn" onclick="moveSlide(1)" aria-label="Próximo">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                </button>
+        <!-- SEÇÃO DINÂMICA: História & Guia de Cuidados em Carrossel -->
+        <section id="experiencia" class="carousel-section">
+            <div class="container">
+                <h2 class="section-title">Nossa Essência & Cuidados</h2>
 
-                <!-- Indicadores (Dots) -->
-                <div class="carousel-dots">
-                    <span class="dot active" onclick="goToSlide(0)"></span>
-                    <span class="dot" onclick="goToSlide(1)"></span>
-                    <span class="dot" onclick="goToSlide(2)"></span>
-                    <span class="dot" onclick="goToSlide(3)"></span>
+                <div class="carousel-container" id="infoCarousel">
+
+                    <div class="carousel-track">
+
+                        <!-- Slide 1: Processo Manual -->
+                        <div class="carousel-slide active">
+                            <div class="slide-media">
+                                <video src="estilo/midias/IMG_2559.mp4" muted loop playsinline preload="metadata"
+                                    aria-label="Vídeo do processo manual"></video>
+                            </div>
+                            <div class="slide-content">
+                                <span class="slide-badge">Artesanal</span>
+                                <h3>O Processo Manual & Macramé</h3>
+                                <p>Cada nó do microcrochê e do macramé é entrelaçado com paciência e precisão. Não
+                                    utilizamos processos industriais em massa; cada joia exige horas de dedicação técnica
+                                    para garantir resistência, leveza e caimento perfeito.</p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: Energia das Pedras -->
+                        <div class="carousel-slide">
+                            <div class="slide-media">
+                                <video src="estilo/midias/IMG_2563.mp4" muted loop playsinline preload="metadata"
+                                    aria-label="Vídeo sobre a energia dos minerais"></video>
+                            </div>
+                            <div class="slide-content">
+                                <span class="slide-badge">Energia</span>
+                                <h3>A Energia dos Minerais</h3>
+                                <p>Acreditamos na força sutil da terra. Nossos minerais são selecionados individualmente não
+                                    apenas pela estética, mas pelo seu campo vibracional, trazendo intenção, proteção e
+                                    equilíbrio para quem as usa.</p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: Cuidados com Microcrochê -->
+                        <div class="carousel-slide">
+                            <div class="slide-media">
+                                <video src="estilo/midias/IMG_2585.mp4" muted loop playsinline preload="metadata"
+                                    aria-label="Vídeo com guia de cuidados do microcrochê"></video>
+                            </div>
+                            <div class="slide-content">
+                                <span class="slide-badge">Guia de Cuidados</span>
+                                <h3>Como Cuidar do Microcrochê</h3>
+                                <p>• <strong>Evite Umidade:</strong> Retire as peças antes do banho, mar ou piscina.<br>
+                                    • <strong>Cosméticos:</strong> Aplique perfumes e cremes minutos antes de vestir a
+                                    joia.<br>
+                                    • <strong>Guarde com Zelo:</strong> Mantenha em local seco e individual para evitar
+                                    embaraços.</p>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4: Higienização de Cristais -->
+                        <div class="carousel-slide">
+                            <div class="slide-media">
+                                <video src="estilo/midias/IMG_2585.mp4" muted loop playsinline preload="metadata"
+                                    aria-label="Vídeo sobre higienização das pedras naturais"></video>
+                            </div>
+                            <div class="slide-content">
+                                <span class="slide-badge">Higienização</span>
+                                <h3>Limpeza das Pedras Naturais</h3>
+                                <p>• <strong>Limpeza Física:</strong> Pano macio de microfibra ligeiramente úmido.<br>
+                                    • <strong>Purificação:</strong> Deixe o mineral próximo a uma drusa de quartzo ou à luz
+                                    do luar.<br>
+                                    • <strong>Atenção:</strong> Nunca use álcool ou produtos químicos nas gemas.</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Botões de Navegação (com SVG) -->
+                    <button type="button" class="carousel-btn prev-btn" onclick="moveSlide(-1)" aria-label="Slide anterior">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button type="button" class="carousel-btn next-btn" onclick="moveSlide(1)" aria-label="Próximo slide">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+
+                    <!-- Indicadores (Dots) -->
+                    <div class="carousel-dots">
+                        <span class="dot active" onclick="goToSlide(0)" role="button" tabindex="0" aria-label="Ir para slide 1"></span>
+                        <span class="dot" onclick="goToSlide(1)" role="button" tabindex="0" aria-label="Ir para slide 2"></span>
+                        <span class="dot" onclick="goToSlide(2)" role="button" tabindex="0" aria-label="Ir para slide 3"></span>
+                        <span class="dot" onclick="goToSlide(3)" role="button" tabindex="0" aria-label="Ir para slide 4"></span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== SEÇÃO DEPOIMENTOS ==================== -->
+        <section id="depoimentos" class="testimonials-section">
+            <div class="container">
+                <h2 class="section-title">O que dizem de nós</h2>
+                <p class="section-subtitle">Histórias reais de quem escolheu a Use Gemas</p>
+
+                <!-- Grid de depoimentos curados (você cola aqui quando receber) -->
+                <div class="testimonials-grid" id="testimonials-grid">
+
+                    <article class="testimonial-card">
+                        <div class="testimonial-stars" aria-label="Avaliação: 5 estrelas">★★★★★</div>
+                        <p class="testimonial-text">"A gargantilha é um sonho. Cada detalhe do microcrochê é perfeito e
+                            recebi muitos elogios."</p>
+                        <footer class="testimonial-author">
+                            <span class="testimonial-name">Mariana</span>
+                            <span class="testimonial-product">Gargantilha Microcrochê</span>
+                        </footer>
+                    </article>
+
+                    <article class="testimonial-card">
+                        <div class="testimonial-stars" aria-label="Avaliação: 5 estrelas">★★★★★</div>
+                        <p class="testimonial-text">"Simplesmente perfeita. Uso todos os dias e continua impecável. Já quero
+                            a próxima peça!"</p>
+                        <footer class="testimonial-author">
+                            <span class="testimonial-name">Camila</span>
+                            <span class="testimonial-product">Chocker Microcristal</span>
+                        </footer>
+                    </article>
+
+                    <article class="testimonial-card">
+                        <div class="testimonial-stars" aria-label="Avaliação: 4 estrelas">★★★★☆</div>
+                        <p class="testimonial-text">"Chegou super rápido e é ainda mais bonita pessoalmente. A energia das
+                            pedras é real."</p>
+                        <footer class="testimonial-author">
+                            <span class="testimonial-name">Beatriz</span>
+                            <span class="testimonial-product">Linha AàZ Colab</span>
+                        </footer>
+                    </article>
+
                 </div>
 
-            </div>
-        </div>
-    </section>
+                <!-- Botão para abrir formulário -->
+                <div class="testimonial-cta">
+                    <button type="button" class="btn-outline" id="testimonial-toggle-btn" onclick="toggleTestimonialForm()">
+                        Deixe seu depoimento
+                    </button>
+                </div>
 
-    <!-- ==================== SEÇÃO DEPOIMENTOS ==================== -->
-    <section id="depoimentos" class="testimonials-section">
-        <div class="container">
-            <h2 class="section-title">O que dizem de nós</h2>
-            <p class="section-subtitle">Histórias reais de quem escolheu a Use Gemas</p>
+                <!-- Formulário (oculto por padrão) -->
+                <div id="testimonial-form-wrapper" class="testimonial-form-wrapper">
+                    <form id="testimonial-form" class="testimonial-form" novalidate>
 
-            <!-- Grid de depoimentos curados (você cola aqui quando receber) -->
-            <div class="testimonials-grid" id="testimonials-grid">
+                        <!-- Web3Forms -->
+                        <input type="hidden" name="access_key" value="69a758b3-d87b-4ea5-a666-424321663f86">
+                        <input type="hidden" name="subject" value="Novo depoimento — Use Gemas">
+                        <input type="hidden" name="from_name" value="Use Gemas — Depoimentos">
+                        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-                <article class="testimonial-card">
-                    <div class="testimonial-stars" aria-label="5 estrelas">★★★★★</div>
-                    <p class="testimonial-text">"A gargantilha é um sonho. Cada detalhe do microcrochê é perfeito e
-                        recebi muitos elogios."</p>
-                    <footer class="testimonial-author">
-                        <span class="testimonial-name">Mariana</span>
-                        <span class="testimonial-product">Gargantilha Microcrochê</span>
-                    </footer>
-                </article>
+                        <h3>Compartilhe sua experiência</h3>
 
-                <article class="testimonial-card">
-                    <div class="testimonial-stars" aria-label="5 estrelas">★★★★★</div>
-                    <p class="testimonial-text">"Simplesmente perfeita. Uso todos os dias e continua impecável. Já quero
-                        a próxima peça!"</p>
-                    <footer class="testimonial-author">
-                        <span class="testimonial-name">Camila</span>
-                        <span class="testimonial-product">Chocker Microcristal</span>
-                    </footer>
-                </article>
-
-                <article class="testimonial-card">
-                    <div class="testimonial-stars" aria-label="4 estrelas">★★★★☆</div>
-                    <p class="testimonial-text">"Chegou super rápido e é ainda mais bonita pessoalmente. A energia das
-                        pedras é real."</p>
-                    <footer class="testimonial-author">
-                        <span class="testimonial-name">Beatriz</span>
-                        <span class="testimonial-product">Linha AàZ Colab</span>
-                    </footer>
-                </article>
-
-            </div>
-
-            <!-- Botão para abrir formulário -->
-            <div class="testimonial-cta">
-                <button type="button" class="btn-outline" id="testimonial-toggle-btn" onclick="toggleTestimonialForm()">
-                    Deixe seu depoimento
-                </button>
-            </div>
-
-            <!-- Formulário (oculto por padrão) -->
-            <div id="testimonial-form-wrapper" class="testimonial-form-wrapper">
-                <form id="testimonial-form" class="testimonial-form" novalidate>
-
-                    <!-- Web3Forms -->
-                    <input type="hidden" name="access_key" value="69a758b3-d87b-4ea5-a666-424321663f86">
-                    <input type="hidden" name="subject" value="Novo depoimento — Use Gemas">
-                    <input type="hidden" name="from_name" value="Use Gemas — Depoimentos">
-                    <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
-
-                    <h3>Compartilhe sua experiência</h3>
-
-                    <div class="form-group">
-                        <label for="t-name">Seu nome *</label>
-                        <input type="text" id="t-name" name="name" placeholder="Como quer ser identificado(a)" required
-                            maxlength="60">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Sua avaliação *</label>
-                        <div class="star-rating" id="star-rating" role="radiogroup" aria-label="Avaliação em estrelas">
-                            <button type="button" class="star" data-value="1" aria-label="1 estrela">★</button>
-                            <button type="button" class="star" data-value="2" aria-label="2 estrelas">★</button>
-                            <button type="button" class="star" data-value="3" aria-label="3 estrelas">★</button>
-                            <button type="button" class="star" data-value="4" aria-label="4 estrelas">★</button>
-                            <button type="button" class="star" data-value="5" aria-label="5 estrelas">★</button>
+                        <div class="form-group">
+                            <label for="t-name">Seu nome *</label>
+                            <input type="text" id="t-name" name="name" placeholder="Como quer ser identificado(a)" required
+                                maxlength="60">
                         </div>
-                        <input type="hidden" id="t-stars" name="stars" required>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="t-comment">Seu depoimento *</label>
-                        <textarea id="t-comment" name="comment" rows="4"
-                            placeholder="Conte como foi sua experiência com a peça..." required minlength="10"
-                            maxlength="500"></textarea>
-                    </div>
+                        <div class="form-group">
+                            <label id="star-rating-label">Sua avaliação *</label>
+                            <div class="star-rating" id="star-rating" role="radiogroup" aria-labelledby="star-rating-label">
+                                <button type="button" class="star" data-value="1" aria-label="1 estrela">★</button>
+                                <button type="button" class="star" data-value="2" aria-label="2 estrelas">★</button>
+                                <button type="button" class="star" data-value="3" aria-label="3 estrelas">★</button>
+                                <button type="button" class="star" data-value="4" aria-label="4 estrelas">★</button>
+                                <button type="button" class="star" data-value="5" aria-label="5 estrelas">★</button>
+                            </div>
+                            <input type="hidden" id="t-stars" name="stars" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="t-product">Qual peça você comprou? (opcional)</label>
-                        <input type="text" id="t-product" name="product" placeholder="Ex: Gargantilha Microcrochê"
-                            maxlength="80">
-                    </div>
+                        <div class="form-group">
+                            <label for="t-comment">Seu depoimento *</label>
+                            <textarea id="t-comment" name="comment" rows="4"
+                                placeholder="Conte como foi sua experiência com a peça..." required minlength="10"
+                                maxlength="500"></textarea>
+                        </div>
 
-                    <div id="testimonial-feedback" class="testimonial-feedback"></div>
+                        <div class="form-group">
+                            <label for="t-product">Qual peça você comprou? (opcional)</label>
+                            <input type="text" id="t-product" name="product" placeholder="Ex: Gargantilha Microcrochê"
+                                maxlength="80">
+                        </div>
 
-                    <div class="form-actions-row">
-                        <button type="button" class="btn-cancel" onclick="toggleTestimonialForm()">Cancelar</button>
-                        <button type="submit" class="btn-primary" id="testimonial-submit">Enviar depoimento</button>
-                    </div>
-                </form>
+                        <div id="testimonial-feedback" class="testimonial-feedback"></div>
+
+                        <div class="form-actions-row">
+                            <button type="button" class="btn-cancel" onclick="toggleTestimonialForm()">Cancelar</button>
+                            <button type="submit" class="btn-primary" id="testimonial-submit">Enviar depoimento</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-    </section>
-    <!-- ==================== FIM DEPOIMENTOS ==================== -->
+        </section>
+        <!-- ==================== FIM DEPOIMENTOS ==================== -->
+
+    </main>
 
     <!-- Modal de Detalhes do Produto -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeProductModal()">&times;</button>
+            <button class="modal-close" onclick="closeProductModal()" aria-label="Fechar">&times;</button>
             <div class="modal-body">
                 <div class="modal-media-container">
                     <div id="modal-media-wrapper" class="modal-media-wrapper"></div>
                     <button class="modal-nav prev-btn" onclick="navigateModalGallery(-1)" aria-label="Mídia anterior">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <polyline points="15 18 9 12 15 6"></polyline>
                         </svg>
                     </button>
                     <button class="modal-nav next-btn" onclick="navigateModalGallery(1)" aria-label="Próxima mídia">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
                     </button>
@@ -472,7 +486,7 @@
     <!-- Modal de Checkout -->
     <div id="checkout-modal" class="modal-overlay">
         <div class="checkout-card">
-            <button class="modal-close" onclick="closeCheckoutModal()">&times;</button>
+            <button class="modal-close" onclick="closeCheckoutModal()" aria-label="Fechar">&times;</button>
 
             <div class="checkout-header">
                 <h3>Finalizar Pedido</h3>
@@ -565,7 +579,7 @@
     <!-- Modal de Autenticação -->
     <div id="auth-modal" class="modal-overlay">
         <div class="auth-card">
-            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            <button class="modal-close" onclick="closeAuthModal()" aria-label="Fechar">&times;</button>
 
             <div class="auth-tabs">
                 <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Entrar</button>
@@ -621,7 +635,7 @@
     <div id="cart-drawer" class="cart-drawer">
         <div class="cart-header">
             <h3>Seu Carrinho</h3>
-            <button class="close-cart" onclick="toggleCart()">&times;</button>
+            <button class="close-cart" onclick="toggleCart()" aria-label="Fechar carrinho">&times;</button>
         </div>
 
         <div id="cart-items" class="cart-items"></div>
@@ -638,12 +652,12 @@
 
             <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 0.8rem; margin-bottom: 1rem;">
                 <div
-                    style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; margin-bottom: 0.4rem;">
+                    style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #c5c5c5; margin-bottom: 0.4rem;">
                     <span>Subtotal:</span>
                     <span id="cart-subtotal">R$ 0,00</span>
                 </div>
                 <div
-                    style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; margin-bottom: 0.6rem;">
+                    style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #c5c5c5; margin-bottom: 0.6rem;">
                     <span>Frete:</span>
                     <span id="cart-shipping-cost">A calcular</span>
                 </div>
@@ -665,7 +679,7 @@
     <div id="wishlist-drawer" class="wishlist-drawer">
         <div class="wishlist-header">
             <h3>Meus Favoritos</h3>
-            <button class="close-wishlist" onclick="toggleWishlist()">&times;</button>
+            <button class="close-wishlist" onclick="toggleWishlist()" aria-label="Fechar favoritos">&times;</button>
         </div>
 
         <div id="wishlist-items" class="wishlist-items"></div>
@@ -687,8 +701,8 @@
                 <p>Arte viva em pedras e microcristais.</p>
             </div>
             <div class="footer-social">
-                <a href="https://instagram.com/use.gemas" target="_blank">@use.gemas</a>
-                <a href="https://api.whatsapp.com/send?phone=5511982053330" target="_blank">WhatsApp Direct</a>
+                <a href="https://instagram.com/use.gemas" target="_blank" rel="noopener">@use.gemas</a>
+                <a href="https://api.whatsapp.com/send?phone=5511982053330" target="_blank" rel="noopener">WhatsApp Direct</a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -697,7 +711,7 @@
     </footer>
 
     <!-- Importação do JS -->
-    <script src="estilo/script.js?v=17.0"></script>
+    <script src="estilo/script.js?v=18.0"></script>
 
 </body>
 
