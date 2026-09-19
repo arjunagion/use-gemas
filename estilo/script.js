@@ -317,7 +317,7 @@ function setupRegisterLiveValidation() {
 // Auth com Supabase
 // ==========================================================================
 const SUPABASE_URL = 'https://dytdnemwqbzgrekamwla.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_ooUF5efbIvxuRlaxYqP5fw_nP1bs2Su';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5dGRuZW13cWJ6Z3Jla2Ftd2xhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3ODExMTEsImV4cCI6MjEwNTM1NzExMX0.6Zb3JK1CrpSrPqtigu9ZyEm_rWLKATOiQvPRQZmCU24';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function handleRegister(event) {
