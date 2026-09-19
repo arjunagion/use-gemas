@@ -19,6 +19,13 @@ let currentSlide = 0;
 let autoSlideInterval = null;
 
 // ==========================================================================
+// Supabase
+// ==========================================================================
+const SUPABASE_URL = 'https://dytdnemwqbzgrekamwla.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5dGRuZW13cWJ6Z3Jla2Ftd2xhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3ODExMTEsImV4cCI6MjEwNTM1NzExMX0.6Zb3JK1CrpSrPqtigu9ZyEm_rWLKATOiQvPRQZmCU24';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ==========================================================================
 // EMOJIS — construídos via String.fromCodePoint (100% imune a encoding)
 // ==========================================================================
 const EMOJI_BAG = String.fromCodePoint(0x1F6CD, 0xFE0F); // 🛍️
@@ -38,7 +45,7 @@ const EMOJI_CART = String.fromCodePoint(0x1F6D2);         // 🛒
 const EMOJI_SPARKLE = String.fromCodePoint(0x2728);          // ✨
 
 // ==========================================================================
-// Controle do Carrossel de Essência & Cuidados (Escopo Global)
+// Controle do Carrossel de Essência & Cuidados
 // ==========================================================================
 function getCarouselElements() {
     return {
@@ -316,9 +323,6 @@ function setupRegisterLiveValidation() {
 // ==========================================================================
 // Auth com Supabase
 // ==========================================================================
-const SUPABASE_URL = 'https://dytdnemwqbzgrekamwla.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5dGRuZW13cWJ6Z3Jla2Ftd2xhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3ODExMTEsImV4cCI6MjEwNTM1NzExMX0.6Zb3JK1CrpSrPqtigu9ZyEm_rWLKATOiQvPRQZmCU24';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function handleRegister(event) {
     event.preventDefault();
@@ -376,6 +380,13 @@ async function handleRegister(event) {
     }
 
     showAuthFeedback('Conta criada com sucesso!', 'success');
+
+    // Migra dados locais pro Supabase e recarrega
+    await syncLocalToCloud();
+    await loadFavorites();
+    await loadCheckoutData();
+    updateFavoritesUI();
+    updateCartUI();
     updateUserSessionUI();
 
     setTimeout(() => {
@@ -419,6 +430,13 @@ async function handleLogin(event) {
     }
 
     showAuthFeedback('Login realizado com sucesso!', 'success');
+
+    // Migra dados locais pro Supabase e recarrega
+    await syncLocalToCloud();
+    await loadFavorites();
+    await loadCheckoutData();
+    updateFavoritesUI();
+    updateCartUI();
     updateUserSessionUI();
 
     setTimeout(() => {
@@ -430,6 +448,12 @@ async function handleLogin(event) {
 
 async function handleLogout() {
     await supabaseClient.auth.signOut();
+
+    // Limpa os favoritos da memória (mantém os locais)
+    favorites = [];
+    loadFavorites(); // Recarrega do localStorage
+
+    updateFavoritesUI();
     updateUserSessionUI();
 }
 
@@ -467,6 +491,41 @@ async function updateUserSessionUI() {
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
+}
+
+// ==========================================================================
+// Sincronização de Dados Locais → Cloud (ao logar/cadastrar)
+// ==========================================================================
+async function syncLocalToCloud() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
+
+    // Migra favoritos locais
+    try {
+        const localFavs = JSON.parse(localStorage.getItem('gemas_favorites') || '[]');
+        if (Array.isArray(localFavs) && localFavs.length > 0) {
+            for (const fav of localFavs) {
+                // Verifica se já existe no Supabase
+                const { data: existing } = await supabaseClient
+                    .from('favorites')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .eq('product_ref', fav.ref)
+                    .maybeSingle();
+
+                if (!existing) {
+                    await supabaseClient.from('favorites').insert({
+                        user_id: user.id,
+                        product_name: fav.name,
+                        product_ref: fav.ref,
+                        product_price: fav.price
+                    });
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('Erro ao migrar favoritos:', e);
+    }
 }
 
 // ==========================================================================
@@ -797,27 +856,20 @@ function sendToWhatsApp() {
         return;
     }
 
-    const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
     const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
 
     let subtotalPrice = 0;
     let message = "";
 
-    // Cabeçalho
     message += EMOJI_BAG + " *NOVO PEDIDO — USE GEMAS*\n";
     message += "━━━━━━━━━━━━━━━━━━\n";
 
-    // Dados do cliente
     if (checkoutData && checkoutData.name) {
         message += EMOJI_USER + ` *Cliente:* ${checkoutData.name}\n`;
         if (checkoutData.doc) message += EMOJI_DOC + ` *CPF/CNPJ:* ${checkoutData.doc}\n`;
         if (checkoutData.phone) message += EMOJI_PHONE + ` *Telefone:* ${checkoutData.phone}\n`;
-    } else if (currentUser) {
-        message += EMOJI_USER + ` *Cliente:* ${currentUser.name}\n`;
-        message += EMOJI_EMAIL + ` *E-mail:* ${currentUser.email}\n`;
     }
 
-    // Endereço
     if (checkoutData && checkoutData.cep) {
         message += "\n━━━━━━━━━━━━━━━━━━\n";
         message += EMOJI_PIN + " *ENDEREÇO DE ENTREGA*\n";
@@ -828,7 +880,6 @@ function sendToWhatsApp() {
         message += `CEP: ${checkoutData.cep}\n`;
     }
 
-    // Itens
     message += "\n━━━━━━━━━━━━━━━━━━\n";
     message += "*ITENS DO PEDIDO:*\n";
     cart.forEach((item) => {
@@ -837,7 +888,6 @@ function sendToWhatsApp() {
         message += `• ${item.quantity}x ${item.name} (REF: ${item.ref}) — ${formatCurrency(itemSubtotal)}\n`;
     });
 
-    // Totais
     message += "━━━━━━━━━━━━━━━━━━\n";
     message += EMOJI_MONEY + ` *Subtotal:* ${formatCurrency(subtotalPrice)}\n`;
 
@@ -849,7 +899,6 @@ function sendToWhatsApp() {
         message += EMOJI_MONEY + ` *Total parcial:* ${formatCurrency(subtotalPrice)}\n`;
     }
 
-    // Observações
     if (checkoutData && checkoutData.notes) {
         message += "\n━━━━━━━━━━━━━━━━━━\n";
         message += EMOJI_NOTE + ` *Observações:*\n${checkoutData.notes}\n`;
@@ -865,28 +914,66 @@ function sendToWhatsApp() {
 }
 
 // ==========================================================================
-// Favoritos / Lista de Desejos
+// Favoritos / Lista de Desejos (sincronizado com Supabase)
 // ==========================================================================
 let favorites = [];
 
-function loadFavorites() {
-    try {
-        favorites = JSON.parse(localStorage.getItem('gemas_favorites') || '[]');
-        if (!Array.isArray(favorites)) favorites = [];
-    } catch (e) {
-        favorites = [];
+async function loadFavorites() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (user) {
+        // Carrega do Supabase
+        const { data, error } = await supabaseClient
+            .from('favorites')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: true });
+
+        if (!error && data) {
+            favorites = data.map(f => ({
+                name: f.product_name,
+                ref: f.product_ref,
+                price: parseFloat(f.product_price)
+            }));
+        }
+    } else {
+        // Fallback: localStorage
+        try {
+            favorites = JSON.parse(localStorage.getItem('gemas_favorites') || '[]');
+            if (!Array.isArray(favorites)) favorites = [];
+        } catch (e) {
+            favorites = [];
+        }
     }
 }
 
-function saveFavorites() {
+async function saveFavorites() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    // Sempre salva no localStorage como cache
     localStorage.setItem('gemas_favorites', JSON.stringify(favorites));
+
+    if (user) {
+        // Deleta todos e insere de novo (mais simples)
+        await supabaseClient.from('favorites').delete().eq('user_id', user.id);
+
+        if (favorites.length > 0) {
+            const rows = favorites.map(f => ({
+                user_id: user.id,
+                product_name: f.name,
+                product_ref: f.ref,
+                product_price: f.price
+            }));
+            await supabaseClient.from('favorites').insert(rows);
+        }
+    }
 }
 
 function isFavorite(ref) {
     return favorites.some(f => f.ref === ref);
 }
 
-function toggleFavorite(event, name, ref, price) {
+async function toggleFavorite(event, name, ref, price) {
     if (event) {
         event.stopPropagation();
         event.preventDefault();
@@ -900,7 +987,7 @@ function toggleFavorite(event, name, ref, price) {
         favorites.push({ name, ref, price });
     }
 
-    saveFavorites();
+    await saveFavorites();
     updateFavoritesUI();
 }
 
@@ -957,21 +1044,21 @@ function renderWishlistItems() {
     });
 }
 
-function removeFromFavorites(index) {
+async function removeFromFavorites(index) {
     if (index < 0 || index >= favorites.length) return;
     favorites.splice(index, 1);
-    saveFavorites();
+    await saveFavorites();
     updateFavoritesUI();
 }
 
-function moveFavoriteToCart(index) {
+async function moveFavoriteToCart(index) {
     const item = favorites[index];
     if (!item) return;
 
     addToCart(item.name, item.ref, item.price);
 
     favorites.splice(index, 1);
-    saveFavorites();
+    await saveFavorites();
     updateFavoritesUI();
 }
 
@@ -1001,7 +1088,7 @@ function closeWishlist() {
     if (wishlistDrawer) wishlistDrawer.classList.remove('open');
 }
 
-function addAllFavoritesToCart() {
+async function addAllFavoritesToCart() {
     if (favorites.length === 0) {
         alert('Sua lista de favoritos está vazia.');
         return;
@@ -1013,7 +1100,7 @@ function addAllFavoritesToCart() {
     });
 
     favorites = [];
-    saveFavorites();
+    await saveFavorites();
     updateFavoritesUI();
     closeWishlist();
 }
@@ -1269,7 +1356,7 @@ async function handleTestimonialSubmit(event) {
 }
 
 // ==========================================================================
-// Checkout — Modal de dados de entrega
+// Checkout — Modal de dados de entrega (sincronizado com Supabase)
 // ==========================================================================
 function openCheckoutModal() {
     if (cart.length === 0) {
@@ -1295,29 +1382,60 @@ function closeCheckoutModal() {
     clearCheckoutErrors();
 }
 
-function loadCheckoutData() {
-    try {
-        const saved = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
-        if (!saved) return;
+async function loadCheckoutData() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
-        const fields = ['name', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
-        fields.forEach(field => {
-            const el = document.getElementById('ck-' + field);
-            if (el && saved[field]) el.value = saved[field];
-        });
-    } catch (e) {
-        // silencioso
+    let saved = null;
+
+    if (user) {
+        // Tenta carregar do Supabase
+        const { data } = await supabaseClient
+            .from('checkout_data')
+            .select('*')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if (data) saved = data;
     }
+
+    // Fallback: localStorage
+    if (!saved) {
+        try {
+            saved = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+        } catch (e) {
+            saved = null;
+        }
+    }
+
+    if (!saved) return;
+
+    const fields = ['name', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
+    fields.forEach(field => {
+        const el = document.getElementById('ck-' + field);
+        if (el && saved[field]) el.value = saved[field];
+    });
 }
 
-function saveCheckoutData() {
+async function saveCheckoutData() {
     const fields = ['name', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
     const data = {};
     fields.forEach(field => {
         const el = document.getElementById('ck-' + field);
         if (el) data[field] = el.value.trim();
     });
+
+    // Sempre salva no localStorage como cache
     localStorage.setItem('gemas_checkout_data', JSON.stringify(data));
+
+    // Se tiver logado, salva também no Supabase
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (user) {
+        await supabaseClient.from('checkout_data').upsert({
+            user_id: user.id,
+            ...data,
+            updated_at: new Date().toISOString()
+        });
+    }
 }
 
 function clearCheckoutFeedback() {
@@ -1496,12 +1614,12 @@ function validateCheckoutForm() {
     return true;
 }
 
-function handleCheckoutSubmit(event) {
+async function handleCheckoutSubmit(event) {
     event.preventDefault();
 
     if (!validateCheckoutForm()) return;
 
-    saveCheckoutData();
+    await saveCheckoutData();
 
     const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data'));
     if (checkoutData && checkoutData.cep) {
@@ -1539,11 +1657,11 @@ async function fetchShippingForCheckout(cepRaw) {
 }
 
 function handleDoubtClick() {
-    const currentUser = JSON.parse(localStorage.getItem('gemas_current_user'));
+    const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
     let message = "Olá! " + EMOJI_WAVE + " Tenho uma dúvida sobre a Use Gemas.";
 
-    if (currentUser) {
-        message = `Olá! Meu nome é *${currentUser.name}*. Tenho uma dúvida sobre a Use Gemas.`;
+    if (checkoutData && checkoutData.name) {
+        message = `Olá! Meu nome é *${checkoutData.name}*. Tenho uma dúvida sobre a Use Gemas.`;
     }
 
     if (cart.length > 0) {
@@ -1558,16 +1676,19 @@ function handleDoubtClick() {
 // ==========================================================================
 // Eventos Globais e Inicialização
 // ==========================================================================
-document.addEventListener('DOMContentLoaded', () => {
-    updateUserSessionUI();
-    loadFavorites();
-    updateFavoritesUI();
+document.addEventListener('DOMContentLoaded', async () => {
     setupRegisterLiveValidation();
     setupStarRating();
-
-    // Checkout
     setupCheckoutMasks();
 
+    // Auth — carrega estado atual
+    await updateUserSessionUI();
+    await loadFavorites();
+    await loadCheckoutData();
+    updateFavoritesUI();
+    updateCartUI();
+
+    // Checkout
     const checkoutForm = document.getElementById('checkout-form');
     if (checkoutForm) {
         checkoutForm.addEventListener('submit', handleCheckoutSubmit);
@@ -1646,7 +1767,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Inicialização do Carrossel de Essência & Cuidados
+    // Inicialização do Carrossel
     const carouselContainer = document.getElementById('infoCarousel');
     if (carouselContainer) {
         showSlide(0);
