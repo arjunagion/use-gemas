@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Use Gemas</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* ==================== Variáveis ==================== */
+        :root {
+            --bg: #0e0e10;
+            --bg-panel: #141418;
+            --bg-card: #18181c;
+            --bg-hover: #1f1f24;
+            --border: rgba(212, 175, 55, 0.15);
+            --border-hover: rgba(212, 175, 55, 0.4);
+            --text: #f5f5f5;
+            --text-muted: #c5c5c5;
+            --text-dim: #888;
+            --gold: #d4af37;
+            --gold-hover: #f3cf55;
+            --danger: #ff5555;
+            --success: #51cf66;
+            --font-title: 'Cormorant Garamond', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* ==================== Telas ==================== */
+        .screen {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* TELA: Carregando */
+        #screen-loading {
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(212, 175, 55, 0.2);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #screen-loading p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* TELA: Acesso negado */
+        #screen-denied {
+            justify-content: center;
+            align-items: center;
+        }
+
+        .denied-box {
+            text-align: center;
+            padding: 3rem 2rem;
+            max-width: 450px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .denied-box h1 {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 0.8rem;
+        }
+
+        .denied-box p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+            color: #0e0e10;
+            padding: 0.85rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-ghost {
+            display: inline-block;
+            background: transparent;
+            color: var(--text-muted);
+            padding: 0.85rem 2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.8rem;
+            font-family: var(--font-body);
+        }
+
+        .btn-ghost:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--text);
+        }
+
+        /* TELA: Admin — layout */
+        #screen-admin {
+            display: none;
+        }
+
+        #screen-admin.active {
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 1.8rem 1.5rem;
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--gold);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-brand small {
+            display: block;
+            font-family: var(--font-body);
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-top: 0.2rem;
+            font-weight: 500;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.9rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-left: 3px solid transparent;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--gold);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item .icon {
+            font-size: 1.1rem;
+            width: 22px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid var(--border);
+            padding: 1.2rem 1.5rem;
+        }
+
+        .user-info {
+            margin-bottom: 0.9rem;
+        }
+
+        .user-info span {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .user-info small {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-logout {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255, 85, 85, 0.3);
+            color: var(--danger);
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: var(--font-body);
+            font-weight: 600;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 85, 85, 0.1);
+            border-color: var(--danger);
+        }
+
+        /* Main */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-header {
+            padding: 1.8rem 2.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .main-header h1 {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .btn-view-site {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: transparent;
+            color: var(--gold);
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .btn-view-site:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .main-body {
+            padding: 2.5rem;
+            flex: 1;
+        }
+
+        /* Seções */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Grid de métricas */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.3rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            display: block;
+            font-family: var(--font-title);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        /* Placeholder box */
+        .placeholder-box {
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+
+        .placeholder-box h2 {
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .placeholder-box p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .placeholder-box ul {
+            list-style: none;
+            text-align: left;
+            max-width: 500px;
+            margin: 0 auto;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .placeholder-box li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .placeholder-box li:last-child {
+            border-bottom: none;
+        }
+
+        .placeholder-box li strong {
+            color: var(--text);
+        }
+
+        /* Botão hamburguer mobile */
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.3rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Overlay mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* ==================== Responsivo ==================== */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .main-header {
+                padding: 1.2rem 1.2rem;
+            }
+
+            .main-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .main-body {
+                padding: 1.5rem 1.2rem;
+            }
+
+            .metric-card {
+                padding: 1.2rem 1rem;
+            }
+
+            .metric-value {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TELA 1: Carregando -->
+    <div id="screen-loading" class="screen active">
+        <div class="spinner"></div>
+        <p>Verificando acesso...</p>
+    </div>
+
+    <!-- TELA 2: Acesso negado -->
+    <div id="screen-denied" class="screen">
+        <div class="denied-box">
+            <h1>Acesso Restrito</h1>
+            <p>Esta área é exclusiva para administradores da Use Gemas.</p>
+            <a href="index.html" class="btn-primary">Voltar ao site</a>
+            <br>
+            <button onclick="handleLogout()" class="btn-ghost">Sair da conta</button>
+        </div>
+    </div>
+
+    <!-- TELA 3: Admin -->
+    <div id="screen-admin" class="screen">
+
+        <!-- Overlay mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                USE GEMAS
+                <small>Painel Administrativo</small>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-section="produtos">
+                    <span class="icon">📦</span> Produtos
+                </a>
+                <a href="#" class="nav-item" data-section="pedidos">
+                    <span class="icon">🛒</span> Pedidos
+                </a>
+                <a href="#" class="nav-item" data-section="clientes">
+                    <span class="icon">👥</span> Clientes
+                </a>
+                <a href="#" class="nav-item" data-section="config">
+                    <span class="icon">⚙️</span> Configurações
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span id="admin-name">Admin</span>
+                    <small id="admin-email">admin@email.com</small>
+                </div>
+                <button onclick="handleLogout()" class="btn-logout">Sair da conta</button>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main-content">
+            <header class="main-header">
+                <div style="display: flex; align-items: center;">
+                    <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <a href="index.html" target="_blank" class="btn-view-site">Ver site →</a>
+            </header>
+
+            <div class="main-body">
+
+                <!-- SEÇÃO: Dashboard -->
+                <section class="content-section active" id="section-dashboard">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-label">Vendas hoje</span>
+                            <span class="metric-value" id="metric-today">R$ 0,00</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Vendas do mês</span>
+                            <span class="metric-value" id="metric-month">R$ 0,00</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Pedidos pendentes</span>
+                            <span class="metric-value" id="metric-pending">0</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Produtos em estoque</span>
+                            <span class="metric-value" id="metric-stock">0</span>
+                        </div>
+                    </div>
+
+                    <div class="placeholder-box">
+                        <h2>Bem-vindo ao painel 👋</h2>
+                        <p>O esqueleto do admin está pronto! As funcionalidades serão adicionadas nas próximas fases:</p>
+                        <ul>
+                            <li>📦 <strong>Fase 2:</strong> Cadastro e edição de produtos com controle de estoque</li>
+                            <li>🛒 <strong>Fase 3:</strong> Lista de pedidos com status (novo → pago → enviado)</li>
+                            <li>👥 <strong>Fase 4:</strong> Clientes e histórico de compras</li>
+                            <li>⚙️ <strong>Fase 5:</strong> Configurações da loja</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- SEÇÃO: Produtos -->
+                <section class="content-section" id="section-produtos">
+                    <div class="placeholder-box">
+                        <h2>📦 Produtos</h2>
+                        <p>Em breve você poderá cadastrar, editar e controlar o estoque por aqui.</p>
+                    </div>
+                </section>
+
+                <!-- SEÇÃO: Pedidos -->
+                <section class="content-section" id="section-pedidos">
+                    <div class="placeholder-box">
+                        <h2>🛒 Pedidos</h2>
+                        <p>Em breve você verá todos os pedidos com status e filtros.</p>
+                    </div>
+                </section>
+
+                <!-- SEÇÃO: Clientes -->
+                <section class="content-section" id="section-clientes">
+                    <div class="placeholder-box">
+                        <h2>👥 Clientes</h2>
+                        <p>Em breve você terá uma lista completa de clientes cadastrados.</p>
+                    </div>
+                </section>
+
+                <!-- SEÇÃO: Configurações -->
+                <section class="content-section" id="section-config">
+                    <div class="placeholder-box">
+                        <h2>⚙️ Configurações</h2>
+                        <p>Em breve você poderá ajustar dados da loja, frete e formas de pagamento.</p>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ==========================================================================
+        // Supabase Setup
+        // ==========================================================================
+        const SUPABASE_URL = 'https://dytdnemwqbzgrekamwla.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5dGRuZW13cWJ6Z3Jla2Ftd2xhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3ODExMTEsImV4cCI6MjEwNTM1NzExMX0.6Zb3JK1CrpSrPqtigu9ZyEm_rWLKATOiQvPRQZmCU24';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ==========================================================================
+        // Controle de Telas
+        // ==========================================================================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const screen = document.getElementById(screenId);
+            if (screen) screen.classList.add('active');
+        }
+
+        // ==========================================================================
+        // Verificação de Admin
+        // ==========================================================================
+        async function checkAdminAccess() {
+            try {
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+
+                if (userError || !user) {
+                    showScreen('screen-denied');
+                    return;
+                }
+
+                // Verifica se é admin
+                const { data: adminData, error: adminError } = await supabaseClient
+                    .from('admins')
+                    .select('user_id')
+                    .eq('user_id', user.id)
+                    .maybeSingle();
+
+                if (adminError || !adminData) {
+                    showScreen('screen-denied');
+                    return;
+                }
+
+                // Pega nome do admin
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('name')
+                    .eq('id', user.id)
+                    .single();
+
+                const adminName = profile?.name || user.email.split('@')[0];
+
+                document.getElementById('admin-name').innerText = adminName;
+                document.getElementById('admin-email').innerText = user.email;
+
+                showScreen('screen-admin');
+
+            } catch (e) {
+                console.error('Erro na verificação:', e);
+                showScreen('screen-denied');
+            }
+        }
+
+        // ==========================================================================
+        // Logout
+        // ==========================================================================
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // ==========================================================================
+        // Navegação entre Seções
+        // ==========================================================================
+        const sectionTitles = {
+            dashboard: 'Dashboard',
+            produtos: 'Produtos',
+            pedidos: 'Pedidos',
+            clientes: 'Clientes',
+            config: 'Configurações'
+        };
+
+        function switchSection(sectionName) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.section === sectionName);
+            });
+
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.toggle('active', section.id === 'section-' + sectionName);
+            });
+
+            document.getElementById('page-title').innerText = sectionTitles[sectionName] || 'Dashboard';
+
+            // Fecha sidebar no mobile
+            if (window.innerWidth <= 900) {
+                closeSidebar();
+            }
+        }
+
+        // ==========================================================================
+        // Sidebar Mobile
+        // ==========================================================================
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+        }
+
+        // ==========================================================================
+        // Inicialização
+        // ==========================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Configura navegação
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchSection(item.dataset.section);
+                });
+            });
+
+            // Verifica acesso
+            checkAdminAccess();
+
+            // Monitora mudanças de auth (logout em outra aba, etc)
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT') {
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
