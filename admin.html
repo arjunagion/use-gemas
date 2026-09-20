@@ -526,6 +526,11 @@
             gap: 0.4rem;
         }
 
+        .btn-new-product:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
         .btn-export {
             background: transparent;
             border: 1px solid var(--border);
@@ -1443,6 +1448,11 @@
                 justify-content: center;
             }
 
+            .btn-export {
+                width: 100%;
+                justify-content: center;
+            }
+
             .form-row-2 {
                 grid-template-columns: 1fr;
             }
@@ -1583,9 +1593,7 @@
 
                     <div class="placeholder-box">
                         <h2>Bem-vindo ao painel 👋</h2>
-                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>,
-                            <strong>Clientes</strong> e <strong>Configurações</strong>.
-                        </p>
+                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>, <strong>Clientes</strong> e <strong>Configurações</strong>.</p>
                     </div>
                 </section>
 
@@ -1694,9 +1702,7 @@
                                 </div>
                             </div>
 
-                            <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa
-                                regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o
-                                valor.</small>
+                            <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o valor.</small>
                         </div>
 
                         <div class="config-block">
@@ -1704,16 +1710,13 @@
 
                             <div class="form-group">
                                 <label for="cfg-banner-message">Mensagem (deixe vazio pra esconder)</label>
-                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300 ✨"
-                                    maxlength="120">
-                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra
-                                    promoções e avisos rápidos.</small>
+                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300 ✨" maxlength="120">
+                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra promoções e avisos rápidos.</small>
                             </div>
                         </div>
 
                         <div class="config-actions">
-                            <button class="btn-save" id="config-save-btn" onclick="saveSettings()">Salvar
-                                Configurações</button>
+                            <button class="btn-save" id="config-save-btn" onclick="saveSettings()">Salvar Configurações</button>
                         </div>
                     </div>
                 </section>
@@ -2286,6 +2289,110 @@
             renderOrders();
         }
 
+        // ==========================================================================
+        // EXPORTAR PEDIDOS EM CSV
+        // ==========================================================================
+        function csvEscape(value) {
+            const str = String(value == null ? '' : value);
+            if (str.includes(';') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        function csvMoney(value) {
+            return Number(value || 0).toFixed(2).replace('.', ',');
+        }
+
+        function exportOrdersToCSV() {
+            const btn = document.getElementById('export-orders-btn');
+            if (!btn) return;
+
+            let filtered = allOrders.slice();
+            if (currentOrderFilter !== 'all') {
+                filtered = filtered.filter(o => o.status === currentOrderFilter);
+            }
+
+            if (filtered.length === 0) {
+                showToast('Nenhum pedido pra exportar com esse filtro.', 'error');
+                return;
+            }
+
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Gerando...';
+
+            try {
+                const headers = [
+                    'Data',
+                    'Status',
+                    'Cliente',
+                    'CPF/CNPJ',
+                    'Telefone',
+                    'E-mail',
+                    'Cidade/UF',
+                    'Itens',
+                    'Subtotal (R$)',
+                    'Frete (R$)',
+                    'Total (R$)'
+                ];
+
+                const rows = filtered.map(o => {
+                    const date = new Date(o.created_at);
+                    const dateStr = date.toLocaleDateString('pt-BR') + ' ' +
+                        date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+                    const itemsStr = (o.items || [])
+                        .map(i => `${i.quantity}x ${i.name} (${i.ref})`)
+                        .join('; ');
+
+                    const cidadeUF = o.city
+                        ? `${o.city}/${o.state || ''}`
+                        : '';
+
+                    return [
+                        dateStr,
+                        getStatusLabel(o.status),
+                        o.customer_name || '',
+                        o.customer_doc || '',
+                        o.customer_phone || '',
+                        o.customer_email || '',
+                        cidadeUF,
+                        itemsStr,
+                        csvMoney(o.subtotal),
+                        csvMoney(o.shipping_cost),
+                        csvMoney(o.total)
+                    ].map(csvEscape).join(';');
+                });
+
+                const csvContent = headers.join(';') + '\n' + rows.join('\n');
+
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+                const now = new Date();
+                const filename = `pedidos-use-gemas-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.csv`;
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                const filterLabel = currentOrderFilter === 'all' ? 'todos os status' : getStatusLabel(currentOrderFilter).toLowerCase();
+                showToast(`${filtered.length} pedido(s) exportado(s) (${filterLabel}).`);
+
+            } catch (e) {
+                console.error('Erro ao exportar CSV:', e);
+                showToast('Erro ao gerar o CSV.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
         function getStatusLabel(status) {
             const map = {
                 novo: 'Novo', pago: 'Pago', produzindo: 'Produzindo',
@@ -2410,7 +2517,6 @@
             const oldStatus = order.status;
             if (oldStatus === newStatus) return;
 
-            // Status que já consumiram estoque
             const statusComEstoqueBaixado = ['pago', 'produzindo', 'enviado'];
             const oldBaixou = statusComEstoqueBaixado.includes(oldStatus);
             const newBaixou = statusComEstoqueBaixado.includes(newStatus);
@@ -2469,7 +2575,6 @@
                 const email = (o.customer_email || '').toLowerCase().trim();
                 const nameKey = (o.customer_name || '').toLowerCase().trim();
 
-                // Prefere agrupar por e-mail. Se não tiver, agrupa por nome.
                 const key = email || (nameKey ? 'nome:' + nameKey : '');
                 if (!key) return;
 
@@ -2497,7 +2602,6 @@
                 const orderDate = new Date(o.created_at);
                 if (!c.lastOrderDate || orderDate > new Date(c.lastOrderDate)) {
                     c.lastOrderDate = o.created_at;
-                    // Atualiza com dados do pedido mais recente
                     c.name = o.customer_name || c.name;
                     c.phone = o.customer_phone || c.phone;
                     c.doc = o.customer_doc || c.doc;
@@ -2710,7 +2814,6 @@
         // INICIALIZAÇÃO
         // ==========================================================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Menu lateral — clicar em cada item troca de seção
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -2718,7 +2821,6 @@
                 });
             });
 
-            // Fechar modais ao clicar no overlay (fora do conteúdo)
             document.querySelectorAll('.modal-overlay').forEach(overlay => {
                 overlay.addEventListener('click', (e) => {
                     if (e.target === overlay) {
@@ -2727,14 +2829,12 @@
                 });
             });
 
-            // Fechar modais com a tecla ESC
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
                 }
             });
 
-            // Verifica acesso e carrega tudo
             checkAdminAccess();
         });
     </script>

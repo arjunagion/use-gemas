@@ -465,37 +465,6 @@ async function handleForgotPassword(event) {
     }
 }
 
-const link = event.target.querySelector('.forgot-password');
-const originalText = link ? link.innerText : 'Esqueceu a senha?';
-if (link) {
-    link.style.pointerEvents = 'none';
-    link.style.opacity = '0.6';
-    link.innerText = 'Enviando...';
-}
-
-try {
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, '')}reset-password.html`
-    });
-
-    if (error) {
-        console.error('Erro ao enviar e-mail de recuperação:', error);
-        showAuthFeedback('Não foi possível enviar o e-mail. Tente novamente em instantes.', 'error');
-        return;
-    }
-
-    showAuthFeedback(`Enviamos um link de redefinição para ${email}. Confira sua caixa de entrada e o spam.`, 'success');
-} catch (e) {
-    console.error('Erro inesperado:', e);
-    showAuthFeedback('Erro inesperado. Tente novamente.', 'error');
-} finally {
-    if (link) {
-        link.style.pointerEvents = '';
-        link.style.opacity = '';
-        link.innerText = originalText;
-    }
-}
-
 function setFieldStatus(inputEl, isValid, message = '') {
     if (!inputEl) return;
 
