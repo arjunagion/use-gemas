@@ -2234,4 +2234,21 @@ a {
     .form-actions-row button {
         width: 100%;
     }
+
+    /* Badge "Últimas unidades" no card */
+    .low-stock-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(255, 193, 7, 0.95);
+        color: #0e0e10;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        z-index: 4;
+        backdrop-filter: blur(6px);
+        text-transform: uppercase;
+    }
 }

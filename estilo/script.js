@@ -16,8 +16,6 @@ let currentSlide = 0;
 let autoSlideInterval = null;
 
 let productsFromDb = [];
-let favorites = [];
-let currentTestimonialStars = 0;
 
 // ==========================================================================
 // Supabase
@@ -45,8 +43,6 @@ const EMOJI_HEART = String.fromCodePoint(0x2764, 0xFE0F);
 const EMOJI_CART = String.fromCodePoint(0x1F6D2);
 const EMOJI_SPARKLE = String.fromCodePoint(0x2728);
 
-const WEB3FORMS_KEY = '69a758b3-d87b-4ea5-a666-424321663f86';
-
 // ==========================================================================
 // Utilidades
 // ==========================================================================
@@ -55,18 +51,13 @@ function formatCurrency(value) {
 }
 
 function escapeHTML(str) {
-    if (!str && str !== 0) return '';
+    if (!str) return '';
     return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
-}
-
-function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
 }
 
 // ==========================================================================
@@ -90,7 +81,8 @@ async function loadProductsFromDb() {
             return;
         }
 
-        productsFromDb = data || [];
+        // Filtro defensivo no client (caso o RLS deixe passar algo)
+        productsFromDb = (data || []).filter(p => p.active && p.stock > 0);
         renderProductsGrid();
 
     } catch (e) {
@@ -112,6 +104,7 @@ function renderProductsGrid() {
         const galleryItems = (p.gallery || '').split(',').map(s => s.trim()).filter(Boolean);
         const firstMedia = galleryItems[0] || '';
         const isVideo = firstMedia.match(/\.(mov|mp4|webm|ogg)$/i);
+        const isLowStock = p.stock <= 2;
 
         const mediaHTML = isVideo
             ? `<video src="${escapeHTML(firstMedia)}" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>`
@@ -119,8 +112,9 @@ function renderProductsGrid() {
                 ? `<img src="${escapeHTML(firstMedia)}" alt="${escapeHTML(p.name)}" />`
                 : `<div style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;color:#666;font-size:0.8rem;">Sem mídia</div>`);
 
-        const galleryAttr = escapeHTML(p.gallery || '');
-        const nameEscaped = escapeHTML(p.name).replace(/'/g, "\\'");
+        const stockBadge = isLowStock
+            ? `<span class="low-stock-badge">⚡ Últimas unidades</span>`
+            : '';
 
         return `
             <div class="product-card" data-category="${escapeHTML(p.category)}"
@@ -130,12 +124,14 @@ function renderProductsGrid() {
                  data-gem="${escapeHTML(p.gem || '')}"
                  data-desc="${escapeHTML(p.description || '')}"
                  data-materials="${escapeHTML(p.materials || '')}"
-                 data-gallery="${galleryAttr}">
+                 data-gallery="${escapeHTML(p.gallery || '')}"
+                 data-stock="${p.stock}">
 
                 <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
                     ${mediaHTML}
+                    ${stockBadge}
                     <button type="button" class="btn-favorite"
-                        onclick="toggleFavorite(event, '${nameEscaped}', '${escapeHTML(p.ref)}', ${Number(p.price)})"
+                        onclick="toggleFavorite(event, '${escapeHTML(p.name).replace(/'/g, "\\'")}', '${escapeHTML(p.ref)}', ${Number(p.price)})"
                         aria-label="Adicionar ${escapeHTML(p.name)} aos favoritos">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -147,7 +143,7 @@ function renderProductsGrid() {
                     <p class="gem-type">${escapeHTML(p.gem || '')}</p>
                     <span class="price">${formatCurrency(p.price)}</span>
                     <button class="btn-add-cart"
-                        onclick="addToCart('${nameEscaped}', '${escapeHTML(p.ref)}', ${Number(p.price)})">
+                        onclick="addToCart('${escapeHTML(p.name).replace(/'/g, "\\'")}', '${escapeHTML(p.ref)}', ${Number(p.price)})">
                         Adicionar ao Carrinho
                     </button>
                 </div>
@@ -155,7 +151,9 @@ function renderProductsGrid() {
         `;
     }).join('');
 
-    if (typeof updateFavoritesUI === 'function') updateFavoritesUI();
+    if (typeof updateFavoritesUI === 'function') {
+        updateFavoritesUI();
+    }
 }
 
 // ==========================================================================
@@ -191,7 +189,9 @@ function showSlide(index) {
         }
     });
 
-    dots.forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+    dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+    });
 }
 
 function moveSlide(step) { showSlide(currentSlide + step); resetAutoSlide(); }
@@ -199,7 +199,7 @@ function goToSlide(index) { showSlide(index); resetAutoSlide(); }
 
 function startAutoSlide() {
     stopAutoSlide();
-    autoSlideInterval = setInterval(() => showSlide(currentSlide + 1), 6000);
+    autoSlideInterval = setInterval(() => { showSlide(currentSlide + 1); }, 6000);
 }
 
 function stopAutoSlide() {
@@ -234,7 +234,7 @@ function openCart() {
 }
 
 // ==========================================================================
-// Auth
+// Autenticação
 // ==========================================================================
 function openAuthModal(tab = 'login') {
     const modal = document.getElementById('auth-modal');
@@ -277,18 +277,18 @@ function switchAuthTab(tabName) {
 }
 
 function showAuthFeedback(message, type = 'error') {
-    const el = document.getElementById('auth-feedback');
-    if (el) {
-        el.className = `auth-feedback ${type}`;
-        el.innerText = message;
+    const feedbackEl = document.getElementById('auth-feedback');
+    if (feedbackEl) {
+        feedbackEl.className = `auth-feedback ${type}`;
+        feedbackEl.innerText = message;
     }
 }
 
 function clearAuthFeedback() {
-    const el = document.getElementById('auth-feedback');
-    if (el) {
-        el.className = 'auth-feedback';
-        el.innerText = '';
+    const feedbackEl = document.getElementById('auth-feedback');
+    if (feedbackEl) {
+        feedbackEl.className = 'auth-feedback';
+        feedbackEl.innerText = '';
     }
 }
 
@@ -425,7 +425,7 @@ async function handleRegister(event) {
     const originalText = btn ? btn.innerText : 'Cadastrar';
     if (btn) { btn.disabled = true; btn.innerText = 'Cadastrando...'; }
 
-    const { error } = await supabaseClient.auth.signUp({
+    const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
         options: { data: { name: name } }
@@ -474,7 +474,7 @@ async function handleLogin(event) {
     const originalText = btn ? btn.innerText : 'Acessar';
     if (btn) { btn.disabled = true; btn.innerText = 'Entrando...'; }
 
-    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     if (btn) { btn.disabled = false; btn.innerText = originalText; }
 
@@ -535,6 +535,11 @@ async function updateUserSessionUI() {
         userBtn.onclick = () => openAuthModal('login');
         userBtn.title = "Entrar / Cadastrar";
     }
+}
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
 }
 
 async function syncLocalToCloud() {
@@ -726,19 +731,62 @@ function filterProducts(category, element) {
 }
 
 // ==========================================================================
-// Carrinho — Operações
+// Carrinho — Lógica com validação de estoque
 // ==========================================================================
 function addToCart(name, ref, price) {
+    // Busca o produto atual no estado
+    const product = productsFromDb.find(p => p.ref === ref);
+
+    // Trava 1: produto não existe mais
+    if (!product) {
+        alert(`"${name}" não está mais disponível.`);
+        return;
+    }
+
+    // Trava 2: estoque zerado
+    if (product.stock <= 0) {
+        alert(`"${name}" está esgotado no momento.`);
+        return;
+    }
+
+    // Trava 3: quantidade no carrinho já bate o estoque
     const existingItem = cart.find(item => item.ref === ref);
-    if (existingItem) existingItem.quantity += 1;
-    else cart.push({ name, ref, price, quantity: 1 });
+    const currentQty = existingItem ? existingItem.quantity : 0;
+
+    if (currentQty + 1 > product.stock) {
+        alert(`Só temos ${product.stock} unidade(s) de "${name}" em estoque.`);
+        return;
+    }
+
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ name, ref, price, quantity: 1 });
+    }
+
     updateCartUI();
     openCart();
 }
 
 function updateQuantity(index, delta) {
-    cart[index].quantity += delta;
-    if (cart[index].quantity <= 0) cart.splice(index, 1);
+    const item = cart[index];
+    if (!item) return;
+
+    const product = productsFromDb.find(p => p.ref === item.ref);
+    const newQty = item.quantity + delta;
+
+    // Bloqueia se tentar passar do estoque
+    if (delta > 0 && product && newQty > product.stock) {
+        alert(`Só temos ${product.stock} unidade(s) de "${item.name}" em estoque.`);
+        return;
+    }
+
+    item.quantity = newQty;
+
+    if (item.quantity <= 0) {
+        cart.splice(index, 1);
+    }
+
     updateCartUI();
 }
 
@@ -851,7 +899,14 @@ function updateCartUI() {
 // ==========================================================================
 // WhatsApp
 // ==========================================================================
-function sendToWhatsApp() {
+function sendToWhatsApp(itemsParam = null) {
+    const itemsToSend = itemsParam || cart;
+
+    if (itemsToSend.length === 0) {
+        alert("Seu carrinho está vazio!");
+        return;
+    }
+
     const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
 
     let subtotalPrice = 0;
@@ -878,7 +933,7 @@ function sendToWhatsApp() {
 
     message += "\n━━━━━━━━━━━━━━━━━━\n";
     message += "*ITENS DO PEDIDO:*\n";
-    cart.forEach((item) => {
+    itemsToSend.forEach((item) => {
         const itemSubtotal = item.price * item.quantity;
         subtotalPrice += itemSubtotal;
         message += `• ${item.quantity}x ${item.name} (REF: ${item.ref}) — ${formatCurrency(itemSubtotal)}\n`;
@@ -911,6 +966,8 @@ function sendToWhatsApp() {
 // ==========================================================================
 // Favoritos
 // ==========================================================================
+let favorites = [];
+
 async function loadFavorites() {
     const { data: { user } } = await supabaseClient.auth.getUser();
 
@@ -1067,7 +1124,20 @@ async function addAllFavoritesToCart() {
     }
 
     const itemsToAdd = [...favorites];
-    itemsToAdd.forEach(item => addToCart(item.name, item.ref, item.price));
+    let added = 0;
+
+    itemsToAdd.forEach(item => {
+        const product = productsFromDb.find(p => p.ref === item.ref);
+        if (product && product.stock > 0) {
+            addToCart(item.name, item.ref, item.price);
+            added++;
+        }
+    });
+
+    if (added === 0) {
+        alert('Nenhum dos favoritos está disponível no momento.');
+        return;
+    }
 
     favorites = [];
     await saveFavorites();
@@ -1148,6 +1218,9 @@ function closePhotoSwipeIfOpen() {
 // ==========================================================================
 // Depoimentos
 // ==========================================================================
+const WEB3FORMS_KEY = '69a758b3-d87b-4ea5-a666-424321663f86';
+let currentTestimonialStars = 0;
+
 function toggleTestimonialForm() {
     const wrapper = document.getElementById('testimonial-form-wrapper');
     if (!wrapper) return;
@@ -1186,7 +1259,9 @@ function setupStarRating() {
         });
     });
 
-    starRating.addEventListener('mouseleave', () => updateStarsUI(currentTestimonialStars));
+    starRating.addEventListener('mouseleave', () => {
+        updateStarsUI(currentTestimonialStars);
+    });
 }
 
 function updateStarsUI(value) {
@@ -1354,7 +1429,11 @@ function clearCheckoutFeedback() {
 
 function showCheckoutFeedback(message, type = 'error') {
     const el = document.getElementById('checkout-feedback');
-    if (el) { el.className = `checkout-feedback ${type}`; el.innerText = message; }
+    if (el) {
+        el.className = `checkout-feedback ${type}`;
+        el.innerText = message;
+        el.style.whiteSpace = 'pre-line';
+    }
 }
 
 function clearCheckoutErrors() {
@@ -1470,23 +1549,51 @@ function validateCheckoutForm() {
     return true;
 }
 
-async function fetchShippingForCheckout(cepRaw) {
-    const cep = cepRaw.replace(/\D/g, '');
-    if (cep.length !== 8) return;
+// ==========================================================================
+// Revalidação de estoque ANTES de salvar o pedido
+// ==========================================================================
+async function revalidateStockBeforeCheckout() {
+    const refs = cart.map(item => item.ref);
 
-    try {
-        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const data = await response.json();
-        if (!data.erro) {
-            shippingCost = 20.00;
-            shippingDetails = { cep: data.cep, city: data.localidade, uf: data.uf };
-            updateCartUI();
+    const { data, error } = await supabaseClient
+        .from('products')
+        .select('ref, name, stock, active')
+        .in('ref', refs);
+
+    if (error) {
+        console.error('Erro ao validar estoque:', error);
+        return { ok: false, message: 'Erro ao validar estoque. Tente novamente.' };
+    }
+
+    const problems = [];
+
+    for (const item of cart) {
+        const product = (data || []).find(p => p.ref === item.ref);
+
+        if (!product) {
+            problems.push(`"${item.name}" não está mais disponível.`);
+            continue;
         }
-    } catch (err) { }
+
+        if (!product.active) {
+            problems.push(`"${item.name}" está esgotado.`);
+            continue;
+        }
+
+        if (product.stock < item.quantity) {
+            problems.push(`"${item.name}" só tem ${product.stock} unidade(s) em estoque (você pediu ${item.quantity}).`);
+        }
+    }
+
+    if (problems.length > 0) {
+        return { ok: false, message: problems.join('\n') };
+    }
+
+    return { ok: true };
 }
 
 // ==========================================================================
-// Pedido — Salvar no Supabase
+// Salvar pedido no Supabase (SEM baixar estoque)
 // ==========================================================================
 async function saveOrderToDb() {
     const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
@@ -1538,21 +1645,14 @@ async function saveOrderToDb() {
         return null;
     }
 
-    // Decrementa estoque de cada item
-    for (const item of items) {
-        try {
-            await supabaseClient.rpc('decrease_product_stock', {
-                p_ref: item.ref,
-                p_qty: item.quantity
-            });
-        } catch (e) {
-            console.warn('Erro ao diminuir estoque de', item.ref, e);
-        }
-    }
+    // NÃO decrementa estoque aqui — será feito quando admin marcar como "pago"
 
     return data;
 }
 
+// ==========================================================================
+// Submissão do checkout
+// ==========================================================================
 async function handleCheckoutSubmit(event) {
     event.preventDefault();
 
@@ -1562,41 +1662,71 @@ async function handleCheckoutSubmit(event) {
     const originalText = submitBtn ? submitBtn.innerText : 'Continuar pelo WhatsApp';
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = 'Salvando pedido...';
+        submitBtn.innerText = 'Validando estoque...';
     }
 
     try {
+        // 1. Revalida estoque no banco (evita corrida entre clientes)
+        const stockCheck = await revalidateStockBeforeCheckout();
+        if (!stockCheck.ok) {
+            showCheckoutFeedback(stockCheck.message, 'error');
+            return;
+        }
+
+        if (submitBtn) submitBtn.innerText = 'Salvando pedido...';
+
+        // 2. Salva dados do cliente
         await saveCheckoutData();
 
+        // 3. Calcula frete
         const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data'));
         if (checkoutData && checkoutData.cep) {
             await fetchShippingForCheckout(checkoutData.cep);
         }
 
-        // 1) Salva pedido no banco
+        // 4. Salva pedido no banco
         const order = await saveOrderToDb();
 
-        // 2) Fecha o modal
-        closeCheckoutModal();
-
-        // 3) Abre WhatsApp com o carrinho ainda cheio (pra montar a mensagem)
-        sendToWhatsApp();
-
-        // 4) Só agora limpa o carrinho
-        if (order) {
-            cart = [];
-            updateCartUI();
+        if (!order) {
+            showCheckoutFeedback('Erro ao salvar pedido. Tente novamente.', 'error');
+            return;
         }
+
+        // 5. Guarda cópia dos itens pra mensagem do WhatsApp
+        const itemsSnapshot = [...cart];
+
+        // 6. Fecha modal e limpa carrinho
+        closeCheckoutModal();
+        cart = [];
+        updateCartUI();
+
+        // 7. Abre WhatsApp com os itens capturados
+        sendToWhatsApp(itemsSnapshot);
 
     } catch (e) {
         console.error('Erro no checkout:', e);
-        alert('Erro ao finalizar. Tente novamente.');
+        showCheckoutFeedback('Erro ao finalizar. Tente novamente.', 'error');
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.innerText = originalText;
         }
     }
+}
+
+async function fetchShippingForCheckout(cepRaw) {
+    const cep = cepRaw.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+        if (!data.erro) {
+            shippingCost = 20.00;
+            shippingDetails = { cep: data.cep, city: data.localidade, uf: data.uf };
+            updateCartUI();
+        }
+    } catch (err) { }
 }
 
 function handleDoubtClick() {

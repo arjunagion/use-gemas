@@ -9,14 +9,11 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* ==================== Variáveis ==================== */
         :root {
             --bg: #0e0e10;
             --bg-panel: #141418;
@@ -58,7 +55,6 @@
             text-decoration: none;
         }
 
-        /* ==================== Telas ==================== */
         .screen {
             display: none;
             min-height: 100vh;
@@ -85,9 +81,7 @@
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
 
         #screen-loading p {
@@ -165,7 +159,6 @@
             color: var(--text);
         }
 
-        /* ==================== Admin Layout ==================== */
         #screen-admin {
             display: none;
         }
@@ -366,18 +359,10 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ==================== Métricas ==================== */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -417,7 +402,6 @@
             line-height: 1;
         }
 
-        /* ==================== Placeholder ==================== */
         .placeholder-box {
             background: var(--bg-card);
             border: 1px dashed var(--border);
@@ -439,7 +423,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* ==================== Seção Header ==================== */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -537,7 +520,6 @@
             box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
         }
 
-        /* ==================== Produtos Grid ==================== */
         .products-admin-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -695,7 +677,6 @@
             opacity: 0.5;
         }
 
-        /* ==================== Pedidos ==================== */
         .orders-list {
             display: flex;
             flex-direction: column;
@@ -785,7 +766,6 @@
             font-size: 1.2rem;
         }
 
-        /* ==================== Modal Detalhes do Pedido ==================== */
         .order-detail-section {
             margin-bottom: 1.5rem;
         }
@@ -925,7 +905,6 @@
             background: rgba(255, 85, 85, 0.08);
         }
 
-        /* ==================== Modais ==================== */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1171,7 +1150,6 @@
             color: var(--text);
         }
 
-        /* ==================== Toast ==================== */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -1204,7 +1182,10 @@
             border-left: 3px solid var(--danger);
         }
 
-        /* ==================== Mobile ==================== */
+        .toast.info {
+            border-left: 3px solid var(--info);
+        }
+
         .menu-toggle {
             display: none;
             background: transparent;
@@ -1229,85 +1210,25 @@
         }
 
         @media (max-width: 900px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .main-header {
-                padding: 1.2rem 1.2rem;
-            }
-
-            .main-header h1 {
-                font-size: 1.4rem;
-            }
-
-            .main-body {
-                padding: 1.5rem 1.2rem;
-            }
-
-            .metric-card {
-                padding: 1.2rem 1rem;
-            }
-
-            .metric-value {
-                font-size: 1.6rem;
-            }
-
-            .section-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .section-actions {
-                width: 100%;
-            }
-
-            .search-input {
-                width: 100%;
-                min-width: 0;
-            }
-
-            .btn-new-product {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .form-row-2 {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-box {
-                padding: 1.5rem 1.2rem;
-            }
-
-            .modal-actions {
-                flex-direction: column-reverse;
-            }
-
-            .modal-actions button {
-                width: 100%;
-            }
-
-            .order-card {
-                grid-template-columns: 1fr;
-                gap: 0.8rem;
-            }
-
-            .order-total {
-                font-size: 1.3rem;
-            }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .main-header { padding: 1.2rem 1.2rem; }
+            .main-header h1 { font-size: 1.4rem; }
+            .main-body { padding: 1.5rem 1.2rem; }
+            .metric-card { padding: 1.2rem 1rem; }
+            .metric-value { font-size: 1.6rem; }
+            .section-header { flex-direction: column; align-items: stretch; }
+            .section-actions { width: 100%; }
+            .search-input { width: 100%; min-width: 0; }
+            .btn-new-product { width: 100%; justify-content: center; }
+            .form-row-2 { grid-template-columns: 1fr; }
+            .modal-box { padding: 1.5rem 1.2rem; }
+            .modal-actions { flex-direction: column-reverse; }
+            .modal-actions button { width: 100%; }
+            .order-card { grid-template-columns: 1fr; gap: 0.8rem; }
+            .order-total { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -1333,6 +1254,7 @@
 
     <!-- TELA 3: Admin -->
     <div id="screen-admin" class="screen">
+
         <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
         <aside class="sidebar" id="sidebar">
@@ -1411,8 +1333,7 @@
                 <section class="content-section" id="section-produtos">
                     <div class="section-header">
                         <div class="section-actions">
-                            <input type="text" class="search-input" id="product-search"
-                                placeholder="🔍 Buscar por nome ou REF..." oninput="renderProducts()">
+                            <input type="text" class="search-input" id="product-search" placeholder="🔍 Buscar por nome ou REF..." oninput="renderProducts()">
                             <div class="filter-tabs">
                                 <button class="filter-tab active" onclick="setProductFilter('all', this)">Todos</button>
                                 <button class="filter-tab" onclick="setProductFilter('active', this)">Ativos</button>
@@ -1488,15 +1409,13 @@
 
                 <div class="form-group">
                     <label for="prod-name">Nome <span class="required">*</span></label>
-                    <input type="text" id="prod-name" required maxlength="120"
-                        placeholder="Ex: Gargantilha Microcrochê">
+                    <input type="text" id="prod-name" required maxlength="120" placeholder="Ex: Gargantilha Microcrochê">
                 </div>
 
                 <div class="form-row-2">
                     <div class="form-group">
                         <label for="prod-ref">Referência (REF) <span class="required">*</span></label>
-                        <input type="text" id="prod-ref" required maxlength="30" placeholder="Ex: UG-GAR01"
-                            style="text-transform: uppercase;">
+                        <input type="text" id="prod-ref" required maxlength="30" placeholder="Ex: UG-GAR01" style="text-transform: uppercase;">
                     </div>
                     <div class="form-group">
                         <label for="prod-category">Categoria <span class="required">*</span></label>
@@ -1521,29 +1440,22 @@
 
                 <div class="form-group">
                     <label for="prod-gem">Subtítulo / Tipo de Gema</label>
-                    <input type="text" id="prod-gem" maxlength="120"
-                        placeholder="Ex: Microcristais & Acessórios Dourados">
+                    <input type="text" id="prod-gem" maxlength="120" placeholder="Ex: Microcristais & Acessórios Dourados">
                 </div>
 
                 <div class="form-group">
                     <label for="prod-description">Descrição</label>
-                    <textarea id="prod-description" rows="3" maxlength="500"
-                        placeholder="Descreva a peça com carinho..."></textarea>
+                    <textarea id="prod-description" rows="3" maxlength="500" placeholder="Descreva a peça com carinho..."></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="prod-materials">Composição & Materiais</label>
-                    <textarea id="prod-materials" rows="2" maxlength="400"
-                        placeholder="Fios, cristais, fecho, etc."></textarea>
+                    <textarea id="prod-materials" rows="2" maxlength="400" placeholder="Fios, cristais, fecho, etc."></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="prod-gallery">Galeria (URLs separadas por vírgula)</label>
-                    <input type="text" id="prod-gallery" maxlength="500"
-                        placeholder="estilo/midias/foto1.jpg, estilo/midias/foto2.jpg">
-                    <small style="font-size: 0.7rem; color: var(--text-dim); margin-top: 3px;">
-                        Upload de imagens será adicionado depois. Por enquanto, cole os caminhos das mídias.
-                    </small>
+                    <input type="text" id="prod-gallery" maxlength="500" placeholder="estilo/midias/foto1.jpg, estilo/midias/foto2.jpg">
                 </div>
 
                 <div class="form-check">
@@ -1596,9 +1508,9 @@
         // ==========================================================================
         let allProducts = [];
         let currentFilter = 'all';
-
         let allOrders = [];
         let currentOrderFilter = 'all';
+        let pendingDeleteId = null;
 
         // ==========================================================================
         // Utilidades
@@ -1613,11 +1525,9 @@
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             if (!toast) return;
-
             toast.className = `toast ${type}`;
-            toast.innerHTML = (type === 'success' ? '✅' : '⚠️') + ' ' + message;
+            toast.innerHTML = (type === 'success' ? '✅' : type === 'info' ? 'ℹ️' : '⚠️') + ' ' + message;
             toast.classList.add('show');
-
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
         }
@@ -1629,26 +1539,16 @@
         function formatDate(isoString) {
             if (!isoString) return '';
             const d = new Date(isoString);
-            return d.toLocaleDateString('pt-BR') + ' às ' +
-                d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
 
         function escapeHTML(str) {
             if (!str && str !== 0) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
         function getCategoryLabel(cat) {
-            const map = {
-                microcroche: 'Microcrochê',
-                pedras: 'Pedras Naturais',
-                colab: 'Colabs'
-            };
+            const map = { microcroche: 'Microcrochê', pedras: 'Pedras Naturais', colab: 'Colabs' };
             return map[cat] || cat;
         }
 
@@ -1658,11 +1558,7 @@
         async function checkAdminAccess() {
             try {
                 const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-
-                if (userError || !user) {
-                    showScreen('screen-denied');
-                    return;
-                }
+                if (userError || !user) { showScreen('screen-denied'); return; }
 
                 const { data: adminData, error: adminError } = await supabaseClient
                     .from('admins')
@@ -1670,19 +1566,12 @@
                     .eq('user_id', user.id)
                     .maybeSingle();
 
-                if (adminError || !adminData) {
-                    showScreen('screen-denied');
-                    return;
-                }
+                if (adminError || !adminData) { showScreen('screen-denied'); return; }
 
                 const { data: profile } = await supabaseClient
-                    .from('profiles')
-                    .select('name')
-                    .eq('id', user.id)
-                    .single();
+                    .from('profiles').select('name').eq('id', user.id).single();
 
                 const adminName = profile?.name || user.email.split('@')[0];
-
                 document.getElementById('admin-name').innerText = adminName;
                 document.getElementById('admin-email').innerText = user.email;
 
@@ -1718,17 +1607,11 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.toggle('active', item.dataset.section === sectionName);
             });
-
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.toggle('active', section.id === 'section-' + sectionName);
             });
-
             document.getElementById('page-title').innerText = sectionTitles[sectionName] || 'Dashboard';
-
-            if (sectionName === 'dashboard') {
-                updateDashboardMetrics();
-            }
-
+            if (sectionName === 'dashboard') updateDashboardMetrics();
             if (window.innerWidth <= 900) closeSidebar();
         }
 
@@ -1743,7 +1626,7 @@
         }
 
         // ==========================================================================
-        // Dashboard — Métricas
+        // Dashboard
         // ==========================================================================
         function updateDashboardMetrics() {
             const now = new Date();
@@ -1756,17 +1639,13 @@
 
             allOrders.forEach(order => {
                 if (order.status === 'cancelado') return;
-
                 const orderDate = new Date(order.created_at);
-
                 if (orderDate >= startOfDay) todayTotal += Number(order.total);
                 if (orderDate >= startOfMonth) monthTotal += Number(order.total);
                 if (order.status === 'novo' || order.status === 'pago') pendingCount++;
             });
 
-            const stockTotal = allProducts
-                .filter(p => p.active)
-                .reduce((sum, p) => sum + (p.stock || 0), 0);
+            const stockTotal = allProducts.filter(p => p.active).reduce((sum, p) => sum + (p.stock || 0), 0);
 
             document.getElementById('metric-today').innerText = formatBRL(todayTotal);
             document.getElementById('metric-month').innerText = formatBRL(monthTotal);
@@ -1786,15 +1665,9 @@
         // ==========================================================================
         async function loadProducts() {
             const { data, error } = await supabaseClient
-                .from('products')
-                .select('*')
-                .order('created_at', { ascending: true });
+                .from('products').select('*').order('created_at', { ascending: true });
 
-            if (error) {
-                console.error('Erro ao carregar produtos:', error);
-                showToast('Erro ao carregar produtos.', 'error');
-                return;
-            }
+            if (error) { console.error('Erro ao carregar produtos:', error); showToast('Erro ao carregar produtos.', 'error'); return; }
 
             allProducts = data || [];
             renderProducts();
@@ -1826,7 +1699,6 @@
             const searchTerm = (document.getElementById('product-search')?.value || '').trim().toLowerCase();
 
             let filtered = allProducts.slice();
-
             if (currentFilter === 'active') filtered = filtered.filter(p => p.active);
             else if (currentFilter === 'inactive') filtered = filtered.filter(p => !p.active);
 
@@ -1842,8 +1714,7 @@
                     <div class="empty-state">
                         <span class="icon">📦</span>
                         <p>${allProducts.length === 0 ? 'Nenhum produto cadastrado ainda.' : 'Nenhum produto encontrado.'}</p>
-                    </div>
-                `;
+                    </div>`;
                 return;
             }
 
@@ -1939,34 +1810,16 @@
             const gallery = document.getElementById('prod-gallery').value.trim();
             const active = document.getElementById('prod-active').checked;
 
-            if (!name || name.length < 2) {
-                feedback.className = 'modal-feedback error';
-                feedback.innerText = 'Informe um nome válido.';
-                return;
-            }
-            if (!ref || ref.length < 2) {
-                feedback.className = 'modal-feedback error';
-                feedback.innerText = 'Informe uma referência (REF).';
-                return;
-            }
+            if (!name || name.length < 2) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Informe um nome válido.'; return; }
+            if (!ref || ref.length < 2) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Informe uma referência (REF).'; return; }
 
             const price = normalizePrice(priceRaw);
-            if (isNaN(price) || price < 0) {
-                feedback.className = 'modal-feedback error';
-                feedback.innerText = 'Preço inválido. Use formato 149.00 ou 149,00.';
-                return;
-            }
+            if (isNaN(price) || price < 0) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Preço inválido.'; return; }
 
             const stock = parseInt(stockRaw, 10);
-            if (isNaN(stock) || stock < 0) {
-                feedback.className = 'modal-feedback error';
-                feedback.innerText = 'Estoque inválido.';
-                return;
-            }
+            if (isNaN(stock) || stock < 0) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Estoque inválido.'; return; }
 
-            const payload = {
-                name, ref, category, price, stock, gem, description, materials, gallery, active
-            };
+            const payload = { name, ref, category, price, stock, gem, description, materials, gallery, active };
 
             const originalText = saveBtn.innerText;
             saveBtn.disabled = true;
@@ -1983,11 +1836,8 @@
                 if (result.error) {
                     console.error('Erro ao salvar:', result.error);
                     let msg = 'Erro ao salvar produto.';
-                    if (result.error.code === '23505') {
-                        msg = 'Já existe um produto com essa REF. Escolha outra.';
-                    } else if (result.error.message) {
-                        msg = result.error.message;
-                    }
+                    if (result.error.code === '23505') msg = 'Já existe um produto com essa REF.';
+                    else if (result.error.message) msg = result.error.message;
                     feedback.className = 'modal-feedback error';
                     feedback.innerText = msg;
                     return;
@@ -1996,12 +1846,12 @@
                 closeProductForm();
                 await loadProducts();
                 updateDashboardMetrics();
-                showToast(id ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!');
+                showToast(id ? 'Produto atualizado!' : 'Produto cadastrado!');
 
             } catch (e) {
                 console.error(e);
                 feedback.className = 'modal-feedback error';
-                feedback.innerText = 'Erro inesperado. Tente novamente.';
+                feedback.innerText = 'Erro inesperado.';
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerText = originalText;
@@ -2012,32 +1862,22 @@
             const p = allProducts.find(x => x.id === id);
             if (!p) return;
 
-            const { error } = await supabaseClient
-                .from('products')
-                .update({ active: !p.active })
-                .eq('id', id);
-
-            if (error) {
-                showToast('Erro ao atualizar produto.', 'error');
-                return;
-            }
+            const { error } = await supabaseClient.from('products').update({ active: !p.active }).eq('id', id);
+            if (error) { showToast('Erro ao atualizar.', 'error'); return; }
 
             await loadProducts();
             updateDashboardMetrics();
-            showToast(!p.active ? 'Produto reativado!' : 'Produto marcado como esgotado.');
+            showToast(!p.active ? 'Produto reativado!' : 'Produto esgotado.');
         }
-
-        let pendingDeleteId = null;
 
         function confirmDeleteProduct(id) {
             const p = allProducts.find(x => x.id === id);
             if (!p) return;
 
             pendingDeleteId = id;
-
             document.getElementById('confirm-title').innerText = 'Excluir produto?';
             document.getElementById('confirm-text').innerHTML =
-                `Você está prestes a excluir <strong>${escapeHTML(p.name)}</strong> (REF: ${escapeHTML(p.ref)}).<br><br>Essa ação não pode ser desfeita.`;
+                `Você está prestes a excluir <strong>${escapeHTML(p.name)}</strong>.<br><br>Essa ação não pode ser desfeita.`;
 
             const confirmBtn = document.getElementById('confirm-btn');
             confirmBtn.innerText = 'Excluir';
@@ -2054,19 +1894,12 @@
             confirmBtn.disabled = true;
             confirmBtn.innerText = 'Excluindo...';
 
-            const { error } = await supabaseClient
-                .from('products')
-                .delete()
-                .eq('id', pendingDeleteId);
+            const { error } = await supabaseClient.from('products').delete().eq('id', pendingDeleteId);
 
             confirmBtn.disabled = false;
             confirmBtn.innerText = originalText;
 
-            if (error) {
-                console.error(error);
-                showToast('Erro ao excluir produto.', 'error');
-                return;
-            }
+            if (error) { showToast('Erro ao excluir.', 'error'); return; }
 
             closeConfirmModal();
             await loadProducts();
@@ -2084,14 +1917,9 @@
         // ==========================================================================
         async function loadOrders() {
             const { data, error } = await supabaseClient
-                .from('orders')
-                .select('*')
-                .order('created_at', { ascending: false });
+                .from('orders').select('*').order('created_at', { ascending: false });
 
-            if (error) {
-                console.error('Erro ao carregar pedidos:', error);
-                return;
-            }
+            if (error) { console.error('Erro ao carregar pedidos:', error); return; }
 
             allOrders = data || [];
             renderOrders();
@@ -2107,11 +1935,8 @@
 
         function getStatusLabel(status) {
             const map = {
-                novo: 'Novo',
-                pago: 'Pago',
-                produzindo: 'Produzindo',
-                enviado: 'Enviado',
-                cancelado: 'Cancelado'
+                novo: 'Novo', pago: 'Pago', produzindo: 'Produzindo',
+                enviado: 'Enviado', cancelado: 'Cancelado'
             };
             return map[status] || status;
         }
@@ -2121,17 +1946,14 @@
             if (!container) return;
 
             let filtered = allOrders.slice();
-            if (currentOrderFilter !== 'all') {
-                filtered = filtered.filter(o => o.status === currentOrderFilter);
-            }
+            if (currentOrderFilter !== 'all') filtered = filtered.filter(o => o.status === currentOrderFilter);
 
             if (filtered.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <span class="icon">🛒</span>
                         <p>${allOrders.length === 0 ? 'Nenhum pedido ainda.' : 'Nenhum pedido com esse filtro.'}</p>
-                    </div>
-                `;
+                    </div>`;
                 return;
             }
 
@@ -2191,10 +2013,7 @@
 
                 <div class="order-detail-section">
                     <h4>Cliente</h4>
-                    <div class="order-detail-row">
-                        <span class="label">Nome:</span>
-                        <span class="value">${escapeHTML(o.customer_name)}</span>
-                    </div>
+                    <div class="order-detail-row"><span class="label">Nome:</span><span class="value">${escapeHTML(o.customer_name)}</span></div>
                     ${o.customer_doc ? `<div class="order-detail-row"><span class="label">CPF/CNPJ:</span><span class="value">${escapeHTML(o.customer_doc)}</span></div>` : ''}
                     ${o.customer_phone ? `<div class="order-detail-row"><span class="label">Telefone:</span><span class="value">${escapeHTML(o.customer_phone)}</span></div>` : ''}
                     ${o.customer_email ? `<div class="order-detail-row"><span class="label">E-mail:</span><span class="value">${escapeHTML(o.customer_email)}</span></div>` : ''}
@@ -2220,9 +2039,7 @@
 
                 <div class="order-detail-section">
                     <h4>Pedido criado em</h4>
-                    <div class="order-detail-row">
-                        <span class="value" style="text-align:left;">${formatDate(o.created_at)}</span>
-                    </div>
+                    <div class="order-detail-row"><span class="value" style="text-align:left;">${formatDate(o.created_at)}</span></div>
                 </div>
             `;
 
@@ -2234,6 +2051,40 @@
         }
 
         async function updateOrderStatus(orderId, newStatus) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            const oldStatus = order.status;
+            if (oldStatus === newStatus) return;
+
+            // Se está mudando PARA "pago" → baixa estoque
+            if (newStatus === 'pago' && oldStatus !== 'pago') {
+                for (const item of (order.items || [])) {
+                    try {
+                        await supabaseClient.rpc('decrease_product_stock', {
+                            p_ref: item.ref,
+                            p_qty: item.quantity
+                        });
+                    } catch (e) {
+                        console.warn('Erro ao baixar estoque de', item.ref, e);
+                    }
+                }
+            }
+
+            // Se está saindo DE "pago" pra outro status → devolve estoque
+            if (oldStatus === 'pago' && newStatus !== 'pago') {
+                for (const item of (order.items || [])) {
+                    try {
+                        await supabaseClient.rpc('restore_product_stock', {
+                            p_ref: item.ref,
+                            p_qty: item.quantity
+                        });
+                    } catch (e) {
+                        console.warn('Erro ao restaurar estoque de', item.ref, e);
+                    }
+                }
+            }
+
             const { error } = await supabaseClient
                 .from('orders')
                 .update({ status: newStatus, updated_at: new Date().toISOString() })
@@ -2245,6 +2096,7 @@
             }
 
             await loadOrders();
+            await loadProducts();
             showToast('Status atualizado para ' + getStatusLabel(newStatus).toLowerCase());
             closeOrderModal();
         }
