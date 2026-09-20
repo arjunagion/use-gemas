@@ -14,6 +14,7 @@
         rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
     <style>
         :root {
@@ -83,9 +84,7 @@
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
 
         #screen-loading p {
@@ -363,15 +362,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .metrics-grid {
@@ -480,9 +472,7 @@
             scrollbar-width: none;
         }
 
-        .filter-tabs::-webkit-scrollbar {
-            display: none;
-        }
+        .filter-tabs::-webkit-scrollbar { display: none; }
 
         .filter-tab {
             background: transparent;
@@ -504,9 +494,7 @@
             color: var(--gold);
         }
 
-        .filter-tab:hover:not(.active) {
-            color: var(--text);
-        }
+        .filter-tab:hover:not(.active) { color: var(--text); }
 
         .btn-new-product {
             background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
@@ -555,10 +543,7 @@
             background: rgba(212, 175, 55, 0.08);
         }
 
-        .btn-export:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .btn-export:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .products-admin-grid {
             display: grid;
@@ -577,13 +562,8 @@
             gap: 0.8rem;
         }
 
-        .product-admin-card:hover {
-            border-color: var(--border-hover);
-        }
-
-        .product-admin-card.inactive {
-            opacity: 0.55;
-        }
+        .product-admin-card:hover { border-color: var(--border-hover); }
+        .product-admin-card.inactive { opacity: 0.55; }
 
         .product-admin-header {
             display: flex;
@@ -621,20 +601,9 @@
             flex-shrink: 0;
         }
 
-        .stock-badge.ok {
-            background: rgba(81, 207, 102, 0.12);
-            color: var(--success);
-        }
-
-        .stock-badge.low {
-            background: rgba(255, 193, 7, 0.12);
-            color: var(--warning);
-        }
-
-        .stock-badge.zero {
-            background: rgba(255, 85, 85, 0.12);
-            color: var(--danger);
-        }
+        .stock-badge.ok { background: rgba(81, 207, 102, 0.12); color: var(--success); }
+        .stock-badge.low { background: rgba(255, 193, 7, 0.12); color: var(--warning); }
+        .stock-badge.zero { background: rgba(255, 85, 85, 0.12); color: var(--danger); }
 
         .product-admin-price {
             font-size: 1.3rem;
@@ -751,34 +720,13 @@
             white-space: nowrap;
         }
 
-        .order-status.novo {
-            background: rgba(77, 171, 247, 0.15);
-            color: var(--info);
-        }
+        .order-status.novo { background: rgba(77, 171, 247, 0.15); color: var(--info); }
+        .order-status.pago { background: rgba(81, 207, 102, 0.15); color: var(--success); }
+        .order-status.produzindo { background: rgba(255, 193, 7, 0.15); color: var(--warning); }
+        .order-status.enviado { background: rgba(212, 175, 55, 0.15); color: var(--gold); }
+        .order-status.cancelado { background: rgba(255, 85, 85, 0.15); color: var(--danger); }
 
-        .order-status.pago {
-            background: rgba(81, 207, 102, 0.15);
-            color: var(--success);
-        }
-
-        .order-status.produzindo {
-            background: rgba(255, 193, 7, 0.15);
-            color: var(--warning);
-        }
-
-        .order-status.enviado {
-            background: rgba(212, 175, 55, 0.15);
-            color: var(--gold);
-        }
-
-        .order-status.cancelado {
-            background: rgba(255, 85, 85, 0.15);
-            color: var(--danger);
-        }
-
-        .order-info {
-            min-width: 0;
-        }
+        .order-info { min-width: 0; }
 
         .order-customer {
             font-family: var(--font-title);
@@ -806,9 +754,7 @@
             font-size: 1.2rem;
         }
 
-        .order-detail-section {
-            margin-bottom: 1.5rem;
-        }
+        .order-detail-section { margin-bottom: 1.5rem; }
 
         .order-detail-section h4 {
             font-size: 0.75rem;
@@ -829,10 +775,7 @@
             font-size: 0.9rem;
         }
 
-        .order-detail-row .label {
-            color: var(--text-dim);
-            flex-shrink: 0;
-        }
+        .order-detail-row .label { color: var(--text-dim); flex-shrink: 0; }
 
         .order-detail-row .value {
             color: var(--text);
@@ -858,10 +801,7 @@
             background: var(--bg-hover);
         }
 
-        .order-item-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .order-item-info { flex: 1; min-width: 0; }
 
         .order-item-name {
             font-family: var(--font-title);
@@ -952,7 +892,7 @@
         }
 
         /* ==========================================================================
-           CLIENTES — Grid de cards
+           CLIENTES
            ========================================================================== */
         .clients-grid {
             display: grid;
@@ -1025,9 +965,7 @@
         /* ==========================================================================
            CONFIGURAÇÕES
            ========================================================================== */
-        .config-wrapper {
-            max-width: 720px;
-        }
+        .config-wrapper { max-width: 720px; }
 
         .config-block {
             background: var(--bg-card);
@@ -1088,6 +1026,179 @@
             transform: none;
         }
 
+        /* ==========================================================================
+           FINANCEIRO
+           ========================================================================== */
+        .finance-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+        }
+
+        .finance-presets {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem 0.9rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-family: var(--font-body);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--gold);
+            color: var(--text);
+        }
+
+        .preset-btn.active {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .finance-dates {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .finance-dates label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+
+        .finance-dates input[type="date"] {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: var(--font-body);
+            outline: none;
+            transition: border-color 0.3s;
+            color-scheme: dark;
+        }
+
+        .finance-dates input[type="date"]:focus {
+            border-color: var(--gold);
+        }
+
+        .finance-chart-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .finance-chart-header {
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .finance-chart-header h3 {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .finance-chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        .finance-chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .finance-top-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .top-product-row {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.7rem 0.9rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .top-product-row:hover {
+            border-color: var(--border-hover);
+            background: var(--bg-hover);
+        }
+
+        .top-product-rank {
+            font-family: var(--font-title);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gold);
+            min-width: 26px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .top-product-info { flex: 1; min-width: 0; }
+
+        .top-product-name {
+            font-family: var(--font-title);
+            font-size: 1rem;
+            color: var(--text);
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .top-product-ref {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .top-product-total {
+            font-size: 0.9rem;
+            color: var(--gold);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1122,13 +1233,8 @@
             transition: transform 0.3s ease;
         }
 
-        .modal-overlay.open .modal-box {
-            transform: translateY(0);
-        }
-
-        .modal-box.narrow {
-            max-width: 420px;
-        }
+        .modal-overlay.open .modal-box { transform: translateY(0); }
+        .modal-box.narrow { max-width: 420px; }
 
         .modal-close {
             position: absolute;
@@ -1178,9 +1284,7 @@
             font-weight: 600;
         }
 
-        .form-group label .required {
-            color: var(--danger);
-        }
+        .form-group label .required { color: var(--danger); }
 
         .form-group input,
         .form-group textarea,
@@ -1329,9 +1433,7 @@
             margin-bottom: 1.5rem;
         }
 
-        .confirm-text strong {
-            color: var(--text);
-        }
+        .confirm-text strong { color: var(--text); }
 
         .toast {
             position: fixed;
@@ -1353,21 +1455,10 @@
             gap: 0.7rem;
         }
 
-        .toast.show {
-            transform: translateY(0);
-        }
-
-        .toast.success {
-            border-left: 3px solid var(--success);
-        }
-
-        .toast.error {
-            border-left: 3px solid var(--danger);
-        }
-
-        .toast.info {
-            border-left: 3px solid var(--info);
-        }
+        .toast.show { transform: translateY(0); }
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--danger); }
+        .toast.info { border-left: 3px solid var(--info); }
 
         .menu-toggle {
             display: none;
@@ -1388,115 +1479,39 @@
             z-index: 99;
         }
 
-        .sidebar-overlay.active {
-            display: block;
-        }
+        .sidebar-overlay.active { display: block; }
 
         @media (max-width: 900px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .main-header {
-                padding: 1.2rem 1.2rem;
-            }
-
-            .main-header h1 {
-                font-size: 1.4rem;
-            }
-
-            .main-body {
-                padding: 1.5rem 1.2rem;
-            }
-
-            .metric-card {
-                padding: 1.2rem 1rem;
-            }
-
-            .metric-value {
-                font-size: 1.6rem;
-            }
-
-            .section-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .section-actions {
-                width: 100%;
-            }
-
-            .search-input {
-                width: 100%;
-                min-width: 0;
-            }
-
-            .btn-new-product {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .btn-export {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .form-row-2 {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-box {
-                padding: 1.5rem 1.2rem;
-            }
-
-            .modal-actions {
-                flex-direction: column-reverse;
-            }
-
-            .modal-actions button {
-                width: 100%;
-            }
-
-            .order-card {
-                grid-template-columns: 1fr;
-                gap: 0.8rem;
-            }
-
-            .order-total {
-                font-size: 1.3rem;
-            }
-
-            .clients-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .config-wrapper {
-                max-width: 100%;
-            }
-
-            .config-block {
-                padding: 1.2rem;
-            }
-
-            .config-actions {
-                justify-content: stretch;
-            }
-
-            .config-actions .btn-save {
-                width: 100%;
-            }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .main-header { padding: 1.2rem 1.2rem; }
+            .main-header h1 { font-size: 1.4rem; }
+            .main-body { padding: 1.5rem 1.2rem; }
+            .metric-card { padding: 1.2rem 1rem; }
+            .metric-value { font-size: 1.6rem; }
+            .section-header { flex-direction: column; align-items: stretch; }
+            .section-actions { width: 100%; }
+            .search-input { width: 100%; min-width: 0; }
+            .btn-new-product { width: 100%; justify-content: center; }
+            .btn-export { width: 100%; justify-content: center; }
+            .form-row-2 { grid-template-columns: 1fr; }
+            .modal-box { padding: 1.5rem 1.2rem; }
+            .modal-actions { flex-direction: column-reverse; }
+            .modal-actions button { width: 100%; }
+            .order-card { grid-template-columns: 1fr; gap: 0.8rem; }
+            .order-total { font-size: 1.3rem; }
+            .clients-grid { grid-template-columns: 1fr; }
+            .config-wrapper { max-width: 100%; }
+            .config-block { padding: 1.2rem; }
+            .config-actions { justify-content: stretch; }
+            .config-actions .btn-save { width: 100%; }
+            .finance-filters { flex-direction: column; align-items: stretch; }
+            .finance-dates { flex-direction: column; align-items: stretch; }
+            .finance-dates label { justify-content: space-between; }
+            .finance-chart-grid { grid-template-columns: 1fr; }
+            .finance-chart-container { height: 240px; }
         }
     </style>
 </head>
@@ -1544,6 +1559,9 @@
                 </a>
                 <a href="#" class="nav-item" data-section="clientes">
                     <span class="icon">👥</span> Clientes
+                </a>
+                <a href="#" class="nav-item" data-section="financeiro">
+                    <span class="icon">💰</span> Financeiro
                 </a>
                 <a href="#" class="nav-item" data-section="config">
                     <span class="icon">⚙️</span> Configurações
@@ -1593,7 +1611,7 @@
 
                     <div class="placeholder-box">
                         <h2>Bem-vindo ao painel 👋</h2>
-                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>, <strong>Clientes</strong> e <strong>Configurações</strong>.</p>
+                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>, <strong>Clientes</strong>, <strong>Financeiro</strong> e <strong>Configurações</strong>.</p>
                     </div>
                 </section>
 
@@ -1665,6 +1683,80 @@
                             <span class="icon">👥</span>
                             <p>Carregando clientes...</p>
                         </div>
+                    </div>
+                </section>
+
+                <!-- ==================== FINANCEIRO ==================== -->
+                <section class="content-section" id="section-financeiro">
+
+                    <div class="finance-filters">
+                        <div class="finance-presets">
+                            <button class="preset-btn active" data-preset="month" onclick="setFinancePreset('month')">Este mês</button>
+                            <button class="preset-btn" data-preset="30d" onclick="setFinancePreset('30d')">Últimos 30 dias</button>
+                            <button class="preset-btn" data-preset="year" onclick="setFinancePreset('year')">Este ano</button>
+                            <button class="preset-btn" data-preset="all" onclick="setFinancePreset('all')">Tudo</button>
+                        </div>
+                        <div class="finance-dates">
+                            <label>
+                                De
+                                <input type="date" id="finance-from" onchange="applyFinanceFilter()">
+                            </label>
+                            <label>
+                                Até
+                                <input type="date" id="finance-to" onchange="applyFinanceFilter()">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-label">Faturamento bruto</span>
+                            <span class="metric-value" id="fin-gross">R$ 0,00</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Faturamento líquido</span>
+                            <span class="metric-value" id="fin-net">R$ 0,00</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Nº de pedidos</span>
+                            <span class="metric-value" id="fin-count">0</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Ticket médio</span>
+                            <span class="metric-value" id="fin-avg">R$ 0,00</span>
+                        </div>
+                    </div>
+
+                    <div class="finance-chart-block">
+                        <div class="finance-chart-header">
+                            <h3>Vendas nos últimos 12 meses</h3>
+                        </div>
+                        <div class="finance-chart-container">
+                            <canvas id="finance-sales-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="finance-chart-grid">
+                        <div class="finance-chart-block">
+                            <div class="finance-chart-header">
+                                <h3>Vendas por categoria</h3>
+                            </div>
+                            <div class="finance-chart-container">
+                                <canvas id="finance-category-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="finance-chart-block">
+                            <div class="finance-chart-header">
+                                <h3>Top produtos do período</h3>
+                            </div>
+                            <div id="finance-top-products" class="finance-top-list"></div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                        <button class="btn-export" onclick="exportFinanceCSV()">
+                            ⬇️ Exportar período em CSV
+                        </button>
                     </div>
                 </section>
 
@@ -1858,6 +1950,9 @@
         let allClients = [];
         let currentSettings = null;
 
+        let financeCharts = { sales: null, category: null };
+        let financeState = { from: null, to: null, preset: 'month' };
+
         // ==========================================================================
         // Utilidades
         // ==========================================================================
@@ -1892,6 +1987,13 @@
             if (!isoString) return '—';
             const d = new Date(isoString);
             return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        }
+
+        function toISODate(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
         }
 
         function escapeHTML(str) {
@@ -1960,6 +2062,7 @@
             produtos: 'Produtos',
             pedidos: 'Pedidos',
             clientes: 'Clientes',
+            financeiro: 'Financeiro',
             config: 'Configurações'
         };
 
@@ -1974,6 +2077,13 @@
             if (sectionName === 'dashboard') updateDashboardMetrics();
             if (sectionName === 'clientes') renderClients();
             if (sectionName === 'config') loadSettings();
+            if (sectionName === 'financeiro') {
+                if (!financeState.from) {
+                    setFinancePreset('month');
+                } else {
+                    renderFinance();
+                }
+            }
             if (window.innerWidth <= 900) closeSidebar();
         }
 
@@ -2290,7 +2400,7 @@
         }
 
         // ==========================================================================
-        // EXPORTAR PEDIDOS EM CSV
+        // CSV — helpers
         // ==========================================================================
         function csvEscape(value) {
             const str = String(value == null ? '' : value);
@@ -2323,50 +2433,21 @@
             btn.innerText = 'Gerando...';
 
             try {
-                const headers = [
-                    'Data',
-                    'Status',
-                    'Cliente',
-                    'CPF/CNPJ',
-                    'Telefone',
-                    'E-mail',
-                    'Cidade/UF',
-                    'Itens',
-                    'Subtotal (R$)',
-                    'Frete (R$)',
-                    'Total (R$)'
-                ];
+                const headers = ['Data', 'Status', 'Cliente', 'CPF/CNPJ', 'Telefone', 'E-mail', 'Cidade/UF', 'Itens', 'Subtotal (R$)', 'Frete (R$)', 'Total (R$)'];
 
                 const rows = filtered.map(o => {
                     const date = new Date(o.created_at);
-                    const dateStr = date.toLocaleDateString('pt-BR') + ' ' +
-                        date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-                    const itemsStr = (o.items || [])
-                        .map(i => `${i.quantity}x ${i.name} (${i.ref})`)
-                        .join('; ');
-
-                    const cidadeUF = o.city
-                        ? `${o.city}/${o.state || ''}`
-                        : '';
-
+                    const dateStr = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    const itemsStr = (o.items || []).map(i => `${i.quantity}x ${i.name} (${i.ref})`).join('; ');
+                    const cidadeUF = o.city ? `${o.city}/${o.state || ''}` : '';
                     return [
-                        dateStr,
-                        getStatusLabel(o.status),
-                        o.customer_name || '',
-                        o.customer_doc || '',
-                        o.customer_phone || '',
-                        o.customer_email || '',
-                        cidadeUF,
-                        itemsStr,
-                        csvMoney(o.subtotal),
-                        csvMoney(o.shipping_cost),
-                        csvMoney(o.total)
+                        dateStr, getStatusLabel(o.status), o.customer_name || '', o.customer_doc || '',
+                        o.customer_phone || '', o.customer_email || '', cidadeUF, itemsStr,
+                        csvMoney(o.subtotal), csvMoney(o.shipping_cost), csvMoney(o.total)
                     ].map(csvEscape).join(';');
                 });
 
                 const csvContent = headers.join(';') + '\n' + rows.join('\n');
-
                 const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
 
                 const now = new Date();
@@ -2714,6 +2795,330 @@
 
         function closeClientModal() {
             document.getElementById('client-modal').classList.remove('open');
+        }
+
+        // ==========================================================================
+        // FINANCEIRO
+        // ==========================================================================
+        function setFinancePreset(preset) {
+            financeState.preset = preset;
+            document.querySelectorAll('.preset-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.preset === preset);
+            });
+
+            const now = new Date();
+            let from, to;
+
+            if (preset === 'month') {
+                from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+                to = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+            } else if (preset === '30d') {
+                to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                from = new Date(to);
+                from.setDate(from.getDate() - 29);
+                from.setHours(0, 0, 0, 0);
+            } else if (preset === 'year') {
+                from = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
+                to = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+            } else {
+                from = new Date(2020, 0, 1, 0, 0, 0);
+                to = new Date(now.getFullYear() + 1, 11, 31, 23, 59, 59);
+            }
+
+            document.getElementById('finance-from').value = toISODate(from);
+            document.getElementById('finance-to').value = toISODate(to);
+
+            financeState.from = from;
+            financeState.to = to;
+
+            renderFinance();
+        }
+
+        function applyFinanceFilter() {
+            const fromInput = document.getElementById('finance-from').value;
+            const toInput = document.getElementById('finance-to').value;
+
+            if (!fromInput || !toInput) return;
+
+            financeState.from = new Date(fromInput + 'T00:00:00');
+            financeState.to = new Date(toInput + 'T23:59:59');
+            financeState.preset = 'custom';
+
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+
+            renderFinance();
+        }
+
+        function filterOrdersByPeriod(orders, from, to) {
+            return orders.filter(o => {
+                const d = new Date(o.created_at);
+                return d >= from && d <= to;
+            });
+        }
+
+        function getCategoryByRef(ref) {
+            const p = allProducts.find(x => x.ref === ref);
+            return p ? p.category : null;
+        }
+
+        function renderFinance() {
+            if (!financeState.from || !financeState.to) return;
+
+            const filtered = filterOrdersByPeriod(allOrders, financeState.from, financeState.to);
+            const valid = filtered.filter(o => o.status !== 'cancelado');
+            const confirmed = valid.filter(o => ['pago', 'produzindo', 'enviado'].includes(o.status));
+
+            const gross = valid.reduce((s, o) => s + Number(o.total || 0), 0);
+            const net = confirmed.reduce((s, o) => s + Number(o.total || 0), 0);
+            const count = valid.length;
+            const avg = count > 0 ? gross / count : 0;
+
+            document.getElementById('fin-gross').innerText = formatBRL(gross);
+            document.getElementById('fin-net').innerText = formatBRL(net);
+            document.getElementById('fin-count').innerText = count;
+            document.getElementById('fin-avg').innerText = formatBRL(avg);
+
+            renderSalesChart();
+            renderCategoryChart(valid);
+            renderTopProducts(valid);
+        }
+
+        function renderSalesChart() {
+            const now = new Date();
+            const months = [];
+            const labels = [];
+
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.push({
+                    year: d.getFullYear(),
+                    month: d.getMonth(),
+                    total: 0
+                });
+                labels.push(d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }).replace('.', ''));
+            }
+
+            allOrders.forEach(o => {
+                if (o.status === 'cancelado') return;
+                const d = new Date(o.created_at);
+                const found = months.find(m => m.year === d.getFullYear() && m.month === d.getMonth());
+                if (found) found.total += Number(o.total || 0);
+            });
+
+            const canvas = document.getElementById('finance-sales-chart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            if (financeCharts.sales) financeCharts.sales.destroy();
+
+            financeCharts.sales = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Vendas (R$)',
+                        data: months.map(m => m.total),
+                        backgroundColor: 'rgba(212, 175, 55, 0.55)',
+                        borderColor: '#d4af37',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => formatBRL(ctx.parsed.y)
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#888',
+                                callback: (v) => 'R$ ' + v
+                            },
+                            grid: { color: 'rgba(255,255,255,0.05)' }
+                        },
+                        x: {
+                            ticks: { color: '#888' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCategoryChart(orders) {
+            const catTotals = { microcroche: 0, pedras: 0, colab: 0, desconhecida: 0 };
+
+            orders.forEach(o => {
+                (o.items || []).forEach(item => {
+                    const cat = getCategoryByRef(item.ref) || 'desconhecida';
+                    catTotals[cat] = (catTotals[cat] || 0) + (Number(item.price) * Number(item.quantity));
+                });
+            });
+
+            const catMap = {
+                microcroche: { label: 'Microcrochê', color: '#d4af37' },
+                pedras: { label: 'Pedras Naturais', color: '#8b6f47' },
+                colab: { label: 'Colabs', color: '#6b5b95' },
+                desconhecida: { label: 'Sem categoria', color: '#555' }
+            };
+
+            const labels = [];
+            const data = [];
+            const colors = [];
+
+            Object.entries(catTotals).forEach(([key, val]) => {
+                if (val > 0) {
+                    labels.push(catMap[key].label);
+                    data.push(val);
+                    colors.push(catMap[key].color);
+                }
+            });
+
+            const canvas = document.getElementById('finance-category-chart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            if (financeCharts.category) financeCharts.category.destroy();
+
+            if (data.length === 0) {
+                financeCharts.category = null;
+                return;
+            }
+
+            financeCharts.category = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: colors,
+                        borderColor: '#141418',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '62%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#c5c5c5',
+                                padding: 12,
+                                font: { family: "'Montserrat', sans-serif", size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ctx.label + ': ' + formatBRL(ctx.parsed)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTopProducts(orders) {
+            const container = document.getElementById('finance-top-products');
+            if (!container) return;
+
+            const map = new Map();
+
+            orders.forEach(o => {
+                (o.items || []).forEach(item => {
+                    const key = item.ref;
+                    if (!map.has(key)) {
+                        map.set(key, {
+                            name: item.name,
+                            ref: item.ref,
+                            qty: 0,
+                            total: 0
+                        });
+                    }
+                    const p = map.get(key);
+                    p.qty += Number(item.quantity);
+                    p.total += Number(item.price) * Number(item.quantity);
+                });
+            });
+
+            const top = Array.from(map.values()).sort((a, b) => b.total - a.total).slice(0, 5);
+
+            if (top.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem;text-align:center;padding:2rem;">Sem vendas no período selecionado.</p>';
+                return;
+            }
+
+            container.innerHTML = top.map((p, i) => `
+                <div class="top-product-row">
+                    <div class="top-product-rank">${i + 1}</div>
+                    <div class="top-product-info">
+                        <div class="top-product-name">${escapeHTML(p.name)}</div>
+                        <div class="top-product-ref">REF: ${escapeHTML(p.ref)} · ${p.qty} un.</div>
+                    </div>
+                    <div class="top-product-total">${formatBRL(p.total)}</div>
+                </div>
+            `).join('');
+        }
+
+        function exportFinanceCSV() {
+            if (!financeState.from || !financeState.to) {
+                showToast('Selecione um período.', 'error');
+                return;
+            }
+
+            const filtered = filterOrdersByPeriod(allOrders, financeState.from, financeState.to);
+            const valid = filtered.filter(o => o.status !== 'cancelado');
+
+            if (valid.length === 0) {
+                showToast('Nenhum pedido no período selecionado.', 'error');
+                return;
+            }
+
+            const headers = ['Data', 'Status', 'Cliente', 'CPF/CNPJ', 'Telefone', 'E-mail', 'Cidade/UF', 'Itens', 'Subtotal (R$)', 'Frete (R$)', 'Total (R$)'];
+
+            const rows = valid.map(o => {
+                const date = new Date(o.created_at);
+                const dateStr = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                const itemsStr = (o.items || []).map(i => `${i.quantity}x ${i.name} (${i.ref})`).join('; ');
+                const cidadeUF = o.city ? `${o.city}/${o.state || ''}` : '';
+                return [
+                    dateStr, getStatusLabel(o.status), o.customer_name || '', o.customer_doc || '',
+                    o.customer_phone || '', o.customer_email || '', cidadeUF, itemsStr,
+                    csvMoney(o.subtotal), csvMoney(o.shipping_cost), csvMoney(o.total)
+                ].map(csvEscape).join(';');
+            });
+
+            const totalGross = valid.reduce((s, o) => s + Number(o.total || 0), 0);
+            rows.push('');
+            rows.push(['', '', '', '', '', '', '', '', '', 'TOTAL GERAL:', csvMoney(totalGross)].join(';'));
+
+            const csvContent = headers.join(';') + '\n' + rows.join('\n');
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            const fromStr = toISODate(financeState.from);
+            const toStr = toISODate(financeState.to);
+            const filename = `financeiro-use-gemas-${fromStr}_a_${toStr}.csv`;
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast(`${valid.length} pedido(s) exportado(s) — período ${fromStr} a ${toStr}.`);
         }
 
         // ==========================================================================
