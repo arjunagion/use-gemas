@@ -84,7 +84,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         #screen-loading p {
@@ -362,8 +364,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .metrics-grid {
@@ -472,7 +481,9 @@
             scrollbar-width: none;
         }
 
-        .filter-tabs::-webkit-scrollbar { display: none; }
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
 
         .filter-tab {
             background: transparent;
@@ -494,7 +505,9 @@
             color: var(--gold);
         }
 
-        .filter-tab:hover:not(.active) { color: var(--text); }
+        .filter-tab:hover:not(.active) {
+            color: var(--text);
+        }
 
         .btn-new-product {
             background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
@@ -543,7 +556,10 @@
             background: rgba(212, 175, 55, 0.08);
         }
 
-        .btn-export:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-export:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
         .products-admin-grid {
             display: grid;
@@ -562,8 +578,13 @@
             gap: 0.8rem;
         }
 
-        .product-admin-card:hover { border-color: var(--border-hover); }
-        .product-admin-card.inactive { opacity: 0.55; }
+        .product-admin-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .product-admin-card.inactive {
+            opacity: 0.55;
+        }
 
         .product-admin-header {
             display: flex;
@@ -601,9 +622,20 @@
             flex-shrink: 0;
         }
 
-        .stock-badge.ok { background: rgba(81, 207, 102, 0.12); color: var(--success); }
-        .stock-badge.low { background: rgba(255, 193, 7, 0.12); color: var(--warning); }
-        .stock-badge.zero { background: rgba(255, 85, 85, 0.12); color: var(--danger); }
+        .stock-badge.ok {
+            background: rgba(81, 207, 102, 0.12);
+            color: var(--success);
+        }
+
+        .stock-badge.low {
+            background: rgba(255, 193, 7, 0.12);
+            color: var(--warning);
+        }
+
+        .stock-badge.zero {
+            background: rgba(255, 85, 85, 0.12);
+            color: var(--danger);
+        }
 
         .product-admin-price {
             font-size: 1.3rem;
@@ -720,13 +752,34 @@
             white-space: nowrap;
         }
 
-        .order-status.novo { background: rgba(77, 171, 247, 0.15); color: var(--info); }
-        .order-status.pago { background: rgba(81, 207, 102, 0.15); color: var(--success); }
-        .order-status.produzindo { background: rgba(255, 193, 7, 0.15); color: var(--warning); }
-        .order-status.enviado { background: rgba(212, 175, 55, 0.15); color: var(--gold); }
-        .order-status.cancelado { background: rgba(255, 85, 85, 0.15); color: var(--danger); }
+        .order-status.novo {
+            background: rgba(77, 171, 247, 0.15);
+            color: var(--info);
+        }
 
-        .order-info { min-width: 0; }
+        .order-status.pago {
+            background: rgba(81, 207, 102, 0.15);
+            color: var(--success);
+        }
+
+        .order-status.produzindo {
+            background: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+
+        .order-status.enviado {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+        }
+
+        .order-status.cancelado {
+            background: rgba(255, 85, 85, 0.15);
+            color: var(--danger);
+        }
+
+        .order-info {
+            min-width: 0;
+        }
 
         .order-customer {
             font-family: var(--font-title);
@@ -754,7 +807,9 @@
             font-size: 1.2rem;
         }
 
-        .order-detail-section { margin-bottom: 1.5rem; }
+        .order-detail-section {
+            margin-bottom: 1.5rem;
+        }
 
         .order-detail-section h4 {
             font-size: 0.75rem;
@@ -775,7 +830,10 @@
             font-size: 0.9rem;
         }
 
-        .order-detail-row .label { color: var(--text-dim); flex-shrink: 0; }
+        .order-detail-row .label {
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
 
         .order-detail-row .value {
             color: var(--text);
@@ -801,7 +859,10 @@
             background: var(--bg-hover);
         }
 
-        .order-item-info { flex: 1; min-width: 0; }
+        .order-item-info {
+            flex: 1;
+            min-width: 0;
+        }
 
         .order-item-name {
             font-family: var(--font-title);
@@ -965,7 +1026,9 @@
         /* ==========================================================================
            CONFIGURAÇÕES
            ========================================================================== */
-        .config-wrapper { max-width: 720px; }
+        .config-wrapper {
+            max-width: 720px;
+        }
 
         .config-block {
             background: var(--bg-card);
@@ -1173,7 +1236,10 @@
             line-height: 1;
         }
 
-        .top-product-info { flex: 1; min-width: 0; }
+        .top-product-info {
+            flex: 1;
+            min-width: 0;
+        }
 
         .top-product-name {
             font-family: var(--font-title);
@@ -1233,8 +1299,13 @@
             transition: transform 0.3s ease;
         }
 
-        .modal-overlay.open .modal-box { transform: translateY(0); }
-        .modal-box.narrow { max-width: 420px; }
+        .modal-overlay.open .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-box.narrow {
+            max-width: 420px;
+        }
 
         .modal-close {
             position: absolute;
@@ -1284,7 +1355,9 @@
             font-weight: 600;
         }
 
-        .form-group label .required { color: var(--danger); }
+        .form-group label .required {
+            color: var(--danger);
+        }
 
         .form-group input,
         .form-group textarea,
@@ -1433,7 +1506,9 @@
             margin-bottom: 1.5rem;
         }
 
-        .confirm-text strong { color: var(--text); }
+        .confirm-text strong {
+            color: var(--text);
+        }
 
         .toast {
             position: fixed;
@@ -1455,10 +1530,21 @@
             gap: 0.7rem;
         }
 
-        .toast.show { transform: translateY(0); }
-        .toast.success { border-left: 3px solid var(--success); }
-        .toast.error { border-left: 3px solid var(--danger); }
-        .toast.info { border-left: 3px solid var(--info); }
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            border-left: 3px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 3px solid var(--danger);
+        }
+
+        .toast.info {
+            border-left: 3px solid var(--info);
+        }
 
         .menu-toggle {
             display: none;
@@ -1479,39 +1565,137 @@
             z-index: 99;
         }
 
-        .sidebar-overlay.active { display: block; }
+        .sidebar-overlay.active {
+            display: block;
+        }
 
         @media (max-width: 900px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .menu-toggle { display: block; }
-            .main-header { padding: 1.2rem 1.2rem; }
-            .main-header h1 { font-size: 1.4rem; }
-            .main-body { padding: 1.5rem 1.2rem; }
-            .metric-card { padding: 1.2rem 1rem; }
-            .metric-value { font-size: 1.6rem; }
-            .section-header { flex-direction: column; align-items: stretch; }
-            .section-actions { width: 100%; }
-            .search-input { width: 100%; min-width: 0; }
-            .btn-new-product { width: 100%; justify-content: center; }
-            .btn-export { width: 100%; justify-content: center; }
-            .form-row-2 { grid-template-columns: 1fr; }
-            .modal-box { padding: 1.5rem 1.2rem; }
-            .modal-actions { flex-direction: column-reverse; }
-            .modal-actions button { width: 100%; }
-            .order-card { grid-template-columns: 1fr; gap: 0.8rem; }
-            .order-total { font-size: 1.3rem; }
-            .clients-grid { grid-template-columns: 1fr; }
-            .config-wrapper { max-width: 100%; }
-            .config-block { padding: 1.2rem; }
-            .config-actions { justify-content: stretch; }
-            .config-actions .btn-save { width: 100%; }
-            .finance-filters { flex-direction: column; align-items: stretch; }
-            .finance-dates { flex-direction: column; align-items: stretch; }
-            .finance-dates label { justify-content: space-between; }
-            .finance-chart-grid { grid-template-columns: 1fr; }
-            .finance-chart-container { height: 240px; }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .main-header {
+                padding: 1.2rem 1.2rem;
+            }
+
+            .main-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .main-body {
+                padding: 1.5rem 1.2rem;
+            }
+
+            .metric-card {
+                padding: 1.2rem 1rem;
+            }
+
+            .metric-value {
+                font-size: 1.6rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .section-actions {
+                width: 100%;
+            }
+
+            .search-input {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .btn-new-product {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .btn-export {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-row-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-box {
+                padding: 1.5rem 1.2rem;
+            }
+
+            .modal-actions {
+                flex-direction: column-reverse;
+            }
+
+            .modal-actions button {
+                width: 100%;
+            }
+
+            .order-card {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .order-total {
+                font-size: 1.3rem;
+            }
+
+            .clients-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .config-wrapper {
+                max-width: 100%;
+            }
+
+            .config-block {
+                padding: 1.2rem;
+            }
+
+            .config-actions {
+                justify-content: stretch;
+            }
+
+            .config-actions .btn-save {
+                width: 100%;
+            }
+
+            .finance-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .finance-dates {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .finance-dates label {
+                justify-content: space-between;
+            }
+
+            .finance-chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .finance-chart-container {
+                height: 240px;
+            }
         }
     </style>
 </head>
@@ -1611,7 +1795,9 @@
 
                     <div class="placeholder-box">
                         <h2>Bem-vindo ao painel 👋</h2>
-                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>, <strong>Clientes</strong>, <strong>Financeiro</strong> e <strong>Configurações</strong>.</p>
+                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>,
+                            <strong>Clientes</strong>, <strong>Financeiro</strong> e <strong>Configurações</strong>.
+                        </p>
                     </div>
                 </section>
 
@@ -1691,9 +1877,12 @@
 
                     <div class="finance-filters">
                         <div class="finance-presets">
-                            <button class="preset-btn active" data-preset="month" onclick="setFinancePreset('month')">Este mês</button>
-                            <button class="preset-btn" data-preset="30d" onclick="setFinancePreset('30d')">Últimos 30 dias</button>
-                            <button class="preset-btn" data-preset="year" onclick="setFinancePreset('year')">Este ano</button>
+                            <button class="preset-btn active" data-preset="month"
+                                onclick="setFinancePreset('month')">Este mês</button>
+                            <button class="preset-btn" data-preset="30d" onclick="setFinancePreset('30d')">Últimos 30
+                                dias</button>
+                            <button class="preset-btn" data-preset="year" onclick="setFinancePreset('year')">Este
+                                ano</button>
                             <button class="preset-btn" data-preset="all" onclick="setFinancePreset('all')">Tudo</button>
                         </div>
                         <div class="finance-dates">
@@ -1794,7 +1983,9 @@
                                 </div>
                             </div>
 
-                            <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o valor.</small>
+                            <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa
+                                regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o
+                                valor.</small>
                         </div>
 
                         <div class="config-block">
@@ -1802,13 +1993,16 @@
 
                             <div class="form-group">
                                 <label for="cfg-banner-message">Mensagem (deixe vazio pra esconder)</label>
-                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300 ✨" maxlength="120">
-                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra promoções e avisos rápidos.</small>
+                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300 ✨"
+                                    maxlength="120">
+                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra
+                                    promoções e avisos rápidos.</small>
                             </div>
                         </div>
 
                         <div class="config-actions">
-                            <button class="btn-save" id="config-save-btn" onclick="saveSettings()">Salvar Configurações</button>
+                            <button class="btn-save" id="config-save-btn" onclick="saveSettings()">Salvar
+                                Configurações</button>
                         </div>
                     </div>
                 </section>
@@ -1973,20 +2167,31 @@
             toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
+        function parseDateSafe(iso) {
+            if (!iso) return null;
+            let s = String(iso);
+            // Se não tem indicação de timezone, assume UTC
+            if (!/[Zz]|[+-]\d{2}:?\d{2}$/.test(s)) {
+                s = s + 'Z';
+            }
+            return new Date(s);
+        }
+
         function formatBRL(value) {
             return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
         function formatDate(isoString) {
-            if (!isoString) return '';
-            const d = new Date(isoString);
-            return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const d = parseDateSafe(isoString);
+            if (!d || isNaN(d.getTime())) return '';
+            return d.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) + ' às ' +
+                d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
         }
 
         function formatDateShort(isoString) {
-            if (!isoString) return '—';
-            const d = new Date(isoString);
-            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+            const d = parseDateSafe(isoString);
+            if (!d || isNaN(d.getTime())) return '—';
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', timeZone: 'America/Sao_Paulo' });
         }
 
         function toISODate(date) {
@@ -2436,7 +2641,7 @@
                 const headers = ['Data', 'Status', 'Cliente', 'CPF/CNPJ', 'Telefone', 'E-mail', 'Cidade/UF', 'Itens', 'Subtotal (R$)', 'Frete (R$)', 'Total (R$)'];
 
                 const rows = filtered.map(o => {
-                    const date = new Date(o.created_at);
+                    const date = parseDateSafe(o.created_at);
                     const dateStr = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                     const itemsStr = (o.items || []).map(i => `${i.quantity}x ${i.name} (${i.ref})`).join('; ');
                     const cidadeUF = o.city ? `${o.city}/${o.state || ''}` : '';
@@ -3087,7 +3292,7 @@
             const headers = ['Data', 'Status', 'Cliente', 'CPF/CNPJ', 'Telefone', 'E-mail', 'Cidade/UF', 'Itens', 'Subtotal (R$)', 'Frete (R$)', 'Total (R$)'];
 
             const rows = valid.map(o => {
-                const date = new Date(o.created_at);
+                const date = parseDateSafe(o.created_at);
                 const dateStr = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 const itemsStr = (o.items || []).map(i => `${i.quantity}x ${i.name} (${i.ref})`).join('; ');
                 const cidadeUF = o.city ? `${o.city}/${o.state || ''}` : '';
