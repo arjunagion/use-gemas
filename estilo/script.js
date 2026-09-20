@@ -123,7 +123,7 @@ function renderBanner() {
         top: '0',
         left: '0',
         right: '0',
-        zIndex: '1002',
+        zIndex: '999',
         background: 'linear-gradient(135deg, #d4af37 0%, #aa820a 100%)',
         color: '#0e0e10',
         textAlign: 'center',
