@@ -2072,7 +2072,7 @@
             }
 
             // Se está saindo DE "pago" pra outro status → devolve estoque
-            if (oldStatus === 'pago' && newStatus !== 'pago') {
+            if (oldStatus === 'pago' && (newStatus === 'cancelado' || newStatus === 'novo')) {
                 for (const item of (order.items || [])) {
                     try {
                         await supabaseClient.rpc('restore_product_stock', {
