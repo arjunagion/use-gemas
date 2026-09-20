@@ -158,12 +158,12 @@
             font-family: var(--font-body);
         }
 
-        .btn-ghost:hover {
-            border-color: rgba(255, 255, 255, 0.4);
-            color: var(--text);
+        .btn-gh           ost:hover {
+            border-color: rgba font(255, 255, 255-family, 0.4);
+            color:: var(--text);
         }
 
-        #screen-admin {
+ var        #screen-admin {
             display: none;
         }
 
@@ -187,7 +187,7 @@
 
         .sidebar-brand {
             padding: 1.8rem 1.5rem;
-            font-family: var(--font-title);
+(--font-title);
             font-size: 1.5rem;
             font-weight: 700;
             letter-spacing: 2px;
@@ -2186,6 +2186,38 @@
             showToast('Status atualizado para ' + getStatusLabel(newStatus).toLowerCase());
             closeOrderModal();
         }
+
+        // ==========================================================================
+        // INICIALIZAÇÃO
+        // ==========================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Menu lateral — clicar em cada item troca de seção
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchSection(item.dataset.section);
+                });
+            });
+
+            // Fechar modais ao clicar no overlay (fora do conteúdo)
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.classList.remove('open');
+                    }
+                });
+            });
+
+            // Fechar modais com a tecla ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+                }
+            });
+
+            // Verifica acesso e carrega tudo
+            checkAdminAccess();
+        });
     </script>
 
 </body>
