@@ -526,9 +526,33 @@
             gap: 0.4rem;
         }
 
-        .btn-new-product:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        .btn-export {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--gold);
+            padding: 0.65rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+
+        .btn-export:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .btn-export:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .products-admin-grid {
@@ -1559,7 +1583,9 @@
 
                     <div class="placeholder-box">
                         <h2>Bem-vindo ao painel 👋</h2>
-                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>, <strong>Clientes</strong> e <strong>Configurações</strong>.</p>
+                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>,
+                            <strong>Clientes</strong> e <strong>Configurações</strong>.
+                        </p>
                     </div>
                 </section>
 
@@ -1604,6 +1630,9 @@
                                     onclick="setOrderFilter('cancelado', this)">Cancelados</button>
                             </div>
                         </div>
+                        <button class="btn-export" id="export-orders-btn" onclick="exportOrdersToCSV()">
+                            ⬇️ Exportar CSV
+                        </button>
                     </div>
 
                     <div id="orders-container">
@@ -1665,7 +1694,9 @@
                                 </div>
                             </div>
 
-                            <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o valor.</small>
+                            <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa
+                                regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o
+                                valor.</small>
                         </div>
 
                         <div class="config-block">
@@ -1673,13 +1704,16 @@
 
                             <div class="form-group">
                                 <label for="cfg-banner-message">Mensagem (deixe vazio pra esconder)</label>
-                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300 ✨" maxlength="120">
-                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra promoções e avisos rápidos.</small>
+                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300 ✨"
+                                    maxlength="120">
+                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra
+                                    promoções e avisos rápidos.</small>
                             </div>
                         </div>
 
                         <div class="config-actions">
-                            <button class="btn-save" id="config-save-btn" onclick="saveSettings()">Salvar Configurações</button>
+                            <button class="btn-save" id="config-save-btn" onclick="saveSettings()">Salvar
+                                Configurações</button>
                         </div>
                     </div>
                 </section>
