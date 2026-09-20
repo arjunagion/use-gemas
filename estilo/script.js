@@ -950,19 +950,23 @@ function removeFromCart(index) {
 // Frete
 // ==========================================================================
 // Calcula o frete efetivo após aplicar a regra de frete grátis.
+// IMPORTANTE: o frete grátis depende APENAS do subtotal bater o mínimo —
+// não precisa ter calculado o CEP antes.
 function getEffectiveShipping(subtotal) {
-    if (!shippingDetails) return 0;
-
+    // Se bateu o mínimo pra frete grátis, retorna 0 independente do CEP
     if (siteSettings.free_shipping_min > 0 && subtotal >= siteSettings.free_shipping_min) {
         return 0;
     }
+
+    // Sem CEP calculado: frete indefinido (retorna 0, mas updateCartUI trata como "A calcular")
+    if (!shippingDetails) return 0;
+
     return shippingCost;
 }
 
 function isFreeShippingApplied(subtotal) {
     return siteSettings.free_shipping_min > 0
-        && subtotal >= siteSettings.free_shipping_min
-        && !!shippingDetails;
+        && subtotal >= siteSettings.free_shipping_min;
 }
 
 async function calculateShipping() {
@@ -1067,8 +1071,8 @@ function updateCartUI() {
         });
     }
 
-    const effectiveShipping = getEffectiveShipping(subtotalPrice);
     const freeApplied = isFreeShippingApplied(subtotalPrice);
+    const effectiveShipping = getEffectiveShipping(subtotalPrice);
     const finalTotal = subtotalPrice + effectiveShipping;
 
     if (cartCount) cartCount.innerText = totalItems;
@@ -1076,12 +1080,15 @@ function updateCartUI() {
 
     if (cartShippingElement) {
         if (freeApplied) {
+            // Bateu o mínimo → frete grátis, mesmo sem CEP calculado
             cartShippingElement.innerText = 'GRÁTIS ✨';
             cartShippingElement.style.color = '#51cf66';
         } else if (shippingDetails) {
+            // Não bateu o mínimo, mas tem CEP → mostra o valor
             cartShippingElement.innerText = formatCurrency(effectiveShipping);
             cartShippingElement.style.color = '';
         } else {
+            // Não bateu o mínimo e não tem CEP → pede pra calcular
             cartShippingElement.innerText = 'A calcular';
             cartShippingElement.style.color = '';
         }
@@ -1136,17 +1143,19 @@ function sendToWhatsApp(itemsParam = null) {
     message += "━━━━━━━━━━━━━━━━━━\n";
     message += EMOJI_MONEY + ` *Subtotal:* ${formatCurrency(subtotalPrice)}\n`;
 
-    const effectiveShipping = getEffectiveShipping(subtotalPrice);
     const freeApplied = isFreeShippingApplied(subtotalPrice);
+    const effectiveShipping = getEffectiveShipping(subtotalPrice);
 
-    if (shippingDetails) {
-        if (freeApplied) {
-            message += EMOJI_TRUCK + ` *Frete:* GRÁTIS ✨\n`;
-        } else {
-            message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(effectiveShipping)}\n`;
-        }
+    if (freeApplied) {
+        // Bateu o mínimo → frete grátis, mesmo sem CEP
+        message += EMOJI_TRUCK + ` *Frete:* GRÁTIS ✨\n`;
+        message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice)}\n`;
+    } else if (shippingDetails) {
+        // Não bateu o mínimo, mas tem CEP
+        message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(effectiveShipping)}\n`;
         message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice + effectiveShipping)}\n`;
     } else {
+        // Não bateu o mínimo e não tem CEP
         message += EMOJI_TRUCK + ` *Frete:* Pendente (calcular por CEP)\n`;
         message += EMOJI_MONEY + ` *Total parcial:* ${formatCurrency(subtotalPrice)}\n`;
     }
@@ -1817,6 +1826,8 @@ async function saveOrderToDb() {
         };
     });
 
+    // effectiveShipping = 0 quando bate o mínimo (frete grátis por valor),
+    // independente de ter CEP calculado ou não.
     const effectiveShipping = getEffectiveShipping(subtotalPrice);
 
     const orderPayload = {
