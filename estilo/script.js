@@ -64,29 +64,38 @@ function escapeHTML(str) {
 // PRODUTOS — Carregar do Supabase
 // ==========================================================================
 async function loadProductsFromDb() {
+    console.log('🔍 Iniciando loadProductsFromDb...');
     const grid = document.getElementById('products-grid');
-    if (!grid) return;
+    if (!grid) {
+        console.warn('❌ Grid #products-grid não encontrado');
+        return;
+    }
 
     try {
         const { data, error } = await supabaseClient
             .from('products')
             .select('*')
-            .eq('active', true)
-            .gt('stock', 0)
             .order('created_at', { ascending: true });
 
+        console.log('📦 Produtos retornados do banco:', data);
+        console.log('❌ Erro:', error);
+
         if (error) {
-            console.error('Erro ao carregar produtos:', error);
             grid.innerHTML = '<div class="empty-state"><p>Erro ao carregar produtos.</p></div>';
             return;
         }
 
-        // Filtro defensivo no client (caso o RLS deixe passar algo)
-        productsFromDb = (data || []).filter(p => p.active && p.stock > 0);
-        renderProductsGrid();
+        productsFromDb = (data || []).filter(p => {
+            const isActive = p.active === true;
+            const hasStock = Number(p.stock) > 0;
+            console.log(`  → ${p.ref}: active=${p.active} (${typeof p.active}) stock=${p.stock} | passe=${isActive && hasStock}`);
+            return isActive && hasStock;
+        });
 
+        console.log('✅ Produtos filtrados:', productsFromDb.length);
+        renderProductsGrid();
     } catch (e) {
-        console.error('Erro inesperado:', e);
+        console.error('💥 Erro:', e);
         grid.innerHTML = '<div class="empty-state"><p>Erro de conexão.</p></div>';
     }
 }
