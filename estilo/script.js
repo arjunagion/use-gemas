@@ -71,6 +71,25 @@ function escapeHTML(str) {
         .replace(/'/g, '&#39;');
 }
 
+function getCategoryLabel(cat) {
+    const map = { microcroche: 'Microcrochê', pedras: 'Pedras Naturais', colab: 'Colabs' };
+    return map[cat] || cat || 'Outros';
+}
+
+// ==========================================================================
+// Google Analytics 4 — Eventos customizados
+// ==========================================================================
+// Helper seguro: se GA4 não tiver carregado (AdBlock, offline, etc), não quebra nada
+function trackGA(eventName, params = {}) {
+    if (typeof window.gtag === 'function') {
+        try {
+            window.gtag('event', eventName, params);
+        } catch (e) {
+            console.warn('GA4 erro no evento', eventName, e);
+        }
+    }
+}
+
 // ==========================================================================
 // CONFIGURAÇÕES DINÂMICAS
 // ==========================================================================
@@ -103,13 +122,10 @@ async function loadSiteSettings() {
 }
 
 function renderBanner() {
-    // Remove banner antigo, se existir
     const existing = document.getElementById('site-banner');
     if (existing) existing.remove();
 
     const navbar = document.querySelector('.navbar');
-
-    // Reset posição do navbar
     if (navbar) navbar.style.top = '';
 
     if (!siteSettings.banner_message) return;
@@ -138,7 +154,6 @@ function renderBanner() {
 
     document.body.insertBefore(banner, document.body.firstChild);
 
-    // Empurra navbar pra baixo do banner
     requestAnimationFrame(() => {
         const bannerHeight = banner.offsetHeight;
         if (navbar && bannerHeight > 0) {
@@ -148,23 +163,19 @@ function renderBanner() {
 }
 
 function updateDynamicLinks() {
-    // Instagram — todos os links que apontam para instagram.com
     document.querySelectorAll('a[href*="instagram.com"]').forEach(a => {
         a.href = `https://instagram.com/${siteSettings.instagram}`;
-        // Se o texto começa com @, atualiza pra refletir o novo handle
         if (a.textContent.trim().startsWith('@')) {
             a.textContent = `@${siteSettings.instagram}`;
         }
     });
 
-    // WhatsApp — link do rodapé
     document.querySelectorAll('a[href*="api.whatsapp.com"]').forEach(a => {
         try {
             const url = new URL(a.href);
             url.searchParams.set('phone', siteSettings.whatsapp);
             a.href = url.toString();
         } catch (e) {
-            // fallback: substitui direto
             a.href = `https://api.whatsapp.com/send?phone=${siteSettings.whatsapp}`;
         }
     });
@@ -192,9 +203,6 @@ async function loadProductsFromDb() {
             return;
         }
 
-        // Mostra apenas produtos ativos (active = true).
-        // Produtos esgotados (stock = 0) PERMANECEM no catálogo com badge "Estoque em breve".
-        // Produtos com active = false são os descontinuados — somem do site.
         productsFromDb = (data || []).filter(p => p.active === true);
 
         renderProductsGrid();
@@ -228,7 +236,6 @@ function renderProductsGrid() {
                 ? `<img src="${escapeHTML(firstMedia)}" alt="${escapeHTML(p.name)}" />`
                 : `<div style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;color:#666;font-size:0.8rem;">Sem mídia</div>`);
 
-        // Badge: "Estoque em breve" (esgotado) OU "Últimas unidades" (estoque baixo)
         let stockBadge = '';
         if (isOutOfStock) {
             stockBadge = `<span class="low-stock-badge" style="background:rgba(14,14,16,0.92);color:#d4af37;border:1px solid rgba(212,175,55,0.55);">✦ Estoque em breve</span>`;
@@ -236,7 +243,6 @@ function renderProductsGrid() {
             stockBadge = `<span class="low-stock-badge">⚡ Últimas unidades</span>`;
         }
 
-        // Botão do card — ativo ou desabilitado
         const cartButtonHTML = isOutOfStock
             ? `<button class="btn-add-cart" disabled
                    style="opacity:0.45;cursor:not-allowed;border-color:rgba(255,255,255,0.15);color:#888;pointer-events:none;">
@@ -282,6 +288,19 @@ function renderProductsGrid() {
     if (typeof updateFavoritesUI === 'function') {
         updateFavoritesUI();
     }
+
+    // ====== GA4: view_item_list ======
+    trackGA('view_item_list', {
+        item_list_id: 'vitrine_principal',
+        item_list_name: 'Destaques da Coleção',
+        items: productsFromDb.map(p => ({
+            item_id: p.ref,
+            item_name: p.name,
+            item_category: getCategoryLabel(p.category),
+            price: Number(p.price),
+            quantity: 1
+        }))
+    });
 }
 
 // ==========================================================================
@@ -349,6 +368,7 @@ function toggleCart() {
         const willOpen = !cartDrawer.classList.contains('open');
         cartDrawer.classList.toggle('open');
         if (willOpen && wishlistDrawer) wishlistDrawer.classList.remove('open');
+        if (willOpen) trackViewCart(); // ====== GA4: view_cart ======
     }
 }
 
@@ -358,7 +378,23 @@ function openCart() {
     if (cartDrawer && !cartDrawer.classList.contains('open')) {
         cartDrawer.classList.add('open');
         if (wishlistDrawer) wishlistDrawer.classList.remove('open');
+        trackViewCart(); // ====== GA4: view_cart ======
     }
+}
+
+function trackViewCart() {
+    if (cart.length === 0) return;
+    const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    trackGA('view_cart', {
+        currency: 'BRL',
+        value: total,
+        items: cart.map(i => ({
+            item_id: i.ref,
+            item_name: i.name,
+            price: Number(i.price),
+            quantity: Number(i.quantity)
+        }))
+    });
 }
 
 // ==========================================================================
@@ -433,7 +469,7 @@ async function handleForgotPassword(event) {
         return;
     }
 
-    const link = event.target.querySelector('.forgot-password');
+    const link = document.querySelector('.forgot-password');
     const originalText = link ? link.innerText : 'Esqueceu a senha?';
     if (link) {
         link.style.pointerEvents = 'none';
@@ -770,7 +806,6 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
     const addBtn = document.getElementById('modal-add-btn');
     if (addBtn) {
         if (Number(stock) > 0) {
-            // Produto disponível — botão normal
             addBtn.disabled = false;
             addBtn.innerText = 'Adicionar ao Carrinho';
             addBtn.style.opacity = '1';
@@ -783,7 +818,6 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
                 closeProductModal();
             };
         } else {
-            // Produto esgotado — botão "Em produção" desabilitado
             addBtn.disabled = true;
             addBtn.innerText = 'Em produção';
             addBtn.style.opacity = '0.45';
@@ -796,6 +830,20 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
     }
 
     modal.classList.add('open');
+
+    // ====== GA4: view_item ======
+    const productInfo = productsFromDb.find(p => p.ref === ref);
+    trackGA('view_item', {
+        currency: 'BRL',
+        value: Number(price),
+        items: [{
+            item_id: ref,
+            item_name: name,
+            item_category: productInfo ? getCategoryLabel(productInfo.category) : 'Outros',
+            price: Number(price),
+            quantity: 1
+        }]
+    });
 }
 
 function renderModalMedia() {
@@ -913,24 +961,19 @@ function filterProducts(category, element) {
 // ==========================================================================
 // Carrinho — Lógica com validação de estoque
 // ==========================================================================
-// Retorna TRUE se adicionou com sucesso, FALSE se foi bloqueado por algum motivo.
 function addToCart(name, ref, price) {
-    // Busca o produto atual no estado
     const product = productsFromDb.find(p => p.ref === ref);
 
-    // Trava 1: produto não existe mais
     if (!product) {
         alert(`"${name}" não está mais disponível.`);
         return false;
     }
 
-    // Trava 2: estoque zerado
     if (Number(product.stock) <= 0) {
         alert(`"${name}" está em produção no momento. Adicione aos favoritos pra ser avisado(a) quando voltar!`);
         return false;
     }
 
-    // Trava 3: quantidade no carrinho já bate o estoque
     const existingItem = cart.find(item => item.ref === ref);
     const currentQty = existingItem ? existingItem.quantity : 0;
 
@@ -947,6 +990,20 @@ function addToCart(name, ref, price) {
 
     updateCartUI();
     openCart();
+
+    // ====== GA4: add_to_cart ======
+    trackGA('add_to_cart', {
+        currency: 'BRL',
+        value: Number(price),
+        items: [{
+            item_id: ref,
+            item_name: name,
+            item_category: getCategoryLabel(product.category),
+            price: Number(price),
+            quantity: 1
+        }]
+    });
+
     return true;
 }
 
@@ -957,7 +1014,6 @@ function updateQuantity(index, delta) {
     const product = productsFromDb.find(p => p.ref === item.ref);
     const newQty = item.quantity + delta;
 
-    // Bloqueia se tentar passar do estoque
     if (delta > 0 && product && newQty > Number(product.stock)) {
         alert(`Só temos ${product.stock} unidade(s) de "${item.name}" em estoque.`);
         return;
@@ -973,6 +1029,21 @@ function updateQuantity(index, delta) {
 }
 
 function removeFromCart(index) {
+    const item = cart[index];
+    if (!item) return;
+
+    // ====== GA4: remove_from_cart ======
+    trackGA('remove_from_cart', {
+        currency: 'BRL',
+        value: Number(item.price) * Number(item.quantity),
+        items: [{
+            item_id: item.ref,
+            item_name: item.name,
+            price: Number(item.price),
+            quantity: Number(item.quantity)
+        }]
+    });
+
     cart.splice(index, 1);
     updateCartUI();
 }
@@ -980,16 +1051,11 @@ function removeFromCart(index) {
 // ==========================================================================
 // Frete
 // ==========================================================================
-// Calcula o frete efetivo após aplicar a regra de frete grátis.
-// IMPORTANTE: o frete grátis depende APENAS do subtotal bater o mínimo —
-// não precisa ter calculado o CEP antes.
 function getEffectiveShipping(subtotal) {
-    // Se bateu o mínimo pra frete grátis, retorna 0 independente do CEP
     if (siteSettings.free_shipping_min > 0 && subtotal >= siteSettings.free_shipping_min) {
         return 0;
     }
 
-    // Sem CEP calculado: frete indefinido (retorna 0, mas updateCartUI trata como "A calcular")
     if (!shippingDetails) return 0;
 
     return shippingCost;
@@ -1111,15 +1177,12 @@ function updateCartUI() {
 
     if (cartShippingElement) {
         if (freeApplied) {
-            // Bateu o mínimo → frete grátis, mesmo sem CEP calculado
             cartShippingElement.innerText = 'GRÁTIS ✨';
             cartShippingElement.style.color = '#51cf66';
         } else if (shippingDetails) {
-            // Não bateu o mínimo, mas tem CEP → mostra o valor
             cartShippingElement.innerText = formatCurrency(effectiveShipping);
             cartShippingElement.style.color = '';
         } else {
-            // Não bateu o mínimo e não tem CEP → pede pra calcular
             cartShippingElement.innerText = 'A calcular';
             cartShippingElement.style.color = '';
         }
@@ -1178,15 +1241,12 @@ function sendToWhatsApp(itemsParam = null) {
     const effectiveShipping = getEffectiveShipping(subtotalPrice);
 
     if (freeApplied) {
-        // Bateu o mínimo → frete grátis, mesmo sem CEP
         message += EMOJI_TRUCK + ` *Frete:* GRÁTIS ✨\n`;
         message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice)}\n`;
     } else if (shippingDetails) {
-        // Não bateu o mínimo, mas tem CEP
         message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(effectiveShipping)}\n`;
         message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice + effectiveShipping)}\n`;
     } else {
-        // Não bateu o mínimo e não tem CEP
         message += EMOJI_TRUCK + ` *Frete:* Pendente (calcular por CEP)\n`;
         message += EMOJI_MONEY + ` *Total parcial:* ${formatCurrency(subtotalPrice)}\n`;
     }
@@ -1266,8 +1326,27 @@ async function toggleFavorite(event, name, ref, price) {
 
     const index = favorites.findIndex(f => f.ref === ref);
 
-    if (index >= 0) favorites.splice(index, 1);
-    else favorites.push({ name, ref, price });
+    if (index >= 0) {
+        // Remove dos favoritos
+        favorites.splice(index, 1);
+    } else {
+        // Adiciona aos favoritos
+        favorites.push({ name, ref, price });
+
+        // ====== GA4: add_to_wishlist ======
+        const productInfo = productsFromDb.find(p => p.ref === ref);
+        trackGA('add_to_wishlist', {
+            currency: 'BRL',
+            value: Number(price),
+            items: [{
+                item_id: ref,
+                item_name: name,
+                item_category: productInfo ? getCategoryLabel(productInfo.category) : 'Outros',
+                price: Number(price),
+                quantity: 1
+            }]
+        });
+    }
 
     await saveFavorites();
     updateFavoritesUI();
@@ -1337,7 +1416,6 @@ async function moveFavoriteToCart(index) {
     const item = favorites[index];
     if (!item) return;
 
-    // Se o produto esgotou ou falhou, NÃO remove dos favoritos.
     const added = addToCart(item.name, item.ref, item.price);
     if (!added) return;
 
@@ -1371,18 +1449,15 @@ async function addAllFavoritesToCart() {
     const failedIndexes = [];
 
     itemsToAdd.forEach((item, idx) => {
-        // Usa o retorno do addToCart: só remove da lista quem realmente foi adicionado
         const added = addToCart(item.name, item.ref, item.price);
         if (!added) failedIndexes.push(idx);
     });
 
     if (failedIndexes.length === itemsToAdd.length) {
-        // Nenhum foi adicionado — mantém tudo nos favoritos
         alert('Nenhum dos favoritos está disponível no momento.');
         return;
     }
 
-    // Remove apenas os que foram adicionados com sucesso
     favorites = favorites.filter((_, idx) => failedIndexes.includes(idx));
     await saveFavorites();
     updateFavoritesUI();
@@ -1611,6 +1686,19 @@ function openCheckoutModal() {
 
     const modal = document.getElementById('checkout-modal');
     if (modal) modal.classList.add('open');
+
+    // ====== GA4: begin_checkout ======
+    const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    trackGA('begin_checkout', {
+        currency: 'BRL',
+        value: total,
+        items: cart.map(i => ({
+            item_id: i.ref,
+            item_name: i.name,
+            price: Number(i.price),
+            quantity: Number(i.quantity)
+        }))
+    });
 }
 
 function closeCheckoutModal() {
@@ -1857,8 +1945,6 @@ async function saveOrderToDb() {
         };
     });
 
-    // effectiveShipping = 0 quando bate o mínimo (frete grátis por valor),
-    // independente de ter CEP calculado ou não.
     const effectiveShipping = getEffectiveShipping(subtotalPrice);
 
     const orderPayload = {
@@ -1893,8 +1979,6 @@ async function saveOrderToDb() {
         return null;
     }
 
-    // NÃO decrementa estoque aqui — será feito quando admin marcar como "pago"
-
     return data;
 }
 
@@ -1914,7 +1998,6 @@ async function handleCheckoutSubmit(event) {
     }
 
     try {
-        // 1. Revalida estoque no banco (evita corrida entre clientes)
         const stockCheck = await revalidateStockBeforeCheckout();
         if (!stockCheck.ok) {
             showCheckoutFeedback(stockCheck.message, 'error');
@@ -1923,16 +2006,13 @@ async function handleCheckoutSubmit(event) {
 
         if (submitBtn) submitBtn.innerText = 'Salvando pedido...';
 
-        // 2. Salva dados do cliente
         await saveCheckoutData();
 
-        // 3. Calcula frete
         const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data'));
         if (checkoutData && checkoutData.cep) {
             await fetchShippingForCheckout(checkoutData.cep);
         }
 
-        // 4. Salva pedido no banco
         const order = await saveOrderToDb();
 
         if (!order) {
@@ -1940,15 +2020,26 @@ async function handleCheckoutSubmit(event) {
             return;
         }
 
-        // 5. Guarda cópia dos itens pra mensagem do WhatsApp
+        // ====== GA4: purchase ======
+        trackGA('purchase', {
+            transaction_id: order.id,
+            currency: 'BRL',
+            value: Number(order.total),
+            shipping: Number(order.shipping_cost || 0),
+            items: (order.items || []).map(i => ({
+                item_id: i.ref,
+                item_name: i.name,
+                price: Number(i.price),
+                quantity: Number(i.quantity)
+            }))
+        });
+
         const itemsSnapshot = [...cart];
 
-        // 6. Fecha modal e limpa carrinho
         closeCheckoutModal();
         cart = [];
         updateCartUI();
 
-        // 7. Abre WhatsApp com os itens capturados
         sendToWhatsApp(itemsSnapshot);
 
     } catch (e) {
@@ -1996,27 +2087,22 @@ function handleDoubtClick() {
 // Inicialização
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Carrega configs do site ANTES de tudo (banner, links, frete)
     await loadSiteSettings();
     renderBanner();
     updateDynamicLinks();
 
-    // 2. Carrega produtos
     await loadProductsFromDb();
 
-    // 3. Setups de UI
     setupRegisterLiveValidation();
     setupStarRating();
     setupCheckoutMasks();
 
-    // 4. Sessão e dados do usuário
     await updateUserSessionUI();
     await loadFavorites();
     await loadCheckoutData();
     updateFavoritesUI();
     updateCartUI();
 
-    // 5. Listeners de formulários
     const checkoutForm = document.getElementById('checkout-form');
     if (checkoutForm) checkoutForm.addEventListener('submit', handleCheckoutSubmit);
 
