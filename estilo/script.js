@@ -64,7 +64,6 @@ function escapeHTML(str) {
 // PRODUTOS — Carregar do Supabase
 // ==========================================================================
 async function loadProductsFromDb() {
-    console.log('🔍 Iniciando loadProductsFromDb...');
     const grid = document.getElementById('products-grid');
     if (!grid) {
         console.warn('❌ Grid #products-grid não encontrado');
@@ -77,25 +76,20 @@ async function loadProductsFromDb() {
             .select('*')
             .order('created_at', { ascending: true });
 
-        console.log('📦 Produtos retornados do banco:', data);
-        console.log('❌ Erro:', error);
-
         if (error) {
+            console.error('Erro ao carregar produtos:', error);
             grid.innerHTML = '<div class="empty-state"><p>Erro ao carregar produtos.</p></div>';
             return;
         }
 
-        productsFromDb = (data || []).filter(p => {
-            const isActive = p.active === true;
-            const hasStock = Number(p.stock) > 0;
-            console.log(`  → ${p.ref}: active=${p.active} (${typeof p.active}) stock=${p.stock} | passe=${isActive && hasStock}`);
-            return isActive && hasStock;
-        });
+        // Mostra apenas produtos ativos (active = true).
+        // Produtos esgotados (stock = 0) PERMANECEM no catálogo com badge "Estoque em breve".
+        // Produtos com active = false são os descontinuados — somem do site.
+        productsFromDb = (data || []).filter(p => p.active === true);
 
-        console.log('✅ Produtos filtrados:', productsFromDb.length);
         renderProductsGrid();
     } catch (e) {
-        console.error('💥 Erro:', e);
+        console.error('Erro de conexão:', e);
         grid.innerHTML = '<div class="empty-state"><p>Erro de conexão.</p></div>';
     }
 }
@@ -113,7 +107,10 @@ function renderProductsGrid() {
         const galleryItems = (p.gallery || '').split(',').map(s => s.trim()).filter(Boolean);
         const firstMedia = galleryItems[0] || '';
         const isVideo = firstMedia.match(/\.(mov|mp4|webm|ogg)$/i);
-        const isLowStock = p.stock <= 2;
+
+        const stockNum = Number(p.stock) || 0;
+        const isOutOfStock = stockNum <= 0;
+        const isLowStock = stockNum > 0 && stockNum <= 2;
 
         const mediaHTML = isVideo
             ? `<video src="${escapeHTML(firstMedia)}" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>`
@@ -121,9 +118,24 @@ function renderProductsGrid() {
                 ? `<img src="${escapeHTML(firstMedia)}" alt="${escapeHTML(p.name)}" />`
                 : `<div style="width:100%;height:100%;background:#222;display:flex;align-items:center;justify-content:center;color:#666;font-size:0.8rem;">Sem mídia</div>`);
 
-        const stockBadge = isLowStock
-            ? `<span class="low-stock-badge">⚡ Últimas unidades</span>`
-            : '';
+        // Badge: "Estoque em breve" (esgotado) OU "Últimas unidades" (estoque baixo)
+        let stockBadge = '';
+        if (isOutOfStock) {
+            stockBadge = `<span class="low-stock-badge" style="background:rgba(14,14,16,0.92);color:#d4af37;border:1px solid rgba(212,175,55,0.55);">✦ Estoque em breve</span>`;
+        } else if (isLowStock) {
+            stockBadge = `<span class="low-stock-badge">⚡ Últimas unidades</span>`;
+        }
+
+        // Botão do card — ativo ou desabilitado
+        const cartButtonHTML = isOutOfStock
+            ? `<button class="btn-add-cart" disabled
+                   style="opacity:0.45;cursor:not-allowed;border-color:rgba(255,255,255,0.15);color:#888;pointer-events:none;">
+                   Em produção
+               </button>`
+            : `<button class="btn-add-cart"
+                   onclick="addToCart('${escapeHTML(p.name).replace(/'/g, "\\'")}', '${escapeHTML(p.ref)}', ${Number(p.price)})">
+                   Adicionar ao Carrinho
+               </button>`;
 
         return `
             <div class="product-card" data-category="${escapeHTML(p.category)}"
@@ -134,7 +146,7 @@ function renderProductsGrid() {
                  data-desc="${escapeHTML(p.description || '')}"
                  data-materials="${escapeHTML(p.materials || '')}"
                  data-gallery="${escapeHTML(p.gallery || '')}"
-                 data-stock="${p.stock}">
+                 data-stock="${stockNum}">
 
                 <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
                     ${mediaHTML}
@@ -151,10 +163,7 @@ function renderProductsGrid() {
                     <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">${escapeHTML(p.name)}</h3>
                     <p class="gem-type">${escapeHTML(p.gem || '')}</p>
                     <span class="price">${formatCurrency(p.price)}</span>
-                    <button class="btn-add-cart"
-                        onclick="addToCart('${escapeHTML(p.name).replace(/'/g, "\\'")}', '${escapeHTML(p.ref)}', ${Number(p.price)})">
-                        Adicionar ao Carrinho
-                    </button>
+                    ${cartButtonHTML}
                 </div>
             </div>
         `;
@@ -594,13 +603,14 @@ function openProductModalFromCard(cardElement) {
     const desc = cardElement.getAttribute('data-desc');
     const materials = cardElement.getAttribute('data-materials');
     const galleryRaw = cardElement.getAttribute('data-gallery');
+    const stock = parseInt(cardElement.getAttribute('data-stock'), 10) || 0;
 
     const gallery = galleryRaw ? galleryRaw.split(',').map(item => item.trim()) : [];
 
-    openProductModal(name, ref, price, gem, desc, materials, gallery);
+    openProductModal(name, ref, price, gem, desc, materials, gallery, stock);
 }
 
-function openProductModal(name, ref, price, gemType, description, materials, gallery) {
+function openProductModal(name, ref, price, gemType, description, materials, gallery, stock = 1) {
     const modal = document.getElementById('product-modal');
     if (!modal) return;
 
@@ -618,10 +628,30 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
 
     const addBtn = document.getElementById('modal-add-btn');
     if (addBtn) {
-        addBtn.onclick = () => {
-            addToCart(name, ref, price);
-            closeProductModal();
-        };
+        if (Number(stock) > 0) {
+            // Produto disponível — botão normal
+            addBtn.disabled = false;
+            addBtn.innerText = 'Adicionar ao Carrinho';
+            addBtn.style.opacity = '1';
+            addBtn.style.cursor = 'pointer';
+            addBtn.style.background = '';
+            addBtn.style.color = '';
+            addBtn.style.border = '';
+            addBtn.onclick = () => {
+                addToCart(name, ref, price);
+                closeProductModal();
+            };
+        } else {
+            // Produto esgotado — botão "Em produção" desabilitado
+            addBtn.disabled = true;
+            addBtn.innerText = 'Em produção';
+            addBtn.style.opacity = '0.45';
+            addBtn.style.cursor = 'not-allowed';
+            addBtn.style.background = 'transparent';
+            addBtn.style.color = '#888';
+            addBtn.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+            addBtn.onclick = null;
+        }
     }
 
     modal.classList.add('open');
@@ -742,6 +772,7 @@ function filterProducts(category, element) {
 // ==========================================================================
 // Carrinho — Lógica com validação de estoque
 // ==========================================================================
+// Retorna TRUE se adicionou com sucesso, FALSE se foi bloqueado por algum motivo.
 function addToCart(name, ref, price) {
     // Busca o produto atual no estado
     const product = productsFromDb.find(p => p.ref === ref);
@@ -749,22 +780,22 @@ function addToCart(name, ref, price) {
     // Trava 1: produto não existe mais
     if (!product) {
         alert(`"${name}" não está mais disponível.`);
-        return;
+        return false;
     }
 
     // Trava 2: estoque zerado
-    if (product.stock <= 0) {
-        alert(`"${name}" está esgotado no momento.`);
-        return;
+    if (Number(product.stock) <= 0) {
+        alert(`"${name}" está em produção no momento. Adicione aos favoritos pra ser avisado(a) quando voltar!`);
+        return false;
     }
 
     // Trava 3: quantidade no carrinho já bate o estoque
     const existingItem = cart.find(item => item.ref === ref);
     const currentQty = existingItem ? existingItem.quantity : 0;
 
-    if (currentQty + 1 > product.stock) {
+    if (currentQty + 1 > Number(product.stock)) {
         alert(`Só temos ${product.stock} unidade(s) de "${name}" em estoque.`);
-        return;
+        return false;
     }
 
     if (existingItem) {
@@ -775,6 +806,7 @@ function addToCart(name, ref, price) {
 
     updateCartUI();
     openCart();
+    return true;
 }
 
 function updateQuantity(index, delta) {
@@ -785,7 +817,7 @@ function updateQuantity(index, delta) {
     const newQty = item.quantity + delta;
 
     // Bloqueia se tentar passar do estoque
-    if (delta > 0 && product && newQty > product.stock) {
+    if (delta > 0 && product && newQty > Number(product.stock)) {
         alert(`Só temos ${product.stock} unidade(s) de "${item.name}" em estoque.`);
         return;
     }
@@ -1105,7 +1137,10 @@ async function moveFavoriteToCart(index) {
     const item = favorites[index];
     if (!item) return;
 
-    addToCart(item.name, item.ref, item.price);
+    // Se o produto esgotou ou falhou, NÃO remove dos favoritos.
+    const added = addToCart(item.name, item.ref, item.price);
+    if (!added) return;
+
     favorites.splice(index, 1);
     await saveFavorites();
     updateFavoritesUI();
@@ -1133,22 +1168,22 @@ async function addAllFavoritesToCart() {
     }
 
     const itemsToAdd = [...favorites];
-    let added = 0;
+    const failedIndexes = [];
 
-    itemsToAdd.forEach(item => {
-        const product = productsFromDb.find(p => p.ref === item.ref);
-        if (product && product.stock > 0) {
-            addToCart(item.name, item.ref, item.price);
-            added++;
-        }
+    itemsToAdd.forEach((item, idx) => {
+        // Usa o retorno do addToCart: só remove da lista quem realmente foi adicionado
+        const added = addToCart(item.name, item.ref, item.price);
+        if (!added) failedIndexes.push(idx);
     });
 
-    if (added === 0) {
+    if (failedIndexes.length === itemsToAdd.length) {
+        // Nenhum foi adicionado — mantém tudo nos favoritos
         alert('Nenhum dos favoritos está disponível no momento.');
         return;
     }
 
-    favorites = [];
+    // Remove apenas os que foram adicionados com sucesso
+    favorites = favorites.filter((_, idx) => failedIndexes.includes(idx));
     await saveFavorites();
     updateFavoritesUI();
     closeWishlist();
@@ -1589,7 +1624,7 @@ async function revalidateStockBeforeCheckout() {
             continue;
         }
 
-        if (product.stock < item.quantity) {
+        if (Number(product.stock) < item.quantity) {
             problems.push(`"${item.name}" só tem ${product.stock} unidade(s) em estoque (você pediu ${item.quantity}).`);
         }
     }
