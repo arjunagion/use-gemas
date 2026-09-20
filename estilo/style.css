@@ -529,6 +529,26 @@ a {
 }
 
 /* ==========================================================================
+   7.1 BADGE "ÚLTIMAS UNIDADES" (movido pra fora do media query)
+   ========================================================================== */
+.low-stock-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(255, 193, 7, 0.95);
+    color: #0e0e10;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    z-index: 4;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
    8. MODAIS (Produto e Autenticação)
    ========================================================================== */
 .modal-overlay {
@@ -1290,7 +1310,6 @@ a {
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
-    /* ADICIONA ESSAS DUAS LINHAS */
     padding: 6px;
     box-sizing: content-box;
 }
@@ -2169,7 +2188,9 @@ a {
     font-size: 0.8rem;
 }
 
-/* Mobile — Checkout */
+/* ==========================================================================
+   17. RESPONSIVO EXTRA — Mobile (checkout + depoimentos)
+   ========================================================================== */
 @media (max-width: 768px) {
     .checkout-card {
         padding: 1.5rem 1.2rem;
@@ -2191,7 +2212,6 @@ a {
         width: 100%;
     }
 
-    /* Testimonials mobile */
     .testimonials-section {
         padding: 4rem 0;
     }
@@ -2233,22 +2253,5 @@ a {
 
     .form-actions-row button {
         width: 100%;
-    }
-
-    /* Badge "Últimas unidades" no card */
-    .low-stock-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: rgba(255, 193, 7, 0.95);
-        color: #0e0e10;
-        font-size: 0.7rem;
-        font-weight: 700;
-        padding: 0.3rem 0.7rem;
-        border-radius: 20px;
-        letter-spacing: 0.5px;
-        z-index: 4;
-        backdrop-filter: blur(6px);
-        text-transform: uppercase;
     }
 }

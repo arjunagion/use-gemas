@@ -41,7 +41,7 @@
         rel="stylesheet">
 
     <!-- Link para o CSS -->
-    <link rel="stylesheet" href="estilo/style.css?v=20.0">
+    <link rel="stylesheet" href="estilo/style.css?v=21.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css">
@@ -147,99 +147,8 @@
                     <button class="filter-btn" onclick="filterProducts('colab', this)">Colabs</button>
                 </div>
 
-                <div class="products-grid">
-
-                    <div class="product-card" data-category="microcroche" data-name="Gargantilha Microcrochê"
-                        data-ref="UG-GAR01" data-price="149.00" data-gem="Microcristais & Acessórios Dourados"
-                        data-desc="Confeccionada minuciosamente à mão com técnicas exclusivas de microcrochê e acabamento em banho dourado de alta durabilidade."
-                        data-materials="Fios de alta resistência, microcristais lapidados e fecho banhado a ouro 18k."
-                        data-gallery="estilo/midias/IMG_2585.mp4, estilo/midias/foto_detalhe1.jpg, estilo/midias/foto_modelo1.jpg">
-
-                        <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                            <video src="estilo/midias/IMG_2585.mp4" autoplay muted loop playsinline preload="metadata"
-                                aria-hidden="true"></video>
-                            <button type="button" class="btn-favorite"
-                                onclick="toggleFavorite(event, 'Gargantilha Microcrochê', 'UG-GAR01', 149.00)"
-                                aria-label="Adicionar Gargantilha Microcrochê aos favoritos">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path
-                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="product-info">
-                            <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
-                                style="cursor: pointer;">Gargantilha Microcrochê</h3>
-                            <p class="gem-type">Microcristais & Acessórios Dourados</p>
-                            <span class="price">R$ 149,00</span>
-                            <button class="btn-add-cart"
-                                onclick="addToCart('Gargantilha Microcrochê', 'UG-GAR01', 149.00)">Adicionar ao
-                                Carrinho</button>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-category="pedras" data-name="Chocker Microcristal"
-                        data-ref="UG-CHO02" data-price="189.00" data-gem="Gargantilha Em Micro-Cristais"
-                        data-desc="Design minimalista feito com seleção de microcristais que captam a luz com elegância natural."
-                        data-materials="Microcristais naturais lapidados, entremeios folheados e extensão ajustável."
-                        data-gallery="estilo/midias/IMG_2501.mp4, estilo/midias/foto_detalhe2.jpg">
-
-                        <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                            <video src="estilo/midias/IMG_2501.mp4" autoplay muted loop playsinline preload="metadata"
-                                aria-hidden="true"></video>
-                            <button type="button" class="btn-favorite"
-                                onclick="toggleFavorite(event, 'Chocker Microcristal', 'UG-CHO02', 189.00)"
-                                aria-label="Adicionar Chocker Microcristal aos favoritos">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path
-                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="product-info">
-                            <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
-                                style="cursor: pointer;">Chocker Microcristal</h3>
-                            <p class="gem-type">Gargantilha Em Micro-Cristais</p>
-                            <span class="price">R$ 189,00</span>
-                            <button class="btn-add-cart"
-                                onclick="addToCart('Chocker Microcristal', 'UG-CHO02', 189.00)">Adicionar ao
-                                Carrinho</button>
-                        </div>
-                    </div>
-
-                    <div class="product-card" data-category="colab" data-name="Linha AàZ Colab UG x AZ"
-                        data-ref="UG-AAZ03" data-price="169.00" data-gem="Mix Triade Café, Palha & Ouro Antigo"
-                        data-desc="Edição especial collab combinando a fusão de texturas terrosas, palha trançada e detalhes metálicos."
-                        data-materials="Fios têxteis sustentáveis, elementos em ouro antigo e tramas manuais."
-                        data-gallery="estilo/midias/IMG_2559.mp4, estilo/midias/foto_detalhe3.jpg">
-
-                        <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
-                            <video src="estilo/midias/IMG_2559.mp4" autoplay muted loop playsinline preload="metadata"
-                                aria-hidden="true"></video>
-                            <button type="button" class="btn-favorite"
-                                onclick="toggleFavorite(event, 'Linha AàZ Colab UG x AZ', 'UG-AAZ03', 169.00)"
-                                aria-label="Adicionar Linha AàZ Colab aos favoritos">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path
-                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="product-info">
-                            <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)"
-                                style="cursor: pointer;">Linha AàZ Colab UG x AZ</h3>
-                            <p class="gem-type">Mix Triade Café, Palha & Ouro Antigo</p>
-                            <span class="price">R$ 169,00</span>
-                            <button class="btn-add-cart"
-                                onclick="addToCart('Linha AàZ Colab UG x AZ', 'UG-AAZ03', 169.00)">Adicionar ao
-                                Carrinho</button>
-                        </div>
-                    </div>
-
-                </div>
+                <!-- Grid preenchido dinamicamente pelo script.js -->
+                <div class="products-grid" id="products-grid"></div>
             </div>
         </section>
 
@@ -736,7 +645,7 @@
     </footer>
 
     <!-- Importação do JS -->
-    <script src="estilo/script.js?v=20.0"></script>
+    <script src="estilo/script.js?v=21.0"></script>
 
 </body>
 
