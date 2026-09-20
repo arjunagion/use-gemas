@@ -10,12 +10,23 @@ let currentMediaIndex = 0;
 
 let photoSwipeLightbox = null;
 
-const whatsappNumber = "5511982053330";
+let whatsappNumber = "5511982053330";
 
 let currentSlide = 0;
 let autoSlideInterval = null;
 
 let productsFromDb = [];
+
+// ==========================================================================
+// Configurações do site (carregadas do Supabase)
+// ==========================================================================
+let siteSettings = {
+    whatsapp: '5511982053330',
+    instagram: 'use.gemas',
+    shipping_fixed: 20.00,
+    free_shipping_min: 0,
+    banner_message: ''
+};
 
 // ==========================================================================
 // Supabase
@@ -58,6 +69,105 @@ function escapeHTML(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+// ==========================================================================
+// CONFIGURAÇÕES DINÂMICAS
+// ==========================================================================
+async function loadSiteSettings() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('settings')
+            .select('*')
+            .eq('id', 1)
+            .maybeSingle();
+
+        if (error) {
+            console.warn('Não foi possível carregar as configurações do site. Usando padrões.', error);
+            return;
+        }
+
+        if (data) {
+            siteSettings = {
+                whatsapp: data.whatsapp || siteSettings.whatsapp,
+                instagram: data.instagram || siteSettings.instagram,
+                shipping_fixed: Number(data.shipping_fixed) || 0,
+                free_shipping_min: Number(data.free_shipping_min) || 0,
+                banner_message: data.banner_message || ''
+            };
+            whatsappNumber = siteSettings.whatsapp;
+        }
+    } catch (e) {
+        console.warn('Erro de conexão ao carregar configurações:', e);
+    }
+}
+
+function renderBanner() {
+    // Remove banner antigo, se existir
+    const existing = document.getElementById('site-banner');
+    if (existing) existing.remove();
+
+    const navbar = document.querySelector('.navbar');
+
+    // Reset posição do navbar
+    if (navbar) navbar.style.top = '';
+
+    if (!siteSettings.banner_message) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'site-banner';
+    banner.textContent = siteSettings.banner_message;
+
+    Object.assign(banner.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        right: '0',
+        zIndex: '1002',
+        background: 'linear-gradient(135deg, #d4af37 0%, #aa820a 100%)',
+        color: '#0e0e10',
+        textAlign: 'center',
+        padding: '0.55rem 1rem',
+        fontSize: '0.78rem',
+        fontWeight: '600',
+        letterSpacing: '1.2px',
+        textTransform: 'uppercase',
+        fontFamily: "'Montserrat', sans-serif",
+        boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
+    });
+
+    document.body.insertBefore(banner, document.body.firstChild);
+
+    // Empurra navbar pra baixo do banner
+    requestAnimationFrame(() => {
+        const bannerHeight = banner.offsetHeight;
+        if (navbar && bannerHeight > 0) {
+            navbar.style.top = bannerHeight + 'px';
+        }
+    });
+}
+
+function updateDynamicLinks() {
+    // Instagram — todos os links que apontam para instagram.com
+    document.querySelectorAll('a[href*="instagram.com"]').forEach(a => {
+        a.href = `https://instagram.com/${siteSettings.instagram}`;
+        // Se o texto começa com @, atualiza pra refletir o novo handle
+        if (a.textContent.trim().startsWith('@')) {
+            a.textContent = `@${siteSettings.instagram}`;
+        }
+    });
+
+    // WhatsApp — link do rodapé
+    document.querySelectorAll('a[href*="api.whatsapp.com"]').forEach(a => {
+        try {
+            const url = new URL(a.href);
+            url.searchParams.set('phone', siteSettings.whatsapp);
+            a.href = url.toString();
+        } catch (e) {
+            // fallback: substitui direto
+            a.href = `https://api.whatsapp.com/send?phone=${siteSettings.whatsapp}`;
+        }
+    });
 }
 
 // ==========================================================================
@@ -839,6 +949,22 @@ function removeFromCart(index) {
 // ==========================================================================
 // Frete
 // ==========================================================================
+// Calcula o frete efetivo após aplicar a regra de frete grátis.
+function getEffectiveShipping(subtotal) {
+    if (!shippingDetails) return 0;
+
+    if (siteSettings.free_shipping_min > 0 && subtotal >= siteSettings.free_shipping_min) {
+        return 0;
+    }
+    return shippingCost;
+}
+
+function isFreeShippingApplied(subtotal) {
+    return siteSettings.free_shipping_min > 0
+        && subtotal >= siteSettings.free_shipping_min
+        && !!shippingDetails;
+}
+
 async function calculateShipping() {
     const cepInput = document.getElementById('cep-input');
     const shippingResult = document.getElementById('shipping-result');
@@ -861,17 +987,29 @@ async function calculateShipping() {
             shippingCost = 0;
             shippingDetails = null;
         } else {
-            const estimatedFreight = 20.00;
-            shippingCost = estimatedFreight;
+            shippingCost = Number(siteSettings.shipping_fixed) || 0;
             shippingDetails = { cep: data.cep, city: data.localidade, uf: data.uf };
 
-            shippingResult.innerHTML = `
-                <div style="color: #6bfbce; font-weight: 500;">${EMOJI_PIN} ${data.localidade} - ${data.uf}</div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
-                    <span style="color: #aaa;">Entrega Estimada:</span>
-                    <strong style="color: #d4af37;">${formatCurrency(estimatedFreight)}</strong>
-                </div>
-            `;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const freeApplied = isFreeShippingApplied(subtotal);
+
+            if (freeApplied) {
+                shippingResult.innerHTML = `
+                    <div style="color: #6bfbce; font-weight: 500;">${EMOJI_PIN} ${data.localidade} - ${data.uf}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
+                        <span style="color: #aaa;">Entrega Estimada:</span>
+                        <strong style="color: #51cf66;">GRÁTIS ✨</strong>
+                    </div>
+                `;
+            } else {
+                shippingResult.innerHTML = `
+                    <div style="color: #6bfbce; font-weight: 500;">${EMOJI_PIN} ${data.localidade} - ${data.uf}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
+                        <span style="color: #aaa;">Entrega Estimada:</span>
+                        <strong style="color: #d4af37;">${formatCurrency(shippingCost)}</strong>
+                    </div>
+                `;
+            }
         }
     } catch (error) {
         shippingResult.innerHTML = `<span style="color: #ff6b6b;">Erro de conexão. Tente novamente.</span>`;
@@ -929,11 +1067,26 @@ function updateCartUI() {
         });
     }
 
-    const finalTotal = subtotalPrice + shippingCost;
+    const effectiveShipping = getEffectiveShipping(subtotalPrice);
+    const freeApplied = isFreeShippingApplied(subtotalPrice);
+    const finalTotal = subtotalPrice + effectiveShipping;
 
     if (cartCount) cartCount.innerText = totalItems;
     if (cartSubtotalElement) cartSubtotalElement.innerText = formatCurrency(subtotalPrice);
-    if (cartShippingElement) cartShippingElement.innerText = shippingCost > 0 ? formatCurrency(shippingCost) : 'A calcular';
+
+    if (cartShippingElement) {
+        if (freeApplied) {
+            cartShippingElement.innerText = 'GRÁTIS ✨';
+            cartShippingElement.style.color = '#51cf66';
+        } else if (shippingDetails) {
+            cartShippingElement.innerText = formatCurrency(effectiveShipping);
+            cartShippingElement.style.color = '';
+        } else {
+            cartShippingElement.innerText = 'A calcular';
+            cartShippingElement.style.color = '';
+        }
+    }
+
     if (cartTotalElement) cartTotalElement.innerText = formatCurrency(finalTotal);
 }
 
@@ -983,9 +1136,16 @@ function sendToWhatsApp(itemsParam = null) {
     message += "━━━━━━━━━━━━━━━━━━\n";
     message += EMOJI_MONEY + ` *Subtotal:* ${formatCurrency(subtotalPrice)}\n`;
 
+    const effectiveShipping = getEffectiveShipping(subtotalPrice);
+    const freeApplied = isFreeShippingApplied(subtotalPrice);
+
     if (shippingDetails) {
-        message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(shippingCost)}\n`;
-        message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice + shippingCost)}\n`;
+        if (freeApplied) {
+            message += EMOJI_TRUCK + ` *Frete:* GRÁTIS ✨\n`;
+        } else {
+            message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(effectiveShipping)}\n`;
+        }
+        message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice + effectiveShipping)}\n`;
     } else {
         message += EMOJI_TRUCK + ` *Frete:* Pendente (calcular por CEP)\n`;
         message += EMOJI_MONEY + ` *Total parcial:* ${formatCurrency(subtotalPrice)}\n`;
@@ -1657,6 +1817,8 @@ async function saveOrderToDb() {
         };
     });
 
+    const effectiveShipping = getEffectiveShipping(subtotalPrice);
+
     const orderPayload = {
         user_id: user?.id || null,
         customer_name: checkoutData.name,
@@ -1673,8 +1835,8 @@ async function saveOrderToDb() {
         notes: checkoutData.notes,
         items: items,
         subtotal: subtotalPrice,
-        shipping_cost: shippingCost || 0,
-        total: subtotalPrice + (shippingCost || 0),
+        shipping_cost: effectiveShipping,
+        total: subtotalPrice + effectiveShipping,
         status: 'novo'
     };
 
@@ -1766,7 +1928,7 @@ async function fetchShippingForCheckout(cepRaw) {
         const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const data = await response.json();
         if (!data.erro) {
-            shippingCost = 20.00;
+            shippingCost = Number(siteSettings.shipping_fixed) || 0;
             shippingDetails = { cep: data.cep, city: data.localidade, uf: data.uf };
             updateCartUI();
         }
@@ -1792,18 +1954,27 @@ function handleDoubtClick() {
 // Inicialização
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Carrega configs do site ANTES de tudo (banner, links, frete)
+    await loadSiteSettings();
+    renderBanner();
+    updateDynamicLinks();
+
+    // 2. Carrega produtos
     await loadProductsFromDb();
 
+    // 3. Setups de UI
     setupRegisterLiveValidation();
     setupStarRating();
     setupCheckoutMasks();
 
+    // 4. Sessão e dados do usuário
     await updateUserSessionUI();
     await loadFavorites();
     await loadCheckoutData();
     updateFavoritesUI();
     updateCartUI();
 
+    // 5. Listeners de formulários
     const checkoutForm = document.getElementById('checkout-form');
     if (checkoutForm) checkoutForm.addEventListener('submit', handleCheckoutSubmit);
 
