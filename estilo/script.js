@@ -76,6 +76,41 @@ function getCategoryLabel(cat) {
     return map[cat] || cat || 'Outros';
 }
 
+// ========================================================================== 
+// // CONSENT MODE v2 — Banner de Cookies //
+//  ========================================================================== // 
+const COOKIE_CONSENT_KEY = 'gemas_cookie_consent';
+function applyConsent(choice) {
+    if (typeof window.gtag !== 'function') return;
+    if (choice === 'all') {
+        gtag('consent', 'update', {
+            'ad_storage': 'granted',
+            'ad_user_data': 'granted',
+            'ad_personalization': 'granted',
+            'analytics_storage': 'granted'
+        });
+    } else {
+        // 'essential' mantém tudo denied
+        gtag('consent', 'update', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+        });
+    }
+}
+function showCookieBanner() { const banner = document.getElementById('cookie-banner'); if (banner) { setTimeout(() => banner.classList.add('visible'), 800); } }
+function hideCookieBanner() { const banner = document.getElementById('cookie-banner'); if (banner) banner.classList.remove('visible'); }
+function handleCookieChoice(choice) { try { localStorage.setItem(COOKIE_CONSENT_KEY, choice); } catch (e) { console.warn('Erro ao salvar consentimento:', e); } applyConsent(choice); hideCookieBanner(); }
+function initCookieConsent() {
+    let saved = null; try { saved = localStorage.getItem(COOKIE_CONSENT_KEY); } catch (e) { }
+    if (saved === 'all' || saved === 'essential') {
+        applyConsent(saved);
+    } else {
+        showCookieBanner();
+    }
+}
+
 // ==========================================================================
 // Google Analytics 4 — Eventos customizados
 // ==========================================================================
@@ -2090,6 +2125,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadSiteSettings();
     renderBanner();
     updateDynamicLinks();
+    
+    initCookieConsent();
 
     await loadProductsFromDb();
 

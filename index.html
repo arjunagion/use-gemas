@@ -41,7 +41,7 @@
         rel="stylesheet">
 
     <!-- Link para o CSS -->
-    <link rel="stylesheet" href="estilo/style.css?v=29.0">
+    <link rel="stylesheet" href="estilo/style.css?v=30.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css">
@@ -49,14 +49,24 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-5S8HJR13T8"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-        gtag('config', 'G-5S8HJR13T8', { 'debug-mode': true });
+
+        // Default: NEGA tudo até o usuário consentir
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied',
+            'wait_for_update': 500
+        });
+
+        gtag('config', 'G-5S8HJR13T8', { 'debug_mode': true });
     </script>
+
 </head>
 
 <body>
@@ -653,9 +663,29 @@
         </div>
     </footer>
 
-    <!-- Importação do JS -->
-    <script src="estilo/script.js?v=29.0"></script>
+    <!-- Banner de Cookies (LGPD / GDPR) -->
+    <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Aviso de cookies" aria-live="polite">
+        <div class="cookie-banner-content">
+            <div class="cookie-banner-text">
+                <strong>🍪 Cookies</strong>
+                <p>Usamos cookies pra melhorar sua experiência e entender como o site é usado. Você escolhe o que
+                    aceitar.</p>
+            </div>
+            <div class="cookie-banner-actions">
+                <button type="button" class="cookie-btn cookie-btn-ghost" onclick="handleCookieChoice('essential')">
+                    Só essenciais
+                </button>
+                <button type="button" class="cookie-btn cookie-btn-primary" onclick="handleCookieChoice('all')">
+                    Aceitar tudo
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Importação do JS -->
+    <script src="estilo/script.js?v=30.0"></script>
+
+</body>
 </body>
 
 </html>
