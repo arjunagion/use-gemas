@@ -158,12 +158,12 @@
             font-family: var(--font-body);
         }
 
-        .btn-gh           ost:hover {
-            border-color: rgba font(255, 255, 255-family, 0.4);
-            color:: var(--text);
+        .btn-ghost:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--text);
         }
 
- var        #screen-admin {
+        #screen-admin {
             display: none;
         }
 
@@ -187,7 +187,7 @@
 
         .sidebar-brand {
             padding: 1.8rem 1.5rem;
-(--font-title);
+            font-family: var(--font-title);
             font-size: 1.5rem;
             font-weight: 700;
             letter-spacing: 2px;
@@ -821,6 +821,12 @@
             justify-content: space-between;
             gap: 1rem;
             align-items: center;
+            transition: all 0.2s;
+        }
+
+        .order-item:hover {
+            border-color: var(--border-hover);
+            background: var(--bg-hover);
         }
 
         .order-item-info {
@@ -914,6 +920,143 @@
             border-color: var(--danger);
             color: var(--danger);
             background: rgba(255, 85, 85, 0.08);
+        }
+
+        /* ==========================================================================
+           CLIENTES — Grid de cards
+           ========================================================================== */
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .client-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.3rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .client-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .client-card-name {
+            font-family: var(--font-title);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .client-card-sub {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            word-break: break-all;
+            margin-top: 2px;
+        }
+
+        .client-card-stats {
+            display: flex;
+            gap: 1.5rem;
+            padding-top: 0.8rem;
+            margin-top: 0.4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            flex-wrap: wrap;
+        }
+
+        .client-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .client-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .client-stat-value {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        /* ==========================================================================
+           CONFIGURAÇÕES
+           ========================================================================== */
+        .config-wrapper {
+            max-width: 720px;
+        }
+
+        .config-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem 1.6rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .config-block-title {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            color: var(--gold);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+        }
+
+        .config-hint {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 6px;
+            letter-spacing: 0.3px;
+            line-height: 1.5;
+        }
+
+        .config-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .config-actions .btn-save {
+            padding: 0.85rem 2rem;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+            color: #0e0e10;
+            transition: all 0.3s;
+        }
+
+        .config-actions .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .config-actions .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .modal-overlay {
@@ -1300,6 +1443,26 @@
             .order-total {
                 font-size: 1.3rem;
             }
+
+            .clients-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .config-wrapper {
+                max-width: 100%;
+            }
+
+            .config-block {
+                padding: 1.2rem;
+            }
+
+            .config-actions {
+                justify-content: stretch;
+            }
+
+            .config-actions .btn-save {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -1396,7 +1559,7 @@
 
                     <div class="placeholder-box">
                         <h2>Bem-vindo ao painel 👋</h2>
-                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong> e <strong>Pedidos</strong>.</p>
+                        <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>, <strong>Clientes</strong> e <strong>Configurações</strong>.</p>
                     </div>
                 </section>
 
@@ -1453,17 +1616,71 @@
 
                 <!-- ==================== CLIENTES ==================== -->
                 <section class="content-section" id="section-clientes">
-                    <div class="placeholder-box">
-                        <h2>👥 Clientes</h2>
-                        <p>Em breve você terá uma lista completa de clientes cadastrados.</p>
+                    <div class="section-header">
+                        <div class="section-actions">
+                            <input type="text" class="search-input" id="client-search"
+                                placeholder="🔍 Buscar por nome, e-mail ou telefone..." oninput="renderClients()">
+                        </div>
+                    </div>
+
+                    <div id="clients-container">
+                        <div class="empty-state">
+                            <span class="icon">👥</span>
+                            <p>Carregando clientes...</p>
+                        </div>
                     </div>
                 </section>
 
                 <!-- ==================== CONFIGURAÇÕES ==================== -->
                 <section class="content-section" id="section-config">
-                    <div class="placeholder-box">
-                        <h2>⚙️ Configurações</h2>
-                        <p>Em breve você poderá ajustar dados da loja, frete e formas de pagamento.</p>
+                    <div class="config-wrapper">
+
+                        <div class="config-block">
+                            <h3 class="config-block-title">Contato & Redes</h3>
+
+                            <div class="form-group">
+                                <label for="cfg-whatsapp">WhatsApp (com DDI, só números)</label>
+                                <input type="text" id="cfg-whatsapp" placeholder="5511982053330" maxlength="20">
+                                <small class="config-hint">Ex: 5511982053330 (55 = Brasil, 11 = DDD, número).</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cfg-instagram">Instagram (sem @)</label>
+                                <input type="text" id="cfg-instagram" placeholder="use.gemas" maxlength="60">
+                                <small class="config-hint">Só o nome do perfil, sem @ e sem link.</small>
+                            </div>
+                        </div>
+
+                        <div class="config-block">
+                            <h3 class="config-block-title">Frete</h3>
+
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label for="cfg-shipping-fixed">Frete fixo (R$)</label>
+                                    <input type="text" id="cfg-shipping-fixed" placeholder="20.00" inputmode="decimal">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cfg-free-shipping-min">Frete grátis acima de (R$)</label>
+                                    <input type="text" id="cfg-free-shipping-min" placeholder="0" inputmode="decimal">
+                                </div>
+                            </div>
+
+                            <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o valor.</small>
+                        </div>
+
+                        <div class="config-block">
+                            <h3 class="config-block-title">Aviso no topo do site</h3>
+
+                            <div class="form-group">
+                                <label for="cfg-banner-message">Mensagem (deixe vazio pra esconder)</label>
+                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300 ✨" maxlength="120">
+                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra promoções e avisos rápidos.</small>
+                            </div>
+                        </div>
+
+                        <div class="config-actions">
+                            <button class="btn-save" id="config-save-btn" onclick="saveSettings()">Salvar Configurações</button>
+                        </div>
                     </div>
                 </section>
 
@@ -1561,6 +1778,15 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL: DETALHES DO CLIENTE ==================== -->
+    <div id="client-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeClientModal()">&times;</button>
+            <h2 class="modal-title" id="client-modal-title">Cliente</h2>
+            <div id="client-modal-content"></div>
+        </div>
+    </div>
+
     <!-- ==================== MODAL: CONFIRMAÇÃO ==================== -->
     <div id="confirm-modal" class="modal-overlay">
         <div class="modal-box narrow">
@@ -1592,6 +1818,8 @@
         let allOrders = [];
         let currentOrderFilter = 'all';
         let pendingDeleteId = null;
+        let allClients = [];
+        let currentSettings = null;
 
         // ==========================================================================
         // Utilidades
@@ -1623,6 +1851,12 @@
             return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
 
+        function formatDateShort(isoString) {
+            if (!isoString) return '—';
+            const d = new Date(isoString);
+            return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        }
+
         function escapeHTML(str) {
             if (!str && str !== 0) return '';
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -1631,6 +1865,13 @@
         function getCategoryLabel(cat) {
             const map = { microcroche: 'Microcrochê', pedras: 'Pedras Naturais', colab: 'Colabs' };
             return map[cat] || cat;
+        }
+
+        function normalizePrice(value) {
+            let v = String(value).trim().replace(/\s/g, '');
+            if (v.includes(',')) v = v.replace(/\./g, '').replace(',', '.');
+            const num = parseFloat(v);
+            return isNaN(num) ? NaN : num;
         }
 
         // ==========================================================================
@@ -1660,6 +1901,7 @@
 
                 await loadProducts();
                 await loadOrders();
+                await loadSettings();
                 updateDashboardMetrics();
 
             } catch (e) {
@@ -1693,6 +1935,8 @@
             });
             document.getElementById('page-title').innerText = sectionTitles[sectionName] || 'Dashboard';
             if (sectionName === 'dashboard') updateDashboardMetrics();
+            if (sectionName === 'clientes') renderClients();
+            if (sectionName === 'config') loadSettings();
             if (window.innerWidth <= 900) closeSidebar();
         }
 
@@ -1864,13 +2108,6 @@
             document.getElementById('product-modal').classList.remove('open');
         }
 
-        function normalizePrice(value) {
-            let v = String(value).trim().replace(/\s/g, '');
-            if (v.includes(',')) v = v.replace(/\./g, '').replace(',', '.');
-            const num = parseFloat(v);
-            return isNaN(num) ? NaN : num;
-        }
-
         async function saveProduct(event) {
             event.preventDefault();
 
@@ -2004,6 +2241,7 @@
 
             allOrders = data || [];
             renderOrders();
+            rebuildClients();
             updateDashboardMetrics();
         }
 
@@ -2185,6 +2423,253 @@
             await loadProducts();
             showToast('Status atualizado para ' + getStatusLabel(newStatus).toLowerCase());
             closeOrderModal();
+        }
+
+        // ==========================================================================
+        // CLIENTES — Consolidado a partir de orders
+        // ==========================================================================
+        function buildClientsFromOrders() {
+            const map = new Map();
+
+            allOrders.forEach(o => {
+                const email = (o.customer_email || '').toLowerCase().trim();
+                const nameKey = (o.customer_name || '').toLowerCase().trim();
+
+                // Prefere agrupar por e-mail. Se não tiver, agrupa por nome.
+                const key = email || (nameKey ? 'nome:' + nameKey : '');
+                if (!key) return;
+
+                if (!map.has(key)) {
+                    map.set(key, {
+                        key,
+                        name: o.customer_name || 'Sem nome',
+                        email: o.customer_email || '',
+                        phone: o.customer_phone || '',
+                        doc: o.customer_doc || '',
+                        ordersCount: 0,
+                        totalSpent: 0,
+                        lastOrderDate: null,
+                        orders: []
+                    });
+                }
+
+                const c = map.get(key);
+                c.ordersCount++;
+                if (o.status !== 'cancelado') {
+                    c.totalSpent += Number(o.total) || 0;
+                }
+                c.orders.push(o);
+
+                const orderDate = new Date(o.created_at);
+                if (!c.lastOrderDate || orderDate > new Date(c.lastOrderDate)) {
+                    c.lastOrderDate = o.created_at;
+                    // Atualiza com dados do pedido mais recente
+                    c.name = o.customer_name || c.name;
+                    c.phone = o.customer_phone || c.phone;
+                    c.doc = o.customer_doc || c.doc;
+                }
+            });
+
+            return Array.from(map.values()).sort((a, b) =>
+                new Date(b.lastOrderDate) - new Date(a.lastOrderDate)
+            );
+        }
+
+        function rebuildClients() {
+            allClients = buildClientsFromOrders();
+            renderClients();
+        }
+
+        function renderClients() {
+            const container = document.getElementById('clients-container');
+            if (!container) return;
+
+            const searchTerm = (document.getElementById('client-search')?.value || '').trim().toLowerCase();
+
+            let filtered = allClients.slice();
+            if (searchTerm) {
+                filtered = filtered.filter(c =>
+                    (c.name || '').toLowerCase().includes(searchTerm) ||
+                    (c.email || '').toLowerCase().includes(searchTerm) ||
+                    (c.phone || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">👥</span>
+                        <p>${allClients.length === 0 ? 'Nenhum cliente ainda. Conforme os pedidos chegarem, eles aparecem aqui automaticamente.' : 'Nenhum cliente encontrado.'}</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = '<div class="clients-grid">' +
+                filtered.map(c => `
+                    <div class="client-card" onclick="openClientModal('${escapeHTML(c.key)}')">
+                        <div>
+                            <div class="client-card-name">${escapeHTML(c.name)}</div>
+                            ${c.email ? `<div class="client-card-sub">${escapeHTML(c.email)}</div>` : ''}
+                            ${c.phone ? `<div class="client-card-sub">${escapeHTML(c.phone)}</div>` : ''}
+                        </div>
+                        <div class="client-card-stats">
+                            <div class="client-stat">
+                                <span class="client-stat-label">Pedidos</span>
+                                <span class="client-stat-value">${c.ordersCount}</span>
+                            </div>
+                            <div class="client-stat">
+                                <span class="client-stat-label">Total gasto</span>
+                                <span class="client-stat-value">${formatBRL(c.totalSpent)}</span>
+                            </div>
+                            <div class="client-stat">
+                                <span class="client-stat-label">Último</span>
+                                <span class="client-stat-value" style="font-size:0.9rem;">${formatDateShort(c.lastOrderDate)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('') +
+                '</div>';
+        }
+
+        function openClientModal(clientKey) {
+            const c = allClients.find(x => x.key === clientKey);
+            if (!c) return;
+
+            document.getElementById('client-modal-title').innerText = c.name;
+
+            const sortedOrders = c.orders.slice().sort((a, b) =>
+                new Date(b.created_at) - new Date(a.created_at)
+            );
+
+            const ordersHTML = sortedOrders.map(o => {
+                const itemCount = (o.items || []).reduce((sum, i) => sum + i.quantity, 0);
+                return `
+                    <div class="order-item" style="cursor:pointer;"
+                         onclick="closeClientModal(); setTimeout(() => openOrderModal('${o.id}'), 250);">
+                        <div class="order-item-info">
+                            <div class="order-item-name">${formatDate(o.created_at)}</div>
+                            <div class="order-item-ref">${getStatusLabel(o.status)} · ${itemCount} ${itemCount === 1 ? 'item' : 'itens'}</div>
+                        </div>
+                        <div class="order-item-price">${formatBRL(o.total)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('client-modal-content').innerHTML = `
+                <div class="order-detail-section">
+                    <h4>Informações</h4>
+                    ${c.email ? `<div class="order-detail-row"><span class="label">E-mail:</span><span class="value">${escapeHTML(c.email)}</span></div>` : ''}
+                    ${c.phone ? `<div class="order-detail-row"><span class="label">Telefone:</span><span class="value">${escapeHTML(c.phone)}</span></div>` : ''}
+                    ${c.doc ? `<div class="order-detail-row"><span class="label">CPF/CNPJ:</span><span class="value">${escapeHTML(c.doc)}</span></div>` : ''}
+                    <div class="order-detail-row"><span class="label">Total gasto:</span><span class="value" style="color:var(--gold);font-weight:700;">${formatBRL(c.totalSpent)}</span></div>
+                    <div class="order-detail-row"><span class="label">Nº de pedidos:</span><span class="value">${c.ordersCount}</span></div>
+                </div>
+
+                <div class="order-detail-section">
+                    <h4>Histórico de pedidos</h4>
+                    ${ordersHTML || '<p style="color:var(--text-muted);font-size:0.9rem;">Sem pedidos.</p>'}
+                </div>
+            `;
+
+            document.getElementById('client-modal').classList.add('open');
+        }
+
+        function closeClientModal() {
+            document.getElementById('client-modal').classList.remove('open');
+        }
+
+        // ==========================================================================
+        // CONFIGURAÇÕES
+        // ==========================================================================
+        async function loadSettings() {
+            const { data, error } = await supabaseClient
+                .from('settings')
+                .select('*')
+                .eq('id', 1)
+                .maybeSingle();
+
+            if (error) {
+                console.error('Erro ao carregar configurações:', error);
+                showToast('Erro ao carregar configurações.', 'error');
+                return;
+            }
+
+            currentSettings = data || {};
+
+            const fields = {
+                'cfg-whatsapp': data?.whatsapp || '',
+                'cfg-instagram': data?.instagram || '',
+                'cfg-shipping-fixed': data?.shipping_fixed != null ? Number(data.shipping_fixed).toFixed(2).replace('.', ',') : '20,00',
+                'cfg-free-shipping-min': data?.free_shipping_min != null ? Number(data.free_shipping_min).toFixed(2).replace('.', ',') : '0,00',
+                'cfg-banner-message': data?.banner_message || ''
+            };
+
+            Object.entries(fields).forEach(([id, value]) => {
+                const el = document.getElementById(id);
+                if (el) el.value = value;
+            });
+        }
+
+        async function saveSettings() {
+            const btn = document.getElementById('config-save-btn');
+            if (!btn) return;
+
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Salvando...';
+
+            const whatsapp = (document.getElementById('cfg-whatsapp')?.value || '').replace(/\D/g, '');
+            const instagram = (document.getElementById('cfg-instagram')?.value || '').trim().replace(/^@/, '');
+            const shippingFixed = normalizePrice(document.getElementById('cfg-shipping-fixed')?.value || '0');
+            const freeShippingMin = normalizePrice(document.getElementById('cfg-free-shipping-min')?.value || '0');
+            const bannerMessage = (document.getElementById('cfg-banner-message')?.value || '').trim();
+
+            if (!whatsapp || whatsapp.length < 10) {
+                showToast('WhatsApp inválido (precisa de DDI + DDD + número).', 'error');
+                btn.disabled = false;
+                btn.innerText = originalText;
+                return;
+            }
+
+            if (isNaN(shippingFixed) || shippingFixed < 0) {
+                showToast('Valor de frete inválido.', 'error');
+                btn.disabled = false;
+                btn.innerText = originalText;
+                return;
+            }
+
+            if (isNaN(freeShippingMin) || freeShippingMin < 0) {
+                showToast('Valor de frete grátis inválido.', 'error');
+                btn.disabled = false;
+                btn.innerText = originalText;
+                return;
+            }
+
+            const payload = {
+                whatsapp,
+                instagram,
+                shipping_fixed: shippingFixed,
+                free_shipping_min: freeShippingMin,
+                banner_message: bannerMessage,
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await supabaseClient
+                .from('settings')
+                .update(payload)
+                .eq('id', 1);
+
+            btn.disabled = false;
+            btn.innerText = originalText;
+
+            if (error) {
+                console.error('Erro ao salvar config:', error);
+                showToast('Erro ao salvar configurações.', 'error');
+                return;
+            }
+
+            currentSettings = { ...currentSettings, ...payload };
+            showToast('Configurações salvas!');
         }
 
         // ==========================================================================
