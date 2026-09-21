@@ -2261,10 +2261,10 @@ a {
     .cookie-banner {
         position: fixed;
         bottom: 1rem;
-        left: 1rem;
-        right: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 2rem);
         max-width: 720px;
-        margin: 0 auto;
         background: rgba(20, 20, 24, 0.98);
         border: 1px solid rgba(212, 175, 55, 0.3);
         border-radius: 14px;
@@ -2275,6 +2275,7 @@ a {
         visibility: hidden;
         transition: opacity 0.3s ease, visibility 0.3s ease;
         pointer-events: none;
+        box-sizing: border-box;
     }
 
     .cookie-banner.visible {
