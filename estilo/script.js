@@ -98,6 +98,7 @@ function injectProductSchema() {
             "sku": p.ref,
             "description": p.description || p.gem || p.name,
             "category": getCategoryLabel(p.category),
+            "url": baseUrl,
             "brand": {
                 "@type": "Brand",
                 "name": "Use Gemas"
@@ -110,9 +111,46 @@ function injectProductSchema() {
                     ? "https://schema.org/InStock"
                     : "https://schema.org/OutOfStock",
                 "url": baseUrl,
+                "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+                    .toISOString().split('T')[0],
                 "seller": {
                     "@type": "Organization",
                     "name": "Use Gemas"
+                },
+                "shippingDetails": {
+                    "@type": "OfferShippingDetails",
+                    "shippingRate": {
+                        "@type": "MonetaryAmount",
+                        "value": "20.00",
+                        "currency": "BRL"
+                    },
+                    "shippingDestination": {
+                        "@type": "DefinedRegion",
+                        "addressCountry": "BR"
+                    },
+                    "deliveryTime": {
+                        "@type": "ShippingDeliveryTime",
+                        "handlingTime": {
+                            "@type": "QuantitativeValue",
+                            "minValue": 1,
+                            "maxValue": 3,
+                            "unitCode": "DAY"
+                        },
+                        "transitTime": {
+                            "@type": "QuantitativeValue",
+                            "minValue": 2,
+                            "maxValue": 10,
+                            "unitCode": "DAY"
+                        }
+                    }
+                },
+                "hasMerchantReturnPolicy": {
+                    "@type": "MerchantReturnPolicy",
+                    "applicableCountry": "BR",
+                    "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                    "merchantReturnDays": 7,
+                    "returnMethod": "https://schema.org/ReturnByMail",
+                    "returnFees": "https://schema.org/ReturnShippingFees"
                 }
             }
         };
@@ -132,6 +170,9 @@ function injectProductSchema() {
     script.textContent = JSON.stringify({
         "@context": "https://schema.org",
         "@type": "ItemList",
+        "name": "Destaques da Coleção — Use Gemas",
+        "description": "Joias artesanais em microcrochê e pedras naturais",
+        "numberOfItems": items.length,
         "itemListElement": items.map((item, idx) => ({
             "@type": "ListItem",
             "position": idx + 1,
