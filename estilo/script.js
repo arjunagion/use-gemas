@@ -120,7 +120,6 @@ function trackGA(eventName, params = {}) {
         try {
             window.gtag('event', eventName, params);
         } catch (e) {
-            console.warn('GA4 erro no evento', eventName, e);
         }
     }
 }
@@ -152,7 +151,6 @@ async function loadSiteSettings() {
             whatsappNumber = siteSettings.whatsapp;
         }
     } catch (e) {
-        console.warn('Erro de conexão ao carregar configurações:', e);
     }
 }
 
@@ -222,7 +220,7 @@ function updateDynamicLinks() {
 async function loadProductsFromDb() {
     const grid = document.getElementById('products-grid');
     if (!grid) {
-        console.warn('❌ Grid #products-grid não encontrado');
+
         return;
     }
 
@@ -798,7 +796,7 @@ async function syncLocalToCloud() {
             }
         }
     } catch (e) {
-        console.warn('Erro ao migrar favoritos:', e);
+
     }
 }
 
@@ -2125,7 +2123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadSiteSettings();
     renderBanner();
     updateDynamicLinks();
-    
+
     initCookieConsent();
 
     await loadProductsFromDb();
