@@ -113,9 +113,15 @@ function showCookieBanner() { const banner = document.getElementById('cookie-ban
 function hideCookieBanner() { const banner = document.getElementById('cookie-banner'); if (banner) banner.classList.remove('visible'); }
 function handleCookieChoice(choice) { try { localStorage.setItem(COOKIE_CONSENT_KEY, choice); } catch (e) { console.warn('Erro ao salvar consentimento:', e); } applyConsent(choice); hideCookieBanner(); }
 function initCookieConsent() {
-    let saved = null; try { saved = localStorage.getItem(COOKIE_CONSENT_KEY); } catch (e) { }
-    if (saved === 'all' || saved === 'essential') {
-        applyConsent(saved);
+    let saved = null;
+    try {
+        saved = localStorage.getItem(COOKIE_CONSENT_KEY);
+    } catch (e) { }
+
+    if (saved === 'all') {
+        applyConsent('all');
+    } else if (saved === 'essential') {
+        // Já tá revogado por padrão no <head> — não precisa re-aplicar
     } else {
         showCookieBanner();
     }
