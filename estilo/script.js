@@ -98,7 +98,6 @@ function injectProductSchema() {
             "sku": p.ref,
             "description": p.description || p.gem || p.name,
             "category": getCategoryLabel(p.category),
-            "url": baseUrl,
             "brand": {
                 "@type": "Brand",
                 "name": "Use Gemas"
@@ -150,7 +149,12 @@ function injectProductSchema() {
                     "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
                     "merchantReturnDays": 7,
                     "returnMethod": "https://schema.org/ReturnByMail",
-                    "returnFees": "https://schema.org/ReturnShippingFees"
+                    "returnFees": "https://schema.org/ReturnShippingFees",
+                    "returnShippingFeesAmount": {
+                        "@type": "MonetaryAmount",
+                        "value": "20.00",
+                        "currency": "BRL"
+                    }
                 }
             }
         };
@@ -181,70 +185,6 @@ function injectProductSchema() {
     });
 
     document.head.appendChild(script);
-}
-
-// ========================================================================== 
-// // CONSENT MODE v2 — Banner de Cookies //
-//  ========================================================================== // 
-const COOKIE_CONSENT_KEY = 'gemas_cookie_consent';
-function applyConsent(choice) {
-    // Google Consent Mode
-    if (typeof window.gtag === 'function') {
-        if (choice === 'all') {
-            gtag('consent', 'update', {
-                'ad_storage': 'granted',
-                'ad_user_data': 'granted',
-                'ad_personalization': 'granted',
-                'analytics_storage': 'granted'
-            });
-        } else {
-            gtag('consent', 'update', {
-                'ad_storage': 'denied',
-                'ad_user_data': 'denied',
-                'ad_personalization': 'denied',
-                'analytics_storage': 'denied'
-            });
-        }
-    }
-
-    // Meta Pixel Consent
-    if (typeof window.fbq === 'function') {
-        if (choice === 'all') {
-            window.fbq('consent', 'grant');
-        } else {
-            window.fbq('consent', 'revoke');
-        }
-    }
-}
-function showCookieBanner() { const banner = document.getElementById('cookie-banner'); if (banner) { setTimeout(() => banner.classList.add('visible'), 800); } }
-function hideCookieBanner() { const banner = document.getElementById('cookie-banner'); if (banner) banner.classList.remove('visible'); }
-function handleCookieChoice(choice) { try { localStorage.setItem(COOKIE_CONSENT_KEY, choice); } catch (e) { console.warn('Erro ao salvar consentimento:', e); } applyConsent(choice); hideCookieBanner(); }
-function initCookieConsent() {
-    let saved = null;
-    try {
-        saved = localStorage.getItem(COOKIE_CONSENT_KEY);
-    } catch (e) { }
-
-    if (saved === 'all') {
-        applyConsent('all');
-    } else if (saved === 'essential') {
-        // Já tá revogado por padrão no <head> — não precisa re-aplicar
-    } else {
-        showCookieBanner();
-    }
-}
-
-// ==========================================================================
-// Google Analytics 4 — Eventos customizados
-// ==========================================================================
-// Helper seguro: se GA4 não tiver carregado (AdBlock, offline, etc), não quebra nada
-function trackGA(eventName, params = {}) {
-    if (typeof window.gtag === 'function') {
-        try {
-            window.gtag('event', eventName, params);
-        } catch (e) {
-        }
-    }
 }
 
 function trackMeta(eventName, params = {}) {
