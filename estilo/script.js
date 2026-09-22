@@ -76,6 +76,72 @@ function getCategoryLabel(cat) {
     return map[cat] || cat || 'Outros';
 }
 
+// ==========================================================================
+// Schema.org — Produtos dinâmicos (JSON-LD)
+// ==========================================================================
+function injectProductSchema() {
+    if (!productsFromDb || productsFromDb.length === 0) return;
+
+    const existing = document.getElementById('product-schema');
+    if (existing) existing.remove();
+
+    const baseUrl = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+
+    const items = productsFromDb.map(p => {
+        const gallery = (p.gallery || '').split(',').map(s => s.trim()).filter(Boolean);
+        const firstMedia = gallery[0] || '';
+        const isVideo = firstMedia.match(/\.(mov|mp4|webm|ogg)$/i);
+
+        const schema = {
+            "@type": "Product",
+            "name": p.name,
+            "sku": p.ref,
+            "description": p.description || p.gem || p.name,
+            "category": getCategoryLabel(p.category),
+            "brand": {
+                "@type": "Brand",
+                "name": "Use Gemas"
+            },
+            "offers": {
+                "@type": "Offer",
+                "price": Number(p.price).toFixed(2),
+                "priceCurrency": "BRL",
+                "availability": Number(p.stock) > 0
+                    ? "https://schema.org/InStock"
+                    : "https://schema.org/OutOfStock",
+                "url": baseUrl,
+                "seller": {
+                    "@type": "Organization",
+                    "name": "Use Gemas"
+                }
+            }
+        };
+
+        if (firstMedia && !isVideo) {
+            schema.image = firstMedia.startsWith('http')
+                ? firstMedia
+                : baseUrl + firstMedia;
+        }
+
+        return schema;
+    });
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'product-schema';
+    script.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": items.map((item, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "item": item
+        }))
+    });
+
+    document.head.appendChild(script);
+}
+
 // ========================================================================== 
 // // CONSENT MODE v2 — Banner de Cookies //
 //  ========================================================================== // 
@@ -347,6 +413,9 @@ function renderProductsGrid() {
     if (typeof updateFavoritesUI === 'function') {
         updateFavoritesUI();
     }
+
+    // ====== Schema.org — injeta dados estruturados dos produtos ======
+    injectProductSchema();
 
     // ====== GA4: view_item_list ======
     trackGA('view_item_list', {
