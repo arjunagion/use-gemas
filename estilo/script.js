@@ -81,22 +81,32 @@ function getCategoryLabel(cat) {
 //  ========================================================================== // 
 const COOKIE_CONSENT_KEY = 'gemas_cookie_consent';
 function applyConsent(choice) {
-    if (typeof window.gtag !== 'function') return;
-    if (choice === 'all') {
-        gtag('consent', 'update', {
-            'ad_storage': 'granted',
-            'ad_user_data': 'granted',
-            'ad_personalization': 'granted',
-            'analytics_storage': 'granted'
-        });
-    } else {
-        // 'essential' mantém tudo denied
-        gtag('consent', 'update', {
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied',
-            'analytics_storage': 'denied'
-        });
+    // Google Consent Mode
+    if (typeof window.gtag === 'function') {
+        if (choice === 'all') {
+            gtag('consent', 'update', {
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted',
+                'analytics_storage': 'granted'
+            });
+        } else {
+            gtag('consent', 'update', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied'
+            });
+        }
+    }
+
+    // Meta Pixel Consent
+    if (typeof window.fbq === 'function') {
+        if (choice === 'all') {
+            window.fbq('consent', 'grant');
+        } else {
+            window.fbq('consent', 'revoke');
+        }
     }
 }
 function showCookieBanner() { const banner = document.getElementById('cookie-banner'); if (banner) { setTimeout(() => banner.classList.add('visible'), 800); } }
@@ -122,6 +132,16 @@ function trackGA(eventName, params = {}) {
         } catch (e) {
         }
     }
+}
+
+function trackMeta(eventName, params = {}) {
+    if (typeof window.fbq !== 'function') return;
+    try { window.fbq('track', eventName, params); } catch (e) { }
+}
+
+function trackMetaCustom(eventName, params = {}) {
+    if (typeof window.fbq !== 'function') return;
+    try { window.fbq('trackCustom', eventName, params); } catch (e) { }
 }
 
 // ==========================================================================
@@ -334,6 +354,13 @@ function renderProductsGrid() {
             quantity: 1
         }))
     });
+
+    // ====== Meta: ViewContent (lista) ======
+    trackMeta('ViewContent', {
+        content_ids: productsFromDb.map(p => p.ref),
+        content_type: 'product',
+        content_name: 'Destaques da Coleção'
+    });
 }
 
 // ==========================================================================
@@ -418,6 +445,7 @@ function openCart() {
 function trackViewCart() {
     if (cart.length === 0) return;
     const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
     trackGA('view_cart', {
         currency: 'BRL',
         value: total,
@@ -427,6 +455,15 @@ function trackViewCart() {
             price: Number(i.price),
             quantity: Number(i.quantity)
         }))
+    });
+
+    trackMetaCustom('ViewCart', {
+        content_ids: cart.map(i => i.ref),
+        content_type: 'product',
+        contents: cart.map(i => ({ id: i.ref, quantity: Number(i.quantity), item_price: Number(i.price) })),
+        value: total,
+        currency: 'BRL',
+        num_items: cart.reduce((s, i) => s + Number(i.quantity), 0)
     });
 }
 
@@ -877,6 +914,16 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
             quantity: 1
         }]
     });
+
+    // ====== Meta: ViewContent ======
+    trackMeta('ViewContent', {
+        content_ids: [ref],
+        content_type: 'product',
+        content_name: name,
+        content_category: productInfo ? getCategoryLabel(productInfo.category) : 'Outros',
+        value: Number(price),
+        currency: 'BRL'
+    });
 }
 
 function renderModalMedia() {
@@ -1037,6 +1084,16 @@ function addToCart(name, ref, price) {
         }]
     });
 
+    // ====== Meta: AddToCart ======
+    trackMeta('AddToCart', {
+        content_ids: [ref],
+        content_type: 'product',
+        content_name: name,
+        content_category: getCategoryLabel(product.category),
+        value: Number(price),
+        currency: 'BRL'
+    });
+
     return true;
 }
 
@@ -1076,6 +1133,31 @@ function removeFromCart(index) {
             quantity: Number(item.quantity)
         }]
     });
+
+    function trackViewCart() {
+        if (cart.length === 0) return;
+        const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+        trackGA('view_cart', {
+            currency: 'BRL',
+            value: total,
+            items: cart.map(i => ({
+                item_id: i.ref,
+                item_name: i.name,
+                price: Number(i.price),
+                quantity: Number(i.quantity)
+            }))
+        });
+
+        trackMetaCustom('ViewCart', {
+            content_ids: cart.map(i => i.ref),
+            content_type: 'product',
+            contents: cart.map(i => ({ id: i.ref, quantity: Number(i.quantity), item_price: Number(i.price) })),
+            value: total,
+            currency: 'BRL',
+            num_items: cart.reduce((s, i) => s + Number(i.quantity), 0)
+        });
+    }
 
     cart.splice(index, 1);
     updateCartUI();
@@ -1378,6 +1460,15 @@ async function toggleFavorite(event, name, ref, price) {
                 price: Number(price),
                 quantity: 1
             }]
+        });
+
+        // ====== Meta: AddToWishlist ======
+        trackMeta('AddToWishlist', {
+            content_ids: [ref],
+            content_type: 'product',
+            content_name: name,
+            value: Number(price),
+            currency: 'BRL'
         });
     }
 
@@ -1732,6 +1823,31 @@ function openCheckoutModal() {
             quantity: Number(i.quantity)
         }))
     });
+
+    function trackViewCart() {
+        if (cart.length === 0) return;
+        const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+
+        trackGA('view_cart', {
+            currency: 'BRL',
+            value: total,
+            items: cart.map(i => ({
+                item_id: i.ref,
+                item_name: i.name,
+                price: Number(i.price),
+                quantity: Number(i.quantity)
+            }))
+        });
+
+        trackMetaCustom('ViewCart', {
+            content_ids: cart.map(i => i.ref),
+            content_type: 'product',
+            contents: cart.map(i => ({ id: i.ref, quantity: Number(i.quantity), item_price: Number(i.price) })),
+            value: total,
+            currency: 'BRL',
+            num_items: cart.reduce((s, i) => s + Number(i.quantity), 0)
+        });
+    }
 }
 
 function closeCheckoutModal() {
@@ -2065,6 +2181,16 @@ async function handleCheckoutSubmit(event) {
                 price: Number(i.price),
                 quantity: Number(i.quantity)
             }))
+        });
+
+        // ====== Meta: Purchase ======
+        trackMeta('Purchase', {
+            content_ids: (order.items || []).map(i => i.ref),
+            content_type: 'product',
+            contents: (order.items || []).map(i => ({ id: i.ref, quantity: Number(i.quantity), item_price: Number(i.price) })),
+            value: Number(order.total),
+            currency: 'BRL',
+            num_items: (order.items || []).reduce((s, i) => s + Number(i.quantity), 0)
         });
 
         const itemsSnapshot = [...cart];
