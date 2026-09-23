@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin.html
 Disallow: /reset-password.html
 
-Sitemap: https://arjunagion.github.io/use-gemas/sitemap.xml
+Sitemap: https://usegemas.com.br/sitemap.xml
