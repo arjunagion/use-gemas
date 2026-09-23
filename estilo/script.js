@@ -924,19 +924,27 @@ async function updateUserSessionUI() {
 
         const fullName = profile?.name || user.email.split('@')[0];
         const firstName = fullName.split(' ')[0];
+        const initial = firstName.charAt(0).toUpperCase();
 
+        userBtn.className = 'site-user-btn';
         userBtn.innerHTML = `
-            <span style="font-size: 0.85rem; color: #d4af37; margin-right: 0.4rem; font-weight: 500;">Olá, ${firstName}</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span class="site-user-btn-avatar">${initial}</span>
+            <span class="site-user-btn-label">Perfil</span>
         `;
         userBtn.onclick = () => { window.location.href = 'minha-conta.html'; };
         userBtn.title = "Minha Conta";
+        userBtn.setAttribute('aria-label', 'Ir para Minha Conta');
     } else {
+        userBtn.className = 'btn-icon';
         userBtn.innerHTML = `
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
         `;
         userBtn.onclick = () => openAuthModal('login');
         userBtn.title = "Entrar / Cadastrar";
+        userBtn.setAttribute('aria-label', 'Entrar ou criar conta');
     }
 }
 

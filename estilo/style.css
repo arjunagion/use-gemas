@@ -1469,7 +1469,7 @@ a {
         margin-left: auto;
     }
 
-    #user-btn span {
+    #user-btn .site-user-btn-label {
         display: none !important;
     }
 
@@ -2417,5 +2417,68 @@ a {
 
     .footer-legal a {
         font-size: 0.72rem;
+    }
+}
+
+/* ==========================================================================
+   20. BOTÃO DE PERFIL NO NAVBAR (quando logado)
+   ========================================================================== */
+.site-user-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f7f1e8;
+    border: 1px solid rgba(184, 147, 90, 0.4);
+    color: #2f2620;
+    padding: 0.3rem 0.9rem 0.3rem 0.3rem;
+    border-radius: 30px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.site-user-btn:hover {
+    background: #fdfaf4;
+    border-color: rgba(184, 147, 90, 0.7);
+    box-shadow: 0 4px 14px rgba(184, 147, 90, 0.35);
+    transform: translateY(-1px);
+}
+
+.site-user-btn-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ede4d3;
+    color: #2f2620;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-title);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    flex-shrink: 0;
+}
+
+.site-user-btn-label {
+    color: #2f2620;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+}
+
+/* Ajuste mobile — só mostra o avatar */
+@media (max-width: 768px) {
+    #user-btn .site-user-btn-label {
+        display: none !important;
+    }
+
+    .site-user-btn {
+        padding: 0.28rem;
+        gap: 0;
     }
 }
