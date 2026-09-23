@@ -1,0 +1,935 @@
+/* ==========================================================================
+   ÁREA DO CLIENTE — CREAM MODE
+   Paleta quente/acolhedora pra "Minha Conta"
+   ========================================================================== */
+:root {
+    /* Fundos */
+    --cr-bg-main: #f7f1e8;
+    --cr-bg-card: #fdfaf4;
+    --cr-bg-elevated: #ede4d3;
+    --cr-bg-hover: #efe6d5;
+
+    /* Texto */
+    --cr-text-primary: #2f2620;
+    --cr-text-muted: #7a6b5a;
+    --cr-text-dim: #a89987;
+
+    /* Dourado quente */
+    --cr-gold: #b8935a;
+    --cr-gold-hover: #966f3d;
+    --cr-gold-soft: rgba(184, 147, 90, 0.12);
+
+    /* Bordas */
+    --cr-border: rgba(184, 147, 90, 0.25);
+    --cr-border-hover: rgba(184, 147, 90, 0.5);
+
+    /* Status */
+    --cr-success: #5a8a5a;
+    --cr-success-soft: rgba(90, 138, 90, 0.12);
+    --cr-warning: #c9922a;
+    --cr-warning-soft: rgba(201, 146, 42, 0.12);
+    --cr-danger: #b04545;
+    --cr-danger-soft: rgba(176, 69, 69, 0.1);
+    --cr-info: #4a6fa5;
+    --cr-info-soft: rgba(74, 111, 165, 0.12);
+
+    /* Fontes */
+    --cr-font-title: 'Cormorant Garamond', serif;
+    --cr-font-body: 'Montserrat', sans-serif;
+
+    /* Sombra */
+    --cr-shadow: 0 4px 16px rgba(47, 38, 32, 0.06);
+    --cr-shadow-lg: 0 12px 40px rgba(47, 38, 32, 0.12);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--cr-bg-main);
+    color: var(--cr-text-primary);
+    font-family: var(--cr-font-body);
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--cr-gold);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--cr-gold-hover);
+}
+
+button {
+    font-family: var(--cr-font-body);
+}
+
+/* Acessibilidade */
+:focus-visible {
+    outline: 2px solid var(--cr-gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+.perfil-header {
+    background: var(--cr-bg-card);
+    border-bottom: 1px solid var(--cr-border);
+    padding: 1.2rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(47, 38, 32, 0.04);
+}
+
+.perfil-header-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.perfil-logo {
+    font-family: var(--cr-font-title);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--cr-gold);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.perfil-logo:hover {
+    color: var(--cr-gold-hover);
+    text-decoration: none;
+}
+
+.perfil-back-link {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--cr-text-muted);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--cr-border);
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.perfil-back-link:hover {
+    border-color: var(--cr-gold);
+    color: var(--cr-gold);
+    text-decoration: none;
+    background: var(--cr-gold-soft);
+}
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+.perfil-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+}
+
+.perfil-hero {
+    margin-bottom: 2.5rem;
+}
+
+.perfil-hero h1 {
+    font-family: var(--cr-font-title);
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--cr-text-primary);
+    margin-bottom: 0.4rem;
+}
+
+.perfil-hero h1 .wave {
+    display: inline-block;
+    animation: wave 2s ease-in-out infinite;
+    transform-origin: 70% 70%;
+}
+
+@keyframes wave {
+    0%, 60%, 100% { transform: rotate(0deg); }
+    10%, 30% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    40% { transform: rotate(-4deg); }
+    50% { transform: rotate(10deg); }
+}
+
+.perfil-hero p {
+    font-size: 0.95rem;
+    color: var(--cr-text-muted);
+    letter-spacing: 0.2px;
+}
+
+/* ==========================================================================
+   TABS
+   ========================================================================== */
+.perfil-tabs {
+    display: flex;
+    gap: 0.3rem;
+    border-bottom: 1px solid var(--cr-border);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.perfil-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.perfil-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--cr-text-muted);
+    padding: 0.85rem 1.3rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    margin-bottom: -1px;
+}
+
+.perfil-tab:hover {
+    color: var(--cr-gold);
+}
+
+.perfil-tab.active {
+    color: var(--cr-gold);
+    border-bottom-color: var(--cr-gold);
+}
+
+.perfil-tab .count {
+    display: inline-block;
+    background: var(--cr-gold-soft);
+    color: var(--cr-gold);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    margin-left: 0.5rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* ==========================================================================
+   SEÇÕES / PAINÉIS
+   ========================================================================== */
+.perfil-panel {
+    display: none;
+    animation: fadeIn 0.35s ease;
+}
+
+.perfil-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading central */
+.perfil-loading {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--cr-text-muted);
+}
+
+.perfil-loading .spinner {
+    width: 42px;
+    height: 42px;
+    border: 3px solid rgba(184, 147, 90, 0.2);
+    border-top-color: var(--cr-gold);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.perfil-empty {
+    background: var(--cr-bg-card);
+    border: 1px dashed var(--cr-border);
+    border-radius: 14px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--cr-text-muted);
+}
+
+.perfil-empty .icon {
+    font-size: 2.8rem;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.perfil-empty h3 {
+    font-family: var(--cr-font-title);
+    font-size: 1.4rem;
+    color: var(--cr-text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.perfil-empty p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   PEDIDOS — Cards
+   ========================================================================== */
+.pedidos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.pedido-card {
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 1.2rem;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(47, 38, 32, 0.03);
+}
+
+.pedido-card:hover {
+    border-color: var(--cr-gold);
+    transform: translateY(-2px);
+    box-shadow: var(--cr-shadow);
+}
+
+.pedido-status {
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.pedido-status.novo {
+    background: var(--cr-info-soft);
+    color: var(--cr-info);
+}
+
+.pedido-status.pago {
+    background: var(--cr-success-soft);
+    color: var(--cr-success);
+}
+
+.pedido-status.produzindo {
+    background: var(--cr-warning-soft);
+    color: var(--cr-warning);
+}
+
+.pedido-status.enviado {
+    background: var(--cr-gold-soft);
+    color: var(--cr-gold-hover);
+}
+
+.pedido-status.cancelado {
+    background: var(--cr-danger-soft);
+    color: var(--cr-danger);
+}
+
+.pedido-info {
+    min-width: 0;
+}
+
+.pedido-numero {
+    font-family: var(--cr-font-title);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--cr-text-primary);
+    letter-spacing: 0.5px;
+}
+
+.pedido-meta {
+    font-size: 0.78rem;
+    color: var(--cr-text-muted);
+    margin-top: 3px;
+}
+
+.pedido-total {
+    font-family: var(--cr-font-title);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--cr-gold-hover);
+    white-space: nowrap;
+}
+
+.pedido-arrow {
+    color: var(--cr-text-dim);
+    font-size: 1.2rem;
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.pedido-card:hover .pedido-arrow {
+    color: var(--cr-gold);
+    transform: translateX(4px);
+}
+
+/* ==========================================================================
+   MEUS DADOS — Form
+   ========================================================================== */
+.dados-card {
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 16px;
+    padding: 2rem 2rem 1.6rem;
+    box-shadow: var(--cr-shadow);
+}
+
+.dados-card h2 {
+    font-family: var(--cr-font-title);
+    font-size: 1.6rem;
+    color: var(--cr-text-primary);
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.dados-card .subtitle {
+    font-size: 0.85rem;
+    color: var(--cr-text-muted);
+    margin-bottom: 1.6rem;
+}
+
+.dados-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+}
+
+.dados-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.dados-field.full {
+    grid-column: 1 / -1;
+}
+
+.dados-field label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--cr-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.dados-field input {
+    background: var(--cr-bg-main);
+    border: 1px solid var(--cr-border);
+    color: var(--cr-text-primary);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-family: var(--cr-font-body);
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    width: 100%;
+}
+
+.dados-field input:focus {
+    border-color: var(--cr-gold);
+    background: var(--cr-bg-card);
+    box-shadow: 0 0 0 3px var(--cr-gold-soft);
+}
+
+.dados-field input:disabled {
+    background: var(--cr-bg-elevated);
+    color: var(--cr-text-dim);
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.dados-field .hint {
+    font-size: 0.72rem;
+    color: var(--cr-text-dim);
+    letter-spacing: 0.2px;
+}
+
+.dados-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.8rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--cr-border);
+}
+
+.dados-feedback {
+    font-size: 0.85rem;
+    flex: 1;
+    text-align: left;
+    min-height: 20px;
+}
+
+.dados-feedback.success {
+    color: var(--cr-success);
+}
+
+.dados-feedback.error {
+    color: var(--cr-danger);
+}
+
+/* ==========================================================================
+   FAVORITOS
+   ========================================================================== */
+.favoritos-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1rem;
+}
+
+.favorito-card {
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 14px;
+    padding: 1.2rem 1.3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.25s ease;
+}
+
+.favorito-card:hover {
+    border-color: var(--cr-gold);
+    box-shadow: var(--cr-shadow);
+}
+
+.favorito-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.favorito-nome {
+    font-family: var(--cr-font-title);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--cr-text-primary);
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.favorito-ref {
+    font-size: 0.72rem;
+    color: var(--cr-gold);
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.favorito-preco {
+    font-size: 0.88rem;
+    color: var(--cr-text-muted);
+    font-weight: 500;
+}
+
+.favorito-actions {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.btn-fav-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--cr-border);
+    background: transparent;
+    color: var(--cr-text-muted);
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.btn-fav-icon:hover {
+    border-color: var(--cr-gold);
+    color: var(--cr-gold);
+    background: var(--cr-gold-soft);
+}
+
+.btn-fav-icon.danger:hover {
+    border-color: var(--cr-danger);
+    color: var(--cr-danger);
+    background: var(--cr-danger-soft);
+}
+
+/* ==========================================================================
+   BOTÕES
+   ========================================================================== */
+.btn-cream {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
+    color: #fdfaf4;
+    padding: 0.8rem 1.8rem;
+    border-radius: 25px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: var(--cr-font-body);
+}
+
+.btn-cream:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(184, 147, 90, 0.4);
+}
+
+.btn-cream:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-cream-ghost {
+    background: transparent;
+    border: 1px solid var(--cr-border);
+    color: var(--cr-text-muted);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: var(--cr-font-body);
+}
+
+.btn-cream-ghost:hover {
+    border-color: var(--cr-gold);
+    color: var(--cr-gold);
+    background: var(--cr-gold-soft);
+}
+
+/* ==========================================================================
+   MODAL — Detalhes do Pedido
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(47, 38, 32, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-box {
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 18px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 2rem;
+    position: relative;
+    box-shadow: var(--cr-shadow-lg);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.open .modal-box {
+    transform: translateY(0);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--cr-bg-main);
+    border: 1px solid var(--cr-border);
+    color: var(--cr-text-muted);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+    line-height: 1;
+    padding: 0;
+}
+
+.modal-close:hover {
+    background: var(--cr-gold);
+    color: #fdfaf4;
+    border-color: var(--cr-gold);
+}
+
+.modal-title {
+    font-family: var(--cr-font-title);
+    font-size: 1.6rem;
+    color: var(--cr-text-primary);
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    padding-right: 2rem;
+}
+
+.modal-subtitle {
+    font-size: 0.82rem;
+    color: var(--cr-text-muted);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.3px;
+}
+
+.modal-section {
+    margin-bottom: 1.4rem;
+}
+
+.modal-section h4 {
+    font-size: 0.72rem;
+    color: var(--cr-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 0.7rem;
+    font-weight: 700;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--cr-border);
+}
+
+.modal-item {
+    background: var(--cr-bg-main);
+    border: 1px solid var(--cr-border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+}
+
+.modal-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.modal-item-name {
+    font-family: var(--cr-font-title);
+    font-size: 1rem;
+    color: var(--cr-text-primary);
+    font-weight: 600;
+}
+
+.modal-item-ref {
+    font-size: 0.72rem;
+    color: var(--cr-text-muted);
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.modal-item-price {
+    font-size: 0.9rem;
+    color: var(--cr-gold-hover);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.modal-totals {
+    background: var(--cr-gold-soft);
+    border: 1px solid var(--cr-border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+}
+
+.modal-totals .row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    color: var(--cr-text-muted);
+    padding: 0.2rem 0;
+}
+
+.modal-totals .row.total {
+    font-size: 1.15rem;
+    color: var(--cr-gold-hover);
+    font-family: var(--cr-font-title);
+    font-weight: 700;
+    padding-top: 0.5rem;
+    margin-top: 0.4rem;
+    border-top: 1px solid var(--cr-border);
+}
+
+.modal-detail {
+    font-size: 0.88rem;
+    color: var(--cr-text-muted);
+    line-height: 1.65;
+}
+
+.modal-detail strong {
+    color: var(--cr-text-primary);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   RESPONSIVO
+   ========================================================================== */
+@media (max-width: 768px) {
+    .perfil-header-container {
+        padding: 0 1rem;
+    }
+
+    .perfil-logo {
+        font-size: 1.2rem;
+        letter-spacing: 1.5px;
+    }
+
+    .perfil-back-link {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .perfil-container {
+        padding: 2rem 1rem 3rem;
+    }
+
+    .perfil-hero h1 {
+        font-size: 1.9rem;
+    }
+
+    .perfil-tab {
+        font-size: 0.78rem;
+        padding: 0.7rem 1rem;
+    }
+
+    .pedido-card {
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+        padding: 1rem 1.1rem;
+    }
+
+    .pedido-total {
+        font-size: 1.15rem;
+    }
+
+    .pedido-arrow {
+        display: none;
+    }
+
+    .dados-card {
+        padding: 1.4rem 1.2rem;
+    }
+
+    .dados-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dados-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .dados-actions .btn-cream {
+        width: 100%;
+    }
+
+    .dados-feedback {
+        text-align: center;
+    }
+
+    .favoritos-list {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-box {
+        padding: 1.5rem 1.2rem;
+    }
+
+    .modal-title {
+        font-size: 1.35rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .perfil-logo {
+        font-size: 1.05rem;
+        letter-spacing: 1px;
+    }
+
+    .perfil-tab {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.72rem;
+    }
+
+    .perfil-tab .count {
+        font-size: 0.65rem;
+        padding: 0.1rem 0.4rem;
+    }
+}
