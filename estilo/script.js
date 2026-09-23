@@ -71,6 +71,88 @@ function escapeHTML(str) {
         .replace(/'/g, '&#39;');
 }
 
+// ==========================================================================
+// Google Analytics 4 — Eventos customizados
+// ==========================================================================
+function trackGA(eventName, params = {}) {
+    if (typeof window.gtag === 'function') {
+        try {
+            window.gtag('event', eventName, params);
+        } catch (e) {
+        }
+    }
+}
+
+// ==========================================================================
+// CONSENT MODE v2 — Banner de Cookies
+// ==========================================================================
+const COOKIE_CONSENT_KEY = 'gemas_cookie_consent';
+
+function applyConsent(choice) {
+    // Google Consent Mode
+    if (typeof window.gtag === 'function') {
+        if (choice === 'all') {
+            gtag('consent', 'update', {
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted',
+                'analytics_storage': 'granted'
+            });
+        } else {
+            gtag('consent', 'update', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied'
+            });
+        }
+    }
+
+    // Meta Pixel Consent
+    if (typeof window.fbq === 'function') {
+        if (choice === 'all') {
+            window.fbq('consent', 'grant');
+        } else {
+            window.fbq('consent', 'revoke');
+        }
+    }
+}
+
+function showCookieBanner() {
+    const banner = document.getElementById('cookie-banner');
+    if (banner) {
+        setTimeout(() => banner.classList.add('visible'), 800);
+    }
+}
+
+function hideCookieBanner() {
+    const banner = document.getElementById('cookie-banner');
+    if (banner) banner.classList.remove('visible');
+}
+
+function handleCookieChoice(choice) {
+    try {
+        localStorage.setItem(COOKIE_CONSENT_KEY, choice);
+    } catch (e) {
+        console.warn('Erro ao salvar consentimento:', e);
+    }
+    applyConsent(choice);
+    hideCookieBanner();
+}
+
+function initCookieConsent() {
+    let saved = null;
+    try {
+        saved = localStorage.getItem(COOKIE_CONSENT_KEY);
+    } catch (e) { }
+
+    if (saved === 'all' || saved === 'essential') {
+        applyConsent(saved);
+    } else {
+        showCookieBanner();
+    }
+}
+
 function getCategoryLabel(cat) {
     const map = { microcroche: 'Microcrochê', pedras: 'Pedras Naturais', colab: 'Colabs' };
     return map[cat] || cat || 'Outros';
@@ -1190,30 +1272,14 @@ function removeFromCart(index) {
         }]
     });
 
-    function trackViewCart() {
-        if (cart.length === 0) return;
-        const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-
-        trackGA('view_cart', {
-            currency: 'BRL',
-            value: total,
-            items: cart.map(i => ({
-                item_id: i.ref,
-                item_name: i.name,
-                price: Number(i.price),
-                quantity: Number(i.quantity)
-            }))
-        });
-
-        trackMetaCustom('ViewCart', {
-            content_ids: cart.map(i => i.ref),
-            content_type: 'product',
-            contents: cart.map(i => ({ id: i.ref, quantity: Number(i.quantity), item_price: Number(i.price) })),
-            value: total,
-            currency: 'BRL',
-            num_items: cart.reduce((s, i) => s + Number(i.quantity), 0)
-        });
-    }
+    // ====== Meta: RemoveFromCart ======
+    trackMetaCustom('RemoveFromCart', {
+        content_ids: [item.ref],
+        content_type: 'product',
+        content_name: item.name,
+        value: Number(item.price) * Number(item.quantity),
+        currency: 'BRL'
+    });
 
     cart.splice(index, 1);
     updateCartUI();
@@ -1880,30 +1946,15 @@ function openCheckoutModal() {
         }))
     });
 
-    function trackViewCart() {
-        if (cart.length === 0) return;
-        const total = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-
-        trackGA('view_cart', {
-            currency: 'BRL',
-            value: total,
-            items: cart.map(i => ({
-                item_id: i.ref,
-                item_name: i.name,
-                price: Number(i.price),
-                quantity: Number(i.quantity)
-            }))
-        });
-
-        trackMetaCustom('ViewCart', {
-            content_ids: cart.map(i => i.ref),
-            content_type: 'product',
-            contents: cart.map(i => ({ id: i.ref, quantity: Number(i.quantity), item_price: Number(i.price) })),
-            value: total,
-            currency: 'BRL',
-            num_items: cart.reduce((s, i) => s + Number(i.quantity), 0)
-        });
-    }
+    // ====== Meta: InitiateCheckout ======
+    trackMeta('InitiateCheckout', {
+        content_ids: cart.map(i => i.ref),
+        content_type: 'product',
+        contents: cart.map(i => ({ id: i.ref, quantity: Number(i.quantity), item_price: Number(i.price) })),
+        value: total,
+        currency: 'BRL',
+        num_items: cart.reduce((s, i) => s + Number(i.quantity), 0)
+    });
 }
 
 function closeCheckoutModal() {
