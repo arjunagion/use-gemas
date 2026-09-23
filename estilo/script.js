@@ -71,6 +71,29 @@ function escapeHTML(str) {
         .replace(/'/g, '&#39;');
 }
 
+/**
+ * Escapa uma string para uso dentro de atributos inline (onclick/onerror)
+ * onde o valor vai entrar como string JS entre aspas simples.
+ *
+ * Estratégia dupla:
+ *  - Escapa para JavaScript (backslash, aspas simples, quebra de linha)
+ *  - Escapa para HTML (aspas duplas viram \x22, < > & viram escapes hex)
+ *
+ * Assim o valor é seguro nos DOIS contextos ao mesmo tempo.
+ */
+function escapeJs(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '\\x22')
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/</g, '\\x3C')
+        .replace(/>/g, '\\x3E')
+        .replace(/&/g, '\\x26');
+}
+
 // ==========================================================================
 // Google Analytics 4 — Eventos customizados
 // ==========================================================================
@@ -437,7 +460,7 @@ function renderProductsGrid() {
                    Em produção
                </button>`
             : `<button class="btn-add-cart"
-                   onclick="addToCart('${escapeHTML(p.name).replace(/'/g, "\\'")}', '${escapeHTML(p.ref)}', ${Number(p.price)})">
+                   onclick="addToCart('${escapeJs(p.name)}', '${escapeJs(p.ref)}', ${Number(p.price)})">
                    Adicionar ao Carrinho
                </button>`;
 
@@ -456,7 +479,7 @@ function renderProductsGrid() {
                     ${mediaHTML}
                     ${stockBadge}
                     <button type="button" class="btn-favorite"
-                        onclick="toggleFavorite(event, '${escapeHTML(p.name).replace(/'/g, "\\'")}', '${escapeHTML(p.ref)}', ${Number(p.price)})"
+                        onclick="toggleFavorite(event, '${escapeJs(p.name)}', '${escapeJs(p.ref)}', ${Number(p.price)})"
                         aria-label="Adicionar ${escapeHTML(p.name)} aos favoritos">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -1072,6 +1095,26 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
     });
 }
 
+/**
+ * Handler para onerror de <video>/<img> no modal de produto.
+ * Substitui a mídia quebrada por uma div de fallback.
+ *
+ * Chamado inline: onerror="handleMediaError(this)"
+ */
+function handleMediaError(el) {
+    if (!el || !el.parentElement) return;
+
+    const fallback = document.createElement('div');
+    fallback.style.color = '#666';
+    fallback.style.textAlign = 'center';
+    fallback.style.padding = '2rem';
+    fallback.style.fontSize = '0.9rem';
+    fallback.style.width = '100%';
+    fallback.textContent = 'Mídia indisponível';
+
+    el.parentElement.replaceChild(fallback, el);
+}
+
 function renderModalMedia() {
     const wrapper = document.getElementById('modal-media-wrapper');
     const dotsContainer = document.getElementById('gallery-dots');
@@ -1080,10 +1123,8 @@ function renderModalMedia() {
 
     if (!wrapper) return;
 
-    const fallbackHTML = `<div style="color:#666;text-align:center;padding:2rem;font-size:0.9rem;width:100%;">Mídia indisponível</div>`;
-
     if (currentGallery.length === 0) {
-        wrapper.innerHTML = fallbackHTML;
+        wrapper.innerHTML = `<div style="color:#666;text-align:center;padding:2rem;font-size:0.9rem;width:100%;">Mídia indisponível</div>`;
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
         if (dotsContainer) dotsContainer.innerHTML = '';
@@ -1100,6 +1141,7 @@ function renderModalMedia() {
 
     const currentSrc = currentGallery[currentMediaIndex];
     const isVideo = currentSrc.match(/\.(mov|mp4|webm|ogg)$/i);
+    const safeSrc = escapeHTML(currentSrc);
 
     const zoomIconSVG = `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1119,14 +1161,14 @@ function renderModalMedia() {
 
     if (isVideo) {
         wrapper.innerHTML = `
-            <video src="${currentSrc}" autoplay muted loop playsinline preload="metadata" 
-                   onerror="this.parentElement.innerHTML='${fallbackHTML.replace(/'/g, "\\'")}'"></video>
+            <video src="${safeSrc}" autoplay muted loop playsinline preload="metadata" 
+                   onerror="handleMediaError(this)"></video>
             ${zoomHintHTML}
         `;
     } else {
         wrapper.innerHTML = `
-            <img src="${currentSrc}" alt="Detalhe do Produto" 
-                 onerror="this.parentElement.innerHTML='${fallbackHTML.replace(/'/g, "\\'")}'" />
+            <img src="${safeSrc}" alt="Detalhe do Produto" 
+                 onerror="handleMediaError(this)" />
             ${zoomHintHTML}
         `;
     }
@@ -1457,6 +1499,7 @@ function sendToWhatsApp(itemsParam = null) {
 
     if (checkoutData && checkoutData.name) {
         message += EMOJI_USER + ` *Cliente:* ${checkoutData.name}\n`;
+        if (checkoutData.email) message += EMOJI_EMAIL + ` *E-mail:* ${checkoutData.email}\n`;
         if (checkoutData.doc) message += EMOJI_DOC + ` *CPF/CNPJ:* ${checkoutData.doc}\n`;
         if (checkoutData.phone) message += EMOJI_PHONE + ` *Telefone:* ${checkoutData.phone}\n`;
     }
@@ -1989,17 +2032,30 @@ async function loadCheckoutData() {
         try { saved = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null'); } catch (e) { saved = null; }
     }
 
-    if (!saved) return;
+    if (!saved) {
+        // Sem nada salvo: pré-preenche email com o da conta (se logado)
+        if (user && user.email) {
+            const emailEl = document.getElementById('ck-email');
+            if (emailEl) emailEl.value = user.email;
+        }
+        return;
+    }
 
-    const fields = ['name', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
+    const fields = ['name', 'email', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
     fields.forEach(field => {
         const el = document.getElementById('ck-' + field);
         if (el && saved[field]) el.value = saved[field];
     });
+
+    // Fallback: se o email ainda estiver vazio e o cliente estiver logado, usa o email da conta
+    if (user && user.email) {
+        const emailEl = document.getElementById('ck-email');
+        if (emailEl && !emailEl.value) emailEl.value = user.email;
+    }
 }
 
 async function saveCheckoutData() {
-    const fields = ['name', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
+    const fields = ['name', 'email', 'doc', 'phone', 'cep', 'street', 'number', 'complement', 'neighborhood', 'city', 'state', 'notes'];
     const data = {};
     fields.forEach(field => {
         const el = document.getElementById('ck-' + field);
@@ -2010,9 +2066,13 @@ async function saveCheckoutData() {
 
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (user) {
+        // Remove o email antes de salvar no Supabase:
+        // a tabela checkout_data não precisa dessa coluna, e o email do usuário
+        // logado é recuperado diretamente de auth (user.email) em saveOrderToDb().
+        const { email, ...dataForDb } = data;
         await supabaseClient.from('checkout_data').upsert({
             user_id: user.id,
-            ...data,
+            ...dataForDb,
             updated_at: new Date().toISOString()
         });
     }
@@ -2137,6 +2197,17 @@ function validateCheckoutForm() {
         }
     }
 
+    // Validação "soft" do e-mail: só marca se o campo existir, estiver preenchido e for inválido.
+    // Se estiver vazio, é permitido (guest pode comprar sem informar e-mail).
+    const emailEl = document.getElementById('ck-email');
+    if (emailEl) {
+        const emailVal = emailEl.value.trim();
+        if (emailVal && !validateEmail(emailVal)) {
+            emailEl.classList.add('input-error');
+            if (!firstInvalid) firstInvalid = emailEl;
+        }
+    }
+
     if (firstInvalid) {
         firstInvalid.focus();
         showCheckoutFeedback('Por favor, corrija os campos destacados em vermelho.', 'error');
@@ -2216,7 +2287,7 @@ async function saveOrderToDb() {
         customer_name: checkoutData.name,
         customer_doc: checkoutData.doc,
         customer_phone: checkoutData.phone,
-        customer_email: user?.email || null,
+        customer_email: user?.email || checkoutData.email || null,
         cep: checkoutData.cep,
         street: checkoutData.street,
         number: checkoutData.number,
