@@ -2189,12 +2189,11 @@ a {
 }
 
 /* ==========================================================================
-   17. RESPONSIVO EXTRA — Mobile (;
-checkout + dep   oimentos)
+   17. RESPONSIVO EXTRA — Mobile (checkout + depoimentos)
    ========================================================================== */
-@media (bottommax-width: 768px) {
-    .check:out-card {
-        padding: 1.5 rem 1.2rem;
+@media (max-width: 768px) {
+    .checkout-card {
+        padding: 1.5rem 1.2rem;
     }
 
     .checkout-header h3 {
