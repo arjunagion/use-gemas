@@ -1,29 +1,24 @@
 /* ==========================================================================
-   ÁREA DO CLIENTE — CREAM MODE
-   Paleta quente/acolhedora pra "Minha Conta"
+   ÁREA DO CLIENTE — CREAM MODE + IDENTIDADE USE GEMAS
+   Navbar + rodapé dark (identidade do site) + miolo cream (área pessoal)
    ========================================================================== */
+
 :root {
-    /* Fundos */
+    /* === CREAM MODE (miolo) === */
     --cr-bg-main: #f7f1e8;
     --cr-bg-card: #fdfaf4;
     --cr-bg-elevated: #ede4d3;
     --cr-bg-hover: #efe6d5;
-
-    /* Texto */
     --cr-text-primary: #2f2620;
     --cr-text-muted: #7a6b5a;
     --cr-text-dim: #a89987;
-
-    /* Dourado quente */
     --cr-gold: #b8935a;
     --cr-gold-hover: #966f3d;
     --cr-gold-soft: rgba(184, 147, 90, 0.12);
-
-    /* Bordas */
     --cr-border: rgba(184, 147, 90, 0.25);
     --cr-border-hover: rgba(184, 147, 90, 0.5);
 
-    /* Status */
+    /* === CORES DE STATUS === */
     --cr-success: #5a8a5a;
     --cr-success-soft: rgba(90, 138, 90, 0.12);
     --cr-warning: #c9922a;
@@ -33,13 +28,20 @@
     --cr-info: #4a6fa5;
     --cr-info-soft: rgba(74, 111, 165, 0.12);
 
-    /* Fontes */
-    --cr-font-title: 'Cormorant Garamond', serif;
-    --cr-font-body: 'Montserrat', sans-serif;
+    /* === DARK MODE (identidade Use Gemas) === */
+    --dark-bg: #0e0e10;
+    --dark-bg-panel: #141418;
+    --dark-text: #f5f5f5;
+    --dark-text-muted: #c5c5c5;
+    --dark-text-dim: #888;
+    --dark-gold: #d4af37;
+    --dark-gold-hover: #f3cf55;
+    --dark-border: rgba(212, 175, 55, 0.15);
 
-    /* Sombra */
-    --cr-shadow: 0 4px 16px rgba(47, 38, 32, 0.06);
-    --cr-shadow-lg: 0 12px 40px rgba(47, 38, 32, 0.12);
+    --font-title: 'Cormorant Garamond', serif;
+    --font-body: 'Montserrat', sans-serif;
+    --shadow-soft: 0 4px 16px rgba(47, 38, 32, 0.06);
+    --shadow-lg: 0 12px 40px rgba(47, 38, 32, 0.12);
 }
 
 * {
@@ -55,7 +57,7 @@ html {
 body {
     background: var(--cr-bg-main);
     color: var(--cr-text-primary);
-    font-family: var(--cr-font-body);
+    font-family: var(--font-body);
     line-height: 1.6;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
@@ -72,10 +74,9 @@ a:hover {
 }
 
 button {
-    font-family: var(--cr-font-body);
+    font-family: var(--font-body);
 }
 
-/* Acessibilidade */
 :focus-visible {
     outline: 2px solid var(--cr-gold);
     outline-offset: 3px;
@@ -89,89 +90,238 @@ button {
     }
 }
 
-/* ==========================================================================
-   HEADER
-   ========================================================================== */
-.perfil-header {
-    background: var(--cr-bg-card);
-    border-bottom: 1px solid var(--cr-border);
-    padding: 1.2rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 1px 3px rgba(47, 38, 32, 0.04);
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
-.perfil-header-container {
-    max-width: 1080px;
+/* ==========================================================================
+   1. BANNER DO TOPO (dinâmico, puxa do Supabase)
+   ========================================================================== */
+#perfil-site-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+    color: #0e0e10;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    font-family: var(--font-body);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   2. NAVBAR DARK (identidade Use Gemas)
+   ========================================================================== */
+.perfil-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(14, 14, 16, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--dark-border);
+    transition: top 0.3s ease;
+}
+
+.perfil-nav-container {
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .perfil-logo {
-    font-family: var(--cr-font-title);
-    font-size: 1.5rem;
+    font-family: var(--font-title);
+    font-size: 1.8rem;
     font-weight: 700;
     letter-spacing: 2px;
-    color: var(--cr-gold);
+    color: var(--dark-gold);
+    white-space: nowrap;
+    flex-shrink: 0;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: color 0.3s ease;
 }
 
 .perfil-logo:hover {
-    color: var(--cr-gold-hover);
+    color: var(--dark-gold-hover);
     text-decoration: none;
 }
 
-.perfil-back-link {
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.8px;
+.perfil-nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.perfil-nav-links a {
+    font-size: 0.9rem;
     text-transform: uppercase;
-    color: var(--cr-text-muted);
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--cr-border);
-    border-radius: 20px;
-    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    color: var(--dark-text);
+    white-space: nowrap;
+    transition: color 0.3s;
+    text-decoration: none;
 }
 
-.perfil-back-link:hover {
-    border-color: var(--cr-gold);
-    color: var(--cr-gold);
+.perfil-nav-links a:hover {
+    color: var(--dark-gold);
+}
+
+.perfil-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-shrink: 0;
+}
+
+.perfil-btn-instagram {
+    border: 1px solid var(--dark-gold);
+    color: var(--dark-gold);
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    white-space: nowrap;
     text-decoration: none;
-    background: var(--cr-gold-soft);
+}
+
+.perfil-btn-instagram:hover {
+    background: var(--dark-gold);
+    color: var(--dark-bg);
+    text-decoration: none;
+}
+
+.perfil-nav-icon {
+    position: relative;
+    color: var(--dark-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.2rem;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 1.15rem;
+}
+
+.perfil-nav-icon:hover {
+    color: var(--dark-gold);
+    text-decoration: none;
+}
+
+.perfil-nav-icon .count {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: var(--dark-gold);
+    color: var(--dark-bg);
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 50%;
+    padding: 1px 5px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.perfil-user-greeting {
+    font-size: 0.85rem;
+    color: var(--dark-gold);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.perfil-btn-logout {
+    background: transparent;
+    border: 1px solid rgba(255, 85, 85, 0.4);
+    color: #ff7a7a;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.perfil-btn-logout:hover {
+    background: rgba(255, 85, 85, 0.1);
+    border-color: #ff5555;
+    color: #ff5555;
 }
 
 /* ==========================================================================
-   HERO
+   3. CONTAINER PRINCIPAL
    ========================================================================== */
+.perfil-main {
+    padding-top: 8rem;
+    padding-bottom: 2rem;
+    min-height: calc(100vh - 200px);
+}
+
 .perfil-container {
     max-width: 1080px;
     margin: 0 auto;
-    padding: 3rem 1.5rem 4rem;
+    padding: 0 1.5rem;
 }
 
+/* ==========================================================================
+   4. HERO EDITORIAL
+   ========================================================================== */
 .perfil-hero {
     margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--cr-border);
+}
+
+.perfil-hero-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cr-gold-hover);
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--cr-border);
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    background: var(--cr-gold-soft);
 }
 
 .perfil-hero h1 {
-    font-family: var(--cr-font-title);
-    font-size: 2.6rem;
+    font-family: var(--font-title);
+    font-size: 2.8rem;
     font-weight: 700;
     line-height: 1.15;
     color: var(--cr-text-primary);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.6rem;
 }
 
 .perfil-hero h1 .wave {
     display: inline-block;
-    animation: wave 2s ease-in-out infinite;
+    animation: wave 2.2s ease-in-out infinite;
     transform-origin: 70% 70%;
+    margin-left: 0.3rem;
 }
 
 @keyframes wave {
@@ -182,14 +332,15 @@ button {
     50% { transform: rotate(10deg); }
 }
 
-.perfil-hero p {
-    font-size: 0.95rem;
+.perfil-hero-subtitle {
+    font-size: 0.98rem;
     color: var(--cr-text-muted);
-    letter-spacing: 0.2px;
+    line-height: 1.7;
+    max-width: 640px;
 }
 
 /* ==========================================================================
-   TABS
+   5. TABS
    ========================================================================== */
 .perfil-tabs {
     display: flex;
@@ -222,18 +373,18 @@ button {
 }
 
 .perfil-tab:hover {
-    color: var(--cr-gold);
+    color: var(--cr-gold-hover);
 }
 
 .perfil-tab.active {
-    color: var(--cr-gold);
+    color: var(--cr-gold-hover);
     border-bottom-color: var(--cr-gold);
 }
 
 .perfil-tab .count {
     display: inline-block;
     background: var(--cr-gold-soft);
-    color: var(--cr-gold);
+    color: var(--cr-gold-hover);
     font-size: 0.7rem;
     font-weight: 700;
     padding: 0.15rem 0.5rem;
@@ -244,7 +395,7 @@ button {
 }
 
 /* ==========================================================================
-   SEÇÕES / PAINÉIS
+   6. PAINÉIS / SEÇÕES
    ========================================================================== */
 .perfil-panel {
     display: none;
@@ -260,7 +411,6 @@ button {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Loading central */
 .perfil-loading {
     text-align: center;
     padding: 4rem 2rem;
@@ -281,7 +431,6 @@ button {
     to { transform: rotate(360deg); }
 }
 
-/* Empty state */
 .perfil-empty {
     background: var(--cr-bg-card);
     border: 1px dashed var(--cr-border);
@@ -299,7 +448,7 @@ button {
 }
 
 .perfil-empty h3 {
-    font-family: var(--cr-font-title);
+    font-family: var(--font-title);
     font-size: 1.4rem;
     color: var(--cr-text-primary);
     margin-bottom: 0.5rem;
@@ -312,7 +461,7 @@ button {
 }
 
 /* ==========================================================================
-   PEDIDOS — Cards
+   7. PEDIDOS
    ========================================================================== */
 .pedidos-list {
     display: flex;
@@ -337,7 +486,7 @@ button {
 .pedido-card:hover {
     border-color: var(--cr-gold);
     transform: translateY(-2px);
-    box-shadow: var(--cr-shadow);
+    box-shadow: var(--shadow-soft);
 }
 
 .pedido-status {
@@ -350,37 +499,18 @@ button {
     white-space: nowrap;
 }
 
-.pedido-status.novo {
-    background: var(--cr-info-soft);
-    color: var(--cr-info);
-}
-
-.pedido-status.pago {
-    background: var(--cr-success-soft);
-    color: var(--cr-success);
-}
-
-.pedido-status.produzindo {
-    background: var(--cr-warning-soft);
-    color: var(--cr-warning);
-}
-
-.pedido-status.enviado {
-    background: var(--cr-gold-soft);
-    color: var(--cr-gold-hover);
-}
-
-.pedido-status.cancelado {
-    background: var(--cr-danger-soft);
-    color: var(--cr-danger);
-}
+.pedido-status.novo { background: var(--cr-info-soft); color: var(--cr-info); }
+.pedido-status.pago { background: var(--cr-success-soft); color: var(--cr-success); }
+.pedido-status.produzindo { background: var(--cr-warning-soft); color: var(--cr-warning); }
+.pedido-status.enviado { background: var(--cr-gold-soft); color: var(--cr-gold-hover); }
+.pedido-status.cancelado { background: var(--cr-danger-soft); color: var(--cr-danger); }
 
 .pedido-info {
     min-width: 0;
 }
 
 .pedido-numero {
-    font-family: var(--cr-font-title);
+    font-family: var(--font-title);
     font-size: 1.15rem;
     font-weight: 700;
     color: var(--cr-text-primary);
@@ -394,7 +524,7 @@ button {
 }
 
 .pedido-total {
-    font-family: var(--cr-font-title);
+    font-family: var(--font-title);
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--cr-gold-hover);
@@ -408,23 +538,23 @@ button {
 }
 
 .pedido-card:hover .pedido-arrow {
-    color: var(--cr-gold);
+    color: var(--cr-gold-hover);
     transform: translateX(4px);
 }
 
 /* ==========================================================================
-   MEUS DADOS — Form
+   8. MEUS DADOS
    ========================================================================== */
 .dados-card {
     background: var(--cr-bg-card);
     border: 1px solid var(--cr-border);
     border-radius: 16px;
     padding: 2rem 2rem 1.6rem;
-    box-shadow: var(--cr-shadow);
+    box-shadow: var(--shadow-soft);
 }
 
 .dados-card h2 {
-    font-family: var(--cr-font-title);
+    font-family: var(--font-title);
     font-size: 1.6rem;
     color: var(--cr-text-primary);
     font-weight: 700;
@@ -435,6 +565,7 @@ button {
     font-size: 0.85rem;
     color: var(--cr-text-muted);
     margin-bottom: 1.6rem;
+    line-height: 1.6;
 }
 
 .dados-grid {
@@ -468,7 +599,7 @@ button {
     padding: 0.75rem 1rem;
     border-radius: 10px;
     font-size: 0.92rem;
-    font-family: var(--cr-font-body);
+    font-family: var(--font-body);
     outline: none;
     transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     width: 100%;
@@ -510,16 +641,11 @@ button {
     min-height: 20px;
 }
 
-.dados-feedback.success {
-    color: var(--cr-success);
-}
-
-.dados-feedback.error {
-    color: var(--cr-danger);
-}
+.dados-feedback.success { color: var(--cr-success); }
+.dados-feedback.error { color: var(--cr-danger); }
 
 /* ==========================================================================
-   FAVORITOS
+   9. FAVORITOS
    ========================================================================== */
 .favoritos-list {
     display: grid;
@@ -541,7 +667,7 @@ button {
 
 .favorito-card:hover {
     border-color: var(--cr-gold);
-    box-shadow: var(--cr-shadow);
+    box-shadow: var(--shadow-soft);
 }
 
 .favorito-info {
@@ -550,7 +676,7 @@ button {
 }
 
 .favorito-nome {
-    font-family: var(--cr-font-title);
+    font-family: var(--font-title);
     font-size: 1.15rem;
     font-weight: 600;
     color: var(--cr-text-primary);
@@ -562,7 +688,7 @@ button {
 
 .favorito-ref {
     font-size: 0.72rem;
-    color: var(--cr-gold);
+    color: var(--cr-gold-hover);
     letter-spacing: 0.8px;
     font-weight: 600;
     margin-bottom: 4px;
@@ -599,7 +725,7 @@ button {
 
 .btn-fav-icon:hover {
     border-color: var(--cr-gold);
-    color: var(--cr-gold);
+    color: var(--cr-gold-hover);
     background: var(--cr-gold-soft);
 }
 
@@ -610,7 +736,7 @@ button {
 }
 
 /* ==========================================================================
-   BOTÕES
+   10. BOTÕES
    ========================================================================== */
 .btn-cream {
     display: inline-flex;
@@ -628,7 +754,7 @@ button {
     border: none;
     cursor: pointer;
     transition: all 0.25s ease;
-    font-family: var(--cr-font-body);
+    font-family: var(--font-body);
 }
 
 .btn-cream:hover {
@@ -643,29 +769,8 @@ button {
     box-shadow: none;
 }
 
-.btn-cream-ghost {
-    background: transparent;
-    border: 1px solid var(--cr-border);
-    color: var(--cr-text-muted);
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    font-family: var(--cr-font-body);
-}
-
-.btn-cream-ghost:hover {
-    border-color: var(--cr-gold);
-    color: var(--cr-gold);
-    background: var(--cr-gold-soft);
-}
-
 /* ==========================================================================
-   MODAL — Detalhes do Pedido
+   11. MODAL
    ========================================================================== */
 .modal-overlay {
     position: fixed;
@@ -698,7 +803,7 @@ button {
     overflow-y: auto;
     padding: 2rem;
     position: relative;
-    box-shadow: var(--cr-shadow-lg);
+    box-shadow: var(--shadow-lg);
     transform: translateY(20px);
     transition: transform 0.3s ease;
 }
@@ -734,7 +839,7 @@ button {
 }
 
 .modal-title {
-    font-family: var(--cr-font-title);
+    font-family: var(--font-title);
     font-size: 1.6rem;
     color: var(--cr-text-primary);
     font-weight: 700;
@@ -776,13 +881,10 @@ button {
     align-items: center;
 }
 
-.modal-item-info {
-    flex: 1;
-    min-width: 0;
-}
+.modal-item-info { flex: 1; min-width: 0; }
 
 .modal-item-name {
-    font-family: var(--cr-font-title);
+    font-family: var(--font-title);
     font-size: 1rem;
     color: var(--cr-text-primary);
     font-weight: 600;
@@ -820,7 +922,7 @@ button {
 .modal-totals .row.total {
     font-size: 1.15rem;
     color: var(--cr-gold-hover);
-    font-family: var(--cr-font-title);
+    font-family: var(--font-title);
     font-weight: 700;
     padding-top: 0.5rem;
     margin-top: 0.4rem;
@@ -833,17 +935,117 @@ button {
     line-height: 1.65;
 }
 
-.modal-detail strong {
-    color: var(--cr-text-primary);
-    font-weight: 600;
+/* ==========================================================================
+   12. RODAPÉ DARK (identidade Use Gemas)
+   ========================================================================== */
+.perfil-footer {
+    background: #09090b;
+    border-top: 1px solid var(--dark-border);
+    padding: 3rem 0 2rem 0;
+    margin-top: 4rem;
+    color: var(--dark-text-muted);
+}
+
+.perfil-footer-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.perfil-footer-brand h3 {
+    font-family: var(--font-title);
+    font-size: 1.8rem;
+    color: var(--dark-gold);
+    letter-spacing: 1px;
+    margin-bottom: 0.3rem;
+}
+
+.perfil-footer-brand p {
+    color: var(--dark-text-muted);
+    font-size: 0.9rem;
+}
+
+.perfil-footer-social {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.perfil-footer-social a {
+    color: var(--dark-text-muted);
+    transition: color 0.3s;
+    font-size: 0.9rem;
+}
+
+.perfil-footer-social a:hover {
+    color: var(--dark-gold);
+}
+
+.perfil-footer-legal {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 1.5rem 1.6rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1.6rem;
+}
+
+.perfil-footer-legal a {
+    font-size: 0.78rem;
+    color: var(--dark-text-muted);
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.perfil-footer-legal a:hover {
+    color: var(--dark-gold);
+}
+
+.perfil-footer-legal .sep {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 0.8rem;
+    user-select: none;
+}
+
+.perfil-footer-bottom {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.8rem;
+    color: #999;
 }
 
 /* ==========================================================================
-   RESPONSIVO
+   13. RESPONSIVO
    ========================================================================== */
+@media (max-width: 900px) {
+    .perfil-nav-links {
+        display: none;
+    }
+
+    .perfil-btn-instagram {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
-    .perfil-header-container {
+    .perfil-navbar {
+        padding: 1rem 0;
+    }
+
+    .perfil-nav-container {
         padding: 0 1rem;
+        gap: 0.8rem;
     }
 
     .perfil-logo {
@@ -851,21 +1053,38 @@ button {
         letter-spacing: 1.5px;
     }
 
-    .perfil-back-link {
-        font-size: 0.7rem;
-        padding: 0.4rem 0.8rem;
+    .perfil-nav-actions {
+        gap: 0.9rem;
+        margin-left: auto;
+    }
+
+    .perfil-user-greeting {
+        font-size: 0.75rem;
+    }
+
+    .perfil-btn-logout {
+        font-size: 0.68rem;
+        padding: 0.4rem 0.7rem;
+    }
+
+    .perfil-main {
+        padding-top: 6.5rem;
     }
 
     .perfil-container {
-        padding: 2rem 1rem 3rem;
+        padding: 0 1rem;
     }
 
     .perfil-hero h1 {
-        font-size: 1.9rem;
+        font-size: 2rem;
+    }
+
+    .perfil-hero-subtitle {
+        font-size: 0.9rem;
     }
 
     .perfil-tab {
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         padding: 0.7rem 1rem;
     }
 
@@ -915,6 +1134,15 @@ button {
     .modal-title {
         font-size: 1.35rem;
     }
+
+    .perfil-footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .perfil-footer-social {
+        justify-content: center;
+    }
 }
 
 @media (max-width: 380px) {
@@ -925,11 +1153,15 @@ button {
 
     .perfil-tab {
         padding: 0.6rem 0.8rem;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
     }
 
     .perfil-tab .count {
         font-size: 0.65rem;
         padding: 0.1rem 0.4rem;
+    }
+
+    .perfil-user-greeting {
+        display: none;
     }
 }

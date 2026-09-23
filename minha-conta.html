@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha Conta | Use Gemas</title>
     <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0e0e10">
 
     <link rel="icon" type="image/png" href="estilo/midias/favicon.png">
     <link rel="apple-touch-icon" href="estilo/midias/favicon.png">
@@ -18,104 +19,163 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=1.0">
+    <link rel="stylesheet" href="estilo/perfil.css?v=2.0">
 </head>
 
 <body>
 
-    <!-- Header -->
-    <header class="perfil-header">
-        <div class="perfil-header-container">
+    <!-- Banner dinâmico do topo (puxa do Supabase) -->
+    <div id="perfil-site-banner" style="display: none;"></div>
+
+    <!-- Navbar Dark — identidade Use Gemas -->
+    <header class="perfil-navbar" id="perfil-navbar">
+        <div class="perfil-nav-container">
             <a href="index.html" class="perfil-logo">USE GEMAS</a>
-            <a href="index.html" class="perfil-back-link">← Voltar ao site</a>
+
+            <nav aria-label="Navegação principal">
+                <ul class="perfil-nav-links">
+                    <li><a href="index.html#hero">Início</a></li>
+                    <li><a href="index.html#colecao">Coleções</a></li>
+                    <li><a href="index.html#experiencia">Nossa História</a></li>
+                    <li><a href="index.html#contato">Contato</a></li>
+                </ul>
+            </nav>
+
+            <div class="perfil-nav-actions">
+                <a href="https://instagram.com/use.gemas" target="_blank" rel="noopener" class="perfil-btn-instagram">Instagram</a>
+
+                <span class="perfil-user-greeting" id="nav-user-greeting">Olá</span>
+
+                <a href="index.html" class="perfil-nav-icon" title="Meus Favoritos" aria-label="Meus favoritos">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span class="count" id="nav-wishlist-count" style="display: none;">0</span>
+                </a>
+
+                <a href="index.html" class="perfil-nav-icon" title="Carrinho" aria-label="Carrinho de compras">
+                    🛒
+                    <span class="count" id="nav-cart-count" style="display: none;">0</span>
+                </a>
+
+                <button type="button" class="perfil-btn-logout" onclick="handleLogout()">Sair</button>
+            </div>
         </div>
     </header>
 
-    <!-- Tela de carregamento inicial -->
-    <div id="perfil-loading" class="perfil-container">
+    <!-- Loading inicial -->
+    <div id="perfil-loading" class="perfil-container" style="padding-top: 8rem;">
         <div class="perfil-loading">
             <div class="spinner"></div>
             <p>Verificando acesso...</p>
         </div>
     </div>
 
-    <!-- Conteúdo principal (só aparece depois de validar login) -->
-    <main id="perfil-content" class="perfil-container" style="display: none;">
+    <!-- Conteúdo principal -->
+    <main id="perfil-content" class="perfil-main" style="display: none;">
+        <div class="perfil-container">
 
-        <div class="perfil-hero">
-            <h1>Olá, <span id="user-firstname">...</span> <span class="wave">👋</span></h1>
-            <p id="user-email-hero">...</p>
+            <div class="perfil-hero">
+                <span class="perfil-hero-badge">Área do Cliente</span>
+                <h1>Bem-vinda de volta, <span id="user-firstname">...</span><span class="wave">👋</span></h1>
+                <p class="perfil-hero-subtitle">Aqui você acompanha seus pedidos, cuida dos seus dados e revisita as peças que salvou.</p>
+            </div>
+
+            <!-- Tabs -->
+            <nav class="perfil-tabs" aria-label="Seções da conta">
+                <button class="perfil-tab active" data-panel="pedidos" onclick="switchPanel('pedidos')">
+                    📦 Meus Pedidos
+                    <span class="count" id="tab-count-pedidos" style="display: none;">0</span>
+                </button>
+                <button class="perfil-tab" data-panel="dados" onclick="switchPanel('dados')">
+                    👤 Meus Dados
+                </button>
+                <button class="perfil-tab" data-panel="favoritos" onclick="switchPanel('favoritos')">
+                    ❤️ Favoritos
+                    <span class="count" id="tab-count-favoritos" style="display: none;">0</span>
+                </button>
+            </nav>
+
+            <!-- PAINEL: PEDIDOS -->
+            <section class="perfil-panel active" id="panel-pedidos">
+                <div id="pedidos-container">
+                    <div class="perfil-loading">
+                        <div class="spinner"></div>
+                        <p>Carregando pedidos...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAINEL: DADOS -->
+            <section class="perfil-panel" id="panel-dados">
+                <div class="dados-card">
+                    <h2>Meus Dados</h2>
+                    <p class="subtitle">Você pode atualizar seu nome e telefone. O e-mail é a chave da sua conta e não pode ser alterado.</p>
+
+                    <form id="dados-form" onsubmit="handleDadosSubmit(event)" novalidate>
+                        <div class="dados-grid">
+                            <div class="dados-field">
+                                <label for="dados-nome">Nome completo</label>
+                                <input type="text" id="dados-nome" maxlength="100" required autocomplete="name">
+                            </div>
+
+                            <div class="dados-field">
+                                <label for="dados-telefone">Telefone</label>
+                                <input type="text" id="dados-telefone" maxlength="16" autocomplete="tel" placeholder="(11) 98765-4321">
+                            </div>
+
+                            <div class="dados-field full">
+                                <label for="dados-email">E-mail</label>
+                                <input type="email" id="dados-email" disabled>
+                                <small class="hint">🔒 Este campo é bloqueado. Se precisar trocar, fale com a gente.</small>
+                            </div>
+                        </div>
+
+                        <div class="dados-actions">
+                            <div class="dados-feedback" id="dados-feedback"></div>
+                            <button type="submit" class="btn-cream" id="dados-submit">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- PAINEL: FAVORITOS -->
+            <section class="perfil-panel" id="panel-favoritos">
+                <div id="favoritos-container">
+                    <div class="perfil-loading">
+                        <div class="spinner"></div>
+                        <p>Carregando favoritos...</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Rodapé Dark — identidade Use Gemas -->
+    <footer class="perfil-footer">
+        <div class="perfil-footer-container">
+            <div class="perfil-footer-brand">
+                <h3>USE GEMAS</h3>
+                <p>Arte viva em pedras e microcristais.</p>
+            </div>
+            <div class="perfil-footer-social">
+                <a href="https://instagram.com/use.gemas" target="_blank" rel="noopener">@use.gemas</a>
+                <a href="https://api.whatsapp.com/send?phone=5511982053330" target="_blank" rel="noopener">WhatsApp Direct</a>
+            </div>
         </div>
 
-        <!-- Tabs -->
-        <nav class="perfil-tabs" aria-label="Seções da conta">
-            <button class="perfil-tab active" data-panel="pedidos" onclick="switchPanel('pedidos')">
-                📦 Meus Pedidos
-                <span class="count" id="tab-count-pedidos" style="display: none;">0</span>
-            </button>
-            <button class="perfil-tab" data-panel="dados" onclick="switchPanel('dados')">
-                👤 Meus Dados
-            </button>
-            <button class="perfil-tab" data-panel="favoritos" onclick="switchPanel('favoritos')">
-                ❤️ Favoritos
-                <span class="count" id="tab-count-favoritos" style="display: none;">0</span>
-            </button>
-        </nav>
+        <div class="perfil-footer-legal">
+            <a href="politica-troca.html">Política de Troca e Devolução</a>
+            <span class="sep">·</span>
+            <a href="politica-privacidade.html">Política de Privacidade</a>
+        </div>
 
-        <!-- ==================== PAINEL: PEDIDOS ==================== -->
-        <section class="perfil-panel active" id="panel-pedidos">
-            <div id="pedidos-container">
-                <div class="perfil-loading">
-                    <div class="spinner"></div>
-                    <p>Carregando pedidos...</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== PAINEL: DADOS ==================== -->
-        <section class="perfil-panel" id="panel-dados">
-            <div class="dados-card">
-                <h2>Meus Dados</h2>
-                <p class="subtitle">Você pode atualizar seu nome e telefone. O e-mail é a chave da sua conta e não pode ser alterado.</p>
-
-                <form id="dados-form" onsubmit="handleDadosSubmit(event)" novalidate>
-                    <div class="dados-grid">
-                        <div class="dados-field">
-                            <label for="dados-nome">Nome completo</label>
-                            <input type="text" id="dados-nome" maxlength="100" required autocomplete="name">
-                        </div>
-
-                        <div class="dados-field">
-                            <label for="dados-telefone">Telefone</label>
-                            <input type="text" id="dados-telefone" maxlength="16" autocomplete="tel" placeholder="(11) 98765-4321">
-                        </div>
-
-                        <div class="dados-field full">
-                            <label for="dados-email">E-mail</label>
-                            <input type="email" id="dados-email" disabled>
-                            <small class="hint">🔒 Este campo é bloqueado. Se precisar trocar, fale com a gente.</small>
-                        </div>
-                    </div>
-
-                    <div class="dados-actions">
-                        <div class="dados-feedback" id="dados-feedback"></div>
-                        <button type="submit" class="btn-cream" id="dados-submit">Salvar Alterações</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- ==================== PAINEL: FAVORITOS ==================== -->
-        <section class="perfil-panel" id="panel-favoritos">
-            <div id="favoritos-container">
-                <div class="perfil-loading">
-                    <div class="spinner"></div>
-                    <p>Carregando favoritos...</p>
-                </div>
-            </div>
-        </section>
-
-    </main>
+        <div class="perfil-footer-bottom">
+            <p>&copy; 2026 Use Gemas. Todos os direitos reservados.</p>
+        </div>
+    </footer>
 
     <!-- Modal de Detalhes do Pedido -->
     <div id="pedido-modal" class="modal-overlay">
@@ -140,6 +200,7 @@
         let userProfile = null;
         let userOrders = [];
         let userFavorites = [];
+        let siteSettings = { whatsapp: '5511982053330', instagram: 'use.gemas', banner_message: '' };
 
         // ==========================================================================
         // Utilidades
@@ -151,9 +212,7 @@
         function parseDateSafe(iso) {
             if (!iso) return null;
             let s = String(iso);
-            if (!/[Zz]|[+-]\d{2}:?\d{2}$/.test(s)) {
-                s = s + 'Z';
-            }
+            if (!/[Zz]|[+-]\d{2}:?\d{2}$/.test(s)) s = s + 'Z';
             return new Date(s);
         }
 
@@ -197,6 +256,58 @@
                 return digits.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d{1,4})$/, '$1-$2');
             }
             return digits.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+        }
+
+        // ==========================================================================
+        // Banner do topo + Navbar position
+        // ==========================================================================
+        async function loadSiteBanner() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('settings')
+                    .select('banner_message, whatsapp, instagram')
+                    .eq('id', 1)
+                    .maybeSingle();
+
+                if (error || !data) return;
+
+                siteSettings.banner_message = data.banner_message || '';
+                siteSettings.whatsapp = data.whatsapp || siteSettings.whatsapp;
+                siteSettings.instagram = data.instagram || siteSettings.instagram;
+
+                if (!siteSettings.banner_message) return;
+
+                const banner = document.getElementById('perfil-site-banner');
+                const navbar = document.getElementById('perfil-navbar');
+                const loading = document.getElementById('perfil-loading');
+                const main = document.getElementById('perfil-content');
+
+                banner.textContent = siteSettings.banner_message;
+                banner.style.display = 'block';
+
+                requestAnimationFrame(() => {
+                    const h = banner.offsetHeight;
+                    if (navbar) navbar.style.top = h + 'px';
+                    if (loading) loading.style.paddingTop = (8 + h / 16) + 'rem';
+                });
+            } catch (e) {
+                console.warn('Erro ao carregar banner:', e);
+            }
+        }
+
+        // ==========================================================================
+        // Contadores (carrinho e favoritos) — leitura
+        // ==========================================================================
+        function loadCartCount() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('gemas_cart') || '[]');
+                const total = Array.isArray(cart) ? cart.reduce((s, i) => s + Number(i.quantity || 0), 0) : 0;
+                const el = document.getElementById('nav-cart-count');
+                if (el) {
+                    el.innerText = total;
+                    el.style.display = total > 0 ? 'inline-block' : 'none';
+                }
+            } catch (e) { }
         }
 
         // ==========================================================================
@@ -262,11 +373,9 @@
             container.innerHTML = '<div class="pedidos-list">' +
                 userOrders.map(o => {
                     const itemCount = (o.items || []).reduce((sum, i) => sum + Number(i.quantity), 0);
-                    const statusLabel = getStatusLabel(o.status);
-
                     return `
                         <div class="pedido-card" onclick="openPedidoModal('${o.id}')">
-                            <span class="pedido-status ${o.status}">${statusLabel}</span>
+                            <span class="pedido-status ${o.status}">${getStatusLabel(o.status)}</span>
                             <div class="pedido-info">
                                 <div class="pedido-numero">Pedido de ${formatDateShort(o.created_at)}</div>
                                 <div class="pedido-meta">${itemCount} ${itemCount === 1 ? 'item' : 'itens'}</div>
@@ -351,7 +460,6 @@
         // Dados
         // ==========================================================================
         async function loadUserProfile() {
-            // Busca nome no profiles
             const { data: profileData } = await supabaseClient
                 .from('profiles')
                 .select('name')
@@ -364,13 +472,11 @@
             const firstName = fullName.split(' ')[0];
 
             document.getElementById('user-firstname').innerText = firstName;
-            document.getElementById('user-email-hero').innerText = currentUser.email;
+            document.getElementById('nav-user-greeting').innerText = 'Olá, ' + firstName;
 
-            // Preenche o form
             document.getElementById('dados-nome').value = fullName;
             document.getElementById('dados-email').value = currentUser.email;
 
-            // Busca telefone no checkout_data
             const { data: checkoutData } = await supabaseClient
                 .from('checkout_data')
                 .select('phone')
@@ -404,7 +510,6 @@
             btn.innerText = 'Salvando...';
 
             try {
-                // 1. Atualiza nome no profiles
                 const { error: profileError } = await supabaseClient
                     .from('profiles')
                     .update({ name: nome })
@@ -417,7 +522,6 @@
                     return;
                 }
 
-                // 2. Atualiza telefone no checkout_data (se já existir linha)
                 const { data: existing } = await supabaseClient
                     .from('checkout_data')
                     .select('user_id')
@@ -435,9 +539,9 @@
                         .insert({ user_id: currentUser.id, phone: telefone });
                 }
 
-                // 3. Atualiza cabeçalho
                 const firstName = nome.split(' ')[0];
                 document.getElementById('user-firstname').innerText = firstName;
+                document.getElementById('nav-user-greeting').innerText = 'Olá, ' + firstName;
                 userProfile.name = nome;
 
                 feedback.className = 'dados-feedback success';
@@ -496,6 +600,12 @@
                 countEl.innerText = userFavorites.length;
                 countEl.style.display = userFavorites.length > 0 ? 'inline-block' : 'none';
             }
+
+            const navCount = document.getElementById('nav-wishlist-count');
+            if (navCount) {
+                navCount.innerText = userFavorites.length;
+                navCount.style.display = userFavorites.length > 0 ? 'inline-block' : 'none';
+            }
         }
 
         function renderFavorites() {
@@ -548,16 +658,32 @@
             renderFavorites();
 
             const countEl = document.getElementById('tab-count-favoritos');
+            const navCount = document.getElementById('nav-wishlist-count');
             if (countEl) {
                 countEl.innerText = userFavorites.length;
                 countEl.style.display = userFavorites.length > 0 ? 'inline-block' : 'none';
             }
+            if (navCount) {
+                navCount.innerText = userFavorites.length;
+                navCount.style.display = userFavorites.length > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        // ==========================================================================
+        // Logout
+        // ==========================================================================
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
         }
 
         // ==========================================================================
         // Inicialização
         // ==========================================================================
         document.addEventListener('DOMContentLoaded', async () => {
+            // Banner do topo + navbar position
+            await loadSiteBanner();
+
             // Mascara do telefone
             const telInput = document.getElementById('dados-telefone');
             if (telInput) {
@@ -568,9 +694,7 @@
 
             // Fecha modal com ESC
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closePedidoModal();
-                }
+                if (e.key === 'Escape') closePedidoModal();
             });
 
             // Fecha modal clicando fora
@@ -585,7 +709,6 @@
             const { data: { user }, error } = await supabaseClient.auth.getUser();
 
             if (error || !user) {
-                // Não logado → volta pra home
                 window.location.href = 'index.html';
                 return;
             }
@@ -596,7 +719,8 @@
             document.getElementById('perfil-loading').style.display = 'none';
             document.getElementById('perfil-content').style.display = 'block';
 
-            // Carrega dados em paralelo
+            // Carrega tudo em paralelo
+            loadCartCount();
             await Promise.all([
                 loadUserProfile(),
                 loadUserOrders(),
