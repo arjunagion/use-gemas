@@ -97,28 +97,7 @@ button {
 }
 
 /* ==========================================================================
-   1. BANNER DO TOPO (dinâmico, puxa do Supabase)
-   ========================================================================== */
-#perfil-site-banner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 999;
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
-    text-align: center;
-    padding: 0.55rem 1rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    font-family: var(--font-body);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* ==========================================================================
-   2. NAVBAR DARK (identidade Use Gemas)
+   1. NAVBAR DARK (identidade Use Gemas)
    ========================================================================== */
 .perfil-navbar {
     position: fixed;
@@ -131,7 +110,6 @@ button {
     z-index: 1000;
     padding: 1.2rem 0;
     border-bottom: 1px solid var(--dark-border);
-    transition: top 0.3s ease;
 }
 
 .perfil-nav-container {
@@ -209,44 +187,52 @@ button {
     text-decoration: none;
 }
 
-.perfil-nav-icon {
-    position: relative;
-    color: var(--dark-text);
-    display: flex;
+/* Botão "Perfil" cream com avatar circular */
+.perfil-btn-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: var(--cr-bg-main);
+    border: 1px solid var(--cr-border);
+    color: var(--cr-text-primary);
+    padding: 0.32rem 0.95rem 0.32rem 0.35rem;
+    border-radius: 30px;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+
+.perfil-btn-user:hover {
+    background: var(--cr-bg-card);
+    border-color: var(--cr-gold);
+    box-shadow: 0 4px 12px rgba(184, 147, 90, 0.25);
+}
+
+.perfil-btn-user-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--cr-bg-elevated);
+    color: var(--cr-text-primary);
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.2rem;
-    transition: color 0.3s ease;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 1.15rem;
-}
-
-.perfil-nav-icon:hover {
-    color: var(--dark-gold);
-    text-decoration: none;
-}
-
-.perfil-nav-icon .count {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    background: var(--dark-gold);
-    color: var(--dark-bg);
-    font-size: 0.7rem;
+    font-family: var(--font-title);
+    font-size: 0.95rem;
     font-weight: 700;
-    border-radius: 50%;
-    padding: 1px 5px;
-    min-width: 18px;
-    text-align: center;
-    line-height: 1.4;
+    letter-spacing: 0;
+    flex-shrink: 0;
 }
 
-.perfil-user-greeting {
-    font-size: 0.85rem;
-    color: var(--dark-gold);
-    font-weight: 500;
-    white-space: nowrap;
+.perfil-btn-user-label {
+    color: var(--cr-text-primary);
+    font-weight: 600;
+    letter-spacing: 0.4px;
 }
 
 .perfil-btn-logout {
@@ -271,7 +257,7 @@ button {
 }
 
 /* ==========================================================================
-   3. CONTAINER PRINCIPAL
+   2. CONTAINER PRINCIPAL
    ========================================================================== */
 .perfil-main {
     padding-top: 8rem;
@@ -286,7 +272,7 @@ button {
 }
 
 /* ==========================================================================
-   4. HERO EDITORIAL
+   3. HERO EDITORIAL
    ========================================================================== */
 .perfil-hero {
     margin-bottom: 2.5rem;
@@ -340,7 +326,7 @@ button {
 }
 
 /* ==========================================================================
-   5. TABS
+   4. TABS
    ========================================================================== */
 .perfil-tabs {
     display: flex;
@@ -395,7 +381,7 @@ button {
 }
 
 /* ==========================================================================
-   6. PAINÉIS / SEÇÕES
+   5. PAINÉIS / SEÇÕES
    ========================================================================== */
 .perfil-panel {
     display: none;
@@ -461,7 +447,7 @@ button {
 }
 
 /* ==========================================================================
-   7. PEDIDOS
+   6. PEDIDOS
    ========================================================================== */
 .pedidos-list {
     display: flex;
@@ -543,7 +529,7 @@ button {
 }
 
 /* ==========================================================================
-   8. MEUS DADOS
+   7. MEUS DADOS
    ========================================================================== */
 .dados-card {
     background: var(--cr-bg-card);
@@ -645,7 +631,7 @@ button {
 .dados-feedback.error { color: var(--cr-danger); }
 
 /* ==========================================================================
-   9. FAVORITOS
+   8. FAVORITOS
    ========================================================================== */
 .favoritos-list {
     display: grid;
@@ -736,7 +722,7 @@ button {
 }
 
 /* ==========================================================================
-   10. BOTÕES
+   9. BOTÕES
    ========================================================================== */
 .btn-cream {
     display: inline-flex;
@@ -770,7 +756,7 @@ button {
 }
 
 /* ==========================================================================
-   11. MODAL
+   10. MODAL
    ========================================================================== */
 .modal-overlay {
     position: fixed;
@@ -936,7 +922,7 @@ button {
 }
 
 /* ==========================================================================
-   12. RODAPÉ DARK (identidade Use Gemas)
+   11. RODAPÉ DARK (identidade Use Gemas)
    ========================================================================== */
 .perfil-footer {
     background: #09090b;
@@ -988,14 +974,13 @@ button {
 .perfil-footer-legal {
     max-width: 1080px;
     margin: 0 auto;
-    padding: 0 1.5rem 1.6rem 1.5rem;
+    padding: 1.6rem 1.5rem 0 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.8rem;
     flex-wrap: wrap;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 1.6rem;
 }
 
 .perfil-footer-legal a {
@@ -1026,7 +1011,7 @@ button {
 }
 
 /* ==========================================================================
-   13. RESPONSIVO
+   12. RESPONSIVO
    ========================================================================== */
 @media (max-width: 900px) {
     .perfil-nav-links {
@@ -1054,12 +1039,19 @@ button {
     }
 
     .perfil-nav-actions {
-        gap: 0.9rem;
+        gap: 0.7rem;
         margin-left: auto;
     }
 
-    .perfil-user-greeting {
+    .perfil-btn-user {
         font-size: 0.75rem;
+        padding: 0.28rem 0.75rem 0.28rem 0.3rem;
+    }
+
+    .perfil-btn-user-avatar {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85rem;
     }
 
     .perfil-btn-logout {
@@ -1161,7 +1153,11 @@ button {
         padding: 0.1rem 0.4rem;
     }
 
-    .perfil-user-greeting {
+    .perfil-btn-user-label {
         display: none;
+    }
+
+    .perfil-btn-user {
+        padding: 0.28rem;
     }
 }
