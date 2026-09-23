@@ -84,7 +84,10 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+
+    *,
+    *::before,
+    *::after {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
@@ -217,8 +220,8 @@ button {
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: var(--cr-bg-elevated);
-    color: var(--cr-text-primary);
+    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
+    color: #fdfaf4;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -227,6 +230,7 @@ button {
     font-weight: 700;
     letter-spacing: 0;
     flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(160, 123, 66, 0.4);
 }
 
 .perfil-btn-user-label {
@@ -311,11 +315,29 @@ button {
 }
 
 @keyframes wave {
-    0%, 60%, 100% { transform: rotate(0deg); }
-    10%, 30% { transform: rotate(14deg); }
-    20% { transform: rotate(-8deg); }
-    40% { transform: rotate(-4deg); }
-    50% { transform: rotate(10deg); }
+
+    0%,
+    60%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    10%,
+    30% {
+        transform: rotate(14deg);
+    }
+
+    20% {
+        transform: rotate(-8deg);
+    }
+
+    40% {
+        transform: rotate(-4deg);
+    }
+
+    50% {
+        transform: rotate(10deg);
+    }
 }
 
 .perfil-hero-subtitle {
@@ -393,8 +415,15 @@ button {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .perfil-loading {
@@ -414,7 +443,9 @@ button {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .perfil-empty {
@@ -485,11 +516,30 @@ button {
     white-space: nowrap;
 }
 
-.pedido-status.novo { background: var(--cr-info-soft); color: var(--cr-info); }
-.pedido-status.pago { background: var(--cr-success-soft); color: var(--cr-success); }
-.pedido-status.produzindo { background: var(--cr-warning-soft); color: var(--cr-warning); }
-.pedido-status.enviado { background: var(--cr-gold-soft); color: var(--cr-gold-hover); }
-.pedido-status.cancelado { background: var(--cr-danger-soft); color: var(--cr-danger); }
+.pedido-status.novo {
+    background: var(--cr-info-soft);
+    color: var(--cr-info);
+}
+
+.pedido-status.pago {
+    background: var(--cr-success-soft);
+    color: var(--cr-success);
+}
+
+.pedido-status.produzindo {
+    background: var(--cr-warning-soft);
+    color: var(--cr-warning);
+}
+
+.pedido-status.enviado {
+    background: var(--cr-gold-soft);
+    color: var(--cr-gold-hover);
+}
+
+.pedido-status.cancelado {
+    background: var(--cr-danger-soft);
+    color: var(--cr-danger);
+}
 
 .pedido-info {
     min-width: 0;
@@ -627,8 +677,13 @@ button {
     min-height: 20px;
 }
 
-.dados-feedback.success { color: var(--cr-success); }
-.dados-feedback.error { color: var(--cr-danger); }
+.dados-feedback.success {
+    color: var(--cr-success);
+}
+
+.dados-feedback.error {
+    color: var(--cr-danger);
+}
 
 /* ==========================================================================
    8. FAVORITOS
@@ -867,7 +922,10 @@ button {
     align-items: center;
 }
 
-.modal-item-info { flex: 1; min-width: 0; }
+.modal-item-info {
+    flex: 1;
+    min-width: 0;
+}
 
 .modal-item-name {
     font-family: var(--font-title);
