@@ -19,13 +19,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=2.2">
+    <link rel="stylesheet" href="estilo/perfil.css?v=2.3">
 </head>
 
 <body>
-
-    <!-- Banner dinâmico do topo (puxa do Supabase) -->
-    <div id="perfil-site-banner" style="display: none;"></div>
 
     <!-- Navbar Dark — identidade Use Gemas -->
     <header class="perfil-navbar" id="perfil-navbar">
@@ -44,20 +41,10 @@
             <div class="perfil-nav-actions">
                 <a href="https://instagram.com/use.gemas" target="_blank" rel="noopener" class="perfil-btn-instagram">Instagram</a>
 
-                <span class="perfil-user-greeting" id="nav-user-greeting">Olá</span>
-
-                <a href="index.html" class="perfil-nav-icon" title="Meus Favoritos" aria-label="Meus favoritos">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    <span class="count" id="nav-wishlist-count" style="display: none;">0</span>
-                </a>
-
-                <a href="index.html" class="perfil-nav-icon" title="Carrinho" aria-label="Carrinho de compras">
-                    🛒
-                    <span class="count" id="nav-cart-count" style="display: none;">0</span>
-                </a>
+                <button type="button" class="perfil-btn-user" id="btn-user-perfil" title="Você está na sua área">
+                    <span class="perfil-btn-user-avatar" id="btn-user-initial">·</span>
+                    <span class="perfil-btn-user-label">Perfil</span>
+                </button>
 
                 <button type="button" class="perfil-btn-logout" onclick="handleLogout()">Sair</button>
             </div>
@@ -200,7 +187,6 @@
         let userProfile = null;
         let userOrders = [];
         let userFavorites = [];
-        let siteSettings = { whatsapp: '5511982053330', instagram: 'use.gemas', banner_message: '' };
 
         // ==========================================================================
         // Utilidades
@@ -256,58 +242,6 @@
                 return digits.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{4})(\d{1,4})$/, '$1-$2');
             }
             return digits.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d{1,4})$/, '$1-$2');
-        }
-
-        // ==========================================================================
-        // Banner do topo + Navbar position
-        // ==========================================================================
-        async function loadSiteBanner() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('settings')
-                    .select('banner_message, whatsapp, instagram')
-                    .eq('id', 1)
-                    .maybeSingle();
-
-                if (error || !data) return;
-
-                siteSettings.banner_message = data.banner_message || '';
-                siteSettings.whatsapp = data.whatsapp || siteSettings.whatsapp;
-                siteSettings.instagram = data.instagram || siteSettings.instagram;
-
-                if (!siteSettings.banner_message) return;
-
-                const banner = document.getElementById('perfil-site-banner');
-                const navbar = document.getElementById('perfil-navbar');
-                const loading = document.getElementById('perfil-loading');
-                const main = document.getElementById('perfil-content');
-
-                banner.textContent = siteSettings.banner_message;
-                banner.style.display = 'block';
-
-                requestAnimationFrame(() => {
-                    const h = banner.offsetHeight;
-                    if (navbar) navbar.style.top = h + 'px';
-                    if (loading) loading.style.paddingTop = (8 + h / 16) + 'rem';
-                });
-            } catch (e) {
-                console.warn('Erro ao carregar banner:', e);
-            }
-        }
-
-        // ==========================================================================
-        // Contadores (carrinho e favoritos) — leitura
-        // ==========================================================================
-        function loadCartCount() {
-            try {
-                const cart = JSON.parse(localStorage.getItem('gemas_cart') || '[]');
-                const total = Array.isArray(cart) ? cart.reduce((s, i) => s + Number(i.quantity || 0), 0) : 0;
-                const el = document.getElementById('nav-cart-count');
-                if (el) {
-                    el.innerText = total;
-                    el.style.display = total > 0 ? 'inline-block' : 'none';
-                }
-            } catch (e) { }
         }
 
         // ==========================================================================
@@ -470,10 +404,10 @@
 
             const fullName = userProfile.name || currentUser.email.split('@')[0];
             const firstName = fullName.split(' ')[0];
+            const initial = firstName.charAt(0).toUpperCase();
 
             document.getElementById('user-firstname').innerText = firstName;
-            document.getElementById('nav-user-greeting').innerText = 'Olá, ' + firstName;
-
+            document.getElementById('btn-user-initial').innerText = initial;
             document.getElementById('dados-nome').value = fullName;
             document.getElementById('dados-email').value = currentUser.email;
 
@@ -540,8 +474,9 @@
                 }
 
                 const firstName = nome.split(' ')[0];
+                const initial = firstName.charAt(0).toUpperCase();
                 document.getElementById('user-firstname').innerText = firstName;
-                document.getElementById('nav-user-greeting').innerText = 'Olá, ' + firstName;
+                document.getElementById('btn-user-initial').innerText = initial;
                 userProfile.name = nome;
 
                 feedback.className = 'dados-feedback success';
@@ -600,12 +535,6 @@
                 countEl.innerText = userFavorites.length;
                 countEl.style.display = userFavorites.length > 0 ? 'inline-block' : 'none';
             }
-
-            const navCount = document.getElementById('nav-wishlist-count');
-            if (navCount) {
-                navCount.innerText = userFavorites.length;
-                navCount.style.display = userFavorites.length > 0 ? 'inline-block' : 'none';
-            }
         }
 
         function renderFavorites() {
@@ -658,14 +587,9 @@
             renderFavorites();
 
             const countEl = document.getElementById('tab-count-favoritos');
-            const navCount = document.getElementById('nav-wishlist-count');
             if (countEl) {
                 countEl.innerText = userFavorites.length;
                 countEl.style.display = userFavorites.length > 0 ? 'inline-block' : 'none';
-            }
-            if (navCount) {
-                navCount.innerText = userFavorites.length;
-                navCount.style.display = userFavorites.length > 0 ? 'inline-block' : 'none';
             }
         }
 
@@ -681,9 +605,6 @@
         // Inicialização
         // ==========================================================================
         document.addEventListener('DOMContentLoaded', async () => {
-            // Banner do topo + navbar position
-            await loadSiteBanner();
-
             // Mascara do telefone
             const telInput = document.getElementById('dados-telefone');
             if (telInput) {
@@ -720,7 +641,6 @@
             document.getElementById('perfil-content').style.display = 'block';
 
             // Carrega tudo em paralelo
-            loadCartCount();
             await Promise.all([
                 loadUserProfile(),
                 loadUserOrders(),

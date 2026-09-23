@@ -529,7 +529,7 @@ a {
 }
 
 /* ==========================================================================
-   7.1 BADGE "ÚLTIMAS UNIDADES" (movido pra fora do media query)
+   7.1 BADGE "ÚLTIMAS UNIDADES"
    ========================================================================== */
 .low-stock-badge {
     position: absolute;
@@ -2189,11 +2189,12 @@ a {
 }
 
 /* ==========================================================================
-   17. RESPONSIVO EXTRA — Mobile (checkout + depoimentos)
+   17. RESPONSIVO EXTRA — Mobile (;
+checkout + dep   oimentos)
    ========================================================================== */
-@media (max-width: 768px) {
-    .checkout-card {
-        padding: 1.5rem 1.2rem;
+@media ( bottommax-width: 768px) {
+    .check:out-card {
+        padding: 1.5 rem 1.2rem;
     }
 
     .checkout-header h3 {
@@ -2260,8 +2261,7 @@ a {
    18. BANNER DE COOKIES (LGPD / GDPR)
    ========================================================================== */
 .cookie-banner {
-    position: fixed;
-    bottom: 1rem;
+    position: fixed1rem;
     left: 50%;
     transform: translateX(-50%) translateY(150%);
     width: calc(100% - 2rem);
@@ -2472,7 +2472,6 @@ a {
     letter-spacing: 0.4px;
 }
 
-/* Ajuste mobile — só mostra o avatar */
 @media (max-width: 768px) {
     #user-btn .site-user-btn-label {
         display: none !important;
