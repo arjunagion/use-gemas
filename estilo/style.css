@@ -2260,6 +2260,35 @@ checkout + dep   oimentos)
 /* ==========================================================================
    18. BANNER DE COOKIES (LGPD / GDPR)
    ========================================================================== */
+.cookie-banner {
+    position: fixed;
+    bottom: 1rem;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: calc(100% - 2rem);
+    max-width: 720px;
+    background: rgba(20, 20, 24, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    box-sizing: border-box;
+    transform: translateY(20px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.cookie-banner.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
 .cookie-banner-content {
     display: flex;
     flex-direction: column;
@@ -2332,14 +2361,9 @@ checkout + dep   oimentos)
     .cookie-banner {
         bottom: 0.6rem;
         width: calc(100% - 1.2rem);
+        max-width: 100%;
         padding: 1rem 1.1rem;
         border-radius: 12px;
-    }
-
-    .cookie-banner-content {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.9rem;
     }
 
     .cookie-banner-actions {
