@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin | Use Gemas</title>
     <meta name="robots" content="noindex, nofollow">
+    <!-- PWA Admin -->
+    <link rel="manifest" href="manifest-admin.json">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="UG Admin">
+    <link rel="apple-touch-icon" href="estilo/midias/icone-admin-192.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3447,6 +3454,21 @@
 
             checkAdminAccess();
         });
+    </script>
+
+    <!-- Registro do Service Worker (PWA Admin) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw-admin.js', {
+                    scope: '/'
+                }).then((registration) => {
+                    console.log('[PWA Admin] Service Worker registrado:', registration.scope);
+                }).catch((error) => {
+                    console.warn('[PWA Admin] Falha ao registrar SW:', error);
+                });
+            });
+        }
     </script>
 
 </body>
