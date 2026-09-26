@@ -257,38 +257,15 @@ button {
     color: #ff5555;
 }
 
-/* Botão "Loja" — atalho de volta pra loja */
-.perfil-btn-loja {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: transparent;
-    border: 1px solid var(--dark-border);
-    color: var(--dark-text);
-    padding: 0.5rem 1.2rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.perfil-btn-loja:hover {
-    border-color: var(--dark-gold);
-    color: var(--dark-gold);
-    text-decoration: none;
-}
-
-.perfil-btn-loja-icon {
+/* Seta de "voltar pra loja" dentro do botão do usuário */
+.perfil-btn-user-arrow {
+    color: var(--cr-gold);
+    flex-shrink: 0;
     transition: transform 0.3s ease;
 }
 
-.perfil-btn-loja:hover .perfil-btn-loja-icon {
-    transform: translateX(-3px);
+.perfil-btn-user:hover .perfil-btn-user-arrow {
+    transform: translateX(-2px);
 }
 
 /* ==========================================================================
@@ -1054,18 +1031,6 @@ button {
     }
 
     .perfil-btn-instagram {
-        display: none;
-    }
-
-    .perfil-btn-loja {
-        width: 40px;
-        height: 40px;
-        padding: 0;
-        border-radius: 50%;
-        justify-content: center;
-    }
-
-    .perfil-btn-loja-label {
         display: none;
     }
 }
