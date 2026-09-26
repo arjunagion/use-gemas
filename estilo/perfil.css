@@ -168,25 +168,6 @@ button {
     flex-shrink: 0;
 }
 
-.perfil-btn-instagram {
-    border: 1px solid var(--dark-gold);
-    color: var(--dark-gold);
-    padding: 0.5rem 1.2rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s;
-    white-space: nowrap;
-    text-decoration: none;
-}
-
-.perfil-btn-instagram:hover {
-    background: var(--dark-gold);
-    color: var(--dark-bg);
-    text-decoration: none;
-}
-
 /* Botão "Perfil" cream com avatar circular */
 .perfil-btn-user {
     display: inline-flex;
@@ -1027,10 +1008,6 @@ button {
    ========================================================================== */
 @media (max-width: 900px) {
     .perfil-nav-links {
-        display: none;
-    }
-
-    .perfil-btn-instagram {
         display: none;
     }
 }
