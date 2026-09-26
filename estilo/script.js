@@ -687,6 +687,50 @@ function clearAuthFeedback() {
     }
 }
 
+function translateAuthError(error) {
+    if (!error) return 'Erro inesperado. Tente novamente.';
+
+    const code = String(error.code || '').toLowerCase();
+    const message = String(error.message || '').toLowerCase();
+
+    // Erro de rede
+    if (error instanceof TypeError || /fetch failed|failed to fetch|network|internet|connection/i.test(message)) {
+        return 'Erro de conexão. Verifique sua internet.';
+    }
+
+    // Muitas tentativas / rate limit
+    if (code.includes('rate_limit') || code.includes('too_many') || /rate limit|too many/i.test(message)) {
+        return 'Muitas tentativas. Aguarde alguns minutos.';
+    }
+
+    // Credenciais inválidas (login)
+    if (code === 'invalid_credentials' || /invalid login credentials|incorrect email or password/i.test(message)) {
+        return 'E-mail ou senha incorretos.';
+    }
+
+    // E-mail não confirmado
+    if (code === 'email_not_confirmed' || /email not confirmed|confirm your email/i.test(message)) {
+        return 'Confirme seu e-mail antes de entrar.';
+    }
+
+    // E-mail já cadastrado
+    if (code === 'user_already_exists' || /already registered|already been registered|user already/i.test(message)) {
+        return 'Este e-mail já está cadastrado. Faça login em vez de criar nova conta.';
+    }
+
+    // Senha curta
+    if (code === 'weak_password' || /password should be at least|at least 6 characters/i.test(message)) {
+        return 'A senha precisa ter pelo menos 6 caracteres.';
+    }
+
+    // E-mail inválido
+    if (code === 'validation_failed' || /invalid email|invalid format|unable to validate email/i.test(message)) {
+        return 'E-mail inválido. Confira e tente novamente.';
+    }
+
+    return 'Erro inesperado. Tente novamente.';
+}
+
 async function handleForgotPassword(event) {
     event.preventDefault();
     clearAuthFeedback();
@@ -941,16 +985,23 @@ async function handleRegister(event) {
     const originalText = btn ? btn.innerText : 'Cadastrar';
     if (btn) { btn.disabled = true; btn.innerText = 'Cadastrando...'; }
 
-    const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-        options: { data: { name: name } }
-    });
+    let result;
+    try {
+        result = await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: { data: { name: name } }
+        });
+    } catch (networkError) {
+        if (btn) { btn.disabled = false; btn.innerText = originalText; }
+        showAuthFeedback(translateAuthError(networkError), 'error');
+        return;
+    }
 
     if (btn) { btn.disabled = false; btn.innerText = originalText; }
 
-    if (error) {
-        showAuthFeedback(error.message.includes('already') ? 'Este e-mail já está cadastrado.' : 'Erro ao cadastrar. Tente novamente.', 'error');
+    if (result.error) {
+        showAuthFeedback(translateAuthError(result.error), 'error');
         return;
     }
 
@@ -990,12 +1041,19 @@ async function handleLogin(event) {
     const originalText = btn ? btn.innerText : 'Acessar';
     if (btn) { btn.disabled = true; btn.innerText = 'Entrando...'; }
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    let result;
+    try {
+        result = await supabaseClient.auth.signInWithPassword({ email, password });
+    } catch (networkError) {
+        if (btn) { btn.disabled = false; btn.innerText = originalText; }
+        showAuthFeedback(translateAuthError(networkError), 'error');
+        return;
+    }
 
     if (btn) { btn.disabled = false; btn.innerText = originalText; }
 
-    if (error) {
-        showAuthFeedback('E-mail ou senha incorretos.', 'error');
+    if (result.error) {
+        showAuthFeedback(translateAuthError(result.error), 'error');
         return;
     }
 
