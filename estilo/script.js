@@ -732,17 +732,32 @@ async function handleForgotPassword(event) {
     }
 }
 
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+
+    const open = btn.querySelector('.eye-open');
+    const closed = btn.querySelector('.eye-closed');
+    if (open) open.style.display = isPassword ? 'none' : '';
+    if (closed) closed.style.display = isPassword ? '' : 'none';
+
+    btn.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Mostrar senha');
+}
+
 function setFieldStatus(inputEl, isValid, message = '') {
     if (!inputEl) return;
 
-    let msgEl = inputEl.parentNode.querySelector('.field-msg');
+    let msgEl = inputEl.closest('.form-group').querySelector('.field-msg');
     if (!msgEl) {
         msgEl = document.createElement('small');
         msgEl.className = 'field-msg';
         msgEl.style.fontSize = '0.75rem';
         msgEl.style.marginTop = '4px';
         msgEl.style.display = 'block';
-        inputEl.parentNode.appendChild(msgEl);
+        inputEl.closest('.form-group').appendChild(msgEl);
     }
 
     if (isValid === true) {

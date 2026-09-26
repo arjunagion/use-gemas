@@ -882,6 +882,36 @@ a {
     box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
 }
 
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 2.75rem;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: var(--gold);
+}
+
 .auth-form input.input-error {
     border-color: #ff6b6b !important;
     box-shadow: 0 0 5px rgba(255, 107, 107, 0.4);
