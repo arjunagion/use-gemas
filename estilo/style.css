@@ -912,6 +912,66 @@ a {
     color: var(--gold);
 }
 
+.password-strength {
+    margin-top: 0.35rem;
+}
+
+.password-strength[hidden] {
+    display: none;
+}
+
+.strength-bar {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.strength-segment {
+    flex: 1;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.12);
+    transition: background-color 0.25s ease;
+}
+
+.strength-segment.level-1 {
+    background: #ff5555;
+}
+
+.strength-segment.level-2 {
+    background: #ffc107;
+}
+
+.strength-segment.level-3 {
+    background: #4dd0e1;
+}
+
+.strength-segment.level-4 {
+    background: #51cf66;
+}
+
+.strength-label {
+    margin: 0.35rem 0 0;
+    font-size: 0.75rem;
+    color: #888;
+    transition: color 0.25s ease;
+}
+
+.strength-label.level-1 {
+    color: #ff5555;
+}
+
+.strength-label.level-2 {
+    color: #ffc107;
+}
+
+.strength-label.level-3 {
+    color: #4dd0e1;
+}
+
+.strength-label.level-4 {
+    color: #51cf66;
+}
+
 .auth-form input.input-error {
     border-color: #ff6b6b !important;
     box-shadow: 0 0 5px rgba(255, 107, 107, 0.4);

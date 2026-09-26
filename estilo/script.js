@@ -747,6 +747,78 @@ function togglePasswordVisibility(inputId, btn) {
     btn.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Mostrar senha');
 }
 
+function getPasswordStrength(password) {
+    if (!password) return { level: 0, label: '' };
+
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (password.length >= 12) score++;
+
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    if (hasUpper && hasLower) score++;
+
+    if (/\d/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    let level = 1;
+    if (score >= 4) level = 4;
+    else if (score === 3) level = 3;
+    else if (score === 2) level = 2;
+
+    const labels = {
+        1: 'Senha fraca',
+        2: 'Senha média',
+        3: 'Senha boa',
+        4: 'Senha forte'
+    };
+
+    return { level, label: labels[level] };
+}
+
+function updatePasswordStrength() {
+    const passwordInput = document.getElementById('reg-password');
+    const strengthEl = document.getElementById('reg-password-strength');
+    const labelEl = document.getElementById('reg-strength-label');
+    if (!passwordInput || !strengthEl || !labelEl) return;
+
+    const password = passwordInput.value;
+    const { level, label } = getPasswordStrength(password);
+
+    if (password.length === 0) {
+        strengthEl.hidden = true;
+        return;
+    }
+
+    strengthEl.hidden = false;
+
+    strengthEl.querySelectorAll('.strength-segment').forEach((seg, index) => {
+        seg.classList.remove('level-1', 'level-2', 'level-3', 'level-4');
+        if (index < level) seg.classList.add('level-' + level);
+    });
+
+    labelEl.textContent = label;
+    labelEl.classList.remove('level-1', 'level-2', 'level-3', 'level-4');
+    labelEl.classList.add('level-' + level);
+}
+
+function resetPasswordStrength() {
+    const strengthEl = document.getElementById('reg-password-strength');
+    const labelEl = document.getElementById('reg-strength-label');
+
+    if (strengthEl) {
+        strengthEl.hidden = true;
+        strengthEl.querySelectorAll('.strength-segment').forEach(seg => {
+            seg.classList.remove('level-1', 'level-2', 'level-3', 'level-4');
+        });
+    }
+
+    if (labelEl) {
+        labelEl.textContent = '';
+        labelEl.classList.remove('level-1', 'level-2', 'level-3', 'level-4');
+    }
+}
+
 function setFieldStatus(inputEl, isValid, message = '') {
     if (!inputEl) return;
 
@@ -786,6 +858,7 @@ function resetRegisterValidation() {
             if (id === 'reg-password') setFieldStatus(el, null, 'Mínimo de 6 caracteres.');
         }
     });
+    resetPasswordStrength();
 }
 
 function setupRegisterLiveValidation() {
@@ -815,6 +888,8 @@ function setupRegisterLiveValidation() {
     if (passwordInput) {
         passwordInput.addEventListener('input', () => {
             const val = passwordInput.value;
+            updatePasswordStrength();
+
             if (val.length === 0) setFieldStatus(passwordInput, false, 'A senha é obrigatória.');
             else if (val.length < 6) setFieldStatus(passwordInput, false, `Senha muito curta (${val.length}/6).`);
             else setFieldStatus(passwordInput, true);
