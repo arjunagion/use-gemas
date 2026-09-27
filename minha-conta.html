@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=2.6">
+    <link rel="stylesheet" href="estilo/perfil.css?v=2.7">
 </head>
 
 <body>
@@ -238,6 +238,63 @@
             return map[status] || status;
         }
 
+        function renderOrderTimeline(status) {
+            const steps = [
+                { label: 'Novo' },
+                { label: 'Pago' },
+                { label: 'Produzindo' },
+                { label: 'Enviado' }
+            ];
+
+            let states;
+
+            if (status === 'cancelado') {
+                // Cancelado: sem progressão — primeira etapa vira X vermelho, resto pendente cinza
+                states = steps.map((_, i) => i === 0 ? 'canceled' : 'pending');
+            } else {
+                let currentIndex;
+                switch (status) {
+                    case 'novo': currentIndex = 0; break;
+                    case 'pago': currentIndex = 2; break;
+                    case 'produzindo': currentIndex = 2; break;
+                    case 'enviado': currentIndex = 3; break;
+                    default: currentIndex = 0; break;
+                }
+
+                states = steps.map((_, i) => {
+                    if (i < currentIndex) return 'complete';
+                    if (i === currentIndex) return 'current';
+                    return 'pending';
+                });
+            }
+
+            let html = status === 'cancelado'
+                ? '<div class="timeline timeline-canceled" role="alert" aria-label="Pedido cancelado">'
+                : '<div class="timeline" role="list">';
+
+            steps.forEach((step, i) => {
+                const state = states[i];
+                const dotContent = state === 'complete' ? '✓' : (state === 'canceled' ? '✕' : '');
+                const ariaCurrent = state === 'current' ? ' aria-current="step"' : '';
+
+                html += `
+                    <div class="timeline-step ${state}" role="listitem"${ariaCurrent} aria-label="Status: ${step.label.toLowerCase()}">
+                        <span class="timeline-dot">${dotContent}</span>
+                        <span class="timeline-label">${step.label}</span>
+                    </div>
+                `;
+
+                if (i < steps.length - 1) {
+                    const lineState = state === 'complete' ? 'complete' : 'pending';
+                    html += `<span class="timeline-line ${lineState}" aria-hidden="true"></span>`;
+                }
+            });
+
+            html += '</div>';
+
+            return html;
+        }
+
         function maskPhone(value) {
             const digits = value.replace(/\D/g, '').slice(0, 11);
             if (digits.length <= 10) {
@@ -350,6 +407,8 @@
                 <p class="modal-subtitle">
                     Status: <strong style="color:var(--cr-gold-hover);">${getStatusLabel(o.status)}</strong>
                 </p>
+
+                ${renderOrderTimeline(o.status)}
 
                 <div class="modal-section">
                     <h4>Itens</h4>

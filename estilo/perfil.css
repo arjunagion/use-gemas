@@ -833,6 +833,130 @@ button {
     letter-spacing: 0.3px;
 }
 
+/* ==========================================================================
+   10.1 TIMELINE DO PEDIDO
+   ========================================================================== */
+.timeline {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    margin: 0 0 1.5rem;
+}
+
+.timeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.timeline-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1;
+    background: transparent;
+    border: 2px solid rgba(47, 38, 32, 0.2);
+    color: var(--cr-text-dim);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.timeline-label {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--cr-text-muted);
+    max-width: 80px;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.timeline-line {
+    flex: 1;
+    height: 2px;
+    margin-top: 14px;
+    min-width: 8px;
+    background: rgba(47, 38, 32, 0.15);
+    transition: background-color 0.3s ease;
+}
+
+/* Completo */
+.timeline-step.complete .timeline-dot {
+    background: var(--cr-gold);
+    border-color: var(--cr-gold);
+    color: #fdfaf4;
+}
+
+.timeline-line.complete {
+    background: var(--cr-gold);
+}
+
+/* Atual (com pulse) */
+.timeline-step.current .timeline-dot {
+    background: var(--cr-gold);
+    border-color: var(--cr-gold);
+    color: #fdfaf4;
+    animation: timelinePulse 1.8s ease-in-out infinite;
+}
+
+.timeline-step.current .timeline-label {
+    color: var(--cr-gold-hover);
+    font-weight: 700;
+}
+
+/* Pendente */
+.timeline-step.pending .timeline-dot {
+    border-color: rgba(47, 38, 32, 0.2);
+    color: var(--cr-text-dim);
+}
+
+/* Cancelado */
+.timeline-step.canceled .timeline-dot {
+    background: var(--cr-danger);
+    border-color: var(--cr-danger);
+    color: #fdfaf4;
+}
+
+@keyframes timelinePulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(184, 147, 90, 0.45);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(184, 147, 90, 0);
+    }
+}
+
+@media (max-width: 600px) {
+    .timeline-dot {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
+    }
+
+    .timeline-line {
+        margin-top: 11px;
+    }
+
+    .timeline-label {
+        font-size: 0.62rem;
+        max-width: 60px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .timeline-step.current .timeline-dot {
+        animation: none;
+    }
+}
+
 .modal-section {
     margin-bottom: 1.4rem;
 }
