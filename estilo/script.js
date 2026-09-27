@@ -1436,6 +1436,12 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
 
     // ====== GA4: view_item ======
     const productInfo = productsFromDb.find(p => p.ref === ref);
+
+    // Sugestões "Você também pode gostar"
+    renderRelatedProducts(ref, productInfo ? productInfo.category : '');
+    const infoCol = modal.querySelector('.modal-info');
+    if (infoCol) infoCol.scrollTop = 0;
+
     trackGA('view_item', {
         currency: 'BRL',
         value: Number(price),
@@ -1569,6 +1575,87 @@ function closeProductModal() {
     closePhotoSwipeIfOpen();
     const modal = document.getElementById('product-modal');
     if (modal) modal.classList.remove('open');
+}
+
+function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+function openRelatedProduct(ref) {
+    const product = productsFromDb.find(p => p.ref === ref);
+    if (!product) return;
+
+    const modalContent = document.querySelector('#product-modal .modal-content');
+    if (modalContent) modalContent.classList.add('fade-switch');
+
+    setTimeout(() => {
+        openProductModal(
+            product.name,
+            product.ref,
+            Number(product.price),
+            product.gem || '',
+            product.description || '',
+            product.materials || '',
+            (product.gallery || '').split(',').map(s => s.trim()).filter(Boolean),
+            Number(product.stock) || 0
+        );
+        if (modalContent) modalContent.classList.remove('fade-switch');
+    }, 120);
+}
+
+function renderRelatedProducts(currentRef, currentCategory) {
+    const section = document.getElementById('related-section');
+    const grid = document.getElementById('related-grid');
+    if (!section || !grid) return;
+
+    // Filtra em memória: ativos, com estoque, excluindo o produto atual
+    const candidates = productsFromDb.filter(p => p.ref !== currentRef && Number(p.stock) > 0);
+
+    if (candidates.length === 0) {
+        section.hidden = true;
+        return;
+    }
+
+    // Prioridade 1: mesma categoria. Prioridade 2: outras (embaralhadas)
+    const sameCategory = candidates.filter(p => p.category === currentCategory);
+    const others = shuffleArray(candidates.filter(p => p.category !== currentCategory));
+    const selected = sameCategory.concat(others).slice(0, 3);
+
+    if (selected.length === 0) {
+        section.hidden = true;
+        return;
+    }
+
+    section.hidden = false;
+
+    grid.innerHTML = selected.map(p => {
+        const firstMedia = (p.gallery || '').split(',').map(s => s.trim()).filter(Boolean)[0] || '';
+        const isVideo = firstMedia.match(/\.(mov|mp4|webm|ogg)$/i);
+        const mediaHTML = isVideo
+            ? `<video src="${escapeHTML(firstMedia)}" muted loop playsinline preload="metadata" aria-hidden="true"></video>`
+            : (firstMedia
+                ? `<img src="${escapeHTML(firstMedia)}" alt="${escapeHTML(p.name)}" loading="lazy" />`
+                : `<div class="related-card-media-empty"></div>`);
+
+        return `<div class="related-card" onclick="openRelatedProduct('${escapeJs(p.ref)}')" role="button" tabindex="0" aria-label="Ver ${escapeHTML(p.name)}"><div class="related-card-media">${mediaHTML}</div><div class="related-card-name">${escapeHTML(p.name)}</div><div class="related-card-price">${formatCurrency(p.price)}</div></div>`;
+    }).join('');
+
+    // Analytics opcional: view_item_list
+    trackGA('view_item_list', {
+        item_list_id: 'produtos_relacionados',
+        item_list_name: 'Produtos Relacionados',
+        items: selected.map(p => ({
+            item_id: p.ref,
+            item_name: p.name,
+            item_category: getCategoryLabel(p.category),
+            price: Number(p.price),
+            quantity: 1
+        }))
+    });
 }
 
 async function shareProduct(name, ref, price) {
