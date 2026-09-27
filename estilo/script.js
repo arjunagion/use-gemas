@@ -582,6 +582,17 @@ function renderProductsGrid() {
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                         </svg>
                     </button>
+                    <button type="button" class="btn-share-card"
+                        onclick="event.stopPropagation(); shareProduct('${escapeJs(p.name)}', '${escapeJs(p.ref)}', ${Number(p.price)})"
+                        aria-label="Compartilhar ${escapeHTML(p.name)} no WhatsApp">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                    </button>
                 </div>
                 <div class="product-info">
                     <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">${escapeHTML(p.name)}</h3>
@@ -1327,6 +1338,11 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
         }
     }
 
+    const shareBtn = document.getElementById('modal-share-btn');
+    if (shareBtn) {
+        shareBtn.onclick = () => shareProduct(name, ref, price);
+    }
+
     modal.classList.add('open');
 
     // ====== GA4: view_item ======
@@ -1464,6 +1480,21 @@ function closeProductModal() {
     closePhotoSwipeIfOpen();
     const modal = document.getElementById('product-modal');
     if (modal) modal.classList.remove('open');
+}
+
+function shareProduct(name, ref, price) {
+    const GEM = String.fromCodePoint(0x1F48E); // 💎
+    const STAR = String.fromCodePoint(0x2726); // ✦
+
+    const message =
+        `Olha essa peça que linda na Use Gemas! ${GEM}\n\n` +
+        `${STAR} ${name}\n` +
+        `REF: ${ref}\n` +
+        `Valor: ${formatCurrency(price)}\n\n` +
+        `Veja aqui: https://usegemas.com.br/#produto-${ref}`;
+
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
 }
 
 // ==========================================================================
