@@ -1473,6 +1473,185 @@
             transform: none;
         }
 
+        /* ===== Galeria: upload de fotos e vídeos ===== */
+        .gallery-uploader {
+            width: 100%;
+        }
+
+        .gallery-counter {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: 0.4rem;
+        }
+
+        .gallery-dropzone {
+            border: 2px dashed rgba(212, 175, 55, 0.25);
+            border-radius: 12px;
+            background: var(--bg-card);
+            padding: 1.4rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-dropzone:hover,
+        .gallery-dropzone.dragover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.06);
+            color: var(--text);
+        }
+
+        .gallery-dropzone svg {
+            opacity: 0.7;
+            margin-bottom: 0.4rem;
+        }
+
+        .gallery-dropzone-text {
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .gallery-dropzone-actions {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .gallery-btn {
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: var(--gold);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-btn:hover {
+            background: rgba(212, 175, 55, 0.22);
+            border-color: var(--gold);
+            color: var(--gold-hover);
+        }
+
+        .gallery-btn-camera {
+            display: none;
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .gallery-btn-camera {
+                display: inline-block;
+            }
+        }
+
+        .gallery-limit-msg {
+            margin-top: 0.6rem;
+            color: var(--danger);
+            font-size: 0.75rem;
+        }
+
+        .gallery-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: grab;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55);
+        }
+
+        .gallery-item img,
+        .gallery-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item-video-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.35);
+            color: #fff;
+            font-size: 1.6rem;
+            pointer-events: none;
+        }
+
+        .gallery-item-order {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        .gallery-item-remove {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            line-height: 1;
+            transition: background 0.2s ease;
+            z-index: 2;
+        }
+
+        .gallery-item-remove:hover {
+            background: var(--danger);
+        }
+
+        .gallery-item-status {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 3;
+        }
+
+        .gallery-item.uploading {
+            opacity: 0.75;
+            pointer-events: none;
+        }
+
         .btn-danger-confirm {
             background: linear-gradient(135deg, #ff5555 0%, #cc2222 100%);
             color: #fff;
@@ -2081,9 +2260,29 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="prod-gallery">Galeria (URLs separadas por vírgula)</label>
-                    <input type="text" id="prod-gallery" maxlength="500"
-                        placeholder="estilo/midias/foto1.jpg, estilo/midias/foto2.jpg">
+                    <label>Galeria (fotos e vídeos)</label>
+                    <div class="gallery-uploader">
+                        <div class="gallery-counter" id="gallery-counter">0 de 10 arquivos</div>
+                        <div class="gallery-dropzone" id="gallery-dropzone" role="button" tabindex="0"
+                            aria-label="Arraste fotos ou vídeos aqui ou clique para escolher">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <div class="gallery-dropzone-text">Arraste fotos ou vídeos aqui</div>
+                            <div class="gallery-dropzone-actions" id="gallery-dropzone-actions">
+                                <button type="button" class="gallery-btn" id="gallery-pick-btn">Escolher arquivos</button>
+                                <button type="button" class="gallery-btn gallery-btn-camera" id="gallery-camera-btn">Tirar foto</button>
+                            </div>
+                            <div class="gallery-limit-msg" id="gallery-limit-msg" hidden>Limite de 10 arquivos atingido.</div>
+                            <input type="file" id="gallery-file-input"
+                                accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" multiple hidden>
+                            <input type="file" id="gallery-camera-input" accept="image/*" capture="environment" hidden>
+                        </div>
+                        <div class="gallery-preview-grid" id="gallery-preview-grid"></div>
+                    </div>
                 </div>
 
                 <div class="form-check">
@@ -2437,6 +2636,12 @@
             feedback.innerText = '';
             document.getElementById('prod-id').value = '';
 
+            // Reseta o estado da galeria
+            clearGalleryObjectUrls();
+            galleryFiles = [];
+            galleryRemovedPaths = [];
+            galleryOriginalRef = '';
+
             if (id) {
                 const p = allProducts.find(x => x.id === id);
                 if (!p) return;
@@ -2451,12 +2656,23 @@
                 document.getElementById('prod-gem').value = p.gem || '';
                 document.getElementById('prod-description').value = p.description || '';
                 document.getElementById('prod-materials').value = p.materials || '';
-                document.getElementById('prod-gallery').value = p.gallery || '';
                 document.getElementById('prod-active').checked = p.active;
+
+                // Carrega a galeria existente (retrocompatível com URLs antigas)
+                galleryOriginalRef = (p.ref || '').toUpperCase();
+                const urls = (p.gallery || '').split(',').map(s => s.trim()).filter(Boolean);
+                galleryFiles = urls.map(u => ({
+                    type: 'existing',
+                    url: u,
+                    path: galleryPathFromUrl(u),
+                    id: genGalleryId()
+                }));
+                renderGalleryPreview();
             } else {
                 title.innerText = 'Novo Produto';
                 document.getElementById('prod-stock').value = 1;
                 document.getElementById('prod-active').checked = true;
+                renderGalleryPreview();
             }
 
             modal.classList.add('open');
@@ -2465,6 +2681,267 @@
 
         function closeProductForm() {
             document.getElementById('product-modal').classList.remove('open');
+        }
+
+        // ==========================================================================
+        // Galeria: upload de fotos e vídeos
+        // ==========================================================================
+        const GALLERY_BUCKET = 'product-images';
+        const GALLERY_MAX_FILES = 10;
+        const GALLERY_MAX_SIZE = 30 * 1024 * 1024; // 30MB
+
+        let galleryFiles = []; // { type: 'existing'|'new', url?, file?, path?, id, status? }
+        let galleryRemovedPaths = [];
+        let galleryOriginalRef = '';
+        let galleryObjectUrls = [];
+        let galleryIdCounter = 0;
+
+        function genGalleryId() {
+            galleryIdCounter += 1;
+            return `g${Date.now()}-${galleryIdCounter}`;
+        }
+
+        function getPublicUrl(path) {
+            return `${SUPABASE_URL}/storage/v1/object/public/${GALLERY_BUCKET}/${path}`;
+        }
+
+        function sanitizeRefForPath(ref) {
+            return String(ref).replace(/[^a-zA-Z0-9_-]/g, '-');
+        }
+
+        function galleryPathFromUrl(url) {
+            const marker = '/product-images/';
+            const idx = url.indexOf(marker);
+            if (idx === -1) return null;
+            return decodeURIComponent(url.slice(idx + marker.length).split('?')[0]);
+        }
+
+        function fileExt(file) {
+            const name = (file && file.name) || '';
+            const m = name.match(/\.([a-zA-Z0-9]+)$/);
+            return m ? m[1].toLowerCase() : '';
+        }
+
+        function makeFileName(ext) {
+            const ts = Date.now();
+            const rand = Math.random().toString(36).slice(2, 8);
+            return `${ts}-${rand}.${ext}`;
+        }
+
+        function isVideoUrl(url) {
+            return /\.(mp4|mov|webm|ogg)(\?|#|$)/i.test(url);
+        }
+
+        function isVideoFile(file) {
+            const t = file.type || '';
+            if (t.startsWith('video/')) return true;
+            return ['mp4', 'mov', 'webm', 'ogg'].includes(fileExt(file));
+        }
+
+        function validateGalleryFile(file) {
+            const ext = fileExt(file);
+            const type = file.type || '';
+            const isImage = type.startsWith('image/') || ['jpg', 'jpeg', 'png', 'webp'].includes(ext);
+            const isVideo = type.startsWith('video/') || ['mp4', 'mov'].includes(ext);
+            if (!isImage && !isVideo) {
+                return `Formato não aceito (${file.name}). Use JPG, PNG, WebP, MP4 ou MOV.`;
+            }
+            if (file.size > GALLERY_MAX_SIZE) {
+                return isVideo
+                    ? `Vídeo muito grande. Máximo 30MB. (${file.name})`
+                    : `Arquivo muito grande. Máximo 30MB. (${file.name})`;
+            }
+            return null;
+        }
+
+        function clearGalleryObjectUrls() {
+            galleryObjectUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) { /* ignora */ } });
+            galleryObjectUrls = [];
+        }
+
+        function handleFilesSelected(fileList) {
+            const files = Array.from(fileList || []);
+            const errors = [];
+            for (const file of files) {
+                if (galleryFiles.length >= GALLERY_MAX_FILES) {
+                    errors.push(`Limite de ${GALLERY_MAX_FILES} arquivos atingido.`);
+                    break;
+                }
+                const err = validateGalleryFile(file);
+                if (err) { errors.push(err); continue; }
+                galleryFiles.push({ type: 'new', file, id: genGalleryId(), status: 'ready' });
+            }
+            renderGalleryPreview();
+            if (errors.length) showToast(errors[0], 'error');
+        }
+
+        function removeFile(index) {
+            const item = galleryFiles[index];
+            if (!item) return;
+            if (item.type === 'existing' && item.path) {
+                galleryRemovedPaths.push(item.path);
+            }
+            galleryFiles.splice(index, 1);
+            renderGalleryPreview();
+        }
+
+        function reorderFiles(from, to) {
+            if (from === to) return;
+            if (from < 0 || to < 0 || from >= galleryFiles.length || to >= galleryFiles.length) return;
+            const [moved] = galleryFiles.splice(from, 1);
+            galleryFiles.splice(to, 0, moved);
+            renderGalleryPreview();
+        }
+
+        function renderGalleryPreview() {
+            const grid = document.getElementById('gallery-preview-grid');
+            const counter = document.getElementById('gallery-counter');
+            const actions = document.getElementById('gallery-dropzone-actions');
+            const limitMsg = document.getElementById('gallery-limit-msg');
+            if (!grid) return;
+
+            clearGalleryObjectUrls();
+
+            if (counter) counter.textContent = `${galleryFiles.length} de ${GALLERY_MAX_FILES} arquivos`;
+            const atLimit = galleryFiles.length >= GALLERY_MAX_FILES;
+            if (actions) actions.style.display = atLimit ? 'none' : 'flex';
+            if (limitMsg) limitMsg.hidden = !atLimit;
+
+            const PLAY = String.fromCodePoint(0x25B6);
+
+            grid.innerHTML = galleryFiles.map((item, index) => {
+                let mediaHTML = '';
+                if (item.type === 'existing') {
+                    mediaHTML = isVideoUrl(item.url)
+                        ? `<video src="${escapeHTML(item.url)}" muted preload="metadata"></video><div class="gallery-item-video-overlay">${PLAY}</div>`
+                        : `<img src="${escapeHTML(item.url)}" alt="" loading="lazy" />`;
+                } else {
+                    const objUrl = URL.createObjectURL(item.file);
+                    galleryObjectUrls.push(objUrl);
+                    mediaHTML = isVideoFile(item.file)
+                        ? `<video src="${objUrl}" muted preload="metadata"></video><div class="gallery-item-video-overlay">${PLAY}</div>`
+                        : `<img src="${objUrl}" alt="" />`;
+                }
+                const statusOverlay = item.status === 'uploading'
+                    ? '<div class="gallery-item-status">Enviando…</div>'
+                    : '';
+                return `<div class="gallery-item${item.status === 'uploading' ? ' uploading' : ''}" data-index="${index}" draggable="true">
+                    ${mediaHTML}
+                    <span class="gallery-item-order">${index + 1}</span>
+                    <button type="button" class="gallery-item-remove" data-index="${index}" aria-label="Remover arquivo">&times;</button>
+                    ${statusOverlay}
+                </div>`;
+            }).join('');
+
+            grid.querySelectorAll('.gallery-item-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeFile(parseInt(btn.dataset.index, 10));
+                });
+            });
+
+            grid.querySelectorAll('.gallery-item').forEach(el => {
+                el.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', el.dataset.index);
+                    e.dataTransfer.effectAllowed = 'move';
+                });
+                el.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                });
+                el.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const from = parseInt(e.dataTransfer.getData('text/plain'), 10);
+                    const to = parseInt(el.dataset.index, 10);
+                    if (!isNaN(from) && !isNaN(to)) reorderFiles(from, to);
+                });
+            });
+        }
+
+        async function optimizeImage(file) {
+            const ext = fileExt(file);
+            const type = file.type || '';
+
+            // Vídeos e WebP: mantém como está
+            if (type.startsWith('video/')) return file;
+            if (ext === 'webp') return file;
+            if (!type.startsWith('image/')) return file;
+
+            try {
+                let bitmap;
+                try {
+                    bitmap = await createImageBitmap(file);
+                } catch (e) {
+                    return file;
+                }
+
+                const width = bitmap.width;
+                const height = bitmap.height;
+                const isLargePng = (type === 'image/png' || ext === 'png') && file.size > 500 * 1024;
+                const isLargeJpeg = (type === 'image/jpeg' || ext === 'jpg' || ext === 'jpeg') && file.size > 500 * 1024;
+                const needsResize = width > 1600;
+
+                if (!needsResize && !isLargePng && !isLargeJpeg) {
+                    bitmap.close();
+                    return file;
+                }
+
+                const targetWidth = Math.min(width, 1600);
+                const targetHeight = Math.round(height * (targetWidth / width));
+
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight);
+                bitmap.close();
+
+                // PNG grande → WebP (preserva transparência). Demais → JPEG 80%.
+                const outType = isLargePng ? 'image/webp' : 'image/jpeg';
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, outType, 0.8));
+                canvas.width = 0;
+                canvas.height = 0;
+
+                if (!blob) return file;
+                return blob.size < file.size ? blob : file;
+            } catch (e) {
+                console.warn('Falha ao otimizar imagem, enviando original:', e);
+                return file;
+            }
+        }
+
+        async function uploadFilesToStorage(ref, files) {
+            const bucket = supabaseClient.storage.from(GALLERY_BUCKET);
+            const safeRef = sanitizeRefForPath(ref);
+
+            const results = await Promise.all(files.map(async (item) => {
+                try {
+                    const optimized = await optimizeImage(item.file);
+                    const isOriginal = optimized === item.file;
+                    const originalExt = fileExt(item.file) || 'jpg';
+                    const ext = isOriginal
+                        ? originalExt
+                        : (optimized.type === 'image/webp' ? 'webp' : 'jpg');
+                    const path = `${safeRef}/${makeFileName(ext)}`;
+                    const contentType = optimized.type || item.file.type || 'application/octet-stream';
+
+                    const { data, error } = await bucket.upload(path, optimized, {
+                        cacheControl: '3600',
+                        contentType,
+                        upsert: false
+                    });
+                    if (error) return { ok: false, id: item.id, name: item.file.name, error: error.message };
+                    return { ok: true, id: item.id, path: data.path, url: getPublicUrl(data.path) };
+                } catch (e) {
+                    return { ok: false, id: item.id, name: item.file.name, error: e.message || 'Erro desconhecido' };
+                }
+            }));
+
+            const failed = results.filter(r => !r.ok);
+            if (failed.length) {
+                throw new Error(failed.map(f => `${f.name}: ${f.error}`).join(' | '));
+            }
+            return results.map(r => ({ id: r.id, path: r.path, url: r.url }));
         }
 
         async function saveProduct(event) {
@@ -2484,11 +2961,11 @@
             const gem = document.getElementById('prod-gem').value.trim();
             const description = document.getElementById('prod-description').value.trim();
             const materials = document.getElementById('prod-materials').value.trim();
-            const gallery = document.getElementById('prod-gallery').value.trim();
             const active = document.getElementById('prod-active').checked;
 
             if (!name || name.length < 2) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Informe um nome válido.'; return; }
             if (!ref || ref.length < 2) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Informe uma referência (REF).'; return; }
+            if (/\s/.test(ref)) { feedback.className = 'modal-feedback error'; feedback.innerText = 'A REF não pode conter espaços.'; return; }
 
             const price = normalizePrice(priceRaw);
             if (isNaN(price) || price < 0) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Preço inválido.'; return; }
@@ -2496,13 +2973,56 @@
             const stock = parseInt(stockRaw, 10);
             if (isNaN(stock) || stock < 0) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Estoque inválido.'; return; }
 
-            const payload = { name, ref, category, price, stock, gem, description, materials, gallery, active };
+            const isEdit = !!id;
+            const oldRef = galleryOriginalRef || '';
+            const refChanged = isEdit && oldRef && oldRef !== ref;
+            const newItems = galleryFiles.filter(f => f.type === 'new');
+            const existingItems = galleryFiles.filter(f => f.type === 'existing');
 
             const originalText = saveBtn.innerText;
             saveBtn.disabled = true;
-            saveBtn.innerText = 'Salvando...';
+            saveBtn.innerText = 'Enviando...';
 
             try {
+                // 1. Feedback de upload nos itens novos
+                if (newItems.length) {
+                    newItems.forEach(f => f.status = 'uploading');
+                    renderGalleryPreview();
+                }
+
+                // 2. Upload dos arquivos novos (em paralelo)
+                const uploaded = newItems.length ? await uploadFilesToStorage(ref, newItems) : [];
+                const uploadedById = {};
+                uploaded.forEach(u => { uploadedById[u.id] = u; });
+                newItems.forEach(f => f.status = 'ready');
+
+                // 3. Se a REF mudou, move os arquivos existentes pra nova pasta
+                if (refChanged) {
+                    const bucket = supabaseClient.storage.from(GALLERY_BUCKET);
+                    const prefix = sanitizeRefForPath(oldRef) + '/';
+                    for (const item of existingItems) {
+                        if (!item.path) continue;
+                        const cleanPath = item.path.replace(/^\//, '');
+                        if (!cleanPath.startsWith(prefix)) continue;
+                        const newPath = sanitizeRefForPath(ref) + '/' + cleanPath.slice(prefix.length);
+                        const { error } = await bucket.move(cleanPath, newPath);
+                        if (error) throw new Error(`Falha ao mover arquivo: ${error.message}`);
+                        item.path = newPath;
+                        item.url = getPublicUrl(newPath);
+                    }
+                }
+
+                // 4. Monta o gallery final na ordem do array
+                const gallery = galleryFiles.map(item => {
+                    if (item.type === 'new') {
+                        const u = uploadedById[item.id];
+                        return u ? u.url : '';
+                    }
+                    return item.url;
+                }).filter(Boolean).join(',');
+
+                // 5. Salva o produto
+                const payload = { name, ref, category, price, stock, gem, description, materials, gallery, active };
                 let result;
                 if (id) {
                     result = await supabaseClient.from('products').update(payload).eq('id', id).select().single();
@@ -2520,6 +3040,16 @@
                     return;
                 }
 
+                // 6. Deleta arquivos removidos do Storage (limpeza pós-save)
+                const removePaths = galleryRemovedPaths
+                    .map(p => p.replace(/^\//, ''))
+                    .filter(Boolean);
+                if (removePaths.length) {
+                    const bucket = supabaseClient.storage.from(GALLERY_BUCKET);
+                    const { error: rmError } = await bucket.remove(removePaths);
+                    if (rmError) console.warn('Falha ao deletar arquivos removidos:', rmError);
+                }
+
                 closeProductForm();
                 await loadProducts();
                 updateDashboardMetrics();
@@ -2528,7 +3058,7 @@
             } catch (e) {
                 console.error(e);
                 feedback.className = 'modal-feedback error';
-                feedback.innerText = 'Erro inesperado.';
+                feedback.innerText = e && e.message ? e.message : 'Erro inesperado.';
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerText = originalText;
@@ -3451,6 +3981,41 @@
                     document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
                 }
             });
+
+            // ====== Galeria: eventos de upload ======
+            const galleryDropzone = document.getElementById('gallery-dropzone');
+            const galleryFileInput = document.getElementById('gallery-file-input');
+            const galleryCameraInput = document.getElementById('gallery-camera-input');
+            const galleryPickBtn = document.getElementById('gallery-pick-btn');
+            const galleryCameraBtn = document.getElementById('gallery-camera-btn');
+
+            if (galleryDropzone && galleryFileInput) {
+                galleryDropzone.addEventListener('click', (e) => {
+                    if (e.target.closest('.gallery-btn') || e.target.closest('input')) return;
+                    galleryFileInput.click();
+                });
+                galleryDropzone.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        galleryFileInput.click();
+                    }
+                });
+                ['dragenter', 'dragover'].forEach(evt => galleryDropzone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    galleryDropzone.classList.add('dragover');
+                }));
+                ['dragleave', 'drop'].forEach(evt => galleryDropzone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    galleryDropzone.classList.remove('dragover');
+                }));
+                galleryDropzone.addEventListener('drop', (e) => {
+                    if (e.dataTransfer && e.dataTransfer.files.length) handleFilesSelected(e.dataTransfer.files);
+                });
+            }
+            if (galleryPickBtn) galleryPickBtn.addEventListener('click', (e) => { e.stopPropagation(); galleryFileInput.click(); });
+            if (galleryCameraBtn && galleryCameraInput) galleryCameraBtn.addEventListener('click', (e) => { e.stopPropagation(); galleryCameraInput.click(); });
+            if (galleryFileInput) galleryFileInput.addEventListener('change', () => { handleFilesSelected(galleryFileInput.files); galleryFileInput.value = ''; });
+            if (galleryCameraInput) galleryCameraInput.addEventListener('change', () => { handleFilesSelected(galleryCameraInput.files); galleryCameraInput.value = ''; });
 
             checkAdminAccess();
         });
