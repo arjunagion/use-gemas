@@ -1482,19 +1482,59 @@ function closeProductModal() {
     if (modal) modal.classList.remove('open');
 }
 
-function shareProduct(name, ref, price) {
+async function shareProduct(name, ref, price) {
     const GEM = String.fromCodePoint(0x1F48E); // 💎
     const STAR = String.fromCodePoint(0x2726); // ✦
 
-    const message =
+    const title = `Use Gemas — ${name}`;
+    const text =
         `Olha essa peça que linda na Use Gemas! ${GEM}\n\n` +
         `${STAR} ${name}\n` +
         `REF: ${ref}\n` +
         `Valor: ${formatCurrency(price)}\n\n` +
-        `Veja aqui: https://usegemas.com.br/#produto-${ref}`;
+        `Veja aqui:`;
+    const url = `https://usegemas.com.br/#produto-${ref}`;
 
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+    // 1. API nativa de compartilhamento (folha do sistema operacional)
+    if (typeof navigator.share === 'function') {
+        try {
+            await navigator.share({ title, text, url });
+            trackShareEvent('navigator.share', ref, name);
+        } catch (err) {
+            // Usuário cancelou → ignora silenciosamente
+            if (err && err.name === 'AbortError') return;
+
+            // Erro diferente → fallback pro WhatsApp Web
+            shareViaWhatsApp(text, url, ref, name);
+        }
+        return;
+    }
+
+    // 2. Fallback: WhatsApp Web
+    shareViaWhatsApp(text, url, ref, name);
+}
+
+function shareViaWhatsApp(text, url, ref, name) {
+    const message = `${text} ${url}`;
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+    trackShareEvent('whatsapp_fallback', ref, name);
+}
+
+function trackShareEvent(method, ref, name) {
+    trackGA('share', {
+        method,
+        content_type: 'product',
+        item_id: ref,
+        item_name: name
+    });
+
+    trackMetaCustom('Share', {
+        method,
+        content_type: 'product',
+        content_ids: [ref],
+        content_name: name
+    });
 }
 
 // ==========================================================================
