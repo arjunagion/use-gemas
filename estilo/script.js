@@ -61,14 +61,57 @@ function formatCurrency(value) {
     return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-function showToast(message, type = 'success') {
+let activeToast = null;
+let activeToastTimer = null;
+
+function dismissToast(toast) {
+    if (!toast) return;
+    if (activeToastTimer) {
+        clearTimeout(activeToastTimer);
+        activeToastTimer = null;
+    }
+    toast.classList.remove('show');
+
+    const finalize = () => {
+        if (toast.parentNode) toast.remove();
+        if (activeToast === toast) activeToast = null;
+    };
+
+    toast.addEventListener('transitionend', finalize, { once: true });
+    setTimeout(finalize, 500);
+}
+
+function showToast(message, options = {}) {
+    // Compatibilidade: showToast(msg, 'error') => { type: 'error' }
+    if (typeof options === 'string') {
+        options = { type: options };
+    }
+
+    const {
+        type = 'success',
+        actionLabel = null,
+        actionCallback = null,
+        duration = 4000
+    } = options;
+
     const container = document.getElementById('toast-container');
     if (!container) return;
 
-    const icon = type === 'success' ? '✅' : type === 'info' ? 'ℹ️' : '⚠️';
+    // Substitui o toast anterior (não empilha)
+    if (activeToast) {
+        activeToast.remove();
+        activeToast = null;
+    }
+    if (activeToastTimer) {
+        clearTimeout(activeToastTimer);
+        activeToastTimer = null;
+    }
+
+    const icon = type === 'success' ? '✓' : type === 'info' ? 'ℹ' : '⚠';
 
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
+    toast.setAttribute('role', 'status');
 
     const iconSpan = document.createElement('span');
     iconSpan.className = 'toast-icon';
@@ -80,16 +123,40 @@ function showToast(message, type = 'success') {
 
     toast.appendChild(iconSpan);
     toast.appendChild(msgSpan);
+
+    if (actionLabel && typeof actionCallback === 'function') {
+        const actionBtn = document.createElement('button');
+        actionBtn.type = 'button';
+        actionBtn.className = 'toast-action';
+        actionBtn.textContent = actionLabel;
+        actionBtn.addEventListener('click', () => {
+            actionCallback();
+            dismissToast(toast);
+        });
+        toast.appendChild(actionBtn);
+    }
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'toast-close';
+    closeBtn.setAttribute('aria-label', 'Fechar aviso');
+    closeBtn.textContent = '×';
+    closeBtn.addEventListener('click', () => dismissToast(toast));
+    toast.appendChild(closeBtn);
+
     container.appendChild(toast);
+    activeToast = toast;
 
     requestAnimationFrame(() => toast.classList.add('show'));
 
-    setTimeout(() => {
-        toast.classList.remove('show');
-        toast.addEventListener('transitionend', () => toast.remove(), { once: true });
-        setTimeout(() => toast.remove(), 500);
-    }, 3500);
+    activeToastTimer = setTimeout(() => dismissToast(toast), duration);
 }
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && activeToast) {
+        dismissToast(activeToast);
+    }
+});
 
 function escapeHTML(str) {
     if (!str) return '';
@@ -1517,8 +1584,10 @@ function addToCart(name, ref, price) {
     }
 
     updateCartUI();
-    openCart();
-    showToast('Produto adicionado ao carrinho', 'success');
+    showToast(`${name} adicionado ao carrinho`, {
+        actionLabel: 'Ver carrinho',
+        actionCallback: () => openCart()
+    });
 
     // ====== GA4: add_to_cart ======
     trackGA('add_to_cart', {
