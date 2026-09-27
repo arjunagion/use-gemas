@@ -61,6 +61,36 @@ function formatCurrency(value) {
     return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const icon = type === 'success' ? '✅' : type === 'info' ? 'ℹ️' : '⚠️';
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    const iconSpan = document.createElement('span');
+    iconSpan.className = 'toast-icon';
+    iconSpan.textContent = icon;
+
+    const msgSpan = document.createElement('span');
+    msgSpan.className = 'toast-message';
+    msgSpan.textContent = message;
+
+    toast.appendChild(iconSpan);
+    toast.appendChild(msgSpan);
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('show'));
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+        setTimeout(() => toast.remove(), 500);
+    }, 3500);
+}
+
 function escapeHTML(str) {
     if (!str) return '';
     return String(str)
@@ -1463,12 +1493,12 @@ function addToCart(name, ref, price) {
     const product = productsFromDb.find(p => p.ref === ref);
 
     if (!product) {
-        alert(`"${name}" não está mais disponível.`);
+        showToast(`"${name}" não está mais disponível.`, 'error');
         return false;
     }
 
     if (Number(product.stock) <= 0) {
-        alert(`"${name}" está em produção no momento. Adicione aos favoritos pra ser avisado(a) quando voltar!`);
+        showToast(`"${name}" está em produção no momento. Adicione aos favoritos pra ser avisado(a) quando voltar!`, 'error');
         return false;
     }
 
@@ -1476,7 +1506,7 @@ function addToCart(name, ref, price) {
     const currentQty = existingItem ? existingItem.quantity : 0;
 
     if (currentQty + 1 > Number(product.stock)) {
-        alert(`Só temos ${product.stock} unidade(s) de "${name}" em estoque.`);
+        showToast(`Só temos ${product.stock} unidade(s) de "${name}" em estoque.`, 'error');
         return false;
     }
 
@@ -1488,6 +1518,7 @@ function addToCart(name, ref, price) {
 
     updateCartUI();
     openCart();
+    showToast('Produto adicionado ao carrinho', 'success');
 
     // ====== GA4: add_to_cart ======
     trackGA('add_to_cart', {
@@ -1523,7 +1554,7 @@ function updateQuantity(index, delta) {
     const newQty = item.quantity + delta;
 
     if (delta > 0 && product && newQty > Number(product.stock)) {
-        alert(`Só temos ${product.stock} unidade(s) de "${item.name}" em estoque.`);
+        showToast(`Só temos ${product.stock} unidade(s) de "${item.name}" em estoque.`, 'error');
         return;
     }
 
@@ -1715,7 +1746,7 @@ function sendToWhatsApp(itemsParam = null) {
     const itemsToSend = itemsParam || cart;
 
     if (itemsToSend.length === 0) {
-        alert("Seu carrinho está vazio!");
+        showToast("Seu carrinho está vazio!", 'error');
         return;
     }
 
@@ -1968,7 +1999,7 @@ function closeWishlist() {
 
 async function addAllFavoritesToCart() {
     if (favorites.length === 0) {
-        alert('Sua lista de favoritos está vazia.');
+        showToast('Sua lista de favoritos está vazia.', 'error');
         return;
     }
 
@@ -1981,7 +2012,7 @@ async function addAllFavoritesToCart() {
     });
 
     if (failedIndexes.length === itemsToAdd.length) {
-        alert('Nenhum dos favoritos está disponível no momento.');
+        showToast('Nenhum dos favoritos está disponível no momento.', 'error');
         return;
     }
 
@@ -2202,7 +2233,7 @@ async function handleTestimonialSubmit(event) {
 // Checkout
 // ==========================================================================
 function openCheckoutModal() {
-    if (cart.length === 0) { alert('Seu carrinho está vazio.'); return; }
+    if (cart.length === 0) { showToast('Seu carrinho está vazio.', 'error'); return; }
 
     const cartDrawer = document.getElementById('cart-drawer');
     const wishlistDrawer = document.getElementById('wishlist-drawer');
