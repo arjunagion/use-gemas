@@ -1072,6 +1072,20 @@ async function handleLogin(event) {
     }, 1000);
 }
 
+async function handleGoogleLogin() {
+    try {
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: 'https://usegemas.com.br'
+            }
+        });
+        if (error) showAuthFeedback(translateAuthError(error), 'error');
+    } catch (e) {
+        showAuthFeedback(translateAuthError(e), 'error');
+    }
+}
+
 async function handleLogout() {
     await supabaseClient.auth.signOut();
     favorites = [];
