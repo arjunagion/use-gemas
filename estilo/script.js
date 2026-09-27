@@ -520,6 +520,95 @@ async function loadProductsFromDb() {
     }
 }
 
+function processPendingReorder() {
+    let raw;
+    try {
+        raw = localStorage.getItem('gemas_reorder_pending');
+    } catch (e) {
+        return;
+    }
+    if (!raw) return;
+
+    // Limpa a chave imediatamente (evita repetir ao recarregar)
+    try { localStorage.removeItem('gemas_reorder_pending'); } catch (e) { }
+
+    let payload;
+    try {
+        payload = JSON.parse(raw);
+    } catch (e) {
+        return; // JSON inválido → ignora silenciosamente
+    }
+
+    if (!payload || !Array.isArray(payload.items) || payload.items.length === 0) {
+        return;
+    }
+
+    const totalValue = payload.items.reduce((sum, i) => sum + Number(i.price) * (Number(i.quantity) || 1), 0);
+
+    let addedCount = 0;
+    let unavailableCount = 0;
+
+    payload.items.forEach(item => {
+        const ref = item.ref;
+        const name = item.name;
+        const price = Number(item.price);
+        const quantity = Math.max(1, Number(item.quantity) || 1);
+
+        const product = productsFromDb.find(p => p.ref === ref);
+        if (!product || Number(product.stock) <= 0) {
+            unavailableCount++;
+            return;
+        }
+
+        const inCart = cart.find(c => c.ref === ref);
+        const currentQty = inCart ? inCart.quantity : 0;
+        const toAdd = Math.min(quantity, Number(product.stock) - currentQty);
+
+        if (toAdd <= 0) {
+            unavailableCount++;
+            return;
+        }
+
+        let addedUnits = 0;
+        for (let k = 0; k < toAdd; k++) {
+            if (addToCart(name, ref, price)) addedUnits++;
+        }
+
+        if (addedUnits > 0) {
+            addedCount++;
+        } else {
+            unavailableCount++;
+        }
+    });
+
+    // Analytics: reorder
+    trackGA('reorder', {
+        from_order_id: payload.from_order_id || '',
+        items_count: payload.items.length,
+        value: totalValue
+    });
+    trackMetaCustom('Reorder', {
+        from_order_id: payload.from_order_id || '',
+        items_count: payload.items.length,
+        value: totalValue
+    });
+
+    // Feedback
+    if (addedCount > 0 && unavailableCount === 0) {
+        showToast(`${addedCount} produtos adicionados ao carrinho`, 'success');
+    } else if (addedCount > 0 && unavailableCount > 0) {
+        showToast(`${addedCount} produtos adicionados. ${unavailableCount} não estão mais disponíveis.`, 'info');
+    } else {
+        showToast(`${unavailableCount} produtos não estão disponíveis no momento.`, 'error');
+    }
+
+    // Scroll suave até a vitrine após 1s
+    setTimeout(() => {
+        const target = document.getElementById('colecao');
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+    }, 1000);
+}
+
 function renderProductsGrid() {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
@@ -2840,6 +2929,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCookieConsent();
 
     await loadProductsFromDb();
+
+    processPendingReorder();
 
     setupRegisterLiveValidation();
     setupStarRating();

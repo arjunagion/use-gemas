@@ -748,6 +748,34 @@ button {
     box-shadow: none;
 }
 
+/* Botão "Comprar novamente" no modal de pedido */
+.btn-reorder {
+    width: 100%;
+    margin-top: 0.25rem;
+    margin-bottom: 1.4rem;
+}
+
+.reorder-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(253, 250, 244, 0.4);
+    border-top-color: #fdfaf4;
+    border-radius: 50%;
+    animation: reorderSpin 0.7s linear infinite;
+}
+
+@keyframes reorderSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reorder-spinner {
+        animation: none;
+    }
+}
+
 /* ==========================================================================
    10. MODAL
    ========================================================================== */

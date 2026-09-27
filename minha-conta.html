@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=2.7">
+    <link rel="stylesheet" href="estilo/perfil.css?v=2.8">
 </head>
 
 <body>
@@ -295,6 +295,38 @@
             return html;
         }
 
+        function reorderFromOrder(orderId, btn) {
+            const o = userOrders.find(x => x.id === orderId);
+            if (!o || !Array.isArray(o.items) || o.items.length === 0) return;
+
+            const items = o.items.map(item => ({
+                name: item.name,
+                ref: item.ref,
+                price: Number(item.price),
+                quantity: Math.max(1, Number(item.quantity) || 1)
+            }));
+
+            // Feedback visual no botão
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="reorder-spinner"></span><span>Preparando seu pedido...</span>';
+            }
+
+            try {
+                localStorage.setItem('gemas_reorder_pending', JSON.stringify({
+                    items: items,
+                    from_order_id: orderId,
+                    timestamp: Date.now()
+                }));
+            } catch (e) {
+                // localStorage indisponível
+            }
+
+            setTimeout(() => {
+                window.location.href = 'index.html#carrinho';
+            }, 700);
+        }
+
         function maskPhone(value) {
             const digits = value.replace(/\D/g, '').slice(0, 11);
             if (digits.length <= 10) {
@@ -409,6 +441,17 @@
                 </p>
 
                 ${renderOrderTimeline(o.status)}
+
+                ${o.status !== 'cancelado' ? `
+                    <button type="button" class="btn-cream btn-reorder" onclick="reorderFromOrder('${o.id}', this)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span>Comprar novamente</span>
+                    </button>
+                ` : ''}
 
                 <div class="modal-section">
                     <h4>Itens</h4>
