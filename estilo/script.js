@@ -3094,4 +3094,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         carouselContainer.addEventListener('mouseenter', stopAutoSlide);
         carouselContainer.addEventListener('mouseleave', startAutoSlide);
     }
+
+    // ====== Botão flutuante "Voltar ao topo" ======
+    const backToTopBtn = document.getElementById('back-to-top-btn');
+    if (backToTopBtn) {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let backToTopTicking = false;
+
+        const updateBackToTop = () => {
+            backToTopBtn.classList.toggle('visible', window.scrollY > 400);
+            backToTopTicking = false;
+        };
+
+        window.addEventListener('scroll', () => {
+            if (!backToTopTicking) {
+                backToTopTicking = true;
+                window.requestAnimationFrame(updateBackToTop);
+            }
+        }, { passive: true });
+
+        backToTopBtn.addEventListener('click', () => {
+            const supportsSmooth = 'scrollBehavior' in document.documentElement.style;
+            if (prefersReducedMotion || !supportsSmooth) {
+                window.scrollTo(0, 0);
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        updateBackToTop();
+    }
 });
