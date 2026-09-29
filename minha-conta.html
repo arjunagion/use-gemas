@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=3.3">
+    <link rel="stylesheet" href="estilo/perfil.css?v=3.4">
 </head>
 
 <body>
@@ -97,17 +97,24 @@
 
             <!-- PAINEL: PEDIDOS -->
             <section class="perfil-panel active" id="panel-pedidos">
-                <div id="avaliacoes-pendentes-card" class="avaliacoes-pendentes-card" style="display: none;">
-                    <div class="avaliacoes-card-content">
-                        <div class="avaliacoes-card-icon">⭐</div>
-                        <div class="avaliacoes-card-text">
-                            <h3>Você tem <span id="avaliacoes-pendentes-count">0</span> <span id="avaliacoes-pendentes-label">peças</span> pra avaliar</h3>
-                            <p>Sua opinião ajuda outras clientes a escolherem com confiança.</p>
-                        </div>
-                        <button type="button" class="avaliacoes-card-btn" onclick="scrollToFirstPendingOrder()">
-                            Avaliar agora →
-                        </button>
+                <div id="notif-carousel" class="notif-carousel" style="display: none;">
+                    <button type="button" class="notif-carousel-nav prev" onclick="prevNotifSlide()" aria-label="Anterior">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+
+                    <div class="notif-carousel-track" id="notif-carousel-track">
+                        <!-- Slides preenchidos via JS -->
                     </div>
+
+                    <button type="button" class="notif-carousel-nav next" onclick="nextNotifSlide()" aria-label="Próximo">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+
+                    <div class="notif-carousel-dots" id="notif-carousel-dots"></div>
                 </div>
 
                 <div id="pedidos-container">
@@ -643,58 +650,158 @@
         }
 
         // ==========================================================================
-        // Notificações de avaliações pendentes
+        // Carrossel de Notificações (Meus Pedidos)
         // ==========================================================================
-        let pendingReviewsCount = 0;
+        let notifCarouselCurrentIndex = 0;
+        let notifCarouselInterval = null;
+        let notifCarouselItems = [];
 
-        function calculatePendingReviews() {
-            if (!userOrders || userOrders.length === 0) {
-                pendingReviewsCount = 0;
-                updateReviewNotifications();
+        function renderNotifCarousel() {
+            const carousel = document.getElementById('notif-carousel');
+            const track = document.getElementById('notif-carousel-track');
+            const dots = document.getElementById('notif-carousel-dots');
+
+            if (!carousel || !track || !dots) return;
+
+            // Filtra apenas não lidas
+            notifCarouselItems = (userNotifications || []).filter(n => !n.read_at);
+
+            // Se não tem nenhuma → esconde
+            if (notifCarouselItems.length === 0) {
+                carousel.style.display = 'none';
+                stopNotifCarousel();
                 return;
             }
 
-            let count = 0;
-            userOrders.forEach(order => {
-                if (order.status !== 'enviado' && order.status !== 'entregue') return;
+            carousel.style.display = 'block';
 
-                (order.items || []).forEach(item => {
-                    if (!hasUserReviewed(order.id, item.ref)) {
-                        count++;
-                    }
-                });
-            });
+            const typeIcons = {
+                order_paid: String.fromCodePoint(0x1F4B3),
+                order_shipped: String.fromCodePoint(0x1F69A),
+                review_approved: String.fromCodePoint(0x2B50),
+                review_rejected: String.fromCodePoint(0x1F49B),
+                review_pending: String.fromCodePoint(0x2B50),
+                coupon: String.fromCodePoint(0x1F381),
+                welcome: String.fromCodePoint(0x2728),
+                custom: String.fromCodePoint(0x1F514)
+            };
 
-            pendingReviewsCount = count;
-            updateReviewNotifications();
-        }
+            // Renderiza slides
+            track.innerHTML = notifCarouselItems.map((n, idx) => {
+                const icon = typeIcons[n.type] || String.fromCodePoint(0x1F514);
+                const active = idx === 0 ? 'active' : '';
 
-        function updateReviewNotifications() {
-            const card = document.getElementById('avaliacoes-pendentes-card');
-            const cardCount = document.getElementById('avaliacoes-pendentes-count');
-            const cardLabel = document.getElementById('avaliacoes-pendentes-label');
+                // Texto do CTA (varia por tipo)
+                let ctaText = 'Ver mais →';
+                if (n.type === 'review_pending') ctaText = 'Avaliar agora →';
+                else if (n.type === 'order_paid') ctaText = 'Ver pedido →';
+                else if (n.type === 'order_shipped') ctaText = 'Acompanhar →';
+                else if (n.type === 'coupon') ctaText = 'Usar cupom →';
 
-            if (pendingReviewsCount > 0) {
-                if (card) card.style.display = 'block';
-                if (cardCount) cardCount.innerText = pendingReviewsCount;
-                if (cardLabel) cardLabel.innerText = pendingReviewsCount === 1 ? 'peça' : 'peças';
+                return `
+                    <div class="notif-carousel-slide ${active}" data-index="${idx}">
+                        <div class="notif-carousel-icon">${icon}</div>
+                        <div class="notif-carousel-text">
+                            <h3>${escapeHTML(n.title)}</h3>
+                            <p>${escapeHTML(n.message)}</p>
+                        </div>
+                        <button type="button" class="notif-carousel-cta" onclick="handleNotifCarouselClick('${n.id}')">
+                            ${ctaText}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Renderiza dots
+            if (notifCarouselItems.length > 1) {
+                dots.style.display = 'flex';
+                dots.innerHTML = notifCarouselItems.map((_, idx) =>
+                    `<span class="notif-carousel-dot ${idx === 0 ? 'active' : ''}" onclick="goToNotifSlide(${idx})"></span>`
+                ).join('');
             } else {
-                if (card) card.style.display = 'none';
+                dots.style.display = 'none';
+                dots.innerHTML = '';
+            }
+
+            notifCarouselCurrentIndex = 0;
+
+            // Inicia rotação (só se tiver > 1)
+            if (notifCarouselItems.length > 1) {
+                startNotifCarousel();
             }
         }
 
-        function scrollToFirstPendingOrder() {
-            if (pendingReviewsCount === 0) return;
+        function showNotifSlide(index) {
+            const slides = document.querySelectorAll('.notif-carousel-slide');
+            const dots = document.querySelectorAll('.notif-carousel-dot');
 
-            for (const order of userOrders) {
-                if (order.status !== 'enviado' && order.status !== 'entregue') continue;
+            if (slides.length === 0) return;
 
-                for (const item of (order.items || [])) {
-                    if (!hasUserReviewed(order.id, item.ref)) {
-                        openPedidoModal(order.id);
-                        return;
-                    }
-                }
+            if (index < 0) index = slides.length - 1;
+            if (index >= slides.length) index = 0;
+
+            slides.forEach((s, i) => s.classList.toggle('active', i === index));
+            dots.forEach((d, i) => d.classList.toggle('active', i === index));
+
+            notifCarouselCurrentIndex = index;
+        }
+
+        function nextNotifSlide() {
+            showNotifSlide(notifCarouselCurrentIndex + 1);
+            resetNotifCarouselTimer();
+        }
+
+        function prevNotifSlide() {
+            showNotifSlide(notifCarouselCurrentIndex - 1);
+            resetNotifCarouselTimer();
+        }
+
+        function goToNotifSlide(index) {
+            showNotifSlide(index);
+            resetNotifCarouselTimer();
+        }
+
+        function startNotifCarousel() {
+            stopNotifCarousel();
+            notifCarouselInterval = setInterval(() => {
+                nextNotifSlide();
+            }, 5000);
+        }
+
+        function stopNotifCarousel() {
+            if (notifCarouselInterval) {
+                clearInterval(notifCarouselInterval);
+                notifCarouselInterval = null;
+            }
+        }
+
+        function resetNotifCarouselTimer() {
+            if (notifCarouselItems.length > 1) {
+                stopNotifCarousel();
+                startNotifCarousel();
+            }
+        }
+
+        async function handleNotifCarouselClick(id) {
+            // Se for virtual, só navega
+            const notification = notifCarouselItems.find(n => n.id === id);
+            if (!notification) return;
+
+            if (notification.is_virtual) {
+                if (notification.link) window.location.href = notification.link;
+                return;
+            }
+
+            // Real: marca como lida + navega
+            if (!notification.read_at) {
+                await supabaseClient
+                    .from('notifications')
+                    .update({ read_at: new Date().toISOString() })
+                    .eq('id', id);
+            }
+
+            if (notification.link) {
+                window.location.href = notification.link;
             }
         }
 
@@ -888,6 +995,7 @@
                     notification.read_at = new Date().toISOString();
                     renderNotifications();
                     updateNotificationsBadge();
+                    renderNotifCarousel();
                 }
             }
 
@@ -924,6 +1032,7 @@
 
             renderNotifications();
             updateNotificationsBadge();
+            renderNotifCarousel();
         }
 
         function openReviewModal(orderId, productRef) {
@@ -1141,12 +1250,10 @@
                 const o = userOrders.find(x => x.id === reviewState.orderId);
                 if (o) openPedidoModal(o.id);
 
-                // Recalcula as notificações de avaliações pendentes
-                calculatePendingReviews();
-
                 // Atualiza pedidos e recalcula notificações virtuais + sininho
                 await loadUserOrders();
                 await loadNotifications();
+                renderNotifCarousel();
 
                 if (typeof trackGA === 'function') {
                     trackGA('review_submitted', { product_ref: reviewState.productRef, rating });
@@ -1430,6 +1537,19 @@
                 });
             }
 
+            // Pausa o carrossel de notificações no hover/touch
+            const carouselEl = document.getElementById('notif-carousel');
+            if (carouselEl) {
+                carouselEl.addEventListener('mouseenter', stopNotifCarousel);
+                carouselEl.addEventListener('mouseleave', () => {
+                    if (notifCarouselItems.length > 1) startNotifCarousel();
+                });
+                carouselEl.addEventListener('touchstart', stopNotifCarousel, { passive: true });
+                carouselEl.addEventListener('touchend', () => {
+                    if (notifCarouselItems.length > 1) startNotifCarousel();
+                });
+            }
+
             // ====== Modal de review: estrelas, fotos e envio ======
             const reviewStars = document.querySelectorAll('#review-stars .review-star');
             reviewStars.forEach(btn => {
@@ -1512,12 +1632,14 @@
                 loadUserFavorites()
             ]);
 
-            // Carrega reviews do cliente e calcula pendências de avaliação
+            // Carrega reviews do cliente (necessário p/ calcular pendências virtuais)
             await loadUserReviews();
-            calculatePendingReviews();
 
-            // Carrega notificações (sininho)
+            // Carrega notificações (sininho) — reais + virtuais
             await loadNotifications();
+
+            // Renderiza o carrossel de notificações não lidas
+            renderNotifCarousel();
 
             // ====== Detecção de parâmetro ?review=ORDER_ID (link do email) ======
             const urlParams = new URLSearchParams(window.location.search);
