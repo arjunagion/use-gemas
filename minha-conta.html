@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=2.9">
+    <link rel="stylesheet" href="estilo/perfil.css?v=3.0">
 </head>
 
 <body>
@@ -473,9 +473,9 @@
                 const reviewed = hasUserReviewed(orderId, item.ref);
                 let reviewControl = '';
                 if (canReview && !reviewed) {
-                    reviewControl = `<button type="button" class="btn-review-item" onclick="openReviewModal('${escapeJsString(o.id)}', '${escapeJsString(item.ref)}')">${String.fromCodePoint(0x2605)} <span>Avaliar</span></button>`;
+                    reviewControl = `<button type="button" class="btn-avaliar" onclick="openReviewModal('${escapeJsString(o.id)}', '${escapeJsString(item.ref)}')">${String.fromCodePoint(0x2B50)} <span>Avaliar produto</span></button>`;
                 } else if (reviewed) {
-                    reviewControl = `<span class="review-done-badge">Avaliação enviada ${String.fromCodePoint(0x2705)}</span>`;
+                    reviewControl = `<span class="badge-avaliado">${String.fromCodePoint(0x2713)} Avaliação enviada</span>`;
                 }
                 return `
                 <div class="modal-item">
