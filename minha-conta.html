@@ -1156,7 +1156,20 @@
             const { data: { user }, error } = await supabaseClient.auth.getUser();
 
             if (error || !user) {
-                window.location.href = 'index.html';
+                // Salva o destino pra redirecionar após login (ex: link ?review= do email)
+                const currentPath = window.location.pathname.split('/').pop() || '';
+                const currentSearch = window.location.search || '';
+                const fullPath = currentPath + currentSearch;
+
+                if (currentSearch) {
+                    try {
+                        localStorage.setItem('gemas_redirect_after_login', fullPath);
+                    } catch (e) {
+                        console.warn('Não foi possível salvar redirect:', e);
+                    }
+                }
+
+                window.location.href = 'index.html?login=1';
                 return;
             }
 

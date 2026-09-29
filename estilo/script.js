@@ -1265,6 +1265,18 @@ async function handleLogin(event) {
     }
 
     showAuthFeedback('Login realizado com sucesso!', 'success');
+
+    // Verifica se tem redirect pendente (cliente veio de um link com ?review=)
+    const pendingRedirect = localStorage.getItem('gemas_redirect_after_login');
+    if (pendingRedirect && pendingRedirect.startsWith('minha-conta.html')) {
+        // Limpa a chave e redireciona após pequeno delay (transição visual)
+        localStorage.removeItem('gemas_redirect_after_login');
+        setTimeout(() => {
+            window.location.href = pendingRedirect;
+        }, 800);
+        return; // Não executa o resto do fluxo normal
+    }
+
     await syncLocalToCloud();
     await loadFavorites();
     await loadCheckoutData();
@@ -3435,5 +3447,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         updateBackToTop();
+    }
+
+    // Verifica se deve abrir modal de login automaticamente (?login=1)
+    const loginUrlParams = new URLSearchParams(window.location.search);
+    if (loginUrlParams.get('login') === '1') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => {
+            openAuthModal('login');
+        }, 300);
     }
 });
