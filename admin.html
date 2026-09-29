@@ -1883,6 +1883,165 @@
                 height: 240px;
             }
         }
+
+        /* ===== Reviews Admin ===== */
+        .reviews-admin-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .review-admin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.3rem;
+            transition: all 0.3s;
+        }
+
+        .review-admin-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .review-admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .review-admin-stars {
+            color: var(--gold);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.2rem;
+        }
+
+        .review-admin-product {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .review-status-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+        }
+
+        .review-status-badge.pending {
+            background: rgba(255, 193, 7, 0.15);
+            color: var(--warning);
+        }
+
+        .review-status-badge.approved {
+            background: rgba(81, 207, 102, 0.15);
+            color: var(--success);
+        }
+
+        .review-status-badge.rejected {
+            background: rgba(255, 85, 85, 0.15);
+            color: var(--danger);
+        }
+
+        .review-admin-date {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .review-admin-meta {
+            font-size: 0.85rem;
+            color: var(--text);
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .verified-badge {
+            font-size: 0.7rem;
+            color: var(--success);
+            background: rgba(81, 207, 102, 0.12);
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        .review-admin-title {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.4rem;
+        }
+
+        .review-admin-comment {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
+        }
+
+        .review-admin-photos {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .review-admin-photos img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s ease;
+        }
+
+        .review-admin-photos a:hover img {
+            transform: scale(1.05);
+            border-color: var(--gold);
+        }
+
+        .review-admin-response {
+            background: rgba(212, 175, 55, 0.08);
+            border-left: 3px solid var(--gold);
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+        }
+
+        .review-admin-response strong {
+            color: var(--gold);
+        }
+
+        .review-admin-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .review-admin-actions .action-btn {
+            flex: 0 1 auto;
+        }
+
+        .review-response-preview {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid var(--gold);
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.2rem;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 
@@ -1926,6 +2085,10 @@
                 <a href="#" class="nav-item" data-section="pedidos">
                     <span class="icon">🛒</span> Pedidos
                     <span class="nav-badge" id="nav-badge-pedidos" style="display: none;">0</span>
+                </a>
+                <a href="#" class="nav-item" data-section="avaliacoes">
+                    <span class="icon">⭐</span> Avaliações
+                    <span class="nav-badge" id="nav-badge-reviews" style="display: none;">0</span>
                 </a>
                 <a href="#" class="nav-item" data-section="clientes">
                     <span class="icon">👥</span> Clientes
@@ -2037,6 +2200,29 @@
                         <div class="empty-state">
                             <span class="icon">🛒</span>
                             <p>Carregando pedidos...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== AVALIAÇÕES ==================== -->
+                <section class="content-section" id="section-avaliacoes">
+                    <div class="section-header">
+                        <div class="section-actions">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" onclick="setReviewFilter('pending', this)">Pendentes</button>
+                                <button class="filter-tab" onclick="setReviewFilter('approved', this)">Aprovadas</button>
+                                <button class="filter-tab" onclick="setReviewFilter('rejected', this)">Rejeitadas</button>
+                                <button class="filter-tab" onclick="setReviewFilter('all', this)">Todas</button>
+                            </div>
+                            <input type="text" class="search-input" id="review-search"
+                                placeholder="🔍 Buscar por produto, cliente..." oninput="renderReviews()">
+                        </div>
+                    </div>
+
+                    <div id="reviews-container">
+                        <div class="empty-state">
+                            <span class="icon">⭐</span>
+                            <p>Carregando avaliações...</p>
                         </div>
                     </div>
                 </section>
@@ -2316,6 +2502,27 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL: RESPOSTA DE AVALIAÇÃO ==================== -->
+    <div id="review-response-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeResponseModal()">&times;</button>
+            <h2 class="modal-title">Responder avaliação</h2>
+
+            <div id="review-response-preview" class="review-response-preview"></div>
+
+            <div class="form-group">
+                <label for="review-response-text">Sua resposta (máx 500 caracteres)</label>
+                <textarea id="review-response-text" rows="4" maxlength="500"
+                    placeholder="Agradeça, responda a dúvida, ou comente..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeResponseModal()">Cancelar</button>
+                <button type="button" class="btn-save" onclick="saveResponse()">Salvar resposta</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== MODAL: CONFIRMAÇÃO ==================== -->
     <div id="confirm-modal" class="modal-overlay">
         <div class="modal-box narrow">
@@ -2451,6 +2658,7 @@
 
                 await loadProducts();
                 await loadOrders();
+                await loadReviews();
                 await loadSettings();
                 updateDashboardMetrics();
 
@@ -2472,6 +2680,7 @@
             dashboard: 'Dashboard',
             produtos: 'Produtos',
             pedidos: 'Pedidos',
+            avaliacoes: 'Avaliações',
             clientes: 'Clientes',
             financeiro: 'Financeiro',
             config: 'Configurações'
@@ -2487,6 +2696,7 @@
             document.getElementById('page-title').innerText = sectionTitles[sectionName] || 'Dashboard';
             if (sectionName === 'dashboard') updateDashboardMetrics();
             if (sectionName === 'clientes') renderClients();
+            if (sectionName === 'avaliacoes' && !reviewsLoaded) loadReviews();
             if (sectionName === 'config') loadSettings();
             if (sectionName === 'financeiro') {
                 if (!financeState.from) {
@@ -3117,6 +3327,278 @@
         function closeConfirmModal() {
             document.getElementById('confirm-modal').classList.remove('open');
             pendingDeleteId = null;
+        }
+
+        // ==========================================================================
+        // AVALIAÇÕES
+        // ==========================================================================
+        let allReviews = [];
+        let currentReviewFilter = 'pending';
+        let reviewsLoaded = false;
+
+        async function loadReviews() {
+            const { data, error } = await supabaseClient
+                .from('reviews')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Erro ao carregar avaliações:', error);
+                return;
+            }
+
+            allReviews = data || [];
+            reviewsLoaded = true;
+            renderReviews();
+            updateReviewBadge();
+        }
+
+        function updateReviewBadge() {
+            const pendingCount = allReviews.filter(r => r.status === 'pending').length;
+            const badge = document.getElementById('nav-badge-reviews');
+            if (badge) {
+                badge.innerText = pendingCount;
+                badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        function setReviewFilter(filter, el) {
+            currentReviewFilter = filter;
+            document.querySelectorAll('#section-avaliacoes .filter-tab').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderReviews();
+        }
+
+        function renderReviews() {
+            const container = document.getElementById('reviews-container');
+            if (!container) return;
+
+            const searchTerm = (document.getElementById('review-search')?.value || '').trim().toLowerCase();
+
+            let filtered = allReviews.slice();
+
+            if (currentReviewFilter !== 'all') {
+                filtered = filtered.filter(r => r.status === currentReviewFilter);
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(r =>
+                    (r.customer_name || '').toLowerCase().includes(searchTerm) ||
+                    (r.product_ref || '').toLowerCase().includes(searchTerm) ||
+                    (r.comment || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">⭐</span>
+                        <p>${allReviews.length === 0 ? 'Nenhuma avaliação recebida ainda.' : 'Nenhuma avaliação com esse filtro.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '<div class="reviews-admin-list">' +
+                filtered.map(r => renderReviewCard(r)).join('') +
+                '</div>';
+        }
+
+        function renderReviewCard(review) {
+            const product = allProducts.find(p => p.ref === review.product_ref);
+            const productName = product ? product.name : review.product_ref;
+
+            const ratingNum = Math.max(0, Math.min(5, Number(review.rating) || 0));
+            const stars = '★'.repeat(ratingNum) + '☆'.repeat(5 - ratingNum);
+
+            const photos = (review.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+            const photosHTML = photos.length > 0
+                ? `<div class="review-admin-photos">${photos.map(url => `<a href="${escapeHTML(url)}" target="_blank" rel="noopener"><img src="${escapeHTML(url)}" alt="Foto da avaliação" loading="lazy"></a>`).join('')}</div>`
+                : '';
+
+            const statusMap = {
+                pending: { label: 'Pendente', class: 'pending' },
+                approved: { label: 'Aprovada', class: 'approved' },
+                rejected: { label: 'Rejeitada', class: 'rejected' }
+            };
+            const statusInfo = statusMap[review.status] || statusMap.pending;
+
+            const approveBtn = review.status !== 'approved'
+                ? `<button class="action-btn" onclick="approveReview('${review.id}')">✅ Aprovar</button>`
+                : '';
+            const rejectBtn = review.status !== 'rejected'
+                ? `<button class="action-btn warn" onclick="rejectReview('${review.id}')">❌ Rejeitar</button>`
+                : '';
+
+            return `
+                <div class="review-admin-card">
+                    <div class="review-admin-header">
+                        <div>
+                            <div class="review-admin-stars">${stars}</div>
+                            <div class="review-admin-product">
+                                <strong>${escapeHTML(productName)}</strong> · <span style="color:var(--text-dim);">${escapeHTML(review.product_ref)}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <span class="review-status-badge ${statusInfo.class}">${statusInfo.label}</span>
+                            <span class="review-admin-date">${formatDateShort(review.created_at)}</span>
+                        </div>
+                    </div>
+
+                    <div class="review-admin-meta">
+                        <strong>${escapeHTML(review.customer_name)}</strong>
+                        ${review.customer_email ? `<span style="color:var(--text-dim);">${escapeHTML(review.customer_email)}</span>` : ''}
+                        ${review.verified_purchase ? '<span class="verified-badge">✅ Compra verificada</span>' : ''}
+                    </div>
+
+                    ${review.title ? `<div class="review-admin-title">${escapeHTML(review.title)}</div>` : ''}
+                    <div class="review-admin-comment">${escapeHTML(review.comment)}</div>
+                    ${photosHTML}
+
+                    ${review.admin_response ? `
+                        <div class="review-admin-response">
+                            <strong>💛 Sua resposta:</strong><br>
+                            ${escapeHTML(review.admin_response)}
+                        </div>
+                    ` : ''}
+
+                    <div class="review-admin-actions">
+                        ${approveBtn}
+                        ${rejectBtn}
+                        <button class="action-btn" onclick="openResponseModal('${review.id}')">💛 Responder</button>
+                        <button class="action-btn danger" onclick="confirmDeleteReview('${review.id}')">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function approveReview(reviewId) {
+            const { error } = await supabaseClient
+                .from('reviews')
+                .update({ status: 'approved' })
+                .eq('id', reviewId);
+
+            if (error) { showToast('Erro ao aprovar.', 'error'); return; }
+            showToast('Avaliação aprovada!');
+            await loadReviews();
+        }
+
+        async function rejectReview(reviewId) {
+            const { error } = await supabaseClient
+                .from('reviews')
+                .update({ status: 'rejected' })
+                .eq('id', reviewId);
+
+            if (error) { showToast('Erro ao rejeitar.', 'error'); return; }
+            showToast('Avaliação rejeitada.');
+            await loadReviews();
+        }
+
+        let currentReviewForResponse = null;
+
+        function openResponseModal(reviewId) {
+            const review = allReviews.find(r => r.id === reviewId);
+            if (!review) return;
+
+            currentReviewForResponse = review;
+
+            const modal = document.getElementById('review-response-modal');
+            const preview = document.getElementById('review-response-preview');
+            const textarea = document.getElementById('review-response-text');
+
+            if (preview) {
+                const ratingNum = Math.max(0, Math.min(5, Number(review.rating) || 0));
+                const stars = '★'.repeat(ratingNum) + '☆'.repeat(5 - ratingNum);
+                preview.innerHTML = `
+                    <div style="font-size: 1.2rem; color: #d4af37; margin-bottom: 0.3rem;">${stars}</div>
+                    <div style="font-size: 0.85rem; color: #c5c5c5; margin-bottom: 0.5rem;"><strong>${escapeHTML(review.customer_name)}</strong></div>
+                    <div style="font-size: 0.9rem; color: #ddd;">${escapeHTML(review.comment)}</div>
+                `;
+            }
+
+            if (textarea) textarea.value = review.admin_response || '';
+
+            modal.classList.add('open');
+        }
+
+        function closeResponseModal() {
+            document.getElementById('review-response-modal').classList.remove('open');
+            currentReviewForResponse = null;
+        }
+
+        async function saveResponse() {
+            if (!currentReviewForResponse) return;
+
+            const textarea = document.getElementById('review-response-text');
+            const response = (textarea?.value || '').trim();
+
+            if (response.length > 500) {
+                showToast('Resposta muito longa (máx 500 caracteres).', 'error');
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('reviews')
+                .update({ admin_response: response })
+                .eq('id', currentReviewForResponse.id);
+
+            if (error) { showToast('Erro ao salvar resposta.', 'error'); return; }
+
+            showToast(response ? 'Resposta salva!' : 'Resposta removida.');
+            closeResponseModal();
+            await loadReviews();
+        }
+
+        function confirmDeleteReview(reviewId) {
+            const review = allReviews.find(r => r.id === reviewId);
+            if (!review) return;
+
+            pendingDeleteId = reviewId;
+            document.getElementById('confirm-title').innerText = 'Excluir avaliação?';
+            document.getElementById('confirm-text').innerHTML =
+                `Você está prestes a excluir a avaliação de <strong>${escapeHTML(review.customer_name)}</strong>.<br><br>As fotos também serão removidas do Storage. Essa ação não pode ser desfeita.`;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.innerText = 'Excluir';
+            confirmBtn.onclick = executeDeleteReview;
+
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        async function executeDeleteReview() {
+            if (!pendingDeleteId) return;
+
+            const review = allReviews.find(r => r.id === pendingDeleteId);
+            if (!review) return;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            const originalText = confirmBtn.innerText;
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Excluindo...';
+
+            const photos = (review.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+            if (photos.length > 0) {
+                const paths = photos.map(url => {
+                    const parts = url.split('/review-images/');
+                    return parts.length > 1 ? parts[1] : null;
+                }).filter(Boolean);
+
+                if (paths.length > 0) {
+                    const { error: storageError } = await supabaseClient.storage.from('review-images').remove(paths);
+                    if (storageError) console.warn('Erro ao remover fotos do Storage:', storageError);
+                }
+            }
+
+            const { error } = await supabaseClient.from('reviews').delete().eq('id', review.id);
+
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = originalText;
+
+            if (error) { showToast('Erro ao excluir.', 'error'); return; }
+
+            closeConfirmModal();
+            showToast('Avaliação excluída.');
+            await loadReviews();
         }
 
         // ==========================================================================
