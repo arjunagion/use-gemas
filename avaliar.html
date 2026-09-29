@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliar Pedido | Use Gemas</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0e0e10">
+
+    <link rel="icon" type="image/png" href="estilo/midias/favicon.png">
+    <link rel="apple-touch-icon" href="estilo/midias/favicon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="estilo/avaliar.css?v=1.0">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <!-- Navbar simplificada -->
+    <header class="avaliar-navbar">
+        <a href="index.html" class="avaliar-logo">USE GEMAS</a>
+        <a href="index.html" class="avaliar-back">← Voltar ao site</a>
+    </header>
+
+    <main class="avaliar-container">
+
+        <!-- Estado 1: Loading -->
+        <div id="state-loading" class="state active">
+            <div class="state-center">
+                <div class="spinner"></div>
+                <p>Validando link...</p>
+            </div>
+        </div>
+
+        <!-- Estado 2: Erro -->
+        <div id="state-error" class="state">
+            <div class="state-center">
+                <span class="icon-error">⚠</span>
+                <h1>Link inválido</h1>
+                <p>Este link de avaliação expirou ou é inválido. Se você ainda não avaliou, entre em contato pelo
+                    WhatsApp.</p>
+                <a href="index.html" class="btn-primary">Voltar ao site</a>
+                <br><br>
+                <a href="https://api.whatsapp.com/send?phone=5511982053330" class="btn-ghost" target="_blank"
+                    rel="noopener">Falar no WhatsApp</a>
+            </div>
+        </div>
+
+        <!-- Estado 3: Já avaliou -->
+        <div id="state-already" class="state">
+            <div class="state-center">
+                <span class="icon-success">✓</span>
+                <h1>Você já avaliou! 💛</h1>
+                <p>Obrigada pelo carinho. Sua avaliação já está registrada e em breve aparecerá no site.</p>
+                <a href="index.html" class="btn-primary">Voltar ao site</a>
+            </div>
+        </div>
+
+        <!-- Estado 4: Formulário -->
+        <div id="state-form" class="state">
+            <div class="avaliar-header">
+                <span class="badge">Avaliação de Compra</span>
+                <h1 id="greeting-name">Oi!</h1>
+                <p>Conte pra gente como foi sua experiência com as peças abaixo. Sua opinião é muito importante. 💛</p>
+            </div>
+
+            <div class="avaliar-items">
+                <h3>Itens da sua compra</h3>
+                <div id="order-items"></div>
+            </div>
+
+            <form id="avaliar-form" class="avaliar-form" novalidate>
+                <div class="form-group">
+                    <label>Sua avaliação *</label>
+                    <div class="star-rating" id="star-rating" role="radiogroup" aria-label="Avaliação de 1 a 5 estrelas">
+                        <button type="button" class="star" data-value="1" aria-label="1 estrela">★</button>
+                        <button type="button" class="star" data-value="2" aria-label="2 estrelas">★</button>
+                        <button type="button" class="star" data-value="3" aria-label="3 estrelas">★</button>
+                        <button type="button" class="star" data-value="4" aria-label="4 estrelas">★</button>
+                        <button type="button" class="star" data-value="5" aria-label="5 estrelas">★</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="review-title">Título (opcional)</label>
+                    <input type="text" id="review-title" maxlength="80" placeholder="Resuma em poucas palavras">
+                </div>
+
+                <div class="form-group">
+                    <label for="review-comment">Seu comentário *</label>
+                    <textarea id="review-comment" rows="5" minlength="10" maxlength="2000"
+                        placeholder="Conte como foi sua experiência com a peça..." required></textarea>
+                    <small class="char-counter"><span id="char-count">0</span>/2000</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Fotos (opcional, até 3)</label>
+                    <div class="photo-upload-area">
+                        <input type="file" id="photo-input" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                        <button type="button" class="btn-upload" id="btn-upload"
+                            onclick="document.getElementById('photo-input').click()">
+                            📷 Adicionar fotos
+                        </button>
+                        <div id="photo-preview" class="photo-preview"></div>
+                    </div>
+                    <small class="hint">Máx 5MB por foto · JPG, PNG ou WebP</small>
+                </div>
+
+                <div id="form-feedback" class="form-feedback"></div>
+
+                <button type="submit" class="btn-primary btn-block" id="submit-btn">
+                    Enviar avaliação
+                </button>
+            </form>
+        </div>
+
+        <!-- Estado 5: Sucesso -->
+        <div id="state-success" class="state">
+            <div class="state-center">
+                <span class="icon-success">✓</span>
+                <h1>Avaliação enviada! 💛</h1>
+                <p>Obrigada por compartilhar sua experiência. Sua avaliação passa por uma rápida revisão e logo estará
+                    no site.</p>
+
+                <div class="cta-criar-conta">
+                    <h3>Crie sua conta Use Gemas</h3>
+                    <p>Acompanhe seus pedidos, salve favoritos e ganhe acesso antecipado a lançamentos.</p>
+                    <a href="index.html#cadastro" class="btn-primary">Criar conta grátis</a>
+                </div>
+
+                <a href="index.html" class="btn-ghost">Voltar ao site</a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="avaliar-footer">
+        <p>&copy; 2026 Use Gemas. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // ==========================================================================
+        // Supabase
+        // ==========================================================================
+        const SUPABASE_URL = 'https://dytdnemwqbzgrekamwla.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR5dGRuZW13cWJ6Z3Jla2Ftd2xhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3ODExMTEsImV4cCI6MjEwNTM1NzExMX0.6Zb3JK1CrpSrPqtigu9ZyEm_rWLKATOiQvPRQZmCU24';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ==========================================================================
+        // Estado
+        // ==========================================================================
+        let currentOrder = null;
+        let currentRating = 0;
+        let currentPhotos = []; // array de File
+        let photoObjectUrls = [];
+
+        // ==========================================================================
+        // Utilidades
+        // ==========================================================================
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function showState(stateId) {
+            document.querySelectorAll('.state').forEach(s => s.classList.remove('active'));
+            const el = document.getElementById(stateId);
+            if (el) el.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showFeedback(message, type = 'error') {
+            const fb = document.getElementById('form-feedback');
+            if (!fb) return;
+            fb.className = 'form-feedback ' + type;
+            fb.textContent = message;
+        }
+
+        function renderGreeting(name) {
+            const el = document.getElementById('greeting-name');
+            if (!el) return;
+            const firstName = String(name || '').trim().split(/\s+/)[0] || 'cliente';
+            el.textContent = 'Oi, ' + firstName + '!';
+        }
+
+        function renderOrderItems(order) {
+            const container = document.getElementById('order-items');
+            if (!container) return;
+
+            const items = Array.isArray(order.items) ? order.items : [];
+            if (items.length === 0) {
+                container.innerHTML = '<p class="avaliar-empty-items">Nenhum item encontrado.</p>';
+                return;
+            }
+
+            container.innerHTML = items.map(item => {
+                const name = item.name || 'Produto';
+                const ref = item.ref || '';
+                const qty = Number(item.quantity) || 1;
+                return `<div class="avaliar-item">
+                    <div class="avaliar-item-name">${escapeHTML(name)}</div>
+                    <div class="avaliar-item-ref">REF: ${escapeHTML(ref)}${qty > 1 ? ' · ' + qty + 'x' : ''}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function paintStars(value) {
+            document.querySelectorAll('#star-rating .star').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.value, 10) <= value);
+            });
+        }
+
+        // ==========================================================================
+        // Setup do formulário
+        // ==========================================================================
+        function setupFormHandlers() {
+            const stars = document.querySelectorAll('#star-rating .star');
+            stars.forEach(btn => {
+                const value = parseInt(btn.dataset.value, 10);
+                btn.addEventListener('mouseenter', () => paintStars(value));
+                btn.addEventListener('mouseleave', () => paintStars(currentRating));
+                btn.addEventListener('click', () => {
+                    currentRating = value;
+                    paintStars(value);
+                    stars.forEach(s => s.setAttribute('aria-checked',
+                        parseInt(s.dataset.value, 10) === value ? 'true' : 'false'));
+                });
+            });
+
+            const comment = document.getElementById('review-comment');
+            const counter = document.getElementById('char-count');
+            if (comment && counter) {
+                comment.addEventListener('input', () => { counter.textContent = comment.value.length; });
+            }
+
+            const photoInput = document.getElementById('photo-input');
+            if (photoInput) {
+                photoInput.addEventListener('change', () => {
+                    handlePhotoSelect(photoInput.files);
+                    photoInput.value = '';
+                });
+            }
+
+            const form = document.getElementById('avaliar-form');
+            if (form) form.addEventListener('submit', handleSubmit);
+        }
+
+        function handlePhotoSelect(fileList) {
+            const files = Array.from(fileList || []);
+            for (const file of files) {
+                if (currentPhotos.length >= 3) {
+                    showFeedback('Máximo de 3 fotos por avaliação.', 'error');
+                    break;
+                }
+                if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                    showFeedback(`Formato não aceito (${file.name}). Use JPG, PNG ou WebP.`, 'error');
+                    continue;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    showFeedback(`Foto muito grande (${file.name}). Máximo 5MB.`, 'error');
+                    continue;
+                }
+                currentPhotos.push(file);
+            }
+            renderPhotoPreview();
+        }
+
+        function renderPhotoPreview() {
+            const container = document.getElementById('photo-preview');
+            const uploadBtn = document.getElementById('btn-upload');
+            if (!container) return;
+
+            photoObjectUrls.forEach(u => { try { URL.revokeObjectURL(u); } catch (e) { } });
+            photoObjectUrls = [];
+
+            container.innerHTML = currentPhotos.map((file, i) => {
+                const url = URL.createObjectURL(file);
+                photoObjectUrls.push(url);
+                return `<div class="photo-item">
+                    <img src="${url}" alt="Foto da avaliação" />
+                    <button type="button" class="photo-remove" data-index="${i}" aria-label="Remover foto">&times;</button>
+                </div>`;
+            }).join('');
+
+            if (uploadBtn) uploadBtn.style.display = currentPhotos.length >= 3 ? 'none' : '';
+
+            container.querySelectorAll('.photo-remove').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentPhotos.splice(parseInt(btn.dataset.index, 10), 1);
+                    renderPhotoPreview();
+                });
+            });
+        }
+
+        // ==========================================================================
+        // Upload e envio
+        // ==========================================================================
+        async function uploadPhotos() {
+            if (currentPhotos.length === 0) return [];
+
+            const uploads = currentPhotos.map(async (file) => {
+                const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+                const random = Math.random().toString(36).substring(2, 10);
+                const path = `guest/${currentOrder.id}/${Date.now()}-${random}.${ext}`;
+
+                const { data, error } = await supabaseClient.storage
+                    .from('review-images')
+                    .upload(path, file, { cacheControl: '3600', upsert: false });
+
+                if (error) throw error;
+
+                const { data: urlData } = supabaseClient.storage
+                    .from('review-images')
+                    .getPublicUrl(path);
+
+                return urlData.publicUrl;
+            });
+
+            return await Promise.all(uploads);
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            if (currentRating < 1) {
+                showFeedback('Escolha uma avaliação de 1 a 5 estrelas.', 'error');
+                return;
+            }
+
+            const title = document.getElementById('review-title').value.trim();
+            const comment = document.getElementById('review-comment').value.trim();
+
+            if (comment.length < 10) {
+                showFeedback('O comentário precisa ter pelo menos 10 caracteres.', 'error');
+                return;
+            }
+
+            const firstItem = (Array.isArray(currentOrder.items) && currentOrder.items.length > 0)
+                ? currentOrder.items[0]
+                : null;
+
+            if (!firstItem || !firstItem.ref) {
+                showFeedback('Não foi possível identificar o produto do pedido.', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.innerText;
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Enviando...';
+
+            try {
+                const photoUrls = await uploadPhotos();
+
+                const { error } = await supabaseClient
+                    .from('reviews')
+                    .insert({
+                        product_ref: firstItem.ref,
+                        order_id: currentOrder.id,
+                        user_id: null,
+                        customer_name: currentOrder.customer_name,
+                        customer_email: currentOrder.customer_email,
+                        rating: currentRating,
+                        title: title || null,
+                        comment: comment,
+                        photos: photoUrls.join(','),
+                        status: 'pending',
+                        verified_purchase: true
+                    });
+
+                if (error) throw error;
+
+                showState('state-success');
+            } catch (e) {
+                console.error('Erro ao enviar:', e);
+                showFeedback('Não foi possível enviar. Tente novamente.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+            }
+        }
+
+        // ==========================================================================
+        // Inicialização
+        // ==========================================================================
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('review');
+            const token = urlParams.get('token');
+
+            if (!orderId || !token) {
+                showState('state-error');
+                return;
+            }
+
+            try {
+                const { data: order, error } = await supabaseClient
+                    .from('orders')
+                    .select('id, user_id, guest_token, customer_name, customer_email, items, status')
+                    .eq('id', orderId)
+                    .eq('guest_token', token)
+                    .maybeSingle();
+
+                if (error || !order) {
+                    console.error('Erro ao validar link:', error);
+                    showState('state-error');
+                    return;
+                }
+
+                // Fallback: pedido pertence a uma conta → redireciona pro fluxo logado
+                if (order.user_id) {
+                    window.location.href = `minha-conta.html?review=${orderId}`;
+                    return;
+                }
+
+                const { data: existingReview } = await supabaseClient
+                    .from('reviews')
+                    .select('id')
+                    .eq('order_id', orderId)
+                    .maybeSingle();
+
+                if (existingReview) {
+                    showState('state-already');
+                    return;
+                }
+
+                currentOrder = order;
+                renderOrderItems(order);
+                renderGreeting(order.customer_name);
+                setupFormHandlers();
+                showState('state-form');
+            } catch (e) {
+                console.error('Erro inesperado:', e);
+                showState('state-error');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+
+</html>
