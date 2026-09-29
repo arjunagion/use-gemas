@@ -1172,6 +1172,40 @@
                 loadUserOrders(),
                 loadUserFavorites()
             ]);
+
+            // ====== Detecção de parâmetro ?review=ORDER_ID (link do email) ======
+            const urlParams = new URLSearchParams(window.location.search);
+            const reviewOrderId = urlParams.get('review');
+
+            if (reviewOrderId) {
+                // GA4: link de review aberto
+                if (typeof window.gtag === 'function') {
+                    window.gtag('event', 'review_link_opened', { order_id: reviewOrderId });
+                }
+
+                if (userOrders.length > 0) {
+                    const orderExists = userOrders.find(o => o.id === reviewOrderId);
+
+                    if (orderExists) {
+                        // Garante que está na aba certa e abre o modal do pedido
+                        switchPanel('pedidos');
+                        setTimeout(() => {
+                            openPedidoModal(reviewOrderId);
+                            // Remove o parâmetro da URL (pra não reabrir ao recarregar)
+                            window.history.replaceState({}, document.title, window.location.pathname);
+                        }, 400);
+                    } else {
+                        console.warn('Pedido do link não encontrado:', reviewOrderId);
+                        if (typeof showReviewToast === 'function') {
+                            showReviewToast('Pedido do link não encontrado.');
+                        }
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                } else {
+                    // Sem pedidos carregados → limpa o parâmetro
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
         });
     </script>
 
