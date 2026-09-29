@@ -1610,3 +1610,122 @@ button {
         transition: none;
     }
 }
+
+/* ==========================================================================
+   NOTIFICAÇÕES DE AVALIAÇÃO
+   ========================================================================== */
+
+/* Card destacado em "Meus Pedidos" */
+.avaliacoes-pendentes-card {
+    background: linear-gradient(135deg, #fdf3d9 0%, #f7e6bd 100%);
+    border: 1px solid rgba(184, 147, 90, 0.4);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 14px rgba(184, 147, 90, 0.12);
+    animation: fadeIn 0.4s ease;
+}
+
+.avaliacoes-card-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.avaliacoes-card-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.avaliacoes-card-text {
+    flex: 1;
+    min-width: 200px;
+}
+
+.avaliacoes-card-text h3 {
+    font-family: var(--font-title);
+    font-size: 1.15rem;
+    color: var(--cr-text-primary);
+    margin: 0 0 0.2rem 0;
+    font-weight: 700;
+}
+
+.avaliacoes-card-text h3 span {
+    color: var(--cr-gold-hover);
+}
+
+.avaliacoes-card-text p {
+    font-size: 0.85rem;
+    color: var(--cr-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.avaliacoes-card-btn {
+    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
+    color: #fdfaf4;
+    padding: 0.7rem 1.3rem;
+    border-radius: 30px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.avaliacoes-card-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(184, 147, 90, 0.35);
+}
+
+/* Badge no navbar */
+.nav-review-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--cr-gold-soft);
+    border: 1px solid var(--cr-border);
+    color: var(--cr-gold-hover);
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: help;
+    transition: all 0.25s ease;
+    animation: fadeIn 0.4s ease;
+}
+
+.nav-review-badge-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.nav-review-badge-count {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    line-height: 1;
+}
+
+/* Mobile: badge mais compacto */
+@media (max-width: 768px) {
+    .nav-review-badge {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+    }
+
+    .avaliacoes-card-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .avaliacoes-card-btn {
+        width: 100%;
+    }
+}

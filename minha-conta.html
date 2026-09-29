@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=3.0">
+    <link rel="stylesheet" href="estilo/perfil.css?v=3.1">
 </head>
 
 <body>
@@ -47,6 +47,11 @@
                     <span class="perfil-btn-user-avatar" id="btn-user-initial">·</span>
                     <span class="perfil-btn-user-label">Loja</span>
                 </a>
+
+                <div id="nav-review-badge" class="nav-review-badge" style="display: none;" title="Avaliações pendentes">
+                    <span class="nav-review-badge-icon">⭐</span>
+                    <span class="nav-review-badge-count" id="nav-review-badge-count">0</span>
+                </div>
 
                 <button type="button" class="perfil-btn-logout" onclick="handleLogout()">Sair</button>
             </div>
@@ -88,6 +93,19 @@
 
             <!-- PAINEL: PEDIDOS -->
             <section class="perfil-panel active" id="panel-pedidos">
+                <div id="avaliacoes-pendentes-card" class="avaliacoes-pendentes-card" style="display: none;">
+                    <div class="avaliacoes-card-content">
+                        <div class="avaliacoes-card-icon">⭐</div>
+                        <div class="avaliacoes-card-text">
+                            <h3>Você tem <span id="avaliacoes-pendentes-count">0</span> <span id="avaliacoes-pendentes-label">peças</span> pra avaliar</h3>
+                            <p>Sua opinião ajuda outras clientes a escolherem com confiança.</p>
+                        </div>
+                        <button type="button" class="avaliacoes-card-btn" onclick="scrollToFirstPendingOrder()">
+                            Avaliar agora →
+                        </button>
+                    </div>
+                </div>
+
                 <div id="pedidos-container">
                     <div class="perfil-loading">
                         <div class="spinner"></div>
@@ -620,6 +638,68 @@
             return userReviewsMap.has(`${orderId}:${productRef}`);
         }
 
+        // ==========================================================================
+        // Notificações de avaliações pendentes
+        // ==========================================================================
+        let pendingReviewsCount = 0;
+
+        function calculatePendingReviews() {
+            if (!userOrders || userOrders.length === 0) {
+                pendingReviewsCount = 0;
+                updateReviewNotifications();
+                return;
+            }
+
+            let count = 0;
+            userOrders.forEach(order => {
+                if (order.status !== 'enviado' && order.status !== 'entregue') return;
+
+                (order.items || []).forEach(item => {
+                    if (!hasUserReviewed(order.id, item.ref)) {
+                        count++;
+                    }
+                });
+            });
+
+            pendingReviewsCount = count;
+            updateReviewNotifications();
+        }
+
+        function updateReviewNotifications() {
+            const card = document.getElementById('avaliacoes-pendentes-card');
+            const cardCount = document.getElementById('avaliacoes-pendentes-count');
+            const cardLabel = document.getElementById('avaliacoes-pendentes-label');
+            const badge = document.getElementById('nav-review-badge');
+            const badgeCount = document.getElementById('nav-review-badge-count');
+
+            if (pendingReviewsCount > 0) {
+                if (card) card.style.display = 'block';
+                if (cardCount) cardCount.innerText = pendingReviewsCount;
+                if (cardLabel) cardLabel.innerText = pendingReviewsCount === 1 ? 'peça' : 'peças';
+
+                if (badge) badge.style.display = 'inline-flex';
+                if (badgeCount) badgeCount.innerText = pendingReviewsCount;
+            } else {
+                if (card) card.style.display = 'none';
+                if (badge) badge.style.display = 'none';
+            }
+        }
+
+        function scrollToFirstPendingOrder() {
+            if (pendingReviewsCount === 0) return;
+
+            for (const order of userOrders) {
+                if (order.status !== 'enviado' && order.status !== 'entregue') continue;
+
+                for (const item of (order.items || [])) {
+                    if (!hasUserReviewed(order.id, item.ref)) {
+                        openPedidoModal(order.id);
+                        return;
+                    }
+                }
+            }
+        }
+
         function openReviewModal(orderId, productRef) {
             const o = userOrders.find(x => x.id === orderId);
             const item = o && Array.isArray(o.items) ? o.items.find(i => i.ref === productRef) : null;
@@ -834,6 +914,9 @@
                 // Atualiza o botão no modal de pedido
                 const o = userOrders.find(x => x.id === reviewState.orderId);
                 if (o) openPedidoModal(o.id);
+
+                // Recalcula as notificações de avaliações pendentes
+                calculatePendingReviews();
 
                 if (typeof trackGA === 'function') {
                     trackGA('review_submitted', { product_ref: reviewState.productRef, rating });
@@ -1185,6 +1268,10 @@
                 loadUserOrders(),
                 loadUserFavorites()
             ]);
+
+            // Carrega reviews do cliente e calcula pendências de avaliação
+            await loadUserReviews();
+            calculatePendingReviews();
 
             // ====== Detecção de parâmetro ?review=ORDER_ID (link do email) ======
             const urlParams = new URLSearchParams(window.location.search);
