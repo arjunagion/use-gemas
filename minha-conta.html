@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=3.1">
+    <link rel="stylesheet" href="estilo/perfil.css?v=3.2">
 </head>
 
 <body>
@@ -48,10 +48,14 @@
                     <span class="perfil-btn-user-label">Loja</span>
                 </a>
 
-                <div id="nav-review-badge" class="nav-review-badge" style="display: none;" title="Avaliações pendentes">
-                    <span class="nav-review-badge-icon">⭐</span>
-                    <span class="nav-review-badge-count" id="nav-review-badge-count">0</span>
-                </div>
+                <button type="button" class="nav-bell-btn" id="nav-bell-btn" onclick="toggleNotificationsDrawer()"
+                    aria-label="Notificações" title="Notificações">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="nav-bell-badge" id="nav-bell-badge" style="display: none;">0</span>
+                </button>
 
                 <button type="button" class="perfil-btn-logout" onclick="handleLogout()">Sair</button>
             </div>
@@ -669,19 +673,13 @@
             const card = document.getElementById('avaliacoes-pendentes-card');
             const cardCount = document.getElementById('avaliacoes-pendentes-count');
             const cardLabel = document.getElementById('avaliacoes-pendentes-label');
-            const badge = document.getElementById('nav-review-badge');
-            const badgeCount = document.getElementById('nav-review-badge-count');
 
             if (pendingReviewsCount > 0) {
                 if (card) card.style.display = 'block';
                 if (cardCount) cardCount.innerText = pendingReviewsCount;
                 if (cardLabel) cardLabel.innerText = pendingReviewsCount === 1 ? 'peça' : 'peças';
-
-                if (badge) badge.style.display = 'inline-flex';
-                if (badgeCount) badgeCount.innerText = pendingReviewsCount;
             } else {
                 if (card) card.style.display = 'none';
-                if (badge) badge.style.display = 'none';
             }
         }
 
@@ -698,6 +696,172 @@
                     }
                 }
             }
+        }
+
+        // ==========================================================================
+        // Central de Notificações (sininho)
+        // ==========================================================================
+        let userNotifications = [];
+
+        async function loadNotifications() {
+            if (!currentUser) return;
+
+            const { data, error } = await supabaseClient
+                .from('notifications')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false })
+                .limit(50);
+
+            if (error) {
+                console.error('Erro ao carregar notificações:', error);
+                return;
+            }
+
+            userNotifications = data || [];
+            renderNotifications();
+            updateNotificationsBadge();
+        }
+
+        function renderNotifications() {
+            const container = document.getElementById('notifications-list');
+            if (!container) return;
+
+            if (userNotifications.length === 0) {
+                container.innerHTML = `
+                    <div class="notifications-empty">
+                        <span class="icon">${String.fromCodePoint(0x1F514)}</span>
+                        <p>Nenhuma notificação por aqui</p>
+                        <small>Quando houver novidades, você será avisada.</small>
+                    </div>
+                `;
+                return;
+            }
+
+            const typeIcons = {
+                order_paid: String.fromCodePoint(0x1F4B3),
+                order_shipped: String.fromCodePoint(0x1F69A),
+                review_approved: String.fromCodePoint(0x2B50),
+                review_rejected: String.fromCodePoint(0x1F49B),
+                coupon: String.fromCodePoint(0x1F381),
+                welcome: String.fromCodePoint(0x2728),
+                custom: String.fromCodePoint(0x1F514)
+            };
+
+            container.innerHTML = userNotifications.map(n => {
+                const isUnread = !n.read_at;
+                const icon = typeIcons[n.type] || String.fromCodePoint(0x1F514);
+                const timeAgo = formatTimeAgo(n.created_at);
+
+                return `
+                    <div class="notification-item ${isUnread ? 'unread' : 'read'}"
+                         data-id="${n.id}"
+                         onclick="handleNotificationClick('${n.id}')">
+                        <div class="notification-icon">${icon}</div>
+                        <div class="notification-content">
+                            <div class="notification-title">${escapeHTML(n.title)}</div>
+                            <div class="notification-message">${escapeHTML(n.message)}</div>
+                            <div class="notification-time">${timeAgo}</div>
+                        </div>
+                        ${isUnread ? '<div class="notification-dot"></div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatTimeAgo(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMin = Math.floor(diffMs / 60000);
+            const diffH = Math.floor(diffMin / 60);
+            const diffD = Math.floor(diffH / 24);
+
+            if (diffMin < 1) return 'agora';
+            if (diffMin < 60) return `${diffMin}min atrás`;
+            if (diffH < 24) return `${diffH}h atrás`;
+            if (diffD < 7) return `${diffD}d atrás`;
+            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+        }
+
+        function updateNotificationsBadge() {
+            const unreadCount = userNotifications.filter(n => !n.read_at).length;
+            const badge = document.getElementById('nav-bell-badge');
+            const markAllBtn = document.getElementById('btn-mark-all-read');
+
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.innerText = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            if (markAllBtn) {
+                markAllBtn.style.display = unreadCount > 0 ? 'inline-flex' : 'none';
+            }
+        }
+
+        function toggleNotificationsDrawer() {
+            const drawer = document.getElementById('notifications-drawer');
+            if (!drawer) return;
+            drawer.classList.toggle('open');
+        }
+
+        function closeNotificationsDrawer() {
+            const drawer = document.getElementById('notifications-drawer');
+            if (drawer) drawer.classList.remove('open');
+        }
+
+        async function handleNotificationClick(id) {
+            const notification = userNotifications.find(n => n.id === id);
+            if (!notification) return;
+
+            if (!notification.read_at) {
+                const { error } = await supabaseClient
+                    .from('notifications')
+                    .update({ read_at: new Date().toISOString() })
+                    .eq('id', id);
+
+                if (!error) {
+                    notification.read_at = new Date().toISOString();
+                    renderNotifications();
+                    updateNotificationsBadge();
+                }
+            }
+
+            if (notification.link) {
+                toggleNotificationsDrawer();
+                setTimeout(() => {
+                    window.location.href = notification.link;
+                }, 200);
+            }
+        }
+
+        async function markAllNotificationsAsRead() {
+            if (!currentUser) return;
+
+            const unreadIds = userNotifications.filter(n => !n.read_at).map(n => n.id);
+            if (unreadIds.length === 0) return;
+
+            const { error } = await supabaseClient
+                .from('notifications')
+                .update({ read_at: new Date().toISOString() })
+                .in('id', unreadIds);
+
+            if (error) {
+                console.error('Erro ao marcar como lidas:', error);
+                return;
+            }
+
+            const now = new Date().toISOString();
+            userNotifications.forEach(n => {
+                if (unreadIds.includes(n.id)) n.read_at = now;
+            });
+
+            renderNotifications();
+            updateNotificationsBadge();
         }
 
         function openReviewModal(orderId, productRef) {
@@ -1170,6 +1334,7 @@
                 if (e.key === 'Escape') {
                     closeReviewModal();
                     closePedidoModal();
+                    closeNotificationsDrawer();
                 }
             });
 
@@ -1184,6 +1349,18 @@
             if (reviewModalEl) {
                 reviewModalEl.addEventListener('click', (e) => {
                     if (e.target === reviewModalEl) closeReviewModal();
+                });
+            }
+
+            // Fecha o drawer de notificações ao clicar fora
+            const notificationsDrawer = document.getElementById('notifications-drawer');
+            if (notificationsDrawer) {
+                document.addEventListener('click', (e) => {
+                    if (notificationsDrawer.classList.contains('open') &&
+                        !notificationsDrawer.contains(e.target) &&
+                        !e.target.closest('#nav-bell-btn')) {
+                        notificationsDrawer.classList.remove('open');
+                    }
                 });
             }
 
@@ -1273,6 +1450,9 @@
             await loadUserReviews();
             calculatePendingReviews();
 
+            // Carrega notificações (sininho)
+            await loadNotifications();
+
             // ====== Detecção de parâmetro ?review=ORDER_ID (link do email) ======
             const urlParams = new URLSearchParams(window.location.search);
             const reviewOrderId = urlParams.get('review');
@@ -1308,6 +1488,26 @@
             }
         });
     </script>
+
+    <!-- Drawer de Notificações -->
+    <div class="notifications-drawer" id="notifications-drawer">
+        <div class="notifications-header">
+            <h3>Notificações</h3>
+            <button type="button" class="close-notifications" onclick="toggleNotificationsDrawer()"
+                aria-label="Fechar notificações">&times;</button>
+        </div>
+
+        <div class="notifications-actions-header">
+            <button type="button" class="btn-mark-all-read" id="btn-mark-all-read"
+                onclick="markAllNotificationsAsRead()" style="display: none;">
+                ✓ Marcar todas como lidas
+            </button>
+        </div>
+
+        <div class="notifications-list" id="notifications-list">
+            <!-- Preenchido via JS -->
+        </div>
+    </div>
 
 </body>
 
