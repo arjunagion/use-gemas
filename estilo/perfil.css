@@ -1302,3 +1302,301 @@ button {
         padding: 0.28rem;
     }
 }
+
+/* ==========================================================================
+   13. AVALIAÇÃO DE PRODUTO (REVIEW)
+   ========================================================================== */
+.modal-item-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.45rem;
+}
+
+.btn-review-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: transparent;
+    border: 1px solid var(--cr-border);
+    color: var(--cr-gold-hover);
+    padding: 0.3rem 0.7rem;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: var(--font-body);
+    white-space: nowrap;
+}
+
+.btn-review-item:hover {
+    background: var(--cr-gold-soft);
+    border-color: var(--cr-gold);
+    color: var(--cr-gold-hover);
+}
+
+.review-done-badge {
+    font-size: 0.68rem;
+    color: var(--cr-success);
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.review-box {
+    max-width: 500px;
+}
+
+.review-feedback {
+    display: none;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.review-feedback.error {
+    display: block;
+    background: var(--cr-danger-soft);
+    border: 1px solid var(--cr-danger);
+    color: var(--cr-danger);
+}
+
+.review-feedback.success {
+    display: block;
+    background: var(--cr-success-soft);
+    border: 1px solid var(--cr-success);
+    color: var(--cr-success);
+}
+
+.review-stars {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+}
+
+.review-star {
+    background: none;
+    border: none;
+    font-size: 2.1rem;
+    line-height: 1;
+    color: #a89987;
+    cursor: pointer;
+    padding: 0 0.15rem;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.review-star:hover {
+    transform: scale(1.15);
+}
+
+.review-star.active {
+    color: #b8935a;
+}
+
+.review-field {
+    margin-bottom: 1rem;
+}
+
+.review-field label {
+    font-size: 0.72rem;
+    color: var(--cr-text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.review-required {
+    color: var(--cr-danger);
+}
+
+.review-field input,
+.review-field textarea {
+    width: 100%;
+    background: var(--cr-bg-main);
+    border: 1px solid var(--cr-border);
+    color: var(--cr-text-primary);
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-family: var(--font-body);
+    outline: none;
+    transition: all 0.25s ease;
+    resize: vertical;
+}
+
+.review-field input:focus,
+.review-field textarea:focus {
+    border-color: var(--cr-gold);
+    background: var(--cr-bg-card);
+    box-shadow: 0 0 0 3px var(--cr-gold-soft);
+}
+
+.review-counter {
+    text-align: right;
+    font-size: 0.7rem;
+    color: var(--cr-text-dim);
+    margin-top: 0.3rem;
+}
+
+.review-dropzone {
+    border: 2px dashed var(--cr-border);
+    border-radius: 12px;
+    background: var(--cr-bg-main);
+    padding: 1.1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.review-dropzone:hover,
+.review-dropzone.dragover {
+    border-color: var(--cr-gold);
+    background: var(--cr-gold-soft);
+}
+
+.btn-review-add {
+    background: transparent;
+    border: 1px solid var(--cr-border);
+    color: var(--cr-gold-hover);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: var(--font-body);
+}
+
+.btn-review-add:hover {
+    background: var(--cr-gold-soft);
+    border-color: var(--cr-gold);
+}
+
+.review-photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.8rem;
+}
+
+.review-photo {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--cr-border);
+    background: var(--cr-bg-main);
+}
+
+.review-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.review-photo-remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.65);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.review-photo-remove:hover {
+    background: var(--cr-danger);
+}
+
+.review-actions {
+    display: flex;
+    gap: 0.7rem;
+    justify-content: flex-end;
+    margin-top: 1.3rem;
+    flex-wrap: wrap;
+}
+
+.btn-review-cancel {
+    background: transparent;
+    border: 1px solid var(--cr-border);
+    color: var(--cr-text-muted);
+    padding: 0.7rem 1.4rem;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: var(--font-body);
+}
+
+.btn-review-cancel:hover {
+    border-color: var(--cr-gold);
+    color: var(--cr-text-primary);
+}
+
+.review-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translate(-50%, 20px);
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-gold);
+    color: var(--cr-text-primary);
+    padding: 0.85rem 1.4rem;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    box-shadow: 0 10px 30px rgba(47, 38, 32, 0.35);
+    z-index: 3000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.review-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+}
+
+@media (max-width: 600px) {
+    .review-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .review-actions .btn-cream,
+    .review-actions .btn-review-cancel {
+        width: 100%;
+    }
+
+    .review-star {
+        font-size: 1.8rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .review-toast,
+    .review-star,
+    .review-dropzone,
+    .btn-review-add,
+    .btn-review-cancel {
+        transition: none;
+    }
+}

@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=2.8">
+    <link rel="stylesheet" href="estilo/perfil.css?v=2.9">
 </head>
 
 <body>
@@ -173,6 +173,53 @@
             <div id="pedido-modal-content"></div>
         </div>
     </div>
+
+    <!-- Modal de Avaliação de Produto -->
+    <div id="review-modal" class="modal-overlay">
+        <div class="modal-box review-box">
+            <button class="modal-close" onclick="closeReviewModal()" aria-label="Fechar">&times;</button>
+            <h2 class="modal-title">Avaliar produto</h2>
+            <p class="modal-subtitle" id="review-product-subtitle"></p>
+
+            <div class="review-feedback" id="review-feedback"></div>
+
+            <div class="review-stars" id="review-stars" role="radiogroup" aria-label="Avaliação de 1 a 5 estrelas">
+                <button type="button" class="review-star" data-value="1" aria-label="1 estrela">★</button>
+                <button type="button" class="review-star" data-value="2" aria-label="2 estrelas">★</button>
+                <button type="button" class="review-star" data-value="3" aria-label="3 estrelas">★</button>
+                <button type="button" class="review-star" data-value="4" aria-label="4 estrelas">★</button>
+                <button type="button" class="review-star" data-value="5" aria-label="5 estrelas">★</button>
+            </div>
+
+            <div class="review-field">
+                <label for="review-title">Título (opcional)</label>
+                <input type="text" id="review-title" maxlength="80" placeholder="Resuma sua experiência (opcional)">
+            </div>
+
+            <div class="review-field">
+                <label for="review-comment">Comentário <span class="review-required">*</span></label>
+                <textarea id="review-comment" rows="4" maxlength="2000" placeholder="Como foi sua experiência com a peça?"></textarea>
+                <div class="review-counter"><span id="review-comment-count">0</span>/2000</div>
+            </div>
+
+            <div class="review-field">
+                <label>Fotos (opcional, até 3)</label>
+                <div class="review-dropzone" id="review-dropzone" role="button" tabindex="0" aria-label="Adicionar fotos">
+                    <button type="button" class="btn-review-add" id="review-add-photo-btn">Adicionar fotos</button>
+                    <input type="file" id="review-photo-input" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                </div>
+                <div class="review-photos" id="review-photos"></div>
+            </div>
+
+            <div class="review-actions">
+                <button type="button" class="btn-review-cancel" onclick="closeReviewModal()">Cancelar</button>
+                <button type="button" class="btn-cream btn-review-submit" id="review-submit-btn" disabled>Enviar avaliação</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de avaliação -->
+    <div id="review-toast" class="review-toast" role="status" aria-live="polite"></div>
 
     <script>
         // ==========================================================================
@@ -413,19 +460,36 @@
                 '</div>';
         }
 
-        function openPedidoModal(orderId) {
+        async function openPedidoModal(orderId) {
             const o = userOrders.find(x => x.id === orderId);
             if (!o) return;
 
-            const itemsHTML = (o.items || []).map(item => `
+            // Carrega reviews do cliente (uma única query pra todo o pedido)
+            await loadUserReviews(orderId);
+
+            const canReview = o.status === 'enviado' || o.status === 'entregue';
+
+            const itemsHTML = (o.items || []).map(item => {
+                const reviewed = hasUserReviewed(orderId, item.ref);
+                let reviewControl = '';
+                if (canReview && !reviewed) {
+                    reviewControl = `<button type="button" class="btn-review-item" onclick="openReviewModal('${escapeJsString(o.id)}', '${escapeJsString(item.ref)}')">${String.fromCodePoint(0x2605)} <span>Avaliar</span></button>`;
+                } else if (reviewed) {
+                    reviewControl = `<span class="review-done-badge">Avaliação enviada ${String.fromCodePoint(0x2705)}</span>`;
+                }
+                return `
                 <div class="modal-item">
                     <div class="modal-item-info">
                         <div class="modal-item-name">${escapeHTML(item.name)}</div>
                         <div class="modal-item-ref">REF: ${escapeHTML(item.ref)} · ${item.quantity}x ${formatBRL(item.price)}</div>
                     </div>
-                    <div class="modal-item-price">${formatBRL(Number(item.price) * Number(item.quantity))}</div>
+                    <div class="modal-item-side">
+                        <div class="modal-item-price">${formatBRL(Number(item.price) * Number(item.quantity))}</div>
+                        ${reviewControl}
+                    </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             const address = [
                 o.street ? `${o.street}, ${o.number}${o.complement ? ' - ' + o.complement : ''}` : null,
@@ -492,6 +556,307 @@
 
         function closePedidoModal() {
             document.getElementById('pedido-modal').classList.remove('open');
+        }
+
+        // ==========================================================================
+        // Avaliação de produto (review)
+        // ==========================================================================
+        const REVIEW_BUCKET = 'review-images';
+        const REVIEW_MAX_PHOTOS = 3;
+        const REVIEW_MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB
+
+        let userReviewsMap = new Map(); // key: "orderId:productRef", value: review
+        let reviewState = {
+            orderId: null,
+            productRef: null,
+            productName: null,
+            rating: 0,
+            photos: [] // { file, id, objUrl }
+        };
+        let reviewIdCounter = 0;
+
+        function genReviewId() {
+            reviewIdCounter += 1;
+            return `r${Date.now()}-${reviewIdCounter}`;
+        }
+
+        function escapeJsString(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function sanitizeReviewPath(s) {
+            return String(s || '').replace(/[^a-zA-Z0-9_-]/g, '-');
+        }
+
+        function getReviewPublicUrl(path) {
+            return `${SUPABASE_URL}/storage/v1/object/public/${REVIEW_BUCKET}/${path}`;
+        }
+
+        async function loadUserReviews(orderId) {
+            // Carrega TODAS as reviews do cliente (uma única query) pra evitar N requests
+            if (!currentUser || !currentUser.id) return;
+
+            const { data, error } = await supabaseClient
+                .from('reviews')
+                .select('*')
+                .eq('user_id', currentUser.id);
+
+            if (error) {
+                console.error('Erro ao carregar reviews:', error);
+                return;
+            }
+
+            userReviewsMap = new Map();
+            (data || []).forEach(r => {
+                userReviewsMap.set(`${r.order_id}:${r.product_ref}`, r);
+            });
+        }
+
+        function hasUserReviewed(orderId, productRef) {
+            return userReviewsMap.has(`${orderId}:${productRef}`);
+        }
+
+        function openReviewModal(orderId, productRef) {
+            const o = userOrders.find(x => x.id === orderId);
+            const item = o && Array.isArray(o.items) ? o.items.find(i => i.ref === productRef) : null;
+            const productName = item ? item.name : productRef;
+
+            reviewState.orderId = orderId;
+            reviewState.productRef = productRef;
+            reviewState.productName = productName;
+            reviewState.rating = 0;
+            reviewState.photos.forEach(p => { if (p.objUrl) URL.revokeObjectURL(p.objUrl); });
+            reviewState.photos = [];
+
+            document.getElementById('review-product-subtitle').innerHTML =
+                `<strong>${escapeHTML(productName)}</strong> · REF: ${escapeHTML(productRef)}`;
+            document.getElementById('review-title').value = '';
+            document.getElementById('review-comment').value = '';
+            document.getElementById('review-comment-count').innerText = '0';
+            const fb = document.getElementById('review-feedback');
+            fb.className = 'review-feedback';
+            fb.innerText = '';
+            document.getElementById('review-photo-input').value = '';
+
+            renderStarRating(0);
+            renderReviewPhotos();
+            updateReviewSubmitState();
+
+            document.getElementById('review-modal').classList.add('open');
+        }
+
+        function closeReviewModal() {
+            document.getElementById('review-modal').classList.remove('open');
+            reviewState.photos.forEach(p => { if (p.objUrl) URL.revokeObjectURL(p.objUrl); });
+            reviewState.photos = [];
+        }
+
+        function paintStars(value) {
+            document.querySelectorAll('#review-stars .review-star').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.value, 10) <= value);
+            });
+        }
+
+        function renderStarRating(value) {
+            paintStars(value);
+            reviewState.rating = value;
+            document.querySelectorAll('#review-stars .review-star').forEach(btn => {
+                btn.setAttribute('aria-checked', parseInt(btn.dataset.value, 10) === value ? 'true' : 'false');
+            });
+            updateReviewSubmitState();
+        }
+
+        function setStarRating(value) {
+            renderStarRating(value);
+        }
+
+        function updateReviewSubmitState() {
+            const btn = document.getElementById('review-submit-btn');
+            if (!btn) return;
+            const comment = document.getElementById('review-comment');
+            const valid = reviewState.rating >= 1 && comment && comment.value.trim().length >= 10;
+            btn.disabled = !valid;
+        }
+
+        function handleReviewFilesSelected(fileList) {
+            const files = Array.from(fileList || []);
+            const fb = document.getElementById('review-feedback');
+            fb.className = 'review-feedback';
+            fb.innerText = '';
+            const errors = [];
+            for (const file of files) {
+                if (reviewState.photos.length >= REVIEW_MAX_PHOTOS) {
+                    errors.push(`Máximo de ${REVIEW_MAX_PHOTOS} fotos por avaliação.`);
+                    break;
+                }
+                if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                    errors.push(`Formato não aceito (${file.name}). Use JPG, PNG ou WebP.`);
+                    continue;
+                }
+                if (file.size > REVIEW_MAX_PHOTO_SIZE) {
+                    errors.push(`Foto muito grande (${file.name}). Máximo 5MB.`);
+                    continue;
+                }
+                reviewState.photos.push({ file, id: genReviewId(), objUrl: URL.createObjectURL(file) });
+            }
+            renderReviewPhotos();
+            if (errors.length) {
+                fb.className = 'review-feedback error';
+                fb.innerText = errors[0];
+            }
+        }
+
+        function renderReviewPhotos() {
+            const container = document.getElementById('review-photos');
+            const dropzone = document.getElementById('review-dropzone');
+            if (!container) return;
+
+            container.innerHTML = reviewState.photos.map((p, i) => `
+                <div class="review-photo">
+                    <img src="${p.objUrl}" alt="Foto da avaliação" />
+                    <button type="button" class="review-photo-remove" data-index="${i}" aria-label="Remover foto">&times;</button>
+                </div>
+            `).join('');
+
+            if (dropzone) dropzone.hidden = reviewState.photos.length >= REVIEW_MAX_PHOTOS;
+
+            container.querySelectorAll('.review-photo-remove').forEach(btn => {
+                btn.addEventListener('click', () => removeReviewPhoto(parseInt(btn.dataset.index, 10)));
+            });
+        }
+
+        function removeReviewPhoto(index) {
+            const p = reviewState.photos[index];
+            if (!p) return;
+            if (p.objUrl) URL.revokeObjectURL(p.objUrl);
+            reviewState.photos.splice(index, 1);
+            renderReviewPhotos();
+        }
+
+        async function uploadReviewPhotos() {
+            const bucket = supabaseClient.storage.from(REVIEW_BUCKET);
+            const safeRef = sanitizeReviewPath(reviewState.productRef);
+            const safeUser = sanitizeReviewPath(currentUser.id);
+
+            const results = await Promise.all(reviewState.photos.map(async (p) => {
+                try {
+                    const ext = (p.file.name.match(/\.([a-zA-Z0-9]+)$/) || [null, 'jpg'])[1].toLowerCase();
+                    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+                    const path = `${safeRef}/${safeUser}/${fileName}`;
+                    const { data, error } = await bucket.upload(path, p.file, {
+                        cacheControl: '3600',
+                        contentType: p.file.type || 'image/jpeg',
+                        upsert: false
+                    });
+                    if (error) return { ok: false, error: error.message };
+                    return { ok: true, url: getReviewPublicUrl(data.path) };
+                } catch (e) {
+                    return { ok: false, error: e.message || 'Erro no upload' };
+                }
+            }));
+
+            const failed = results.filter(r => !r.ok);
+            if (failed.length) throw new Error(failed.map(f => f.error).join(' | '));
+            return results.map(r => r.url);
+        }
+
+        async function handleSubmitReview() {
+            const fb = document.getElementById('review-feedback');
+            const btn = document.getElementById('review-submit-btn');
+            fb.className = 'review-feedback';
+            fb.innerText = '';
+
+            const title = document.getElementById('review-title').value.trim();
+            const comment = document.getElementById('review-comment').value.trim();
+            const rating = reviewState.rating;
+
+            if (rating < 1) {
+                fb.className = 'review-feedback error';
+                fb.innerText = 'Dê uma nota de 1 a 5 estrelas.';
+                return;
+            }
+            if (comment.length < 10) {
+                fb.className = 'review-feedback error';
+                fb.innerText = 'Escreva um comentário com pelo menos 10 caracteres.';
+                return;
+            }
+
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Enviando...';
+
+            try {
+                // 1. Upload das fotos
+                let photoUrls = [];
+                if (reviewState.photos.length) {
+                    photoUrls = await uploadReviewPhotos();
+                }
+
+                // 2. Insere a review
+                const customerName = (userProfile && userProfile.name) ||
+                    (currentUser.email ? currentUser.email.split('@')[0] : 'Cliente');
+                const payload = {
+                    product_ref: reviewState.productRef,
+                    user_id: currentUser.id,
+                    order_id: reviewState.orderId,
+                    customer_name: customerName,
+                    customer_email: currentUser.email,
+                    rating,
+                    title: title || null,
+                    comment,
+                    photos: photoUrls.join(','),
+                    status: 'pending',
+                    verified_purchase: true
+                };
+
+                const { error } = await supabaseClient.from('reviews').insert(payload);
+                if (error) {
+                    console.error('Erro ao enviar review:', error);
+                    if (error.code === '23505' || /duplicate key/i.test(error.message || '')) {
+                        fb.className = 'review-feedback error';
+                        fb.innerText = 'Você já avaliou este produto neste pedido.';
+                    } else {
+                        fb.className = 'review-feedback error';
+                        fb.innerText = 'Erro ao enviar avaliação. Tente novamente.';
+                    }
+                    return;
+                }
+
+                // 3. Sucesso
+                userReviewsMap.set(`${reviewState.orderId}:${reviewState.productRef}`, payload);
+                closeReviewModal();
+                showReviewToast(`Avaliação enviada! Aguardando aprovação ${String.fromCodePoint(0x2728)}`);
+
+                // Atualiza o botão no modal de pedido
+                const o = userOrders.find(x => x.id === reviewState.orderId);
+                if (o) openPedidoModal(o.id);
+
+                if (typeof trackGA === 'function') {
+                    trackGA('review_submitted', { product_ref: reviewState.productRef, rating });
+                }
+
+            } catch (e) {
+                console.error(e);
+                fb.className = 'review-feedback error';
+                fb.innerText = e && e.message ? e.message : 'Erro inesperado. Tente novamente.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        let reviewToastTimeout = null;
+        function showReviewToast(message) {
+            const toast = document.getElementById('review-toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(reviewToastTimeout);
+            reviewToastTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
         }
 
         // ==========================================================================
@@ -717,18 +1082,75 @@
                 });
             }
 
-            // Fecha modal com ESC
+            // Fecha modais com ESC
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closePedidoModal();
+                if (e.key === 'Escape') {
+                    closeReviewModal();
+                    closePedidoModal();
+                }
             });
 
-            // Fecha modal clicando fora
+            // Fecha modais clicando fora
             const modal = document.getElementById('pedido-modal');
             if (modal) {
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) closePedidoModal();
                 });
             }
+            const reviewModalEl = document.getElementById('review-modal');
+            if (reviewModalEl) {
+                reviewModalEl.addEventListener('click', (e) => {
+                    if (e.target === reviewModalEl) closeReviewModal();
+                });
+            }
+
+            // ====== Modal de review: estrelas, fotos e envio ======
+            const reviewStars = document.querySelectorAll('#review-stars .review-star');
+            reviewStars.forEach(btn => {
+                const v = parseInt(btn.dataset.value, 10);
+                btn.addEventListener('mouseenter', () => paintStars(v));
+                btn.addEventListener('mouseleave', () => paintStars(reviewState.rating));
+                btn.addEventListener('click', () => setStarRating(v));
+            });
+
+            const reviewCommentEl = document.getElementById('review-comment');
+            if (reviewCommentEl) {
+                reviewCommentEl.addEventListener('input', () => {
+                    document.getElementById('review-comment-count').innerText = reviewCommentEl.value.length;
+                    updateReviewSubmitState();
+                });
+            }
+            const reviewTitleEl = document.getElementById('review-title');
+            if (reviewTitleEl) reviewTitleEl.addEventListener('input', updateReviewSubmitState);
+
+            const reviewDropzone = document.getElementById('review-dropzone');
+            const reviewPhotoInput = document.getElementById('review-photo-input');
+            const reviewAddPhotoBtn = document.getElementById('review-add-photo-btn');
+            if (reviewDropzone && reviewPhotoInput) {
+                reviewDropzone.addEventListener('click', (e) => {
+                    if (e.target.closest('.btn-review-add') || e.target.closest('input')) return;
+                    reviewPhotoInput.click();
+                });
+                reviewDropzone.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reviewPhotoInput.click(); }
+                });
+                ['dragenter', 'dragover'].forEach(evt => reviewDropzone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    reviewDropzone.classList.add('dragover');
+                }));
+                ['dragleave', 'drop'].forEach(evt => reviewDropzone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    reviewDropzone.classList.remove('dragover');
+                }));
+                reviewDropzone.addEventListener('drop', (e) => {
+                    if (e.dataTransfer && e.dataTransfer.files.length) handleReviewFilesSelected(e.dataTransfer.files);
+                });
+            }
+            if (reviewAddPhotoBtn) reviewAddPhotoBtn.addEventListener('click', (e) => { e.stopPropagation(); reviewPhotoInput.click(); });
+            if (reviewPhotoInput) reviewPhotoInput.addEventListener('change', () => { handleReviewFilesSelected(reviewPhotoInput.files); reviewPhotoInput.value = ''; });
+
+            const reviewSubmitBtn = document.getElementById('review-submit-btn');
+            if (reviewSubmitBtn) reviewSubmitBtn.addEventListener('click', handleSubmitReview);
 
             // Verifica login
             const { data: { user }, error } = await supabaseClient.auth.getUser();
