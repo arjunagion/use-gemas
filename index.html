@@ -45,8 +45,8 @@
         rel="stylesheet">
 
     <!-- Link para o CSS -->
-    <!-- ⬇️ BUMP: 47.0 → 48.0 -->
-    <link rel="stylesheet" href="estilo/style.css?v=48.0">
+    <!-- ⬇️ BUMP: 48.0 → 49.0 -->
+    <link rel="stylesheet" href="estilo/style.css?v=49.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css">
@@ -504,6 +504,8 @@
                     <p id="modal-gem" class="gem-type">Tipo de Gema</p>
                     <div id="modal-price" class="modal-price-tag">R$ 0,00</div>
 
+                    <div id="reviews-summary" class="reviews-summary" hidden></div>
+
                     <div class="modal-section">
                         <h4>Descrição</h4>
                         <p id="modal-desc">Descrição detalhada do produto.</p>
@@ -512,6 +514,16 @@
                     <div class="modal-section">
                         <h4>Composição & Materiais</h4>
                         <p id="modal-materials">Detalhes dos materiais utilizados.</p>
+                    </div>
+
+                    <div class="modal-section reviews-section" id="reviews-section" hidden>
+                        <div class="reviews-section-header">
+                            <h4>Avaliações das clientes</h4>
+                            <span class="reviews-section-avg" id="reviews-section-avg"></span>
+                        </div>
+                        <div class="reviews-list" id="reviews-list"></div>
+                        <button type="button" class="reviews-view-all" id="reviews-view-all" hidden>Ver todas as avaliações</button>
+                        <button type="button" class="reviews-cta" id="reviews-cta" hidden>Avaliar este produto</button>
                     </div>
 
                     <div class="modal-section related-section" id="related-section" hidden>
@@ -854,8 +866,8 @@
     </div>
 
     <!-- Importação do JS -->
-    <!-- ⬇️ BUMP: 50.0 → 51.0 -->
-    <script src="estilo/script.js?v=51.0"></script>
+    <!-- ⬇️ BUMP: 51.0 → 52.0 -->
+    <script src="estilo/script.js?v=52.0"></script>
 
     <!-- Toast notifications -->
     <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>

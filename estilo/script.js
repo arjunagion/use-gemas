@@ -17,6 +17,10 @@ let autoSlideInterval = null;
 
 let productsFromDb = [];
 
+// Reviews (avaliações aprovadas)
+let productReviewsSummary = new Map(); // ref -> { avg, count }
+let currentModalReviews = [];
+
 // ==========================================================================
 // Configurações do site (carregadas do Supabase)
 // ==========================================================================
@@ -640,6 +644,11 @@ function renderProductsGrid() {
             stockBadge = `<span class="low-stock-badge">⚡ Últimas unidades</span>`;
         }
 
+        const ratingSummary = productReviewsSummary.get(p.ref);
+        const ratingBadge = ratingSummary
+            ? `<span class="product-rating-badge">${String.fromCodePoint(0x2B50)} ${ratingSummary.avg} (${ratingSummary.count})</span>`
+            : '';
+
         const cartButtonHTML = isOutOfStock
             ? `<button class="btn-add-cart" disabled
                    style="opacity:0.45;cursor:not-allowed;border-color:rgba(255,255,255,0.15);color:#888;pointer-events:none;">
@@ -686,6 +695,7 @@ function renderProductsGrid() {
                 <div class="product-info">
                     <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">${escapeHTML(p.name)}</h3>
                     <p class="gem-type">${escapeHTML(p.gem || '')}</p>
+                    ${ratingBadge}
                     <span class="price">${formatCurrency(p.price)}</span>
                     ${cartButtonHTML}
                 </div>
@@ -1385,7 +1395,7 @@ function openProductModalFromCard(cardElement) {
     openProductModal(name, ref, price, gem, desc, materials, gallery, stock);
 }
 
-function openProductModal(name, ref, price, gemType, description, materials, gallery, stock = 1) {
+async function openProductModal(name, ref, price, gemType, description, materials, gallery, stock = 1) {
     const modal = document.getElementById('product-modal');
     if (!modal) return;
 
@@ -1441,6 +1451,12 @@ function openProductModal(name, ref, price, gemType, description, materials, gal
     renderRelatedProducts(ref, productInfo ? productInfo.category : '');
     const infoCol = modal.querySelector('.modal-info');
     if (infoCol) infoCol.scrollTop = 0;
+
+    // Avaliações aprovadas do produto
+    currentModalReviews = await loadProductReviews(ref);
+    renderReviewsSummary(currentModalReviews);
+    renderReviewsList(ref, currentModalReviews);
+    checkCanReview(ref);
 
     trackGA('view_item', {
         currency: 'BRL',
@@ -2339,6 +2355,300 @@ async function addAllFavoritesToCart() {
 }
 
 // ==========================================================================
+// Avaliações de produto (reviews)
+// ==========================================================================
+async function loadReviewsSummary() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('reviews')
+            .select('product_ref, rating')
+            .eq('status', 'approved');
+
+        if (error) {
+            console.error('Erro ao carregar resumo de reviews:', error);
+            return;
+        }
+
+        const byRef = new Map();
+        (data || []).forEach(r => {
+            if (!byRef.has(r.product_ref)) byRef.set(r.product_ref, { sum: 0, count: 0 });
+            const agg = byRef.get(r.product_ref);
+            agg.sum += Number(r.rating || 0);
+            agg.count += 1;
+        });
+
+        productReviewsSummary = new Map();
+        byRef.forEach((agg, ref) => {
+            productReviewsSummary.set(ref, {
+                avg: (agg.sum / agg.count).toFixed(1),
+                count: agg.count
+            });
+        });
+    } catch (e) {
+        console.error('Erro ao carregar resumo de reviews:', e);
+    }
+}
+
+function buildStarsHTML(rating) {
+    const rounded = Math.round(Number(rating) || 0);
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        html += `<span class="review-star-char${i <= rounded ? ' active' : ''}">${i <= rounded ? '★' : '☆'}</span>`;
+    }
+    return html;
+}
+
+function formatReviewerName(name) {
+    const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return 'Cliente';
+    const first = parts[0];
+    const secondInitial = parts.length > 1 ? parts[1].charAt(0).toUpperCase() + '.' : '';
+    return secondInitial ? `${first} ${secondInitial}` : first;
+}
+
+function formatReviewDate(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    return `${months[d.getMonth()]}/${d.getFullYear()}`;
+}
+
+async function loadProductReviews(productRef) {
+    const { data, error } = await supabaseClient
+        .from('reviews')
+        .select('*')
+        .eq('product_ref', productRef)
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Erro ao carregar reviews:', error);
+        return [];
+    }
+    return data || [];
+}
+
+function renderReviewsSummary(reviews) {
+    const el = document.getElementById('reviews-summary');
+    if (!el) return;
+    if (!reviews || reviews.length === 0) {
+        el.hidden = true;
+        el.innerHTML = '';
+        return;
+    }
+
+    const total = reviews.length;
+    const avg = (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / total).toFixed(1);
+
+    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach(r => {
+        const v = Math.round(Number(r.rating) || 0);
+        if (v >= 1 && v <= 5) dist[v]++;
+    });
+
+    const bars = [5, 4, 3, 2, 1].map(star => {
+        const pct = Math.round((dist[star] / total) * 100);
+        return `<div class="reviews-dist-row">
+            <span class="reviews-dist-label">${star}★</span>
+            <div class="reviews-dist-bar"><div class="reviews-dist-fill" style="width:${pct}%"></div></div>
+            <span class="reviews-dist-pct">${pct}%</span>
+        </div>`;
+    }).join('');
+
+    el.innerHTML = `
+        <div class="reviews-summary-left">
+            <div class="reviews-summary-avg">${avg}</div>
+            <div class="reviews-summary-stars">${buildStarsHTML(avg)}</div>
+            <div class="reviews-summary-count">${total} ${total === 1 ? 'avaliação' : 'avaliações'}</div>
+        </div>
+        <div class="reviews-dist">${bars}</div>
+    `;
+    el.hidden = false;
+}
+
+function buildReviewHTML(r, idx) {
+    const name = formatReviewerName(r.customer_name);
+    const date = formatReviewDate(r.created_at);
+    const verified = r.verified_purchase
+        ? `<span class="review-verified">Compra verificada ${String.fromCodePoint(0x2705)}</span>`
+        : '';
+    const title = r.title ? `<div class="review-item-title">${escapeHTML(r.title)}</div>` : '';
+
+    const comment = r.comment || '';
+    let commentHTML;
+    if (comment.length > 200) {
+        commentHTML = `<span class="review-comment-trunc">${escapeHTML(comment.slice(0, 200))}…</span><span class="review-full" hidden>${escapeHTML(comment.slice(200))}</span> <button type="button" class="review-read-more" onclick="toggleReviewReadMore(this)">Ler mais</button>`;
+    } else {
+        commentHTML = escapeHTML(comment);
+    }
+
+    const photos = (r.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+    let photosHTML = '';
+    if (photos.length) {
+        const shown = photos.slice(0, 3);
+        const extra = photos.length - shown.length;
+        photosHTML = `<div class="review-photos">${shown.map((ph, pi) =>
+            `<img src="${escapeHTML(ph)}" alt="Foto da avaliação" class="review-photo-thumb" loading="lazy" onclick="openReviewPhotoSwipe(${idx}, ${pi})" />`
+        ).join('')}${extra > 0 ? `<span class="review-photos-more">+${extra} fotos</span>` : ''}</div>`;
+    }
+
+    let adminHTML = '';
+    if (r.admin_response) {
+        adminHTML = `<div class="review-admin-response">
+            <div class="review-admin-header">Resposta da Use Gemas</div>
+            <p>${escapeHTML(r.admin_response)}</p>
+        </div>`;
+    }
+
+    return `<div class="review-item">
+        <div class="review-item-stars">${buildStarsHTML(r.rating)}</div>
+        <div class="review-item-meta">
+            <span class="review-item-author">${escapeHTML(name)}</span>
+            ${verified}
+            <span class="review-item-date">${date}</span>
+        </div>
+        ${title}
+        <p class="review-item-comment">${commentHTML}</p>
+        ${photosHTML}
+        ${adminHTML}
+    </div>`;
+}
+
+function toggleReviewReadMore(btn) {
+    const p = btn.parentNode;
+    const trunc = p.querySelector('.review-comment-trunc');
+    const full = p.querySelector('.review-full');
+    if (trunc) trunc.hidden = true;
+    if (full) full.hidden = false;
+    btn.hidden = true;
+}
+
+function renderReviewsList(ref, reviews) {
+    const section = document.getElementById('reviews-section');
+    const list = document.getElementById('reviews-list');
+    const avgEl = document.getElementById('reviews-section-avg');
+    const viewAllBtn = document.getElementById('reviews-view-all');
+    if (!section || !list) return;
+
+    if (!reviews || reviews.length === 0) {
+        section.hidden = true;
+        list.innerHTML = '';
+        return;
+    }
+
+    const total = reviews.length;
+    const avg = (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / total).toFixed(1);
+    if (avgEl) avgEl.innerHTML = `${buildStarsHTML(avg)} ${avg} · ${total} ${total === 1 ? 'avaliação' : 'avaliações'}`;
+
+    const shown = reviews.slice(0, 3);
+    list.innerHTML = shown.map((r, idx) => buildReviewHTML(r, idx)).join('');
+
+    if (viewAllBtn) {
+        viewAllBtn.hidden = total <= 3;
+        viewAllBtn.onclick = () => showAllReviews(ref, reviews);
+    }
+
+    section.hidden = false;
+}
+
+function showAllReviews(ref, reviews) {
+    const list = document.getElementById('reviews-list');
+    const viewAllBtn = document.getElementById('reviews-view-all');
+    if (!list) return;
+    list.innerHTML = reviews.map((r, idx) => buildReviewHTML(r, idx)).join('');
+    if (viewAllBtn) viewAllBtn.hidden = true;
+    list.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function openReviewPhotoSwipe(reviewIdx, photoIdx) {
+    const review = currentModalReviews[reviewIdx];
+    if (!review) return;
+    const photos = (review.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+    if (!photos.length) return;
+    openPhotoSwipeFromUrls(photos, photoIdx || 0);
+}
+
+async function checkCanReview(ref) {
+    const cta = document.getElementById('reviews-cta');
+    if (!cta) return;
+    cta.hidden = true;
+
+    try {
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) return;
+
+        const { data: orders, error } = await supabaseClient
+            .from('orders')
+            .select('items, status')
+            .eq('user_id', user.id);
+        if (error || !orders) return;
+
+        const bought = orders.some(o =>
+            (o.status === 'enviado' || o.status === 'entregue') &&
+            Array.isArray(o.items) &&
+            o.items.some(i => i.ref === ref)
+        );
+        if (!bought) return;
+
+        cta.hidden = false;
+        cta.innerHTML = `${String.fromCodePoint(0x2B50)} Avaliar este produto`;
+        cta.onclick = () => { window.location.href = 'minha-conta.html'; };
+    } catch (e) {
+        // ignora silenciosamente
+    }
+}
+
+function openPhotoSwipeFromUrls(urls, startIndex = 0) {
+    if (!urls || urls.length === 0) return;
+
+    if (photoSwipeLightbox) {
+        try { photoSwipeLightbox.destroy(); } catch (e) { }
+        photoSwipeLightbox = null;
+    }
+
+    const dataSource = urls.map((src) => ({ src, width: 1200, height: 1600, msrc: src }));
+
+    let galleryEl = document.getElementById('pswp-gallery');
+    if (!galleryEl) {
+        galleryEl = document.createElement('div');
+        galleryEl.id = 'pswp-gallery';
+        galleryEl.className = 'pswp-gallery';
+        galleryEl.style.display = 'none';
+        document.body.appendChild(galleryEl);
+    }
+
+    Promise.all([
+        import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js'),
+        import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.esm.min.js')
+    ])
+        .then(([lightboxModule, pswpModule]) => {
+            const PhotoSwipeLightbox = lightboxModule.default;
+            const PhotoSwipe = pswpModule.default;
+
+            photoSwipeLightbox = new PhotoSwipeLightbox({
+                dataSource,
+                pswpModule: () => Promise.resolve(PhotoSwipe),
+                bgOpacity: 0.95,
+                showHideAnimationType: 'zoom',
+                zoomAnimationDuration: 300,
+                wheelToZoom: true,
+                pinchToClose: true,
+                closeOnVerticalDrag: true,
+                escKey: true,
+                arrowKeys: true,
+                clickToCloseNonZoomable: true
+            });
+
+            photoSwipeLightbox.init();
+            photoSwipeLightbox.loadAndOpen(Math.max(0, Math.min(startIndex, dataSource.length - 1)));
+        })
+        .catch((err) => {
+            console.warn('PhotoSwipe não pôde ser carregado:', err);
+            window.open(urls[Math.max(0, Math.min(startIndex, urls.length - 1))], '_blank');
+        });
+}
+
+// ==========================================================================
 // PhotoSwipe
 // ==========================================================================
 function buildPhotoSwipeData() {
@@ -3014,6 +3324,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateDynamicLinks();
 
     initCookieConsent();
+
+    await loadReviewsSummary();
 
     await loadProductsFromDb();
 
