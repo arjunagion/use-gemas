@@ -23,6 +23,7 @@ let currentModalReviews = [];
 
 // Notificações (sininho)
 let userNotifications = [];
+let userOrders = []; // pedidos do cliente (preenchido na área do cliente; aqui vazio → sininho só com reais)
 
 // ==========================================================================
 // Configurações do site (carregadas do Supabase)
@@ -3370,9 +3371,55 @@ async function loadNotifications() {
         return;
     }
 
-    userNotifications = data || [];
+    const realNotifications = data || [];
+
+    // Notificações virtuais (pendências calculadas)
+    const virtualNotifications = calculateVirtualNotifications();
+
+    // Junta tudo
+    userNotifications = [...virtualNotifications, ...realNotifications];
+
+    // Ordena: não-lidas primeiro, depois por data DESC
+    userNotifications.sort((a, b) => {
+        const aUnread = !a.read_at ? 0 : 1;
+        const bUnread = !b.read_at ? 0 : 1;
+
+        if (aUnread !== bUnread) return aUnread - bUnread;
+
+        return new Date(b.created_at) - new Date(a.created_at);
+    });
+
     renderNotifications();
     updateNotificationsBadge();
+}
+
+function calculateVirtualNotifications() {
+    const virtual = [];
+
+    if (!userOrders || userOrders.length === 0) return virtual;
+
+    userOrders.forEach(order => {
+        // Só pedidos enviados/entregues
+        if (order.status !== 'enviado' && order.status !== 'entregue') return;
+
+        (order.items || []).forEach(item => {
+            if (!hasUserReviewed(order.id, item.ref)) {
+                virtual.push({
+                    id: `virtual:review:${order.id}:${item.ref}`,
+                    is_virtual: true,
+                    type: 'review_pending',
+                    title: 'Avalie sua compra ' + String.fromCodePoint(0x2B50),
+                    message: `Conte como foi sua experiência com ${item.name}`,
+                    link: `minha-conta.html?review=${order.id}`,
+                    metadata: { order_id: order.id, product_ref: item.ref },
+                    read_at: null,
+                    created_at: order.shipped_at || order.created_at
+                });
+            }
+        });
+    });
+
+    return virtual;
 }
 
 function renderNotifications() {
@@ -3395,6 +3442,7 @@ function renderNotifications() {
         order_shipped: String.fromCodePoint(0x1F69A),
         review_approved: String.fromCodePoint(0x2B50),
         review_rejected: String.fromCodePoint(0x1F49B),
+        review_pending: String.fromCodePoint(0x2B50),
         coupon: String.fromCodePoint(0x1F381),
         welcome: String.fromCodePoint(0x2728),
         custom: String.fromCodePoint(0x1F514)
@@ -3406,7 +3454,7 @@ function renderNotifications() {
         const timeAgo = formatTimeAgo(n.created_at);
 
         return `
-            <div class="notification-item ${isUnread ? 'unread' : 'read'}"
+            <div class="notification-item ${isUnread ? 'unread' : 'read'} ${n.is_virtual ? 'virtual' : ''}"
                  data-id="${n.id}"
                  onclick="handleNotificationClick('${n.id}')">
                 <div class="notification-icon">${icon}</div>
@@ -3414,6 +3462,7 @@ function renderNotifications() {
                     <div class="notification-title">${escapeHTML(n.title)}</div>
                     <div class="notification-message">${escapeHTML(n.message)}</div>
                     <div class="notification-time">${timeAgo}</div>
+                    ${n.is_virtual ? '<div class="notification-virtual-hint">Ação pendente</div>' : ''}
                 </div>
                 ${isUnread ? '<div class="notification-dot"></div>' : ''}
             </div>
@@ -3475,6 +3524,18 @@ async function handleNotificationClick(id) {
     const notification = userNotifications.find(n => n.id === id);
     if (!notification) return;
 
+    // Se for VIRTUAL: não tenta marcar como lida (não existe no banco)
+    // Só navega pro link
+    if (notification.is_virtual) {
+        toggleNotificationsDrawer();
+        setTimeout(() => {
+            if (notification.link) {
+                window.location.href = notification.link;
+            }
+        }, 200);
+        return;
+    }
+
     if (!notification.read_at) {
         const { error } = await supabaseClient
             .from('notifications')
@@ -3500,7 +3561,9 @@ async function markAllNotificationsAsRead() {
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (!user) return;
 
-    const unreadIds = userNotifications.filter(n => !n.read_at).map(n => n.id);
+    const unreadIds = userNotifications
+        .filter(n => !n.read_at && !n.is_virtual)
+        .map(n => n.id);
     if (unreadIds.length === 0) return;
 
     const { error } = await supabaseClient

@@ -3548,6 +3548,21 @@ a {
     box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
 }
 
+/* Notificação virtual (pendência) */
+.notification-item.virtual {
+    border-left: 3px solid var(--gold);
+}
+
+.notification-virtual-hint {
+    font-size: 0.65rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+    margin-top: 0.4rem;
+    opacity: 0.85;
+}
+
 .notifications-empty {
     text-align: center;
     padding: 4rem 1.5rem;
