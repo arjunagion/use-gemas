@@ -23,7 +23,6 @@ let currentModalReviews = [];
 
 // Notificações (sininho)
 let userNotifications = [];
-let userOrders = []; // pedidos do cliente (preenchido na área do cliente; aqui vazio → sininho só com reais)
 
 // ==========================================================================
 // Configurações do site (carregadas do Supabase)
@@ -3373,8 +3372,8 @@ async function loadNotifications() {
 
     const realNotifications = data || [];
 
-    // Notificações virtuais (pendências calculadas)
-    const virtualNotifications = calculateVirtualNotifications();
+    // Notificações virtuais (pendências de review)
+    const virtualNotifications = await loadPendingReviewsForBadge();
 
     // Junta tudo
     userNotifications = [...virtualNotifications, ...realNotifications];
@@ -3393,18 +3392,48 @@ async function loadNotifications() {
     updateNotificationsBadge();
 }
 
-function calculateVirtualNotifications() {
-    const virtual = [];
+async function loadPendingReviewsForBadge() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return [];
 
-    if (!userOrders || userOrders.length === 0) return virtual;
+    // Busca pedidos com status 'enviado'/'entregue' que ainda NÃO têm review
+    const { data: orders, error } = await supabaseClient
+        .from('orders')
+        .select('id, items, shipped_at, status')
+        .eq('user_id', user.id)
+        .in('status', ['enviado', 'entregue']);
 
-    userOrders.forEach(order => {
-        // Só pedidos enviados/entregues
-        if (order.status !== 'enviado' && order.status !== 'entregue') return;
+    if (error) {
+        console.error('Erro ao carregar pedidos para notificação:', error);
+        return [];
+    }
 
+    if (!orders || orders.length === 0) return [];
+
+    // Pega IDs dos pedidos que já têm review
+    const orderIds = orders.map(o => o.id);
+
+    const { data: reviews, error: reviewsError } = await supabaseClient
+        .from('reviews')
+        .select('order_id, product_ref')
+        .in('order_id', orderIds);
+
+    if (reviewsError) {
+        console.error('Erro ao carregar reviews para notificação:', reviewsError);
+        // Continua — assume que nenhum tem review
+    }
+
+    // Set de "orderId:productRef" que já tem review
+    const reviewedSet = new Set(
+        (reviews || []).map(r => `${r.order_id}:${r.product_ref}`)
+    );
+
+    // Monta virtuais: cada item sem review = 1 virtual
+    const virtuals = [];
+    orders.forEach(order => {
         (order.items || []).forEach(item => {
-            if (!hasUserReviewed(order.id, item.ref)) {
-                virtual.push({
+            if (!reviewedSet.has(`${order.id}:${item.ref}`)) {
+                virtuals.push({
                     id: `virtual:review:${order.id}:${item.ref}`,
                     is_virtual: true,
                     type: 'review_pending',
@@ -3413,13 +3442,13 @@ function calculateVirtualNotifications() {
                     link: `minha-conta.html?review=${order.id}`,
                     metadata: { order_id: order.id, product_ref: item.ref },
                     read_at: null,
-                    created_at: order.shipped_at || order.created_at
+                    created_at: order.shipped_at || new Date().toISOString()
                 });
             }
         });
     });
 
-    return virtual;
+    return virtuals;
 }
 
 function renderNotifications() {
