@@ -40,6 +40,19 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==========================================================================
+// Redirect pós-login (suporta email/senha E Google OAuth)
+// ==========================================================================
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+        const pendingRedirect = localStorage.getItem('gemas_redirect_after_login');
+        if (pendingRedirect && pendingRedirect.startsWith('minha-conta.html')) {
+            localStorage.removeItem('gemas_redirect_after_login');
+            window.location.href = pendingRedirect;
+        }
+    }
+});
+
+// ==========================================================================
 // Emojis
 // ==========================================================================
 const EMOJI_BAG = String.fromCodePoint(0x1F6CD, 0xFE0F);
@@ -1265,17 +1278,6 @@ async function handleLogin(event) {
     }
 
     showAuthFeedback('Login realizado com sucesso!', 'success');
-
-    // Verifica se tem redirect pendente (cliente veio de um link com ?review=)
-    const pendingRedirect = localStorage.getItem('gemas_redirect_after_login');
-    if (pendingRedirect && pendingRedirect.startsWith('minha-conta.html')) {
-        // Limpa a chave e redireciona após pequeno delay (transição visual)
-        localStorage.removeItem('gemas_redirect_after_login');
-        setTimeout(() => {
-            window.location.href = pendingRedirect;
-        }, 800);
-        return; // Não executa o resto do fluxo normal
-    }
 
     await syncLocalToCloud();
     await loadFavorites();
