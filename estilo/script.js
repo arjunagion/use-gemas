@@ -2546,24 +2546,31 @@ async function loadAvailableCoupons(options = {}) {
 
         if (!coupons || coupons.length === 0) return [];
 
-        // 2. Busca usos desse cliente (só se logado — evita 403 de RLS)
+        // 2. Busca usos desse cliente
         let usages = [];
-        if (userId) {
-            const orConditions = [];
-            if (customerEmail) orConditions.push(`customer_email.eq.${customerEmail}`);
-            if (userId) orConditions.push(`user_id.eq.${userId}`);
 
+        if (userId) {
+            // Cliente logado: busca só por user_id (mais confiável, evita problemas de policy)
             const { data: usagesData, error: usagesError } = await supabaseClient
                 .from('coupon_usages')
-                .select('coupon_id, customer_email, user_id')
-                .or(orConditions.join(','));
+                .select('coupon_id, user_id')
+                .eq('user_id', userId);
 
-            // 403 = RLS bloqueou (guest ou cliente não logado)
-            // Nesse caso, assume que nunca usou cupons (padrão seguro)
-            if (usagesError && usagesError.code !== '42501' && !usagesError.message?.includes('403')) {
-                console.warn('Erro ao buscar usos de cupons:', usagesError);
+            if (usagesError) {
+                console.warn('Erro ao buscar usos por user_id:', usagesError);
             }
+            usages = usagesData || [];
 
+        } else if (customerEmail) {
+            // Guest: busca por email (RLS permite anon nesse caso)
+            const { data: usagesData, error: usagesError } = await supabaseClient
+                .from('coupon_usages')
+                .select('coupon_id, customer_email')
+                .ilike('customer_email', customerEmail);
+
+            if (usagesError) {
+                console.warn('Erro ao buscar usos por email:', usagesError);
+            }
             usages = usagesData || [];
         }
 
@@ -2573,22 +2580,17 @@ async function loadAvailableCoupons(options = {}) {
             userUsageMap.set(u.coupon_id, (userUsageMap.get(u.coupon_id) || 0) + 1);
         });
 
-        // 3. Verifica se cliente já comprou (só se logado — evita 403 de RLS)
+        // 3. Verifica se cliente já comprou (só se logado — busca por user_id)
         let hasPreviousOrders = false;
         if (userId) {
-            const orConditions = [];
-            if (customerEmail) orConditions.push(`customer_email.eq.${customerEmail}`);
-            if (userId) orConditions.push(`user_id.eq.${userId}`);
-
             const { data: prevOrders, error: ordersError } = await supabaseClient
                 .from('orders')
                 .select('id')
-                .or(orConditions.join(','))
+                .eq('user_id', userId)
                 .in('status', ['pago', 'produzindo', 'enviado'])
                 .limit(1);
 
-            // 403 = RLS bloqueou (guest) → assume que não tem pedidos anteriores
-            if (ordersError && ordersError.code !== '42501' && !ordersError.message?.includes('403')) {
+            if (ordersError) {
                 console.warn('Erro ao buscar pedidos anteriores:', ordersError);
             }
 
