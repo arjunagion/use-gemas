@@ -1911,6 +1911,12 @@
         async function loadUserFavorites() {
             const container = document.getElementById('favoritos-container');
 
+            // Guard de auth: sem usuário logado, não faz query (evita 403)
+            if (!currentUser) {
+                userFavorites = [];
+                return;
+            }
+
             const { data, error } = await supabaseClient
                 .from('favorites')
                 .select('*')

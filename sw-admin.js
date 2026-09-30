@@ -6,7 +6,7 @@
 //   - Navegação HTML: network-first com fallback pro cache
 // ==========================================================================
 
-const CACHE_NAME = 'ug-admin-v2';
+const CACHE_NAME = 'ug-admin-v3';
 const CACHE_URLS = [
     '/admin.html',
     '/estilo/midias/favicon.png',
@@ -60,9 +60,22 @@ self.addEventListener('fetch', (event) => {
     // Não intercepta métodos que não sejam GET
     if (request.method !== 'GET') return;
 
+    // Ignora requests com Range (conteúdo parcial, status 206) — vídeos/áudios
+    if (request.headers.has('range')) return;
+
     // Não intercepta chamadas ao Supabase (sempre network-only)
     if (url.hostname.includes('supabase.co')) {
         return; // deixa passar direto, sem cache
+    }
+
+    // Não intercepta APIs de analytics/publicidade (GA4, Meta, etc.)
+    if (
+        url.hostname.includes('google-analytics.com') ||
+        url.hostname.includes('googletagmanager.com') ||
+        url.hostname.includes('connect.facebook.net') ||
+        url.hostname.includes('facebook.com')
+    ) {
+        return;
     }
 
     // Não intercepta CDNs externas (Chart.js, Supabase SDK, Google Fonts)
@@ -74,7 +87,7 @@ self.addEventListener('fetch', (event) => {
             caches.match(request).then((cached) => {
                 if (cached) return cached;
                 return fetch(request).then((response) => {
-                    if (response.ok) {
+                    if (response.ok && response.status !== 206) {
                         const clone = response.clone();
                         caches.open(CACHE_NAME).then((cache) => {
                             cache.put(request, clone);
@@ -94,10 +107,12 @@ self.addEventListener('fetch', (event) => {
             event.respondWith(
                 fetch(request)
                     .then((response) => {
-                        const clone = response.clone();
-                        caches.open(CACHE_NAME).then((cache) => {
-                            cache.put(request, clone);
-                        });
+                        if (response.ok && response.status !== 206) {
+                            const clone = response.clone();
+                            caches.open(CACHE_NAME).then((cache) => {
+                                cache.put(request, clone);
+                            });
+                        }
                         return response;
                     })
                     .catch(() => {
@@ -117,7 +132,7 @@ self.addEventListener('fetch', (event) => {
             caches.match(request).then((cached) => {
                 if (cached) return cached;
                 return fetch(request).then((response) => {
-                    if (response.ok) {
+                    if (response.ok && response.status !== 206) {
                         const clone = response.clone();
                         caches.open(CACHE_NAME).then((cache) => {
                             cache.put(request, clone);

@@ -2546,9 +2546,9 @@ async function loadAvailableCoupons(options = {}) {
 
         if (!coupons || coupons.length === 0) return [];
 
-        // 2. Busca usos desse cliente (email ou user_id)
+        // 2. Busca usos desse cliente (só se logado — evita 403 de RLS)
         let usages = [];
-        if (customerEmail || userId) {
+        if (userId) {
             const orConditions = [];
             if (customerEmail) orConditions.push(`customer_email.eq.${customerEmail}`);
             if (userId) orConditions.push(`user_id.eq.${userId}`);
@@ -2573,9 +2573,9 @@ async function loadAvailableCoupons(options = {}) {
             userUsageMap.set(u.coupon_id, (userUsageMap.get(u.coupon_id) || 0) + 1);
         });
 
-        // 3. Verifica se cliente já comprou (pra first_purchase_only)
+        // 3. Verifica se cliente já comprou (só se logado — evita 403 de RLS)
         let hasPreviousOrders = false;
-        if (customerEmail || userId) {
+        if (userId) {
             const orConditions = [];
             if (customerEmail) orConditions.push(`customer_email.eq.${customerEmail}`);
             if (userId) orConditions.push(`user_id.eq.${userId}`);
