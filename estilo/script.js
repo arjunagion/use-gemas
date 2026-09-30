@@ -4561,6 +4561,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCartUI();
     updateCouponsSeeAllBtn();
 
+    // Verifica se deve abrir o carrinho automaticamente (?open_cart=1)
+    const openCartParams = new URLSearchParams(window.location.search);
+    if (openCartParams.get('open_cart') === '1') {
+        // Limpa o parâmetro da URL (pra não reabrir em F5)
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        // Só abre se o carrinho tiver itens
+        if (cart.length > 0) {
+            setTimeout(() => {
+                const cartDrawer = document.getElementById('cart-drawer');
+                const wishlistDrawer = document.getElementById('wishlist-drawer');
+                const notificationsDrawer = document.getElementById('notifications-drawer');
+
+                if (cartDrawer && !cartDrawer.classList.contains('open')) {
+                    cartDrawer.classList.add('open');
+                    // Fecha os outros drawers (padrão)
+                    if (wishlistDrawer) wishlistDrawer.classList.remove('open');
+                    if (notificationsDrawer) notificationsDrawer.classList.remove('open');
+                    trackViewCart(); // dispara GA4
+                }
+            }, 500);
+        }
+    }
+
     // Fecha o modal de cupons com ESC
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
