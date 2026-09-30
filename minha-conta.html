@@ -893,6 +893,194 @@
             });
         }
 
+        /**
+         * Busca cupons disponíveis pro cliente com status de aplicabilidade.
+         */
+        async function loadAvailableCoupons(options = {}) {
+            const { customerEmail = null, userId = null, subtotal = 0 } = options;
+
+            const now = new Date();
+
+            try {
+                // 1. Busca cupons ativos que ainda não expiraram
+                let query = supabaseClient
+                    .from('coupons')
+                    .select('id, code, description, discount_type, discount_value, min_purchase, max_discount, free_shipping, first_purchase_only, customer_email, usage_limit_total, usage_limit_per_user, times_used, starts_at, expires_at')
+                    .eq('active', true)
+                    .or(`expires_at.is.null,expires_at.gt.${now.toISOString()}`);
+
+                // Filtro de email
+                if (customerEmail) {
+                    query = query.or(`customer_email.is.null,customer_email.eq.${customerEmail}`);
+                } else {
+                    query = query.is('customer_email', null);
+                }
+
+                const { data: coupons, error } = await query;
+
+                if (error) {
+                    console.error('Erro ao buscar cupons:', error);
+                    return [];
+                }
+
+                if (!coupons || coupons.length === 0) return [];
+
+                // 2. Busca usos desse cliente (email ou user_id)
+                let usages = [];
+                if (customerEmail || userId) {
+                    const orConditions = [];
+                    if (customerEmail) orConditions.push(`customer_email.eq.${customerEmail}`);
+                    if (userId) orConditions.push(`user_id.eq.${userId}`);
+
+                    const { data: usagesData } = await supabaseClient
+                        .from('coupon_usages')
+                        .select('coupon_id, customer_email, user_id')
+                        .or(orConditions.join(','));
+
+                    usages = usagesData || [];
+                }
+
+                // Mapa de "coupon_id → qtd usada por esse cliente"
+                const userUsageMap = new Map();
+                usages.forEach(u => {
+                    userUsageMap.set(u.coupon_id, (userUsageMap.get(u.coupon_id) || 0) + 1);
+                });
+
+                // 3. Verifica se cliente já comprou (pra first_purchase_only)
+                let hasPreviousOrders = false;
+                if (customerEmail || userId) {
+                    const orConditions = [];
+                    if (customerEmail) orConditions.push(`customer_email.eq.${customerEmail}`);
+                    if (userId) orConditions.push(`user_id.eq.${userId}`);
+
+                    const { data: prevOrders } = await supabaseClient
+                        .from('orders')
+                        .select('id')
+                        .or(orConditions.join(','))
+                        .in('status', ['pago', 'produzindo', 'enviado'])
+                        .limit(1);
+
+                    hasPreviousOrders = (prevOrders && prevOrders.length > 0);
+                }
+
+                // 4. Processa cada cupom
+                const processed = coupons.map(coupon => {
+                    let daysLeft = null;
+                    if (coupon.expires_at) {
+                        const expiresAt = new Date(coupon.expires_at);
+                        daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+                    }
+
+                    // Preview do desconto
+                    let discountPreview = 0;
+                    if (subtotal > 0) {
+                        if (coupon.discount_type === 'percentage') {
+                            discountPreview = subtotal * (Number(coupon.discount_value) / 100);
+                            if (coupon.max_discount && discountPreview > Number(coupon.max_discount)) {
+                                discountPreview = Number(coupon.max_discount);
+                            }
+                        } else {
+                            discountPreview = Number(coupon.discount_value);
+                            if (discountPreview > subtotal) discountPreview = subtotal;
+                        }
+                        discountPreview = Math.round(discountPreview * 100) / 100;
+                    }
+
+                    // Verifica aplicabilidade
+                    let applicable = true;
+                    let reason = null;
+
+                    const userUsageCount = userUsageMap.get(coupon.id) || 0;
+                    if (coupon.usage_limit_per_user && userUsageCount >= coupon.usage_limit_per_user) {
+                        applicable = false;
+                        reason = 'Você já usou este cupom';
+                    }
+
+                    if (applicable && coupon.usage_limit_total && coupon.times_used >= coupon.usage_limit_total) {
+                        applicable = false;
+                        reason = 'Este cupom atingiu o limite de usos';
+                    }
+
+                    if (applicable && Number(coupon.min_purchase) > 0 && subtotal < Number(coupon.min_purchase)) {
+                        applicable = false;
+                        reason = `Precisa de ${formatBRL(coupon.min_purchase)} de compra`;
+                    }
+
+                    if (applicable && coupon.first_purchase_only && hasPreviousOrders) {
+                        applicable = false;
+                        reason = 'Válido apenas na primeira compra';
+                    }
+
+                    return {
+                        id: coupon.id,
+                        code: coupon.code,
+                        description: coupon.description || '',
+                        discount_type: coupon.discount_type,
+                        discount_value: Number(coupon.discount_value),
+                        min_purchase: Number(coupon.min_purchase || 0),
+                        max_discount: coupon.max_discount ? Number(coupon.max_discount) : null,
+                        free_shipping: !!coupon.free_shipping,
+                        first_purchase_only: !!coupon.first_purchase_only,
+                        customer_email: coupon.customer_email,
+                        expires_at: coupon.expires_at,
+                        days_left: daysLeft,
+                        is_individual: !!coupon.customer_email,
+                        applicable,
+                        reason,
+                        discount_preview: discountPreview
+                    };
+                });
+
+                // 5. Ordena: aplicáveis primeiro, depois por dias restantes, depois por desconto
+                processed.sort((a, b) => {
+                    if (a.applicable !== b.applicable) return a.applicable ? -1 : 1;
+
+                    if (a.days_left !== null && b.days_left !== null) {
+                        if (a.days_left !== b.days_left) return a.days_left - b.days_left;
+                    }
+
+                    return b.discount_preview - a.discount_preview;
+                });
+
+                return processed;
+
+            } catch (e) {
+                console.error('Erro inesperado ao carregar cupons:', e);
+                return [];
+            }
+        }
+
+        function getCouponDiscountLabel(coupon) {
+            if (coupon.free_shipping && coupon.discount_value === 0) {
+                return 'Frete grátis';
+            }
+
+            let base;
+            if (coupon.discount_type === 'percentage') {
+                base = `${coupon.discount_value}% off`;
+            } else {
+                base = `${formatBRL(coupon.discount_value)} off`;
+            }
+
+            if (coupon.free_shipping) {
+                base += ' + frete grátis';
+            }
+
+            return base;
+        }
+
+        function getCouponExpiryLabel(coupon) {
+            if (!coupon.expires_at || coupon.days_left === null) {
+                return 'Sem data de expiração';
+            }
+
+            if (coupon.days_left === 0) return 'Expira hoje';
+            if (coupon.days_left === 1) return 'Expira amanhã';
+            if (coupon.days_left <= 5) return `Expira em ${coupon.days_left} dias`;
+
+            return `Válido até ${new Date(coupon.expires_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`;
+        }
+
         function calculateVirtualNotifications(expiringCoupons = []) {
             const virtual = [];
 
