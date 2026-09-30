@@ -1,0 +1,60 @@
+{
+    "name": "Use Gemas — Joias Artesanais",
+    "short_name": "Use Gemas",
+    "description": "Joias artesanais em microcrochê e pedras naturais. Cada peça é feita à mão com intenção e energia.",
+    "start_url": "/index.html",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0e0e10",
+    "theme_color": "#d4af37",
+    "lang": "pt-BR",
+    "dir": "ltr",
+    "categories": ["shopping", "lifestyle"],
+    "icons": [
+        {
+            "src": "estilo/midias/icone-admin-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "estilo/midias/icone-admin-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "estilo/midias/icone-admin-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Meus Pedidos",
+            "short_name": "Pedidos",
+            "description": "Acompanhe seus pedidos",
+            "url": "/minha-conta.html",
+            "icons": [
+                {
+                    "src": "estilo/midias/icone-admin-192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Ver Coleção",
+            "short_name": "Coleção",
+            "description": "Explore as joias da Use Gemas",
+            "url": "/index.html#colecao",
+            "icons": [
+                {
+                    "src": "estilo/midias/icone-admin-192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ]
+}

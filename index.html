@@ -37,6 +37,14 @@
     <link rel="icon" type="image/png" href="estilo/midias/favicon.png">
     <link rel="apple-touch-icon" href="estilo/midias/favicon.png">
 
+    <!-- PWA Cliente -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Use Gemas">
+    <link rel="apple-touch-icon" href="estilo/midias/icone-admin-192.png">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -970,6 +978,21 @@
             <polyline points="18 15 12 9 6 15"></polyline>
         </svg>
     </button>
+
+    <!-- Registro do Service Worker (PWA Cliente) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js', { scope: '/' })
+                    .then((registration) => {
+                        console.log('[PWA Cliente] Service Worker registrado:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.warn('[PWA Cliente] Falha ao registrar SW:', error);
+                    });
+            });
+        }
+    </script>
 
 </body>
 
