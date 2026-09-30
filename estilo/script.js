@@ -2350,6 +2350,9 @@ function updateCartUI() {
     }
 
     if (cartTotalElement) cartTotalElement.innerText = formatCurrency(finalTotal);
+
+    // Atualiza o botão "Ver meus cupons"
+    updateCouponsSeeAllBtn();
 }
 
 // ==========================================================================
@@ -2713,6 +2716,150 @@ function getCouponExpiryLabel(coupon) {
     if (coupon.days_left <= 5) return `Expira em ${coupon.days_left} dias`;
 
     return `Válido até ${new Date(coupon.expires_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`;
+}
+
+// ==========================================================================
+// Modal de Cupons no Carrinho
+// ==========================================================================
+let availableCouponsCache = [];
+
+async function openCouponsModal() {
+    const modal = document.getElementById('coupons-modal');
+    const list = document.getElementById('coupons-modal-list');
+
+    if (!modal || !list) return;
+
+    const TICKET = String.fromCodePoint(0x1F39F, 0xFE0F);
+    const WARN = String.fromCodePoint(0x26A0, 0xFE0F);
+
+    // Abre modal primeiro (com loading)
+    list.innerHTML = '<div class="coupons-modal-loading"><div class="spinner"></div><p>Carregando cupons...</p></div>';
+    modal.classList.add('open');
+
+    // Calcula subtotal atual
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // Pega email + user_id
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+    const customerEmail = user?.email || checkoutData?.email || null;
+    const userId = user?.id || null;
+
+    // Busca cupons
+    const coupons = await loadAvailableCoupons({
+        customerEmail,
+        userId,
+        subtotal
+    });
+
+    // Filtra só aplicáveis
+    const applicable = coupons.filter(c => c.applicable);
+    availableCouponsCache = applicable;
+
+    // Renderiza
+    if (applicable.length === 0) {
+        list.innerHTML = `
+            <div class="coupons-modal-empty">
+                <span class="icon">${TICKET}</span>
+                <h4>Nenhum cupom disponível</h4>
+                <p>Você não tem cupons aplicáveis no momento.</p>
+                <p class="coupons-modal-empty-hint">Fique de olho nas nossas redes sociais pra novidades!</p>
+            </div>
+        `;
+        return;
+    }
+
+    list.innerHTML = applicable.map(coupon => {
+        const discountLabel = getCouponDiscountLabel(coupon);
+        const expiryLabel = getCouponExpiryLabel(coupon);
+        const urgencyClass = (coupon.days_left !== null && coupon.days_left <= 3) ? 'urgent' : '';
+
+        return `
+            <div class="coupon-modal-card ${urgencyClass}">
+                <div class="coupon-modal-card-header">
+                    <span class="coupon-modal-card-icon">${TICKET}</span>
+                    <div class="coupon-modal-card-code">${escapeHTML(coupon.code)}</div>
+                    ${coupon.is_individual ? '<span class="coupon-modal-card-indiv">Exclusivo</span>' : ''}
+                </div>
+
+                <div class="coupon-modal-card-discount">${escapeHTML(discountLabel)}</div>
+
+                ${coupon.description ? `<div class="coupon-modal-card-desc">${escapeHTML(coupon.description)}</div>` : ''}
+
+                <div class="coupon-modal-card-expiry ${urgencyClass}">
+                    ${urgencyClass ? WARN + ' ' : ''}${escapeHTML(expiryLabel)}
+                </div>
+
+                <div class="coupon-modal-card-preview">
+                    Você economiza: <strong>${formatCurrency(coupon.discount_preview)}</strong>
+                </div>
+
+                <button type="button" class="btn-apply-coupon-modal" onclick="applyCouponFromModal('${escapeHTML(coupon.code)}')">
+                    Aplicar este cupom
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+function closeCouponsModal() {
+    document.getElementById('coupons-modal').classList.remove('open');
+}
+
+async function applyCouponFromModal(code) {
+    // Preenche o input de cupom com o código
+    const input = document.getElementById('coupon-input');
+    if (input) {
+        input.value = code;
+    }
+
+    // Fecha o modal
+    closeCouponsModal();
+
+    // Chama a função que aplica (já existe)
+    await applyCoupon();
+}
+
+// Atualiza contador do botão "Ver meus cupons"
+async function updateCouponsSeeAllBtn() {
+    const btn = document.getElementById('coupon-see-all-btn');
+    const countEl = document.getElementById('coupon-see-all-count');
+
+    if (!btn) return;
+
+    // Se não tem carrinho, esconde
+    if (!cart || cart.length === 0) {
+        btn.style.display = 'none';
+        return;
+    }
+
+    // Calcula subtotal
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // Pega email + user_id
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+    const customerEmail = user?.email || checkoutData?.email || null;
+    const userId = user?.id || null;
+
+    const coupons = await loadAvailableCoupons({
+        customerEmail,
+        userId,
+        subtotal
+    });
+
+    const applicable = coupons.filter(c => c.applicable);
+
+    if (applicable.length === 0) {
+        btn.style.display = 'none';
+        return;
+    }
+
+    btn.style.display = 'inline-flex';
+    if (countEl) {
+        countEl.innerText = applicable.length;
+        countEl.style.display = 'inline-flex';
+    }
 }
 
 // ==========================================================================
@@ -4412,6 +4559,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     updateFavoritesUI();
     updateCartUI();
+    updateCouponsSeeAllBtn();
+
+    // Fecha o modal de cupons com ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('coupons-modal');
+            if (modal && modal.classList.contains('open')) {
+                closeCouponsModal();
+            }
+        }
+    });
+
+    // Fecha o modal de cupons clicando fora
+    const couponsModal = document.getElementById('coupons-modal');
+    if (couponsModal) {
+        couponsModal.addEventListener('click', (e) => {
+            if (e.target === couponsModal) closeCouponsModal();
+        });
+    }
 
     const checkoutForm = document.getElementById('checkout-form');
     if (checkoutForm) checkoutForm.addEventListener('submit', handleCheckoutSubmit);

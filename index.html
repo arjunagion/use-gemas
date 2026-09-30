@@ -45,8 +45,8 @@
         rel="stylesheet">
 
     <!-- Link para o CSS -->
-    <!-- ⬇️ BUMP: 53.0 → 54.0 -->
-    <link rel="stylesheet" href="estilo/style.css?v=54.0">
+    <!-- ⬇️ BUMP: 54.0 → 55.0 -->
+    <link rel="stylesheet" href="estilo/style.css?v=55.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css">
@@ -807,6 +807,12 @@
                     <div id="coupon-feedback" class="coupon-feedback"></div>
                 </div>
 
+                <button type="button" class="coupon-see-all-btn" id="coupon-see-all-btn" onclick="openCouponsModal()" style="display: none;">
+                    <span class="coupon-see-all-icon">🎟️</span>
+                    <span>Ver meus cupons</span>
+                    <span class="coupon-see-all-count" id="coupon-see-all-count" style="display: none;">0</span>
+                </button>
+
                 <!-- Estado 2: cupom aplicado (substitui o input) -->
                 <div id="coupon-applied" class="coupon-applied" style="display: none;">
                     <div class="coupon-applied-info">
@@ -883,6 +889,26 @@
         </div>
     </div>
 
+    <!-- Modal de Cupons Disponíveis -->
+    <div id="coupons-modal" class="modal-overlay">
+        <div class="modal-content coupons-modal-content">
+            <button class="modal-close" onclick="closeCouponsModal()" aria-label="Fechar">&times;</button>
+
+            <div class="coupons-modal-header">
+                <h3>Meus Cupons</h3>
+                <p>Escolha um cupom pra aplicar no seu pedido</p>
+            </div>
+
+            <div class="coupons-modal-list" id="coupons-modal-list">
+                <!-- Preenchido via JS -->
+            </div>
+
+            <div class="coupons-modal-footer">
+                <button type="button" class="btn-ghost" onclick="closeCouponsModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Container do PhotoSwipe (galeria ampliada) -->
     <div id="pswp-gallery" class="pswp-gallery" style="display: none;"></div>
 
@@ -931,8 +957,8 @@
     </div>
 
     <!-- Importação do JS -->
-    <!-- ⬇️ BUMP: 61.0 → 62.0 -->
-    <script src="estilo/script.js?v=62.0"></script>
+    <!-- ⬇️ BUMP: 62.0 → 63.0 -->
+    <script src="estilo/script.js?v=63.0"></script>
 
     <!-- Toast notifications -->
     <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
