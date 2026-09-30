@@ -2042,6 +2042,193 @@
             margin-bottom: 1.2rem;
             font-size: 0.9rem;
         }
+
+        /* ==========================================================================
+           CUPONS — Cards, formulário e histórico
+           ========================================================================== */
+        .coupons-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .coupon-admin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .coupon-admin-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .coupon-admin-card.inactive {
+            opacity: 0.65;
+        }
+
+        .coupon-admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+
+        .coupon-admin-code {
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--gold);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .coupon-admin-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .coupon-status-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .coupon-status-badge.active { background: rgba(81, 207, 102, 0.15); color: var(--success); }
+        .coupon-status-badge.inactive { background: rgba(255, 255, 255, 0.06); color: var(--text-dim); }
+        .coupon-status-badge.expired { background: rgba(255, 85, 85, 0.15); color: var(--danger); }
+        .coupon-status-badge.scheduled { background: rgba(77, 171, 247, 0.15); color: var(--info); }
+
+        .coupon-admin-discount {
+            font-family: var(--font-title);
+            font-size: 1.6rem;
+            color: var(--gold-hover);
+            font-weight: 700;
+        }
+
+        .coupon-admin-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .coupon-admin-badge {
+            font-size: 0.7rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--border);
+            color: var(--gold);
+            padding: 0.2rem 0.55rem;
+            border-radius: 20px;
+        }
+
+        .coupon-admin-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+
+        .coupon-admin-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .coupon-usages-summary {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .coupon-usages-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .coupon-usage-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+        }
+
+        .coupon-usage-email {
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        .coupon-usage-date {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+        }
+
+        .coupon-usage-discount {
+            font-weight: 700;
+            color: var(--success);
+            white-space: nowrap;
+        }
+
+        /* Helpers do formulário de cupom */
+        .form-hint {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            margin-top: 0.35rem;
+        }
+
+        .input-with-btn {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-with-btn input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-inline-search {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            color: var(--gold);
+            border-radius: 8px;
+            padding: 0.55rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .btn-inline-search:hover {
+            border-color: var(--border-hover);
+            color: var(--gold-hover);
+        }
     </style>
 </head>
 
@@ -2089,6 +2276,10 @@
                 <a href="#" class="nav-item" data-section="avaliacoes">
                     <span class="icon">⭐</span> Avaliações
                     <span class="nav-badge" id="nav-badge-reviews" style="display: none;">0</span>
+                </a>
+                <a href="#" class="nav-item" data-section="cupons">
+                    <span class="icon">🎟️</span> Cupons
+                    <span class="nav-badge" id="nav-badge-coupons" style="display: none;">0</span>
                 </a>
                 <a href="#" class="nav-item" data-section="clientes">
                     <span class="icon">👥</span> Clientes
@@ -2223,6 +2414,38 @@
                         <div class="empty-state">
                             <span class="icon">⭐</span>
                             <p>Carregando avaliações...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== CUPONS ==================== -->
+                <section class="content-section" id="section-cupons">
+                    <div class="section-header">
+                        <div class="section-actions">
+                            <input type="text" class="search-input" id="coupon-search"
+                                placeholder="🔍 Buscar por código ou descrição..." oninput="renderCoupons()">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" onclick="setCouponFilter('all', this)">Todos</button>
+                                <button class="filter-tab" onclick="setCouponFilter('active', this)">Ativos</button>
+                                <button class="filter-tab" onclick="setCouponFilter('expired', this)">Expirados</button>
+                                <button class="filter-tab" onclick="setCouponFilter('individual', this)">Individuais</button>
+                                <button class="filter-tab" onclick="setCouponFilter('first_purchase', this)">1ª Compra</button>
+                            </div>
+                        </div>
+                        <div class="section-actions">
+                            <button class="btn-export" onclick="exportCouponsCSV()">
+                                ⬇️ Exportar CSV
+                            </button>
+                            <button class="btn-new-product" onclick="openCouponForm()">
+                                <span>+</span> Novo Cupom
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="coupons-container">
+                        <div class="empty-state">
+                            <span class="icon">🎟️</span>
+                            <p>Carregando cupons...</p>
                         </div>
                     </div>
                 </section>
@@ -2536,6 +2759,121 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL: CUPOM ==================== -->
+    <div id="coupon-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeCouponForm()">&times;</button>
+            <h2 class="modal-title" id="coupon-form-title">Novo Cupom</h2>
+
+            <div id="coupon-form-feedback" class="modal-feedback"></div>
+
+            <form id="coupon-form" onsubmit="saveCoupon(event)">
+                <input type="hidden" id="coupon-id">
+
+                <div class="form-group">
+                    <label for="coupon-code">Código <span class="required">*</span></label>
+                    <div class="input-with-btn">
+                        <input type="text" id="coupon-code" required maxlength="30"
+                            placeholder="Ex: BEMVINDA10" style="text-transform: uppercase;">
+                        <button type="button" class="btn-inline-search" onclick="generateCouponCode()">
+                            🎲 Gerar
+                        </button>
+                    </div>
+                    <small class="form-hint">Apenas letras, números e hífen. Será salvo em MAIÚSCULAS.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="coupon-description">Descrição (opcional)</label>
+                    <input type="text" id="coupon-description" maxlength="120"
+                        placeholder="Ex: 10% off na primeira compra">
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="coupon-type">Tipo <span class="required">*</span></label>
+                        <select id="coupon-type" required onchange="updateDiscountLabel()">
+                            <option value="percentage">Percentual (%)</option>
+                            <option value="fixed">Valor fixo (R$)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="coupon-value" id="coupon-value-label">Valor do desconto (%) <span class="required">*</span></label>
+                        <input type="text" id="coupon-value" required placeholder="10" inputmode="decimal">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="coupon-min-purchase">Valor mínimo de compra (R$)</label>
+                        <input type="text" id="coupon-min-purchase" placeholder="0,00" inputmode="decimal">
+                    </div>
+                    <div class="form-group" id="coupon-max-discount-group">
+                        <label for="coupon-max-discount">Teto do desconto (R$) — só pra %</label>
+                        <input type="text" id="coupon-max-discount" placeholder="Sem teto" inputmode="decimal">
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="coupon-free-shipping">
+                    <label for="coupon-free-shipping">🎁 Cupom de frete grátis</label>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="coupon-first-purchase">
+                    <label for="coupon-first-purchase">🌟 Válido apenas na primeira compra do cliente</label>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="coupon-usage-limit-total">Limite total de usos</label>
+                        <input type="number" id="coupon-usage-limit-total" min="1" placeholder="Ilimitado">
+                    </div>
+                    <div class="form-group">
+                        <label for="coupon-usage-limit-per-user">Limite por cliente</label>
+                        <input type="number" id="coupon-usage-limit-per-user" min="1" value="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="coupon-customer-email">Email específico (cupom individual)</label>
+                    <input type="email" id="coupon-customer-email"
+                        placeholder="Deixe vazio para cupom público">
+                    <small class="form-hint">Se preenchido, o cupom só vale para esse email.</small>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="coupon-starts-at">Início (opcional)</label>
+                        <input type="date" id="coupon-starts-at">
+                    </div>
+                    <div class="form-group">
+                        <label for="coupon-expires-at">Expira em (opcional)</label>
+                        <input type="date" id="coupon-expires-at">
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="coupon-active" checked>
+                    <label for="coupon-active">✓ Cupom ativo</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeCouponForm()">Cancelar</button>
+                    <button type="submit" class="btn-save" id="coupon-save-btn">Salvar Cupom</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: USOS DO CUPOM ==================== -->
+    <div id="coupon-usages-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeCouponUsagesModal()">&times;</button>
+            <h2 class="modal-title" id="coupon-usages-title">Histórico de Usos</h2>
+            <div id="coupon-usages-content"></div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
@@ -2660,6 +2998,7 @@
                 await loadOrders();
                 await loadReviews();
                 await loadSettings();
+                await loadCoupons();
                 updateDashboardMetrics();
 
             } catch (e) {
@@ -2681,6 +3020,7 @@
             produtos: 'Produtos',
             pedidos: 'Pedidos',
             avaliacoes: 'Avaliações',
+            cupons: 'Cupons',
             clientes: 'Clientes',
             financeiro: 'Financeiro',
             config: 'Configurações'
@@ -2697,6 +3037,7 @@
             if (sectionName === 'dashboard') updateDashboardMetrics();
             if (sectionName === 'clientes') renderClients();
             if (sectionName === 'avaliacoes' && !reviewsLoaded) loadReviews();
+            if (sectionName === 'cupons') loadCoupons();
             if (sectionName === 'config') loadSettings();
             if (sectionName === 'financeiro') {
                 if (!financeState.from) {
@@ -3636,6 +3977,496 @@
 
         function csvMoney(value) {
             return Number(value || 0).toFixed(2).replace('.', ',');
+        }
+
+        // ==========================================================================
+        // CUPONS
+        // ==========================================================================
+        let allCoupons = [];
+        let currentCouponFilter = 'all';
+
+        async function loadCoupons() {
+            const { data, error } = await supabaseClient
+                .from('coupons')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Erro ao carregar cupons:', error);
+                showToast('Erro ao carregar cupons.', 'error');
+                return;
+            }
+
+            allCoupons = data || [];
+            renderCoupons();
+            updateCouponsBadge();
+        }
+
+        function updateCouponsBadge() {
+            const activeCount = allCoupons.filter(c => isCouponActive(c)).length;
+            const badge = document.getElementById('nav-badge-coupons');
+            if (badge) {
+                badge.innerText = activeCount;
+                badge.style.display = activeCount > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        function isCouponActive(coupon) {
+            if (!coupon.active) return false;
+            if (coupon.expires_at && new Date(coupon.expires_at) <= new Date()) return false;
+            if (coupon.starts_at && new Date(coupon.starts_at) > new Date()) return false;
+            return true;
+        }
+
+        function setCouponFilter(filter, el) {
+            currentCouponFilter = filter;
+            document.querySelectorAll('#section-cupons .filter-tab').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderCoupons();
+        }
+
+        function renderCoupons() {
+            const container = document.getElementById('coupons-container');
+            if (!container) return;
+
+            const searchTerm = (document.getElementById('coupon-search')?.value || '').trim().toLowerCase();
+
+            let filtered = allCoupons.slice();
+
+            if (currentCouponFilter === 'active') {
+                filtered = filtered.filter(c => isCouponActive(c));
+            } else if (currentCouponFilter === 'expired') {
+                filtered = filtered.filter(c => c.expires_at && new Date(c.expires_at) <= new Date());
+            } else if (currentCouponFilter === 'individual') {
+                filtered = filtered.filter(c => c.customer_email);
+            } else if (currentCouponFilter === 'first_purchase') {
+                filtered = filtered.filter(c => c.first_purchase_only);
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(c =>
+                    (c.code || '').toLowerCase().includes(searchTerm) ||
+                    (c.description || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">🎟️</span>
+                        <p>${allCoupons.length === 0 ? 'Nenhum cupom cadastrado ainda.' : 'Nenhum cupom com esse filtro.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '<div class="coupons-admin-grid">' +
+                filtered.map(c => renderCouponCard(c)).join('') +
+                '</div>';
+        }
+
+        function renderCouponCard(coupon) {
+            const isActive = isCouponActive(coupon);
+            const isExpired = coupon.expires_at && new Date(coupon.expires_at) <= new Date();
+
+            let statusLabel, statusClass;
+            if (!coupon.active) {
+                statusLabel = 'Inativo';
+                statusClass = 'inactive';
+            } else if (isExpired) {
+                statusLabel = 'Expirado';
+                statusClass = 'expired';
+            } else if (isActive) {
+                statusLabel = 'Ativo';
+                statusClass = 'active';
+            } else {
+                statusLabel = 'Agendado';
+                statusClass = 'scheduled';
+            }
+
+            let discountLabel = '';
+            if (coupon.discount_type === 'percentage') {
+                discountLabel = `${coupon.discount_value}% off`;
+            } else {
+                discountLabel = `${formatBRL(coupon.discount_value)} off`;
+            }
+
+            const badges = [];
+            if (coupon.free_shipping) badges.push('🚚 Frete grátis');
+            if (coupon.first_purchase_only) badges.push('🌟 1ª compra');
+            if (coupon.customer_email) badges.push('👤 Individual');
+
+            let usageLabel = `${coupon.times_used} usos`;
+            if (coupon.usage_limit_total) {
+                usageLabel += ` / ${coupon.usage_limit_total}`;
+            }
+
+            return `
+                <div class="coupon-admin-card ${isActive ? '' : 'inactive'}">
+                    <div class="coupon-admin-header">
+                        <div>
+                            <div class="coupon-admin-code">${escapeHTML(coupon.code)}</div>
+                            ${coupon.description ? `<div class="coupon-admin-desc">${escapeHTML(coupon.description)}</div>` : ''}
+                        </div>
+                        <span class="coupon-status-badge ${statusClass}">${statusLabel}</span>
+                    </div>
+
+                    <div class="coupon-admin-discount">${discountLabel}</div>
+
+                    <div class="coupon-admin-badges">
+                        ${badges.map(b => `<span class="coupon-admin-badge">${b}</span>`).join('')}
+                    </div>
+
+                    <div class="coupon-admin-meta">
+                        <span>${usageLabel}</span>
+                        ${coupon.expires_at ? `<span>Expira: ${formatDateShort(coupon.expires_at)}</span>` : ''}
+                    </div>
+
+                    <div class="coupon-admin-actions">
+                        <button class="action-btn edit" onclick="openCouponForm('${coupon.id}')">✏️ Editar</button>
+                        <button class="action-btn" onclick="copyCouponCode('${escapeHTML(coupon.code)}')">📋 Copiar</button>
+                        <button class="action-btn" onclick="openCouponUsagesModal('${coupon.id}')">📊 Usos</button>
+                        <button class="action-btn danger" onclick="confirmDeleteCoupon('${coupon.id}')">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openCouponForm(id) {
+            const modal = document.getElementById('coupon-modal');
+            const form = document.getElementById('coupon-form');
+            const title = document.getElementById('coupon-form-title');
+            const feedback = document.getElementById('coupon-form-feedback');
+
+            form.reset();
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+            document.getElementById('coupon-id').value = '';
+            document.getElementById('coupon-active').checked = true;
+            document.getElementById('coupon-usage-limit-per-user').value = 1;
+
+            if (id) {
+                const c = allCoupons.find(x => x.id === id);
+                if (!c) return;
+
+                title.innerText = 'Editar Cupom';
+                document.getElementById('coupon-id').value = c.id;
+                document.getElementById('coupon-code').value = c.code || '';
+                document.getElementById('coupon-description').value = c.description || '';
+                document.getElementById('coupon-type').value = c.discount_type || 'percentage';
+                document.getElementById('coupon-value').value = c.discount_value || '';
+                document.getElementById('coupon-min-purchase').value = c.min_purchase || '';
+                document.getElementById('coupon-max-discount').value = c.max_discount || '';
+                document.getElementById('coupon-free-shipping').checked = !!c.free_shipping;
+                document.getElementById('coupon-first-purchase').checked = !!c.first_purchase_only;
+                document.getElementById('coupon-usage-limit-total').value = c.usage_limit_total || '';
+                document.getElementById('coupon-usage-limit-per-user').value = c.usage_limit_per_user || '';
+                document.getElementById('coupon-customer-email').value = c.customer_email || '';
+                document.getElementById('coupon-active').checked = !!c.active;
+
+                if (c.starts_at) {
+                    document.getElementById('coupon-starts-at').value = c.starts_at.split('T')[0];
+                }
+                if (c.expires_at) {
+                    document.getElementById('coupon-expires-at').value = c.expires_at.split('T')[0];
+                }
+            } else {
+                title.innerText = 'Novo Cupom';
+            }
+
+            updateDiscountLabel();
+            modal.classList.add('open');
+            setTimeout(() => document.getElementById('coupon-code').focus(), 150);
+        }
+
+        function closeCouponForm() {
+            document.getElementById('coupon-modal').classList.remove('open');
+        }
+
+        function updateDiscountLabel() {
+            const type = document.getElementById('coupon-type')?.value;
+            const label = document.getElementById('coupon-value-label');
+            const maxGroup = document.getElementById('coupon-max-discount-group');
+
+            if (type === 'percentage') {
+                if (label) label.innerHTML = 'Valor do desconto (%) <span class="required">*</span>';
+                if (maxGroup) maxGroup.style.display = 'flex';
+            } else {
+                if (label) label.innerHTML = 'Valor do desconto (R$) <span class="required">*</span>';
+                if (maxGroup) maxGroup.style.display = 'none';
+            }
+        }
+
+        function generateCouponCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('coupon-code').value = code;
+        }
+
+        async function saveCoupon(event) {
+            event.preventDefault();
+
+            const feedback = document.getElementById('coupon-form-feedback');
+            const saveBtn = document.getElementById('coupon-save-btn');
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            const id = document.getElementById('coupon-id').value;
+            const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+            const description = document.getElementById('coupon-description').value.trim();
+            const type = document.getElementById('coupon-type').value;
+            const valueRaw = document.getElementById('coupon-value').value;
+            const minRaw = document.getElementById('coupon-min-purchase').value;
+            const maxRaw = document.getElementById('coupon-max-discount').value;
+            const freeShipping = document.getElementById('coupon-free-shipping').checked;
+            const firstPurchase = document.getElementById('coupon-first-purchase').checked;
+            const limitTotal = document.getElementById('coupon-usage-limit-total').value;
+            const limitPerUser = document.getElementById('coupon-usage-limit-per-user').value;
+            const customerEmail = document.getElementById('coupon-customer-email').value.trim().toLowerCase();
+            const startsAt = document.getElementById('coupon-starts-at').value;
+            const expiresAt = document.getElementById('coupon-expires-at').value;
+            const active = document.getElementById('coupon-active').checked;
+
+            if (!code || code.length < 3) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Código precisa ter no mínimo 3 caracteres.';
+                return;
+            }
+            if (!/^[A-Z0-9-]+$/.test(code)) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Código aceita apenas letras, números e hífen.';
+                return;
+            }
+
+            const value = normalizePrice(valueRaw);
+            if (isNaN(value) || value <= 0) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Valor do desconto inválido.';
+                return;
+            }
+            if (type === 'percentage' && value > 100) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Percentual não pode ser maior que 100%.';
+                return;
+            }
+
+            const minPurchase = minRaw ? normalizePrice(minRaw) : 0;
+            const maxDiscount = maxRaw && type === 'percentage' ? normalizePrice(maxRaw) : null;
+
+            const payload = {
+                code,
+                description,
+                discount_type: type,
+                discount_value: value,
+                min_purchase: isNaN(minPurchase) ? 0 : minPurchase,
+                max_discount: maxDiscount && !isNaN(maxDiscount) ? maxDiscount : null,
+                free_shipping: freeShipping,
+                first_purchase_only: firstPurchase,
+                usage_limit_total: limitTotal ? parseInt(limitTotal) : null,
+                usage_limit_per_user: limitPerUser ? parseInt(limitPerUser) : null,
+                customer_email: customerEmail || null,
+                starts_at: startsAt ? new Date(startsAt + 'T00:00:00').toISOString() : null,
+                expires_at: expiresAt ? new Date(expiresAt + 'T23:59:59').toISOString() : null,
+                active
+            };
+
+            const originalText = saveBtn.innerText;
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Salvando...';
+
+            try {
+                let result;
+                if (id) {
+                    result = await supabaseClient.from('coupons').update(payload).eq('id', id).select().single();
+                } else {
+                    result = await supabaseClient.from('coupons').insert(payload).select().single();
+                }
+
+                if (result.error) {
+                    console.error('Erro ao salvar cupom:', result.error);
+                    let msg = 'Erro ao salvar cupom.';
+                    if (result.error.code === '23505') msg = 'Já existe um cupom com esse código.';
+                    else if (result.error.message) msg = result.error.message;
+                    feedback.className = 'modal-feedback error';
+                    feedback.innerText = msg;
+                    return;
+                }
+
+                closeCouponForm();
+                await loadCoupons();
+                showToast(id ? 'Cupom atualizado!' : 'Cupom criado!');
+            } catch (e) {
+                console.error(e);
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Erro inesperado.';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = originalText;
+            }
+        }
+
+        function copyCouponCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showToast(`Código "${code}" copiado!`);
+            }).catch(() => {
+                const input = document.createElement('input');
+                input.value = code;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast(`Código "${code}" copiado!`);
+            });
+        }
+
+        function confirmDeleteCoupon(id) {
+            const c = allCoupons.find(x => x.id === id);
+            if (!c) return;
+
+            pendingDeleteId = id;
+            document.getElementById('confirm-title').innerText = 'Excluir cupom?';
+            document.getElementById('confirm-text').innerHTML =
+                `Você está prestes a excluir o cupom <strong>${escapeHTML(c.code)}</strong>.<br><br>
+                 O histórico de usos será perdido. Essa ação não pode ser desfeita.`;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.innerText = 'Excluir';
+            confirmBtn.onclick = executeDeleteCoupon;
+
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        async function executeDeleteCoupon() {
+            if (!pendingDeleteId) return;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            const originalText = confirmBtn.innerText;
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Excluindo...';
+
+            const { error } = await supabaseClient.from('coupons').delete().eq('id', pendingDeleteId);
+
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = originalText;
+
+            if (error) {
+                showToast('Erro ao excluir.', 'error');
+                return;
+            }
+
+            closeConfirmModal();
+            await loadCoupons();
+            showToast('Cupom excluído.');
+        }
+
+        async function openCouponUsagesModal(couponId) {
+            const coupon = allCoupons.find(c => c.id === couponId);
+            if (!coupon) return;
+
+            const title = document.getElementById('coupon-usages-title');
+            const content = document.getElementById('coupon-usages-content');
+
+            title.innerText = `Usos de ${coupon.code}`;
+            content.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">Carregando...</p>';
+
+            document.getElementById('coupon-usages-modal').classList.add('open');
+
+            const { data: usages, error } = await supabaseClient
+                .from('coupon_usages')
+                .select('*')
+                .eq('coupon_id', couponId)
+                .order('used_at', { ascending: false });
+
+            if (error) {
+                content.innerHTML = '<p style="color: var(--danger); text-align: center; padding: 2rem;">Erro ao carregar usos.</p>';
+                return;
+            }
+
+            if (!usages || usages.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state" style="padding: 2rem;">
+                        <span class="icon">📊</span>
+                        <p>Esse cupom ainda não foi usado.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalDiscount = usages.reduce((sum, u) => sum + Number(u.discount_applied || 0), 0);
+
+            content.innerHTML = `
+                <div class="coupon-usages-summary">
+                    <div><strong>${usages.length}</strong> uso${usages.length > 1 ? 's' : ''}</div>
+                    <div>Total descontado: <strong>${formatBRL(totalDiscount)}</strong></div>
+                </div>
+                <div class="coupon-usages-list">
+                    ${usages.map(u => `
+                        <div class="coupon-usage-item">
+                            <div>
+                                <div class="coupon-usage-email">${escapeHTML(u.customer_email || 'Sem email')}</div>
+                                <div class="coupon-usage-date">${formatDate(u.used_at)}</div>
+                            </div>
+                            <div class="coupon-usage-discount">-${formatBRL(u.discount_applied)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function closeCouponUsagesModal() {
+            document.getElementById('coupon-usages-modal').classList.remove('open');
+        }
+
+        function exportCouponsCSV() {
+            if (allCoupons.length === 0) {
+                showToast('Nenhum cupom pra exportar.', 'error');
+                return;
+            }
+
+            const headers = [
+                'Código', 'Descrição', 'Tipo', 'Valor', 'Mín. Compra', 'Teto',
+                'Frete Grátis', '1ª Compra', 'Limite Total', 'Limite/Cliente',
+                'Email Específico', 'Usos', 'Início', 'Expira Em', 'Ativo', 'Criado Em'
+            ];
+
+            const rows = allCoupons.map(c => [
+                c.code,
+                c.description || '',
+                c.discount_type === 'percentage' ? 'Percentual' : 'Fixo',
+                c.discount_type === 'percentage' ? `${c.discount_value}%` : csvMoney(c.discount_value),
+                csvMoney(c.min_purchase || 0),
+                c.max_discount ? csvMoney(c.max_discount) : '',
+                c.free_shipping ? 'Sim' : 'Não',
+                c.first_purchase_only ? 'Sim' : 'Não',
+                c.usage_limit_total || 'Ilimitado',
+                c.usage_limit_per_user || 'Ilimitado',
+                c.customer_email || 'Público',
+                c.times_used,
+                c.starts_at ? formatDate(c.starts_at) : '',
+                c.expires_at ? formatDate(c.expires_at) : '',
+                c.active ? 'Sim' : 'Não',
+                formatDate(c.created_at)
+            ].map(csvEscape).join(';'));
+
+            const csvContent = headers.join(';') + '\n' + rows.join('\n');
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+            const now = new Date();
+            const filename = `cupons-use-gemas-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.csv`;
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast(`${allCoupons.length} cupom(ns) exportado(s).`);
         }
 
         function exportOrdersToCSV() {
