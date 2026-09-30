@@ -681,6 +681,7 @@
                 review_approved: String.fromCodePoint(0x2B50),
                 review_rejected: String.fromCodePoint(0x1F49B),
                 review_pending: String.fromCodePoint(0x2B50),
+                coupon_expiring: String.fromCodePoint(0x1F39F, 0xFE0F),
                 coupon: String.fromCodePoint(0x1F381),
                 welcome: String.fromCodePoint(0x2728),
                 custom: String.fromCodePoint(0x1F514)
@@ -694,6 +695,7 @@
                 // Texto do CTA (varia por tipo)
                 let ctaText = 'Ver mais →';
                 if (n.type === 'review_pending') ctaText = 'Avaliar agora →';
+                else if (n.type === 'coupon_expiring') ctaText = 'Aproveitar →';
                 else if (n.type === 'order_paid') ctaText = 'Ver pedido →';
                 else if (n.type === 'order_shipped') ctaText = 'Acompanhar →';
                 else if (n.type === 'coupon') ctaText = 'Usar cupom →';
@@ -810,31 +812,116 @@
         // ==========================================================================
         let userNotifications = [];
 
-        function calculateVirtualNotifications() {
+        async function loadExpiringCoupons() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+
+            const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+            const customerEmail = user?.email || checkoutData?.email || null;
+
+            if (!customerEmail) return [];
+
+            const now = new Date();
+            const in5Days = new Date();
+            in5Days.setDate(in5Days.getDate() + 5);
+
+            // Busca cupons que:
+            // - Estão ativos
+            // - Vão expirar entre agora e 5 dias
+            // - São do cliente (individual) OU públicos
+            const { data: coupons, error } = await supabaseClient
+                .from('coupons')
+                .select('id, code, description, discount_type, discount_value, free_shipping, expires_at, customer_email, min_purchase')
+                .eq('active', true)
+                .not('expires_at', 'is', null)
+                .gt('expires_at', now.toISOString())
+                .lte('expires_at', in5Days.toISOString())
+                .or(`customer_email.is.null,customer_email.eq.${customerEmail}`);
+
+            if (error) {
+                console.error('Erro ao carregar cupons expirando:', error);
+                return [];
+            }
+
+            if (!coupons || coupons.length === 0) return [];
+
+            // Verifica quais já foram notificados (localStorage)
+            let notifiedIds = [];
+            try {
+                notifiedIds = JSON.parse(localStorage.getItem('gemas_coupons_notified') || '[]');
+            } catch (e) { notifiedIds = []; }
+
+            // Filtra só os que ainda não foram notificados
+            const notYetNotified = coupons.filter(c => !notifiedIds.includes(c.id));
+
+            // Marca como notificados
+            const newNotifiedIds = [...new Set([...notifiedIds, ...notYetNotified.map(c => c.id)])];
+            try {
+                localStorage.setItem('gemas_coupons_notified', JSON.stringify(newNotifiedIds));
+            } catch (e) { }
+
+            // Cria notificações virtuais
+            return notYetNotified.map(coupon => {
+                const expiresAt = new Date(coupon.expires_at);
+                const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+
+                let discountLabel;
+                if (coupon.free_shipping && Number(coupon.discount_value) === 0) {
+                    discountLabel = 'frete grátis';
+                } else if (coupon.discount_type === 'percentage') {
+                    discountLabel = `${coupon.discount_value}% de desconto`;
+                } else {
+                    discountLabel = `R$ ${Number(coupon.discount_value).toFixed(2).replace('.', ',')} de desconto`;
+                }
+
+                const daysText = daysLeft === 1 ? '1 dia' : `${daysLeft} dias`;
+
+                return {
+                    id: `virtual:coupon_expiring:${coupon.id}`,
+                    is_virtual: true,
+                    type: 'coupon_expiring',
+                    title: `Cupom ${coupon.code} expira em ${daysText}`,
+                    message: `Aproveite ${discountLabel} antes que acabe!`,
+                    link: `index.html#colecao`,
+                    metadata: {
+                        coupon_id: coupon.id,
+                        code: coupon.code,
+                        expires_at: coupon.expires_at
+                    },
+                    read_at: null,
+                    created_at: new Date().toISOString()
+                };
+            });
+        }
+
+        function calculateVirtualNotifications(expiringCoupons = []) {
             const virtual = [];
 
-            if (!userOrders || userOrders.length === 0) return virtual;
+            // 1. Reviews pendentes
+            if (userOrders && userOrders.length > 0) {
+                userOrders.forEach(order => {
+                    // Só pedidos enviados/entregues
+                    if (order.status !== 'enviado' && order.status !== 'entregue') return;
 
-            userOrders.forEach(order => {
-                // Só pedidos enviados/entregues
-                if (order.status !== 'enviado' && order.status !== 'entregue') return;
-
-                (order.items || []).forEach(item => {
-                    if (!hasUserReviewed(order.id, item.ref)) {
-                        virtual.push({
-                            id: `virtual:review:${order.id}:${item.ref}`,
-                            is_virtual: true,
-                            type: 'review_pending',
-                            title: 'Avalie sua compra ' + String.fromCodePoint(0x2B50),
-                            message: `Conte como foi sua experiência com ${item.name}`,
-                            link: `minha-conta.html?review=${order.id}`,
-                            metadata: { order_id: order.id, product_ref: item.ref },
-                            read_at: null, // virtuais são sempre "não lidas"
-                            created_at: order.shipped_at || order.created_at
-                        });
-                    }
+                    (order.items || []).forEach(item => {
+                        if (!hasUserReviewed(order.id, item.ref)) {
+                            virtual.push({
+                                id: `virtual:review:${order.id}:${item.ref}`,
+                                is_virtual: true,
+                                type: 'review_pending',
+                                title: 'Avalie sua compra ' + String.fromCodePoint(0x2B50),
+                                message: `Conte como foi sua experiência com ${item.name}`,
+                                link: `minha-conta.html?review=${order.id}`,
+                                metadata: { order_id: order.id, product_ref: item.ref },
+                                read_at: null,
+                                created_at: order.shipped_at || order.created_at
+                            });
+                        }
+                    });
                 });
-            });
+            }
+
+            // 2. Cupons expirando
+            expiringCoupons.forEach(notif => virtual.push(notif));
 
             return virtual;
         }
@@ -856,8 +943,9 @@
 
             const realNotifications = data || [];
 
-            // Notificações virtuais (pendências calculadas)
-            const virtualNotifications = calculateVirtualNotifications();
+            // Carrega cupons expirando + calcula virtuais
+            const expiringCoupons = await loadExpiringCoupons();
+            const virtualNotifications = calculateVirtualNotifications(expiringCoupons);
 
             // Junta tudo
             userNotifications = [...virtualNotifications, ...realNotifications];
@@ -897,6 +985,7 @@
                 review_approved: String.fromCodePoint(0x2B50),
                 review_rejected: String.fromCodePoint(0x1F49B),
                 review_pending: String.fromCodePoint(0x2B50),
+                coupon_expiring: String.fromCodePoint(0x1F39F, 0xFE0F),
                 coupon: String.fromCodePoint(0x1F381),
                 welcome: String.fromCodePoint(0x2728),
                 custom: String.fromCodePoint(0x1F514)

@@ -2419,6 +2419,7 @@ async function applyCoupon() {
         // Aplica o cupom
         appliedCoupon = {
             code: code,
+            coupon_id: data.coupon_id,
             discount: Number(data.discount),
             discount_type: data.discount_type,
             discount_value: Number(data.discount_value),
@@ -3687,6 +3688,15 @@ async function saveOrderToDb() {
             console.error('Erro inesperado ao aplicar cupom:', e);
         }
 
+        // Limpa cupons notificados (pra futuras notificações)
+        try {
+            let notifiedIds = JSON.parse(localStorage.getItem('gemas_coupons_notified') || '[]');
+            if (appliedCoupon && appliedCoupon.coupon_id) {
+                notifiedIds = notifiedIds.filter(id => id !== appliedCoupon.coupon_id);
+            }
+            localStorage.setItem('gemas_coupons_notified', JSON.stringify(notifiedIds));
+        } catch (e) { }
+
         // Limpa cupom aplicado após uso
         appliedCoupon = null;
         localStorage.removeItem('gemas_applied_coupon');
@@ -3837,8 +3847,12 @@ async function loadNotifications() {
 
     const realNotifications = data || [];
 
-    // Notificações virtuais (pendências de review)
-    const virtualNotifications = await loadPendingReviewsForBadge();
+    // Notificações virtuais: reviews pendentes + cupons expirando
+    const [reviewVirtuals, expiringCoupons] = await Promise.all([
+        loadPendingReviewsForBadge(),
+        loadExpiringCoupons()
+    ]);
+    const virtualNotifications = [...reviewVirtuals, ...expiringCoupons];
 
     // Junta tudo
     userNotifications = [...virtualNotifications, ...realNotifications];
@@ -3916,6 +3930,87 @@ async function loadPendingReviewsForBadge() {
     return virtuals;
 }
 
+async function loadExpiringCoupons() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+    const customerEmail = user?.email || checkoutData?.email || null;
+
+    if (!customerEmail) return [];
+
+    const now = new Date();
+    const in5Days = new Date();
+    in5Days.setDate(in5Days.getDate() + 5);
+
+    // Busca cupons que:
+    // - Estão ativos
+    // - Vão expirar entre agora e 5 dias
+    // - São do cliente (individual) OU públicos
+    const { data: coupons, error } = await supabaseClient
+        .from('coupons')
+        .select('id, code, description, discount_type, discount_value, free_shipping, expires_at, customer_email, min_purchase')
+        .eq('active', true)
+        .not('expires_at', 'is', null)
+        .gt('expires_at', now.toISOString())
+        .lte('expires_at', in5Days.toISOString())
+        .or(`customer_email.is.null,customer_email.eq.${customerEmail}`);
+
+    if (error) {
+        console.error('Erro ao carregar cupons expirando:', error);
+        return [];
+    }
+
+    if (!coupons || coupons.length === 0) return [];
+
+    // Verifica quais já foram notificados (localStorage)
+    let notifiedIds = [];
+    try {
+        notifiedIds = JSON.parse(localStorage.getItem('gemas_coupons_notified') || '[]');
+    } catch (e) { notifiedIds = []; }
+
+    // Filtra só os que ainda não foram notificados
+    const notYetNotified = coupons.filter(c => !notifiedIds.includes(c.id));
+
+    // Marca como notificados
+    const newNotifiedIds = [...new Set([...notifiedIds, ...notYetNotified.map(c => c.id)])];
+    try {
+        localStorage.setItem('gemas_coupons_notified', JSON.stringify(newNotifiedIds));
+    } catch (e) { }
+
+    // Cria notificações virtuais
+    return notYetNotified.map(coupon => {
+        const expiresAt = new Date(coupon.expires_at);
+        const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+
+        let discountLabel;
+        if (coupon.free_shipping && Number(coupon.discount_value) === 0) {
+            discountLabel = 'frete grátis';
+        } else if (coupon.discount_type === 'percentage') {
+            discountLabel = `${coupon.discount_value}% de desconto`;
+        } else {
+            discountLabel = `R$ ${Number(coupon.discount_value).toFixed(2).replace('.', ',')} de desconto`;
+        }
+
+        const daysText = daysLeft === 1 ? '1 dia' : `${daysLeft} dias`;
+
+        return {
+            id: `virtual:coupon_expiring:${coupon.id}`,
+            is_virtual: true,
+            type: 'coupon_expiring',
+            title: `Cupom ${coupon.code} expira em ${daysText}`,
+            message: `Aproveite ${discountLabel} antes que acabe!`,
+            link: `index.html#colecao`,
+            metadata: {
+                coupon_id: coupon.id,
+                code: coupon.code,
+                expires_at: coupon.expires_at
+            },
+            read_at: null,
+            created_at: new Date().toISOString()
+        };
+    });
+}
+
 function renderNotifications() {
     const container = document.getElementById('notifications-list');
     if (!container) return;
@@ -3937,6 +4032,7 @@ function renderNotifications() {
         review_approved: String.fromCodePoint(0x2B50),
         review_rejected: String.fromCodePoint(0x1F49B),
         review_pending: String.fromCodePoint(0x2B50),
+        coupon_expiring: String.fromCodePoint(0x1F39F, 0xFE0F),
         coupon: String.fromCodePoint(0x1F381),
         welcome: String.fromCodePoint(0x2728),
         custom: String.fromCodePoint(0x1F514)
