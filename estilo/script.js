@@ -4175,6 +4175,9 @@ function handleDoubtClick() {
 // NOTIFICAÇÕES (sininho)
 // ==========================================================================
 async function loadNotifications() {
+    // Limpa chave legada da abordagem antiga (pontos ganhos virtuais)
+    try { localStorage.removeItem('gemas_points_notified'); } catch (e) { }
+
     const { data: { user } } = await supabaseClient.auth.getUser();
 
     const bellBtn = document.getElementById('nav-bell-btn');
@@ -4200,13 +4203,12 @@ async function loadNotifications() {
 
     const realNotifications = data || [];
 
-    // Notificações virtuais: reviews pendentes + cupons expirando + pontos ganhos
-    const [reviewVirtuals, expiringCoupons, recentPoints] = await Promise.all([
+    // Notificações virtuais: reviews pendentes + cupons expirando
+    const [reviewVirtuals, expiringCoupons] = await Promise.all([
         loadPendingReviewsForBadge(),
-        loadExpiringCoupons(),
-        loadRecentEarnedPoints()
+        loadExpiringCoupons()
     ]);
-    const virtualNotifications = [...reviewVirtuals, ...expiringCoupons, ...recentPoints];
+    const virtualNotifications = [...reviewVirtuals, ...expiringCoupons];
 
     // Junta tudo
     userNotifications = [...virtualNotifications, ...realNotifications];
@@ -4363,71 +4365,6 @@ async function loadExpiringCoupons() {
             created_at: new Date().toISOString()
         };
     });
-}
-
-async function loadRecentEarnedPoints() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) return [];
-
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    try {
-        const { data, error } = await supabaseClient
-            .from('loyalty_points')
-            .select('id, points, description, order_id, created_at')
-            .eq('type', 'earned')
-            .eq('user_id', user.id)
-            .gte('created_at', sevenDaysAgo.toISOString())
-            .order('created_at', { ascending: false })
-            .limit(10);
-
-        if (error) {
-            console.error('Erro ao carregar pontos ganhos:', error);
-            return [];
-        }
-
-        if (!data || data.length === 0) return [];
-
-        // Verifica quais já foram notificados
-        let notifiedIds = [];
-        try {
-            notifiedIds = JSON.parse(localStorage.getItem('gemas_points_notified') || '[]');
-        } catch (e) { notifiedIds = []; }
-
-        const notYetNotified = data.filter(p => !notifiedIds.includes(p.id));
-
-        // Marca como notificados
-        const newNotifiedIds = [...new Set([...notifiedIds, ...notYetNotified.map(p => p.id)])];
-        try {
-            localStorage.setItem('gemas_points_notified', JSON.stringify(newNotifiedIds));
-        } catch (e) { }
-
-        // Cria notificação virtual
-        return notYetNotified.map(p => {
-            const pointsFormatted = Number(p.points).toLocaleString('pt-BR');
-            const brlValue = (Number(p.points) / 100).toFixed(2).replace('.', ',');
-
-            return {
-                id: `virtual:points_earned:${p.id}`,
-                is_virtual: true,
-                type: 'points_earned',
-                title: `Você ganhou ${pointsFormatted} pontos! ${String.fromCodePoint(0x1F48E)}`,
-                message: `Vale R$ ${brlValue} de desconto no próximo pedido`,
-                link: `minha-conta.html#beneficios`,
-                metadata: {
-                    points: p.points,
-                    order_id: p.order_id,
-                    loyalty_point_id: p.id
-                },
-                read_at: null,
-                created_at: p.created_at
-            };
-        });
-    } catch (e) {
-        console.error('Erro inesperado:', e);
-        return [];
-    }
 }
 
 function renderNotifications() {
