@@ -4710,3 +4710,125 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 300);
     }
 });
+
+// ==========================================================================
+// PWA — Banner custom de instalação
+// ==========================================================================
+const PWA_BANNER_KEY = 'gemas_pwa_banner_dismissed_at';
+const PWA_BANNER_DELAY = 30000; // 30 segundos
+const PWA_DISMISS_DAYS = 30;    // 30 dias
+
+let deferredPwaPrompt = null;
+let pwaBannerTimer = null;
+
+/**
+ * Verifica se pode mostrar o banner:
+ * - Não tá em modo standalone (já instalado)
+ * - Não dispensou recentemente (30 dias)
+ * - Existe beforeinstallprompt disponível (navegador suporta)
+ */
+function canShowPwaBanner() {
+    // Já instalado?
+    const isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true;
+
+    if (isStandalone) return false;
+
+    // Dispensou recentemente?
+    try {
+        const dismissedAt = localStorage.getItem(PWA_BANNER_KEY);
+        if (dismissedAt) {
+            const daysDiff = (Date.now() - parseInt(dismissedAt, 10)) / (1000 * 60 * 60 * 24);
+            if (daysDiff < PWA_DISMISS_DAYS) return false;
+        }
+    } catch (e) { }
+
+    // Tem prompt disponível?
+    if (!deferredPwaPrompt) return false;
+
+    return true;
+}
+
+function showPwaBanner() {
+    if (!canShowPwaBanner()) return;
+
+    const banner = document.getElementById('pwa-install-banner');
+    if (!banner) return;
+
+    banner.classList.add('visible');
+}
+
+function hidePwaBanner() {
+    const banner = document.getElementById('pwa-install-banner');
+    if (banner) banner.classList.remove('visible');
+
+    if (pwaBannerTimer) {
+        clearTimeout(pwaBannerTimer);
+        pwaBannerTimer = null;
+    }
+}
+
+// Captura o evento beforeinstallprompt (Android Chrome)
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Previne o banner automático do Chrome
+    e.preventDefault();
+
+    // Guarda o evento pra disparar depois
+    deferredPwaPrompt = e;
+
+    // Agenda o banner custom (após 30s)
+    if (pwaBannerTimer) clearTimeout(pwaBannerTimer);
+    pwaBannerTimer = setTimeout(() => {
+        showPwaBanner();
+    }, PWA_BANNER_DELAY);
+});
+
+// Detecta se foi instalado
+window.addEventListener('appinstalled', () => {
+    console.log('[PWA] App instalado com sucesso!');
+    hidePwaBanner();
+    try {
+        localStorage.setItem(PWA_BANNER_KEY, Date.now().toString());
+    } catch (e) { }
+});
+
+async function handlePwaInstall() {
+    if (!deferredPwaPrompt) {
+        hidePwaBanner();
+        return;
+    }
+
+    try {
+        // Dispara o prompt nativo do Chrome
+        deferredPwaPrompt.prompt();
+
+        // Aguarda a resposta do usuário
+        const { outcome } = await deferredPwaPrompt.userChoice;
+
+        if (outcome === 'accepted') {
+            console.log('[PWA] Usuário aceitou instalar');
+        } else {
+            console.log('[PWA] Usuário rejeitou instalar');
+            // Marca como dispensado por 30 dias
+            try {
+                localStorage.setItem(PWA_BANNER_KEY, Date.now().toString());
+            } catch (e) { }
+        }
+    } catch (e) {
+        console.warn('[PWA] Erro no prompt:', e);
+    }
+
+    // Limpa o prompt (só pode ser usado uma vez)
+    deferredPwaPrompt = null;
+    hidePwaBanner();
+}
+
+function handlePwaSkip() {
+    hidePwaBanner();
+
+    // Marca como dispensado por 30 dias
+    try {
+        localStorage.setItem(PWA_BANNER_KEY, Date.now().toString());
+    } catch (e) { }
+}
