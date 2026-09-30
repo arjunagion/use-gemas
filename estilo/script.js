@@ -4,6 +4,56 @@
 let cart = [];
 let shippingCost = 0;
 let shippingDetails = null;
+let cartRestored = false; // flag: carrinho já restaurado do storage no boot
+
+// ==========================================================================
+// Persistência do carrinho (localStorage)
+// ==========================================================================
+const CART_STORAGE_KEY = 'gemas_cart_v1';
+const CART_EXPIRY_DAYS = 7;
+
+function saveCartToStorage() {
+    try {
+        const payload = {
+            items: cart,
+            savedAt: new Date().toISOString()
+        };
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(payload));
+    } catch (e) {
+        console.warn('Erro ao salvar carrinho:', e);
+    }
+}
+
+function clearCartStorage() {
+    try {
+        localStorage.removeItem(CART_STORAGE_KEY);
+    } catch (e) { }
+}
+
+function loadCartFromStorage() {
+    try {
+        const raw = localStorage.getItem(CART_STORAGE_KEY);
+        if (!raw) return null;
+
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.items) || !parsed.savedAt) return null;
+
+        // Verifica expiração
+        const savedDate = new Date(parsed.savedAt);
+        const daysDiff = (Date.now() - savedDate.getTime()) / (1000 * 60 * 60 * 24);
+
+        if (daysDiff > CART_EXPIRY_DAYS) {
+            clearCartStorage();
+            return null;
+        }
+
+        return parsed.items;
+    } catch (e) {
+        console.warn('Erro ao carregar carrinho:', e);
+        clearCartStorage();
+        return null;
+    }
+}
 
 let currentGallery = [];
 let currentMediaIndex = 0;
@@ -1876,6 +1926,7 @@ function addToCart(name, ref, price) {
     }
 
     updateCartUI();
+    saveCartToStorage();
     showToast(`${name} adicionado ao carrinho`, {
         actionLabel: 'Ver carrinho',
         actionCallback: () => openCart()
@@ -1926,6 +1977,7 @@ function updateQuantity(index, delta) {
     }
 
     updateCartUI();
+    saveCartToStorage();
 }
 
 function removeFromCart(index) {
@@ -1955,6 +2007,167 @@ function removeFromCart(index) {
 
     cart.splice(index, 1);
     updateCartUI();
+    saveCartToStorage();
+}
+
+// ==========================================================================
+// Persistência do carrinho (revalidação)
+// ==========================================================================
+async function revalidateCartAfterRestore(savedItems) {
+    if (!Array.isArray(savedItems) || savedItems.length === 0) {
+        return { validItems: [], removedItems: [] };
+    }
+
+    // Pega os refs pra buscar no banco
+    const refs = savedItems.map(item => item.ref).filter(Boolean);
+    if (refs.length === 0) {
+        return { validItems: [], removedItems: savedItems.map(i => i.name || i.ref) };
+    }
+
+    // Busca estado atual dos produtos
+    const { data: freshProducts, error } = await supabaseClient
+        .from('products')
+        .select('ref, name, price, stock, active')
+        .in('ref', refs);
+
+    if (error) {
+        console.error('Erro ao revalidar carrinho:', error);
+        // Em caso de erro de rede, mantém o carrinho como tá
+        return { validItems: savedItems, removedItems: [] };
+    }
+
+    const productsMap = new Map((freshProducts || []).map(p => [p.ref, p]));
+    const validItems = [];
+    const removedItems = [];
+
+    for (const item of savedItems) {
+        const product = productsMap.get(item.ref);
+
+        // 1. Produto sumiu?
+        if (!product) {
+            removedItems.push(item.name || item.ref);
+            continue;
+        }
+
+        // 2. Produto inativo?
+        if (!product.active) {
+            removedItems.push(product.name);
+            continue;
+        }
+
+        // 3. Sem estoque?
+        if (Number(product.stock) <= 0) {
+            removedItems.push(product.name);
+            continue;
+        }
+
+        // 4. Preço mudou?
+        const newPrice = Number(product.price);
+        const priceChanged = Math.abs(newPrice - Number(item.price)) > 0.01;
+
+        // 5. Quantidade > estoque? (ajusta pra o máximo disponível)
+        const newQuantity = Math.min(Number(item.quantity), Number(product.stock));
+        const quantityAdjusted = newQuantity !== Number(item.quantity);
+
+        // Adiciona item (com ajustes se necessário)
+        validItems.push({
+            name: product.name,           // atualiza o nome também
+            ref: product.ref,
+            price: newPrice,              // preço atualizado
+            quantity: newQuantity
+        });
+
+        // Avisa se preço ou quantidade mudou
+        if (priceChanged) {
+            console.info(`Preço de "${product.name}" mudou: R$ ${item.price} → R$ ${newPrice}`);
+        }
+        if (quantityAdjusted) {
+            console.info(`Quantidade de "${product.name}" ajustada: ${item.quantity} → ${newQuantity}`);
+        }
+    }
+
+    return { validItems, removedItems };
+}
+
+async function restoreCartFromStorage() {
+    const savedItems = loadCartFromStorage();
+
+    if (!savedItems || savedItems.length === 0) {
+        return;
+    }
+
+    const { validItems, removedItems } = await revalidateCartAfterRestore(savedItems);
+
+    // Aplica itens válidos
+    if (validItems.length > 0) {
+        cart = validItems;
+        saveCartToStorage(); // atualiza com preços/quantidades ajustados
+    } else {
+        cart = [];
+        clearCartStorage();
+    }
+
+    // Avisa sobre itens removidos
+    if (removedItems.length > 0) {
+        const msg = removedItems.length === 1
+            ? `"${removedItems[0]}" não está mais disponível e foi removido do carrinho.`
+            : `${removedItems.length} itens não estão mais disponíveis e foram removidos do carrinho.`;
+
+        if (typeof showToast === 'function') {
+            showToast(msg, 'info');
+        } else {
+            console.warn(msg);
+        }
+    }
+
+    // Se o carrinho ficou vazio, remove o cupom também
+    if (cart.length === 0 && appliedCoupon) {
+        appliedCoupon = null;
+        localStorage.removeItem('gemas_applied_coupon');
+        renderAppliedCoupon();
+    }
+
+    updateCartUI();
+
+    // Revalida o cupom aplicado (o subtotal pode ter mudado)
+    if (appliedCoupon && cart.length > 0) {
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+        const customerEmail = user?.email || checkoutData?.email || null;
+        const userId = user?.id || null;
+
+        try {
+            const { data, error } = await supabaseClient.rpc('validate_coupon', {
+                p_code: appliedCoupon.code,
+                p_subtotal: subtotal,
+                p_customer_email: customerEmail,
+                p_user_id: userId
+            });
+
+            if (error || !data || !data.valid) {
+                // Cupom não vale mais
+                console.warn('Cupom não é mais válido:', data?.message);
+                appliedCoupon = null;
+                localStorage.removeItem('gemas_applied_coupon');
+                renderAppliedCoupon();
+
+                if (typeof showToast === 'function') {
+                    showToast('O cupom aplicado não é mais válido e foi removido.', 'info');
+                }
+            } else {
+                // Cupom ainda vale — atualiza valor do desconto (pode ter mudado)
+                appliedCoupon.discount = Number(data.discount);
+                appliedCoupon.free_shipping = data.free_shipping;
+                localStorage.setItem('gemas_applied_coupon', JSON.stringify(appliedCoupon));
+                renderAppliedCoupon();
+                updateCartUI();
+            }
+        } catch (e) {
+            console.warn('Erro ao revalidar cupom:', e);
+        }
+    }
 }
 
 // ==========================================================================
@@ -2052,8 +2265,9 @@ function updateCartUI() {
         if (shippingResult) shippingResult.innerHTML = '';
         if (cepInput) cepInput.value = '';
 
-        // Remove cupom aplicado quando o carrinho fica vazio
-        if (appliedCoupon) {
+        // Só remove cupom se o carrinho JÁ foi restaurado
+        // (evita apagar cupom durante o boot)
+        if (cartRestored && appliedCoupon) {
             appliedCoupon = null;
             localStorage.removeItem('gemas_applied_coupon');
             renderAppliedCoupon();
@@ -3548,6 +3762,7 @@ async function handleCheckoutSubmit(event) {
 
         closeCheckoutModal();
         cart = [];
+        clearCartStorage();
         updateCartUI();
 
         sendToWhatsApp(itemsSnapshot);
@@ -3887,8 +4102,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     await updateUserSessionUI();
     await loadFavorites();
     await loadCheckoutData();
-    updateFavoritesUI();
+
+    // Carrega cupom antes do carrinho (pra ambos serem restaurados juntos)
     loadAppliedCoupon();
+
+    // Restaura carrinho do storage (com revalidação)
+    await restoreCartFromStorage();
+    cartRestored = true;
+
+    updateFavoritesUI();
     updateCartUI();
 
     const checkoutForm = document.getElementById('checkout-form');
