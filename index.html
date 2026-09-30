@@ -45,8 +45,8 @@
         rel="stylesheet">
 
     <!-- Link para o CSS -->
-    <!-- ⬇️ BUMP: 51.0 → 52.0 -->
-    <link rel="stylesheet" href="estilo/style.css?v=52.0">
+    <!-- ⬇️ BUMP: 52.0 → 53.0 -->
+    <link rel="stylesheet" href="estilo/style.css?v=53.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css">
@@ -790,6 +790,36 @@
                 <div id="shipping-result" class="shipping-result-info"></div>
             </div>
 
+            <div class="cart-coupon-box" id="cart-coupon-box">
+                <!-- Estado 1: input (quando não tem cupom) -->
+                <div id="coupon-input-wrapper">
+                    <label class="coupon-label" for="coupon-input">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        Cupom de desconto
+                    </label>
+                    <div class="coupon-input-group">
+                        <input type="text" id="coupon-input" class="coupon-input" placeholder="Digite o código" maxlength="30" autocomplete="off">
+                        <button type="button" class="btn-apply-coupon" id="btn-apply-coupon" onclick="applyCoupon()">Aplicar</button>
+                    </div>
+                    <div id="coupon-feedback" class="coupon-feedback"></div>
+                </div>
+
+                <!-- Estado 2: cupom aplicado (substitui o input) -->
+                <div id="coupon-applied" class="coupon-applied" style="display: none;">
+                    <div class="coupon-applied-info">
+                        <span class="coupon-applied-icon">🎟️</span>
+                        <div>
+                            <div class="coupon-applied-code" id="coupon-applied-code">CUPOM10</div>
+                            <div class="coupon-applied-desc" id="coupon-applied-desc">10% de desconto</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-remove-coupon" onclick="removeCoupon()" aria-label="Remover cupom">×</button>
+                </div>
+            </div>
+
             <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 0.8rem; margin-bottom: 1rem;">
                 <div
                     style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #c5c5c5; margin-bottom: 0.4rem;">
@@ -800,6 +830,10 @@
                     style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #c5c5c5; margin-bottom: 0.6rem;">
                     <span>Frete:</span>
                     <span id="cart-shipping-cost">A calcular</span>
+                </div>
+                <div id="cart-discount-row" class="cart-discount-row" style="display: none;">
+                    <span>Cupom <span id="cart-discount-code">—</span>:</span>
+                    <span id="cart-discount-amount">-R$ 0,00</span>
                 </div>
                 <div
                     style="display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; font-weight: bold; color: #d4af37; font-family: var(--font-title, serif);">
@@ -897,8 +931,8 @@
     </div>
 
     <!-- Importação do JS -->
-    <!-- ⬇️ BUMP: 56.0 → 57.0 -->
-    <script src="estilo/script.js?v=57.0"></script>
+    <!-- ⬇️ BUMP: 57.0 → 58.0 -->
+    <script src="estilo/script.js?v=58.0"></script>
 
     <!-- Toast notifications -->
     <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>

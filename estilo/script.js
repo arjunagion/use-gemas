@@ -24,6 +24,9 @@ let currentModalReviews = [];
 // Notificações (sininho)
 let userNotifications = [];
 
+// Cupom de desconto aplicado no carrinho
+let appliedCoupon = null; // { code, discount, free_shipping, discount_type, discount_value }
+
 // ==========================================================================
 // Configurações do site (carregadas do Supabase)
 // ==========================================================================
@@ -2048,6 +2051,13 @@ function updateCartUI() {
         const cepInput = document.getElementById('cep-input');
         if (shippingResult) shippingResult.innerHTML = '';
         if (cepInput) cepInput.value = '';
+
+        // Remove cupom aplicado quando o carrinho fica vazio
+        if (appliedCoupon) {
+            appliedCoupon = null;
+            localStorage.removeItem('gemas_applied_coupon');
+            renderAppliedCoupon();
+        }
     } else {
         cart.forEach((item, index) => {
             totalItems += item.quantity;
@@ -2075,14 +2085,30 @@ function updateCartUI() {
     }
 
     const freeApplied = isFreeShippingApplied(subtotalPrice);
-    const effectiveShipping = getEffectiveShipping(subtotalPrice);
-    const finalTotal = subtotalPrice + effectiveShipping;
+    let effectiveShipping = getEffectiveShipping(subtotalPrice);
+
+    // Calcula desconto do cupom
+    let discountAmount = 0;
+    let discountCode = '';
+
+    if (appliedCoupon) {
+        discountAmount = Number(appliedCoupon.discount) || 0;
+
+        // Se for cupom de frete grátis, zera o frete
+        if (appliedCoupon.free_shipping) {
+            effectiveShipping = 0;
+        }
+
+        discountCode = appliedCoupon.code;
+    }
+
+    const finalTotal = subtotalPrice + effectiveShipping - discountAmount;
 
     if (cartCount) cartCount.innerText = totalItems;
     if (cartSubtotalElement) cartSubtotalElement.innerText = formatCurrency(subtotalPrice);
 
     if (cartShippingElement) {
-        if (freeApplied) {
+        if (freeApplied || (appliedCoupon && appliedCoupon.free_shipping)) {
             cartShippingElement.innerText = 'GRÁTIS ✨';
             cartShippingElement.style.color = '#51cf66';
         } else if (shippingDetails) {
@@ -2094,7 +2120,180 @@ function updateCartUI() {
         }
     }
 
+    // Linha de desconto
+    const discountRow = document.getElementById('cart-discount-row');
+    const discountCodeEl = document.getElementById('cart-discount-code');
+    const discountAmountEl = document.getElementById('cart-discount-amount');
+
+    if (discountRow && discountCodeEl && discountAmountEl) {
+        if (discountAmount > 0) {
+            discountRow.style.display = 'flex';
+            discountCodeEl.innerText = discountCode;
+            discountAmountEl.innerText = '-' + formatCurrency(discountAmount);
+        } else {
+            discountRow.style.display = 'none';
+        }
+    }
+
     if (cartTotalElement) cartTotalElement.innerText = formatCurrency(finalTotal);
+}
+
+// ==========================================================================
+// Cupom de desconto
+// ==========================================================================
+async function applyCoupon() {
+    const input = document.getElementById('coupon-input');
+    const btn = document.getElementById('btn-apply-coupon');
+    const feedback = document.getElementById('coupon-feedback');
+
+    if (!input || !btn || !feedback) return;
+
+    const code = input.value.trim().toUpperCase();
+
+    // Validação básica
+    if (!code) {
+        feedback.className = 'coupon-feedback error';
+        feedback.innerText = 'Digite um código de cupom';
+        return;
+    }
+
+    // Bloqueia o botão
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Aplicando...';
+    feedback.className = 'coupon-feedback';
+    feedback.innerText = '';
+
+    try {
+        // Calcula subtotal atual
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        if (subtotal <= 0) {
+            feedback.className = 'coupon-feedback error';
+            feedback.innerText = 'Carrinho vazio';
+            return;
+        }
+
+        // Pega dados do cliente (email + user_id)
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+        const customerEmail = user?.email || checkoutData?.email || null;
+        const userId = user?.id || null;
+
+        // Chama RPC de validação
+        const { data, error } = await supabaseClient.rpc('validate_coupon', {
+            p_code: code,
+            p_subtotal: subtotal,
+            p_customer_email: customerEmail,
+            p_user_id: userId
+        });
+
+        if (error) {
+            console.error('Erro ao validar cupom:', error);
+            feedback.className = 'coupon-feedback error';
+            feedback.innerText = 'Erro ao validar cupom. Tente novamente.';
+            return;
+        }
+
+        // Verifica se é válido
+        if (!data.valid) {
+            feedback.className = 'coupon-feedback error';
+            feedback.innerText = data.message || 'Cupom inválido';
+            return;
+        }
+
+        // Aplica o cupom
+        appliedCoupon = {
+            code: code,
+            discount: Number(data.discount),
+            discount_type: data.discount_type,
+            discount_value: Number(data.discount_value),
+            free_shipping: data.free_shipping
+        };
+
+        // Salva em localStorage pra persistir
+        localStorage.setItem('gemas_applied_coupon', JSON.stringify(appliedCoupon));
+
+        // Atualiza UI
+        renderAppliedCoupon();
+        updateCartUI();
+
+        // Limpa o input
+        input.value = '';
+
+        // Feedback de sucesso
+        feedback.className = 'coupon-feedback success';
+        feedback.innerText = `✓ Cupom aplicado! Você economizou ${formatCurrency(data.discount)}`;
+
+        setTimeout(() => {
+            feedback.innerText = '';
+            feedback.className = 'coupon-feedback';
+        }, 4000);
+
+    } catch (e) {
+        console.error('Erro inesperado:', e);
+        feedback.className = 'coupon-feedback error';
+        feedback.innerText = 'Erro inesperado. Tente novamente.';
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+}
+
+function removeCoupon() {
+    appliedCoupon = null;
+    localStorage.removeItem('gemas_applied_coupon');
+
+    renderAppliedCoupon();
+    updateCartUI();
+
+    // Feedback
+    const feedback = document.getElementById('coupon-feedback');
+    if (feedback) {
+        feedback.className = 'coupon-feedback';
+        feedback.innerText = '';
+    }
+}
+
+function renderAppliedCoupon() {
+    const inputWrapper = document.getElementById('coupon-input-wrapper');
+    const appliedBox = document.getElementById('coupon-applied');
+    const appliedCode = document.getElementById('coupon-applied-code');
+    const appliedDesc = document.getElementById('coupon-applied-desc');
+
+    if (!inputWrapper || !appliedBox) return;
+
+    if (appliedCoupon) {
+        inputWrapper.style.display = 'none';
+        appliedBox.style.display = 'flex';
+
+        if (appliedCode) appliedCode.innerText = appliedCoupon.code;
+
+        if (appliedDesc) {
+            if (appliedCoupon.free_shipping) {
+                appliedDesc.innerText = 'Frete grátis' + (appliedCoupon.discount > 0 ? ' + ' + formatCurrency(appliedCoupon.discount) : '');
+            } else if (appliedCoupon.discount_type === 'percentage') {
+                appliedDesc.innerText = `${appliedCoupon.discount_value}% de desconto`;
+            } else {
+                appliedDesc.innerText = `${formatCurrency(appliedCoupon.discount_value)} de desconto`;
+            }
+        }
+    } else {
+        inputWrapper.style.display = 'block';
+        appliedBox.style.display = 'none';
+    }
+}
+
+function loadAppliedCoupon() {
+    try {
+        const saved = JSON.parse(localStorage.getItem('gemas_applied_coupon') || 'null');
+        if (saved && saved.code && saved.discount !== undefined) {
+            appliedCoupon = saved;
+            renderAppliedCoupon();
+        }
+    } catch (e) {
+        console.warn('Erro ao carregar cupom salvo:', e);
+    }
 }
 
 // ==========================================================================
@@ -2147,16 +2346,25 @@ function sendToWhatsApp(itemsParam = null) {
     const freeApplied = isFreeShippingApplied(subtotalPrice);
     const effectiveShipping = getEffectiveShipping(subtotalPrice);
 
-    if (freeApplied) {
+    let finalShipping = effectiveShipping;
+    if (appliedCoupon && appliedCoupon.free_shipping) {
+        finalShipping = 0;
+    }
+
+    if (freeApplied || (appliedCoupon && appliedCoupon.free_shipping)) {
         message += EMOJI_TRUCK + ` *Frete:* GRÁTIS ✨\n`;
-        message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice)}\n`;
     } else if (shippingDetails) {
-        message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(effectiveShipping)}\n`;
-        message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(subtotalPrice + effectiveShipping)}\n`;
+        message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(finalShipping)}\n`;
     } else {
         message += EMOJI_TRUCK + ` *Frete:* Pendente (calcular por CEP)\n`;
-        message += EMOJI_MONEY + ` *Total parcial:* ${formatCurrency(subtotalPrice)}\n`;
     }
+
+    if (appliedCoupon && appliedCoupon.discount > 0) {
+        message += EMOJI_MONEY + ` *Cupom ${appliedCoupon.code}:* -${formatCurrency(appliedCoupon.discount)}\n`;
+    }
+
+    const totalWithDiscount = subtotalPrice + finalShipping - (appliedCoupon?.discount || 0);
+    message += EMOJI_CHECK + ` *TOTAL:* ${formatCurrency(totalWithDiscount)}\n`;
 
     if (checkoutData && checkoutData.notes) {
         message += "\n━━━━━━━━━━━━━━━━━━\n";
@@ -3197,6 +3405,18 @@ async function saveOrderToDb() {
 
     const effectiveShipping = getEffectiveShipping(subtotalPrice);
 
+    let finalShipping = effectiveShipping;
+    let discountAmount = 0;
+    let discountCode = null;
+
+    if (appliedCoupon) {
+        discountAmount = Number(appliedCoupon.discount) || 0;
+        discountCode = appliedCoupon.code;
+        if (appliedCoupon.free_shipping) finalShipping = 0;
+    }
+
+    const finalTotal = subtotalPrice + finalShipping - discountAmount;
+
     const orderPayload = {
         user_id: user?.id || null,
         customer_name: checkoutData.name,
@@ -3213,8 +3433,10 @@ async function saveOrderToDb() {
         notes: checkoutData.notes,
         items: items,
         subtotal: subtotalPrice,
-        shipping_cost: effectiveShipping,
-        total: subtotalPrice + effectiveShipping,
+        shipping_cost: finalShipping,
+        discount_amount: discountAmount,
+        discount_code: discountCode,
+        total: finalTotal,
         status: 'novo'
     };
 
@@ -3227,6 +3449,34 @@ async function saveOrderToDb() {
     if (error) {
         console.error('Erro ao salvar pedido:', error);
         return null;
+    }
+
+    // Se tem cupom aplicado, chama RPC pra registrar o uso
+    if (appliedCoupon && data) {
+        const customerEmail = user?.email || checkoutData.email || null;
+        const userId = user?.id || null;
+
+        try {
+            const { data: rpcResult, error: rpcError } = await supabaseClient.rpc('apply_coupon_to_order', {
+                p_order_id: data.id,
+                p_code: appliedCoupon.code,
+                p_customer_email: customerEmail,
+                p_user_id: userId
+            });
+
+            if (rpcError) {
+                console.error('Erro ao aplicar cupom no pedido:', rpcError);
+            } else if (!rpcResult || !rpcResult.success) {
+                console.warn('Cupom não pôde ser aplicado:', rpcResult?.message);
+            }
+        } catch (e) {
+            console.error('Erro inesperado ao aplicar cupom:', e);
+        }
+
+        // Limpa cupom aplicado após uso
+        appliedCoupon = null;
+        localStorage.removeItem('gemas_applied_coupon');
+        renderAppliedCoupon();
     }
 
     return data;
@@ -3638,6 +3888,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadFavorites();
     await loadCheckoutData();
     updateFavoritesUI();
+    loadAppliedCoupon();
     updateCartUI();
 
     const checkoutForm = document.getElementById('checkout-form');

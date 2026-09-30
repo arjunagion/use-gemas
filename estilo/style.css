@@ -3604,3 +3604,152 @@ a {
         right: -6px;
     }
 }
+
+/* ==========================================================================
+   CUPOM DE DESCONTO (drawer do carrinho)
+   ========================================================================== */
+.cart-coupon-box {
+    margin-bottom: 1rem;
+}
+
+.coupon-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted, #c5c5c5);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.coupon-label svg {
+    color: var(--gold, #d4af37);
+}
+
+.coupon-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.coupon-input {
+    flex: 1;
+    min-width: 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    color: var(--text-primary, #f5f5f5);
+    font-family: var(--font-body, 'Montserrat', sans-serif);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.coupon-input:focus {
+    border-color: var(--gold, #d4af37);
+}
+
+.coupon-input::placeholder {
+    color: #888;
+    text-transform: none;
+}
+
+.btn-apply-coupon {
+    background: linear-gradient(135deg, #e8c86a 0%, #d4af37 100%);
+    color: #0e0e10;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-family: var(--font-body, 'Montserrat', sans-serif);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: filter 0.2s ease, opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-apply-coupon:hover {
+    filter: brightness(1.08);
+}
+
+.btn-apply-coupon:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.coupon-feedback {
+    font-size: 0.75rem;
+    margin-top: 0.4rem;
+    min-height: 1em;
+}
+
+.coupon-feedback.success {
+    color: #51cf66;
+}
+
+.coupon-feedback.error {
+    color: #ff6b6b;
+}
+
+.coupon-applied {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    background: rgba(81, 207, 102, 0.08);
+    border: 1px solid rgba(81, 207, 102, 0.3);
+    border-radius: 10px;
+    padding: 0.7rem 0.9rem;
+}
+
+.coupon-applied-info {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+}
+
+.coupon-applied-icon {
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.coupon-applied-code {
+    font-weight: 700;
+    color: var(--text-primary, #f5f5f5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.coupon-applied-desc {
+    font-size: 0.75rem;
+    color: #51cf66;
+}
+
+.btn-remove-coupon {
+    background: none;
+    border: none;
+    color: var(--text-muted, #c5c5c5);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    transition: color 0.2s ease;
+}
+
+.btn-remove-coupon:hover {
+    color: #ff6b6b;
+}
+
+.cart-discount-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #6bfbce;
+    margin-bottom: 0.4rem;
+}
