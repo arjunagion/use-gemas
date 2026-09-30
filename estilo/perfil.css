@@ -2182,3 +2182,193 @@ button {
         display: none;
     }
 }
+
+/* ==========================================================================
+   MEUS CUPONS (aba)
+   ========================================================================== */
+.cupons-section {
+    margin-bottom: 2.2rem;
+}
+
+.cupons-section-header {
+    margin-bottom: 1.1rem;
+}
+
+.cupons-section-header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--cr-text-primary);
+    margin: 0 0 0.3rem;
+}
+
+.cupons-section-header p {
+    font-size: 0.9rem;
+    color: var(--cr-text-dim);
+    margin: 0;
+}
+
+.cupons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.cupom-card {
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 12px;
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cupom-card:hover {
+    border-color: var(--cr-border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(184, 147, 90, 0.12);
+}
+
+.cupom-card.urgent {
+    border-color: var(--cr-warning);
+}
+
+.cupom-card.not-applicable {
+    opacity: 0.65;
+}
+
+.cupom-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.cupom-card-icon {
+    font-size: 1.3rem;
+}
+
+.cupom-card-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cr-gold);
+}
+
+.cupom-card-indiv {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--cr-info);
+    background: var(--cr-info-soft);
+    border-radius: 20px;
+    padding: 0.2rem 0.55rem;
+    margin-left: auto;
+}
+
+.cupom-card-discount {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--cr-gold-hover);
+}
+
+.cupom-card-desc {
+    font-size: 0.82rem;
+    color: var(--cr-text-muted);
+}
+
+.cupom-card-expiry {
+    font-size: 0.8rem;
+    color: var(--cr-text-dim);
+}
+
+.cupom-card-expiry.urgent {
+    color: var(--cr-warning);
+    font-weight: 700;
+}
+
+.cupom-card-min {
+    font-size: 0.8rem;
+    color: var(--cr-text-dim);
+}
+
+.btn-cupom-usar {
+    margin-top: auto;
+    background: var(--cr-gold);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-cupom-usar:hover {
+    background: var(--cr-gold-hover);
+    transform: translateY(-1px);
+}
+
+.cupom-card-reason {
+    margin-top: auto;
+    font-size: 0.8rem;
+    color: var(--cr-warning);
+    background: var(--cr-warning-soft);
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+}
+
+.cupons-historico {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.cupom-historico-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+}
+
+.cupom-historico-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.cupom-historico-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cr-gold);
+}
+
+.cupom-historico-date {
+    font-size: 0.78rem;
+    color: var(--cr-text-dim);
+}
+
+.cupom-historico-discount {
+    font-weight: 800;
+    color: var(--cr-success);
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .cupons-grid {
+        grid-template-columns: 1fr;
+    }
+}
