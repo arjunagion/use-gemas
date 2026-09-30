@@ -2550,10 +2550,16 @@ async function loadAvailableCoupons(options = {}) {
             if (customerEmail) orConditions.push(`customer_email.eq.${customerEmail}`);
             if (userId) orConditions.push(`user_id.eq.${userId}`);
 
-            const { data: usagesData } = await supabaseClient
+            const { data: usagesData, error: usagesError } = await supabaseClient
                 .from('coupon_usages')
                 .select('coupon_id, customer_email, user_id')
                 .or(orConditions.join(','));
+
+            // 403 = RLS bloqueou (guest ou cliente não logado)
+            // Nesse caso, assume que nunca usou cupons (padrão seguro)
+            if (usagesError && usagesError.code !== '42501' && !usagesError.message?.includes('403')) {
+                console.warn('Erro ao buscar usos de cupons:', usagesError);
+            }
 
             usages = usagesData || [];
         }
@@ -2571,12 +2577,17 @@ async function loadAvailableCoupons(options = {}) {
             if (customerEmail) orConditions.push(`customer_email.eq.${customerEmail}`);
             if (userId) orConditions.push(`user_id.eq.${userId}`);
 
-            const { data: prevOrders } = await supabaseClient
+            const { data: prevOrders, error: ordersError } = await supabaseClient
                 .from('orders')
                 .select('id')
                 .or(orConditions.join(','))
                 .in('status', ['pago', 'produzindo', 'enviado'])
                 .limit(1);
+
+            // 403 = RLS bloqueou (guest) → assume que não tem pedidos anteriores
+            if (ordersError && ordersError.code !== '42501' && !ordersError.message?.includes('403')) {
+                console.warn('Erro ao buscar pedidos anteriores:', ordersError);
+            }
 
             hasPreviousOrders = (prevOrders && prevOrders.length > 0);
         }
