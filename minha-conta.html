@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=3.5">
+    <link rel="stylesheet" href="estilo/perfil.css?v=3.6">
 </head>
 
 <body>
@@ -94,7 +94,7 @@
                     <span class="count" id="tab-count-favoritos" style="display: none;">0</span>
                 </button>
                 <button class="perfil-tab" data-panel="cupons" onclick="switchPanel('cupons')">
-                    🎟️ Meus Cupons
+                    � Meus Benefícios
                     <span class="count" id="tab-count-cupons" style="display: none;">0</span>
                 </button>
             </nav>
@@ -175,6 +175,36 @@
             <!-- PAINEL: CUPONS -->
             <section class="perfil-panel" id="panel-cupons">
 
+                <!-- Pontos de fidelidade -->
+                <div class="perfil-pontos-section">
+                    <div class="perfil-pontos-card" id="perfil-pontos-card">
+                        <!-- Loading -->
+                        <div class="perfil-loading-mini" id="perfil-pontos-loading">
+                            <div class="spinner-mini"></div>
+                        </div>
+                        <!-- Conteúdo (preenchido via JS) -->
+                        <div id="perfil-pontos-content" style="display: none;">
+                            <div class="perfil-pontos-icon">💎</div>
+                            <div class="perfil-pontos-info">
+                                <div class="perfil-pontos-label">VOCÊ TEM</div>
+                                <div class="perfil-pontos-value">
+                                    <span id="perfil-pontos-numero">0</span> pontos
+                                </div>
+                                <div class="perfil-pontos-brl" id="perfil-pontos-brl">
+                                    = R$ 0,00 de desconto
+                                </div>
+                                <div class="perfil-pontos-warning" id="perfil-pontos-warning" style="display: none;">
+                                    ⚠️ <span id="perfil-pontos-warning-text"></span>
+                                </div>
+                            </div>
+                            <button type="button" class="perfil-pontos-btn-trocar"
+                                    onclick="openRedeemModal()" id="perfil-pontos-btn-trocar">
+                                Trocar pontos →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Seção 1: cupons disponíveis -->
                 <div class="cupons-section">
                     <div class="cupons-section-header">
@@ -203,6 +233,25 @@
                             <p>Carregando histórico...</p>
                         </div>
                     </div>
+                </div>
+
+                <!-- Extrato de pontos -->
+                <div class="perfil-pontos-section">
+                    <div class="cupons-section-header">
+                        <h2>📊 Extrato de Pontos</h2>
+                        <p>Histórico de ganhos, resgates e expirações</p>
+                    </div>
+                    <div id="perfil-pontos-extrato-container">
+                        <div class="perfil-loading">
+                            <div class="spinner"></div>
+                            <p>Carregando extrato...</p>
+                        </div>
+                    </div>
+                    <button type="button" class="perfil-pontos-ver-mais"
+                            id="perfil-pontos-ver-mais" onclick="loadMorePointsExtrato()"
+                            style="display: none;">
+                        Ver mais transações ↓
+                    </button>
                 </div>
 
             </section>
@@ -465,6 +514,8 @@
             if (panelName === 'cupons') {
                 loadMyCoupons();
                 loadMyCouponHistory();
+                loadMyPoints();
+                loadPointsExtrato(true);
             }
         }
 
@@ -1325,6 +1376,314 @@
                 '</div>';
         }
 
+        // ==========================================================================
+        // Meus Benefícios — Pontos de fidelidade
+        // ==========================================================================
+        let currentPointsBalance = 0;
+        let currentPointsExtrato = [];
+        let pointsExtratoOffset = 0;
+        const POINTS_EXTRATO_PAGE_SIZE = 20;
+
+        async function loadMyPoints() {
+            const contentEl = document.getElementById('perfil-pontos-content');
+            const loadingEl = document.getElementById('perfil-pontos-loading');
+            const btnTrocar = document.getElementById('perfil-pontos-btn-trocar');
+
+            if (!contentEl) return;
+
+            try {
+                const { data, error } = await supabaseClient.rpc('get_loyalty_balance', {
+                    p_customer_email: currentUser.email,
+                    p_user_id: currentUser.id
+                });
+
+                if (error) {
+                    console.error('Erro ao carregar pontos:', error);
+                    loadingEl.style.display = 'none';
+                    return;
+                }
+
+                currentPointsBalance = data.balance || 0;
+
+                document.getElementById('perfil-pontos-numero').innerText =
+                    currentPointsBalance.toLocaleString('pt-BR');
+                document.getElementById('perfil-pontos-brl').innerText =
+                    `= ${formatBRL(data.brl_value || 0)} de desconto`;
+
+                const warningEl = document.getElementById('perfil-pontos-warning');
+                const warningText = document.getElementById('perfil-pontos-warning-text');
+                if (data.pending_expiration_30d && data.pending_expiration_30d > 0) {
+                    warningEl.style.display = 'flex';
+                    warningText.innerText =
+                        `${data.pending_expiration_30d.toLocaleString('pt-BR')} pontos expiram em até 30 dias`;
+                } else {
+                    warningEl.style.display = 'none';
+                }
+
+                loadingEl.style.display = 'none';
+                contentEl.style.display = 'flex';
+
+                if (currentPointsBalance < 100) {
+                    btnTrocar.disabled = true;
+                    btnTrocar.innerText = 'Sem pontos pra trocar';
+                } else {
+                    btnTrocar.disabled = false;
+                    btnTrocar.innerText = 'Trocar pontos →';
+                }
+
+            } catch (e) {
+                console.error('Erro inesperado:', e);
+                loadingEl.style.display = 'none';
+            }
+        }
+
+        async function loadPointsExtrato(reset = false) {
+            const container = document.getElementById('perfil-pontos-extrato-container');
+            const btnVerMais = document.getElementById('perfil-pontos-ver-mais');
+
+            if (!container) return;
+
+            if (reset) {
+                pointsExtratoOffset = 0;
+                currentPointsExtrato = [];
+                container.innerHTML = '<div class="perfil-loading"><div class="spinner"></div></div>';
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('loyalty_points')
+                    .select('id, points, type, description, order_id, coupon_id, expires_at, created_at, expired_at')
+                    .or(`user_id.eq.${currentUser.id},customer_email.eq.${currentUser.email}`)
+                    .order('created_at', { ascending: false })
+                    .range(pointsExtratoOffset, pointsExtratoOffset + POINTS_EXTRATO_PAGE_SIZE - 1);
+
+                if (error) {
+                    console.error('Erro ao carregar extrato:', error);
+                    container.innerHTML = '<div class="perfil-empty"><p>Erro ao carregar extrato.</p></div>';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    if (reset || currentPointsExtrato.length === 0) {
+                        container.innerHTML = `
+                            <div class="perfil-empty">
+                                <span class="icon">📊</span>
+                                <p>Nenhuma transação de pontos ainda.</p>
+                            </div>
+                        `;
+                    }
+                    btnVerMais.style.display = 'none';
+                    return;
+                }
+
+                currentPointsExtrato = [...currentPointsExtrato, ...data];
+                pointsExtratoOffset += data.length;
+
+                renderPointsExtrato(container);
+
+                btnVerMais.style.display = data.length === POINTS_EXTRATO_PAGE_SIZE ? 'block' : 'none';
+
+            } catch (e) {
+                console.error('Erro inesperado:', e);
+            }
+        }
+
+        function renderPointsExtrato(container) {
+            container.innerHTML = '<div class="perfil-pontos-extrato">' +
+                currentPointsExtrato.map(t => {
+                    const isPositive = t.points > 0;
+                    const isRedeemed = t.type === 'redeemed';
+                    const isExpired = t.type === 'expired';
+
+                    let icon = '💎';
+                    let label = 'Pontos ganhos';
+                    let className = 'positive';
+
+                    if (t.type === 'redeemed') {
+                        icon = '🎟️';
+                        label = 'Resgate';
+                        className = 'negative';
+                    } else if (t.type === 'expired') {
+                        icon = '⏰';
+                        label = 'Expirado';
+                        className = 'expired';
+                    } else if (t.type === 'adjustment') {
+                        icon = '⚙️';
+                        label = 'Ajuste';
+                        className = isPositive ? 'positive' : 'negative';
+                    }
+
+                    const sign = isPositive ? '+' : '';
+                    const pointsFormatted = `${sign}${t.points.toLocaleString('pt-BR')} pts`;
+
+                    return `
+                        <div class="perfil-pontos-extrato-item ${className}">
+                            <div class="perfil-pontos-extrato-icon">${icon}</div>
+                            <div class="perfil-pontos-extrato-info">
+                                <div class="perfil-pontos-extrato-label">${escapeHTML(t.description || label)}</div>
+                                <div class="perfil-pontos-extrato-date">${formatDate(t.created_at)}</div>
+                            </div>
+                            <div class="perfil-pontos-extrato-value ${className}">${pointsFormatted}</div>
+                        </div>
+                    `;
+                }).join('') +
+                '</div>';
+        }
+
+        function loadMorePointsExtrato() {
+            loadPointsExtrato(false);
+        }
+
+        function openRedeemModal() {
+            if (currentPointsBalance < 100) {
+                showReviewToast('Você precisa de pelo menos 100 pontos pra trocar.');
+                return;
+            }
+
+            const modal = document.getElementById('redeem-points-modal');
+            const balanceEl = document.getElementById('redeem-modal-balance');
+            const inputEl = document.getElementById('redeem-points-input');
+            const feedback = document.getElementById('redeem-points-feedback');
+
+            if (!modal) return;
+
+            balanceEl.innerText = currentPointsBalance.toLocaleString('pt-BR');
+            inputEl.value = 100;
+            inputEl.max = Math.floor(currentPointsBalance / 100) * 100;
+            feedback.className = 'redeem-points-feedback';
+            feedback.innerText = '';
+
+            updateRedeemPreview();
+            modal.classList.add('open');
+
+            setTimeout(() => inputEl.focus(), 150);
+        }
+
+        function closeRedeemModal() {
+            document.getElementById('redeem-points-modal').classList.remove('open');
+        }
+
+        function setRedeemAmount(amount) {
+            const input = document.getElementById('redeem-points-input');
+            if (amount > currentPointsBalance) {
+                amount = Math.floor(currentPointsBalance / 100) * 100;
+            }
+            input.value = amount;
+            updateRedeemPreview();
+        }
+
+        function setRedeemMax() {
+            const maxAmount = Math.floor(currentPointsBalance / 100) * 100;
+            document.getElementById('redeem-points-input').value = maxAmount;
+            updateRedeemPreview();
+        }
+
+        function updateRedeemPreview() {
+            const input = document.getElementById('redeem-points-input');
+            const preview = document.getElementById('redeem-points-preview');
+            const feedback = document.getElementById('redeem-points-feedback');
+
+            let points = parseInt(input.value) || 0;
+
+            if (points < 100) {
+                preview.innerHTML = 'Mínimo: <strong>100 pontos</strong>';
+                feedback.className = 'redeem-points-feedback';
+                feedback.innerText = '';
+                return;
+            }
+
+            if (points % 100 !== 0) {
+                preview.innerHTML = 'Precisa ser múltiplo de <strong>100</strong>';
+                return;
+            }
+
+            if (points > currentPointsBalance) {
+                preview.innerHTML = `Você só tem <strong>${currentPointsBalance} pontos</strong>`;
+                feedback.className = 'redeem-points-feedback error';
+                feedback.innerText = 'Saldo insuficiente';
+                return;
+            }
+
+            const brl = points / 100;
+            preview.innerHTML = `Você ganhará um cupom de <strong>${formatBRL(brl)}</strong>`;
+            feedback.className = 'redeem-points-feedback';
+            feedback.innerText = '';
+        }
+
+        async function confirmRedeem() {
+            const input = document.getElementById('redeem-points-input');
+            const btn = document.getElementById('redeem-points-confirm-btn');
+            const feedback = document.getElementById('redeem-points-feedback');
+
+            const points = parseInt(input.value) || 0;
+
+            if (points < 100) {
+                feedback.className = 'redeem-points-feedback error';
+                feedback.innerText = 'Mínimo: 100 pontos';
+                return;
+            }
+            if (points % 100 !== 0) {
+                feedback.className = 'redeem-points-feedback error';
+                feedback.innerText = 'Precisa ser múltiplo de 100';
+                return;
+            }
+            if (points > currentPointsBalance) {
+                feedback.className = 'redeem-points-feedback error';
+                feedback.innerText = 'Saldo insuficiente';
+                return;
+            }
+
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Trocando...';
+            feedback.className = 'redeem-points-feedback';
+            feedback.innerText = '';
+
+            try {
+                const { data, error } = await supabaseClient.rpc('redeem_points_as_coupon', {
+                    p_points: points,
+                    p_customer_email: currentUser.email,
+                    p_user_id: currentUser.id
+                });
+
+                if (error) {
+                    console.error('Erro ao resgatar pontos:', error);
+                    feedback.className = 'redeem-points-feedback error';
+                    feedback.innerText = 'Erro ao trocar. Tente novamente.';
+                    return;
+                }
+
+                if (!data || !data.success) {
+                    feedback.className = 'redeem-points-feedback error';
+                    feedback.innerText = data?.message || 'Não foi possível trocar.';
+                    return;
+                }
+
+                feedback.className = 'redeem-points-feedback success';
+                feedback.innerHTML = `✓ Cupom <strong>${escapeHTML(data.coupon_code)}</strong> criado! Vale ${formatBRL(data.discount_value)}.`;
+
+                currentPointsBalance = data.new_balance;
+
+                setTimeout(async () => {
+                    closeRedeemModal();
+                    await Promise.all([
+                        loadMyPoints(),
+                        loadPointsExtrato(true),
+                        loadMyCoupons()
+                    ]);
+                    showReviewToast(`Cupom ${data.coupon_code} criado!`);
+                }, 1500);
+
+            } catch (e) {
+                console.error('Erro inesperado:', e);
+                feedback.className = 'redeem-points-feedback error';
+                feedback.innerText = 'Erro inesperado.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
         function calculateVirtualNotifications(expiringCoupons = []) {
             const virtual = [];
 
@@ -2052,6 +2411,22 @@
                 });
             }
 
+            // Fecha modal de troca de pontos com ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    const redeemModal = document.getElementById('redeem-points-modal');
+                    if (redeemModal && redeemModal.classList.contains('open')) closeRedeemModal();
+                }
+            });
+
+            // Fecha modal de troca de pontos clicando fora
+            const redeemModalEl = document.getElementById('redeem-points-modal');
+            if (redeemModalEl) {
+                redeemModalEl.addEventListener('click', (e) => {
+                    if (e.target === redeemModalEl) closeRedeemModal();
+                });
+            }
+
             // Fecha o drawer de notificações ao clicar fora
             const notificationsDrawer = document.getElementById('notifications-drawer');
             if (notificationsDrawer) {
@@ -2158,7 +2533,9 @@
                 loadUserOrders(),
                 loadUserFavorites(),
                 loadMyCoupons(),
-                loadMyCouponHistory()
+                loadMyCouponHistory(),
+                loadMyPoints(),
+                loadPointsExtrato(true)
             ]);
 
             // Carrega reviews do cliente (necessário p/ calcular pendências virtuais)
@@ -2223,6 +2600,55 @@
 
         <div class="notifications-list" id="notifications-list">
             <!-- Preenchido via JS -->
+        </div>
+    </div>
+
+    <!-- Modal de Troca de Pontos -->
+    <div id="redeem-points-modal" class="modal-overlay">
+        <div class="modal-box redeem-points-content">
+            <button class="modal-close" onclick="closeRedeemModal()" aria-label="Fechar">&times;</button>
+
+            <div class="redeem-points-header">
+                <h3>Trocar pontos por cupom</h3>
+                <p>100 pontos = <strong>R$ 1,00</strong> de desconto</p>
+            </div>
+
+            <div class="redeem-points-balance">
+                Saldo disponível: <strong><span id="redeem-modal-balance">0</span> pontos</strong>
+            </div>
+
+            <div class="redeem-points-body">
+                <label for="redeem-points-input" class="redeem-points-label">
+                    Quantos pontos você quer trocar?
+                </label>
+                <input type="number" id="redeem-points-input"
+                       class="redeem-points-input"
+                       min="100" step="100" value="100"
+                       oninput="updateRedeemPreview()">
+
+                <div class="redeem-points-quick-btns">
+                    <button type="button" onclick="setRedeemAmount(100)">100 pts</button>
+                    <button type="button" onclick="setRedeemAmount(500)">500 pts</button>
+                    <button type="button" onclick="setRedeemAmount(1000)">1.000 pts</button>
+                    <button type="button" onclick="setRedeemMax()">Usar tudo</button>
+                </div>
+
+                <div class="redeem-points-preview" id="redeem-points-preview">
+                    Você ganhará um cupom de <strong>R$ 1,00</strong>
+                </div>
+
+                <div class="redeem-points-feedback" id="redeem-points-feedback"></div>
+            </div>
+
+            <div class="redeem-points-actions">
+                <button type="button" class="btn-review-cancel" onclick="closeRedeemModal()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn-cream"
+                        onclick="confirmRedeem()" id="redeem-points-confirm-btn">
+                    Trocar por cupom
+                </button>
+            </div>
         </div>
     </div>
 

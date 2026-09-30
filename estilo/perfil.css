@@ -2372,3 +2372,309 @@ button {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   MEUS BENEFÍCIOS — Pontos de fidelidade
+   ========================================================================== */
+.perfil-pontos-section {
+    margin-bottom: 2.2rem;
+}
+
+.perfil-pontos-card {
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    min-height: 110px;
+    box-shadow: 0 8px 24px rgba(47, 38, 32, 0.05);
+}
+
+.perfil-loading-mini {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90px;
+}
+
+.spinner-mini {
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--cr-gold-soft);
+    border-top-color: var(--cr-gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.perfil-pontos-content {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+}
+
+.perfil-pontos-icon {
+    font-size: 2.6rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.perfil-pontos-info {
+    flex: 1;
+    min-width: 200px;
+}
+
+.perfil-pontos-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--cr-text-dim);
+}
+
+.perfil-pontos-value {
+    font-family: var(--font-title);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--cr-gold-hover);
+    line-height: 1.1;
+}
+
+.perfil-pontos-brl {
+    font-size: 0.85rem;
+    color: var(--cr-text-muted);
+}
+
+.perfil-pontos-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--cr-warning);
+}
+
+.perfil-pontos-btn-trocar {
+    background: var(--cr-gold);
+    color: #fdfaf4;
+    border: none;
+    border-radius: 30px;
+    padding: 0.7rem 1.4rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    font-family: var(--font-body);
+}
+
+.perfil-pontos-btn-trocar:hover {
+    background: var(--cr-gold-hover);
+    transform: translateY(-1px);
+}
+
+.perfil-pontos-btn-trocar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.perfil-pontos-ver-mais {
+    display: block;
+    margin: 1rem auto 0;
+    background: transparent;
+    border: 1px solid var(--cr-border);
+    color: var(--cr-gold-hover);
+    border-radius: 30px;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: var(--font-body);
+}
+
+.perfil-pontos-ver-mais:hover {
+    background: var(--cr-gold-soft);
+    border-color: var(--cr-gold);
+}
+
+/* Extrato */
+.perfil-pontos-extrato {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.perfil-pontos-extrato-item {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    background: var(--cr-bg-card);
+    border: 1px solid var(--cr-border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+}
+
+.perfil-pontos-extrato-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.perfil-pontos-extrato-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.perfil-pontos-extrato-label {
+    font-size: 0.85rem;
+    color: var(--cr-text-primary);
+    font-weight: 600;
+}
+
+.perfil-pontos-extrato-date {
+    font-size: 0.75rem;
+    color: var(--cr-text-dim);
+}
+
+.perfil-pontos-extrato-value {
+    font-weight: 800;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.perfil-pontos-extrato-value.positive { color: var(--cr-success); }
+.perfil-pontos-extrato-value.negative { color: var(--cr-warning); }
+.perfil-pontos-extrato-value.expired { color: var(--cr-text-dim); }
+
+/* Modal de troca de pontos */
+.redeem-points-content {
+    max-width: 480px;
+}
+
+.redeem-points-header h3 {
+    font-family: var(--font-title);
+    font-size: 1.6rem;
+    color: var(--cr-text-primary);
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    padding-right: 2rem;
+}
+
+.redeem-points-header p {
+    font-size: 0.85rem;
+    color: var(--cr-text-muted);
+    margin-bottom: 1.2rem;
+}
+
+.redeem-points-header strong { color: var(--cr-gold-hover); }
+
+.redeem-points-balance {
+    background: var(--cr-gold-soft);
+    border: 1px solid var(--cr-border);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    font-size: 0.88rem;
+    color: var(--cr-text-muted);
+    margin-bottom: 1.2rem;
+}
+
+.redeem-points-balance strong { color: var(--cr-gold-hover); }
+
+.redeem-points-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--cr-text-dim);
+    margin-bottom: 0.5rem;
+}
+
+.redeem-points-input {
+    width: 100%;
+    background: var(--cr-bg-elevated);
+    border: 1px solid var(--cr-border);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--cr-text-primary);
+    font-family: var(--font-body);
+}
+
+.redeem-points-input:focus {
+    outline: none;
+    border-color: var(--cr-gold);
+    box-shadow: 0 0 0 3px var(--cr-gold-soft);
+}
+
+.redeem-points-quick-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.8rem 0;
+}
+
+.redeem-points-quick-btns button {
+    background: var(--cr-bg-elevated);
+    border: 1px solid var(--cr-border);
+    color: var(--cr-text-muted);
+    border-radius: 20px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: var(--font-body);
+}
+
+.redeem-points-quick-btns button:hover {
+    border-color: var(--cr-gold);
+    color: var(--cr-gold-hover);
+    background: var(--cr-gold-soft);
+}
+
+.redeem-points-preview {
+    background: var(--cr-bg-elevated);
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    font-size: 0.88rem;
+    color: var(--cr-text-muted);
+}
+
+.redeem-points-preview strong { color: var(--cr-gold-hover); }
+
+.redeem-points-feedback {
+    font-size: 0.82rem;
+    margin-top: 0.7rem;
+    min-height: 1.2em;
+}
+
+.redeem-points-feedback.error { color: var(--cr-danger); }
+.redeem-points-feedback.success { color: var(--cr-success); }
+
+.redeem-points-actions {
+    display: flex;
+    gap: 0.7rem;
+    margin-top: 1.2rem;
+    justify-content: flex-end;
+}
+
+/* Responsivo pontos */
+@media (max-width: 600px) {
+    .perfil-pontos-content {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .perfil-pontos-btn-trocar { width: 100%; }
+
+    .redeem-points-actions {
+        flex-direction: column;
+    }
+
+    .redeem-points-actions button { width: 100%; }
+}
