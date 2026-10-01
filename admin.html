@@ -2383,168 +2383,380 @@
         }
 
         /* ==========================================================================
-           PONTOS (programa de fidelidade)
+           SEÇÃO PONTOS — Admin
            ========================================================================== */
-        .loyalty-table-wrapper {
+
+        /* Cards de resumo */
+        .points-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .points-summary-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow-x: auto;
+            border-radius: 12px;
+            padding: 1.3rem 1.4rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .loyalty-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 780px;
-            font-size: 0.85rem;
+        .points-summary-card::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-        .loyalty-table thead th {
-            text-align: left;
-            padding: 0.9rem 1rem;
+        .points-summary-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .points-summary-label {
             font-size: 0.7rem;
             color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .points-summary-value {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        /* Tabela de clientes */
+        .points-table-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .points-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .points-table thead {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .points-table th {
+            text-align: left;
+            padding: 1rem 1.2rem;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
             border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
 
-        .loyalty-table tbody td {
-            padding: 0.9rem 1rem;
+        .points-table td {
+            padding: 1rem 1.2rem;
+            font-size: 0.88rem;
+            color: var(--text);
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            color: var(--text-muted);
             vertical-align: middle;
         }
 
-        .loyalty-table tbody tr:last-child td { border-bottom: none; }
-        .loyalty-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+        .points-table tbody tr {
+            transition: background 0.2s ease;
+        }
 
-        .loyalty-client-name { color: var(--text); font-weight: 600; }
-        .loyalty-client-email { font-size: 0.75rem; color: var(--text-dim); }
+        .points-table tbody tr:hover {
+            background: rgba(212, 175, 55, 0.04);
+        }
 
-        .loyalty-balance {
-            color: var(--gold);
-            font-weight: 700;
+        .points-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .points-client-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .points-client-name {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .points-client-email {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        .points-balance {
             font-family: var(--font-title);
-            font-size: 1.15rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .points-metrics {
+            display: flex;
+            gap: 0.6rem;
+            font-size: 0.75rem;
+        }
+
+        .points-metric {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .points-metric.positive { color: var(--success); }
+        .points-metric.negative { color: var(--danger); }
+        .points-metric.expired  { color: var(--text-dim); }
+
+        .points-actions-cell {
+            display: flex;
+            gap: 0.4rem;
             white-space: nowrap;
         }
 
-        .loyalty-stats { display: flex; gap: 0.7rem; flex-wrap: wrap; }
-        .loyalty-stat { font-size: 0.72rem; white-space: nowrap; }
-        .loyalty-stat b { color: var(--text); font-weight: 700; }
-        .loyalty-stat.earned b { color: var(--success); }
-        .loyalty-stat.redeemed b { color: var(--warning); }
-        .loyalty-stat.expired b { color: var(--text-dim); }
-
-        .loyalty-actions { display: flex; gap: 0.4rem; }
-        .loyalty-actions .action-btn { flex: 0 0 auto; padding: 0.4rem 0.6rem; }
-
-        /* Extrato */
-        .points-extrato-header {
+        /* Modal de extrato */
+        .extrato-filters {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
         }
 
-        .points-extrato-client { flex: 1; min-width: 0; }
-        .points-extrato-name { font-family: var(--font-title); font-size: 1.2rem; color: var(--text); font-weight: 700; }
-        .points-extrato-email { font-size: 0.8rem; color: var(--text-dim); word-break: break-all; }
-
-        .points-extrato-balance {
-            text-align: center;
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: 10px;
-            padding: 0.6rem 1.1rem;
-            flex-shrink: 0;
+        .extrato-filter-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-muted);
+            padding: 0.5rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: var(--font-body);
+            letter-spacing: 0.5px;
         }
 
-        .points-extrato-balance span {
-            display: block;
-            font-size: 0.65rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .extrato-filter-btn:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            color: var(--gold);
         }
 
-        .points-extrato-balance strong { font-family: var(--font-title); font-size: 1.4rem; color: var(--gold); }
+        .extrato-filter-btn.active {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
 
-        .extrato-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+        .extrato-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 460px;
+            overflow-y: auto;
+            padding-right: 0.3rem;
+        }
 
         .extrato-item {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 10px;
-            padding: 0.7rem 0.9rem;
+            padding: 0.8rem 1rem;
+            transition: all 0.2s ease;
         }
 
-        .extrato-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            font-size: 1rem;
+        .extrato-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .extrato-item-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            width: 32px;
+            text-align: center;
+        }
+
+        .extrato-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .extrato-item-desc {
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 500;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .extrato-item-date {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        .extrato-item-value {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 700;
+            white-space: nowrap;
             flex-shrink: 0;
         }
 
-        .extrato-icon.earned { background: rgba(81, 207, 102, 0.14); }
-        .extrato-icon.redeemed { background: rgba(255, 85, 85, 0.14); }
-        .extrato-icon.expired { background: rgba(255, 255, 255, 0.07); }
-        .extrato-icon.adjustment { background: rgba(212, 175, 55, 0.14); }
+        .extrato-item-value.earned     { color: var(--success); }
+        .extrato-item-value.redeemed   { color: var(--danger); }
+        .extrato-item-value.expired    { color: var(--text-dim); text-decoration: line-through; }
+        .extrato-item-value.adjustment { color: var(--gold); }
 
-        .extrato-info { flex: 1; min-width: 0; }
-        .extrato-desc { font-size: 0.85rem; color: var(--text); line-height: 1.3; }
-        .extrato-date { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+        /* Modal de ajuste */
+        .adjust-info {
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            margin-bottom: 1.2rem;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
 
-        .extrato-value { font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
-        .extrato-value.positive { color: var(--success); }
-        .extrato-value.negative { color: var(--danger); }
-        .extrato-value.expired { color: var(--text-dim); text-decoration: line-through; }
-        .extrato-value.adjustment { color: var(--gold); }
+        .adjust-info strong {
+            color: var(--gold);
+            font-weight: 700;
+        }
 
-        /* Ajuste */
-        .adjust-quick-btns { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .adjust-input {
+            width: 100%;
+            background: #18181c;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            font-family: var(--font-title);
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            outline: none;
+            transition: all 0.25s ease;
+        }
 
-        .adjust-quick-btn {
+        .adjust-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .adjust-quick-btns {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.7rem;
+            flex-wrap: wrap;
+        }
+
+        .adjust-quick-btns button {
             flex: 1;
             min-width: 70px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 0.5rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: var(--gold);
+            padding: 0.5rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.2s ease;
             font-family: var(--font-body);
-            transition: all 0.25s;
         }
 
-        .adjust-quick-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.08); }
+        .adjust-quick-btns button:hover {
+            background: rgba(212, 175, 55, 0.12);
+            border-color: var(--gold);
+        }
 
         .adjust-preview {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 0.9rem 1rem;
-            font-size: 0.9rem;
+            background: rgba(90, 138, 90, 0.08);
+            border-left: 3px solid var(--success);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin: 1rem 0;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 1rem;
         }
 
-        .adjust-preview strong { color: var(--gold); }
-        .adjust-preview small { display: block; margin-top: 0.3rem; color: var(--danger); }
-        .adjust-preview.error { border-color: var(--danger); color: var(--danger); }
+        .adjust-preview strong {
+            color: var(--gold);
+            font-weight: 700;
+            font-family: var(--font-title);
+            font-size: 1rem;
+        }
+
+        .adjust-preview.warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: var(--warning);
+        }
+
+        .adjust-preview.danger {
+            background: rgba(255, 85, 85, 0.1);
+            border-left-color: var(--danger);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .points-summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .points-summary-value {
+                font-size: 1.6rem;
+            }
+
+            .points-table-wrapper {
+                overflow-x: auto;
+            }
+
+            .points-table {
+                min-width: 700px;
+            }
+
+            .extrato-filters {
+                gap: 0.4rem;
+            }
+
+            .extrato-filter-btn {
+                font-size: 0.68rem;
+                padding: 0.4rem 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .points-summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .adjust-quick-btns button {
+                flex: 1 1 calc(50% - 0.25rem);
+            }
+        }
     </style>
 </head>
 
@@ -2789,22 +3001,22 @@
                         </div>
                     </div>
 
-                    <div class="metrics-grid" id="points-summary">
-                        <div class="metric-card">
-                            <span class="metric-label">Total em circulação</span>
-                            <span class="metric-value" id="points-sum-circulation">0</span>
+                    <div class="points-summary-grid" id="points-summary">
+                        <div class="points-summary-card">
+                            <span class="points-summary-label">Total em circulação</span>
+                            <span class="points-summary-value" id="points-sum-circulation">0</span>
                         </div>
-                        <div class="metric-card">
-                            <span class="metric-label">Total ganho (histórico)</span>
-                            <span class="metric-value" id="points-sum-earned">0</span>
+                        <div class="points-summary-card">
+                            <span class="points-summary-label">Total ganho (histórico)</span>
+                            <span class="points-summary-value" id="points-sum-earned">0</span>
                         </div>
-                        <div class="metric-card">
-                            <span class="metric-label">Total resgatado (histórico)</span>
-                            <span class="metric-value" id="points-sum-redeemed">0</span>
+                        <div class="points-summary-card">
+                            <span class="points-summary-label">Total resgatado (histórico)</span>
+                            <span class="points-summary-value" id="points-sum-redeemed">0</span>
                         </div>
-                        <div class="metric-card">
-                            <span class="metric-label">Total expirado (histórico)</span>
-                            <span class="metric-value" id="points-sum-expired">0</span>
+                        <div class="points-summary-card">
+                            <span class="points-summary-label">Total expirado (histórico)</span>
+                            <span class="points-summary-value" id="points-sum-expired">0</span>
                         </div>
                     </div>
 
@@ -3246,30 +3458,25 @@
             <button class="modal-close" onclick="closeExtratoModal()">&times;</button>
             <h2 class="modal-title">Extrato de Pontos</h2>
 
-            <div class="points-extrato-header">
-                <div class="points-extrato-client">
-                    <div class="points-extrato-name" id="extrato-client-name">—</div>
-                    <div class="points-extrato-email" id="extrato-client-email">—</div>
-                </div>
-                <div class="points-extrato-balance">
-                    <span>Saldo</span>
-                    <strong id="extrato-client-balance">0</strong>
-                </div>
+            <div class="adjust-info">
+                <div><strong id="extrato-client-name">—</strong></div>
+                <div id="extrato-client-email">—</div>
+                <div>Saldo: <strong id="extrato-client-balance">0</strong> pontos</div>
             </div>
 
-            <div class="filter-tabs" style="margin-bottom: 0.8rem;">
-                <button class="filter-tab active" data-extrato-type="all" onclick="setExtratoType('all', this)">Todos</button>
-                <button class="filter-tab" data-extrato-type="earned" onclick="setExtratoType('earned', this)">Ganhos</button>
-                <button class="filter-tab" data-extrato-type="redeemed" onclick="setExtratoType('redeemed', this)">Resgates</button>
-                <button class="filter-tab" data-extrato-type="expired" onclick="setExtratoType('expired', this)">Expirados</button>
-                <button class="filter-tab" data-extrato-type="adjustment" onclick="setExtratoType('adjustment', this)">Ajustes</button>
+            <div class="extrato-filters">
+                <button class="extrato-filter-btn active" data-extrato-type="all" onclick="setExtratoType('all', this)">Todos</button>
+                <button class="extrato-filter-btn" data-extrato-type="earned" onclick="setExtratoType('earned', this)">Ganhos</button>
+                <button class="extrato-filter-btn" data-extrato-type="redeemed" onclick="setExtratoType('redeemed', this)">Resgates</button>
+                <button class="extrato-filter-btn" data-extrato-type="expired" onclick="setExtratoType('expired', this)">Expirados</button>
+                <button class="extrato-filter-btn" data-extrato-type="adjustment" onclick="setExtratoType('adjustment', this)">Ajustes</button>
             </div>
 
-            <div class="filter-tabs" style="margin-bottom: 1rem;">
-                <button class="filter-tab active" data-extrato-days="0" onclick="setExtratoDays('0', this)">Todo período</button>
-                <button class="filter-tab" data-extrato-days="30" onclick="setExtratoDays('30', this)">30d</button>
-                <button class="filter-tab" data-extrato-days="90" onclick="setExtratoDays('90', this)">90d</button>
-                <button class="filter-tab" data-extrato-days="365" onclick="setExtratoDays('365', this)">365d</button>
+            <div class="extrato-filters">
+                <button class="extrato-filter-btn active" data-extrato-days="0" onclick="setExtratoDays('0', this)">Todo período</button>
+                <button class="extrato-filter-btn" data-extrato-days="30" onclick="setExtratoDays('30', this)">30d</button>
+                <button class="extrato-filter-btn" data-extrato-days="90" onclick="setExtratoDays('90', this)">90d</button>
+                <button class="extrato-filter-btn" data-extrato-days="365" onclick="setExtratoDays('365', this)">365d</button>
             </div>
 
             <div id="extrato-list" class="extrato-list"></div>
@@ -3284,23 +3491,24 @@
             <button class="modal-close" onclick="closeAdjustModal()">&times;</button>
             <h2 class="modal-title">Ajustar Pontos</h2>
 
-            <div class="points-extrato-client" style="margin-bottom: 1rem;">
-                <div class="points-extrato-name" id="adjust-client-name">—</div>
-                <div class="points-extrato-email" id="adjust-client-email">—</div>
+            <div class="adjust-info">
+                <div><strong id="adjust-client-name">—</strong></div>
+                <div id="adjust-client-email">—</div>
+                <div>Saldo atual: <strong id="adjust-client-balance">0</strong> pontos</div>
             </div>
 
             <div id="adjust-feedback" class="modal-feedback"></div>
 
             <div class="form-group">
                 <label for="adjust-amount">Quantidade (aceita + e -)</label>
-                <input type="number" id="adjust-amount" value="100" oninput="updateAdjustPreview()">
+                <input type="number" id="adjust-amount" class="adjust-input" value="100" oninput="updateAdjustPreview()">
             </div>
 
             <div class="adjust-quick-btns">
-                <button type="button" class="adjust-quick-btn" onclick="setAdjustAmount(100)">+100</button>
-                <button type="button" class="adjust-quick-btn" onclick="setAdjustAmount(500)">+500</button>
-                <button type="button" class="adjust-quick-btn" onclick="setAdjustAmount(-100)">-100</button>
-                <button type="button" class="adjust-quick-btn" onclick="setAdjustAmount(-500)">-500</button>
+                <button type="button" onclick="setAdjustAmount(100)">+100</button>
+                <button type="button" onclick="setAdjustAmount(500)">+500</button>
+                <button type="button" onclick="setAdjustAmount(-100)">-100</button>
+                <button type="button" onclick="setAdjustAmount(-500)">-500</button>
             </div>
 
             <div class="form-group">
@@ -5819,8 +6027,8 @@
             }
 
             container.innerHTML = `
-                <div class="loyalty-table-wrapper">
-                    <table class="loyalty-table">
+                <div class="points-table-wrapper">
+                    <table class="points-table">
                         <thead>
                             <tr>
                                 <th>Cliente</th>
@@ -5839,20 +6047,22 @@
                                 return `
                                     <tr>
                                         <td>
-                                            <div class="loyalty-client-name">${escapeHTML(name)}</div>
-                                            ${email ? `<div class="loyalty-client-email">${escapeHTML(email)}</div>` : ''}
+                                            <div class="points-client-cell">
+                                                <div class="points-client-name">${escapeHTML(name)}</div>
+                                                ${email ? `<div class="points-client-email">${escapeHTML(email)}</div>` : ''}
+                                            </div>
                                         </td>
-                                        <td><span class="loyalty-balance">${balance.toLocaleString('pt-BR')}</span></td>
+                                        <td><span class="points-balance">${balance.toLocaleString('pt-BR')}</span></td>
                                         <td>
-                                            <div class="loyalty-stats">
-                                                <span class="loyalty-stat earned">+<b>${Number(c.total_earned || 0).toLocaleString('pt-BR')}</b></span>
-                                                <span class="loyalty-stat redeemed">-<b>${Number(c.total_redeemed || 0).toLocaleString('pt-BR')}</b></span>
-                                                <span class="loyalty-stat expired">~<b>${Number(c.total_expired || 0).toLocaleString('pt-BR')}</b></span>
+                                            <div class="points-metrics">
+                                                <span class="points-metric positive">+${Number(c.total_earned || 0).toLocaleString('pt-BR')}</span>
+                                                <span class="points-metric negative">-${Number(c.total_redeemed || 0).toLocaleString('pt-BR')}</span>
+                                                <span class="points-metric expired">~${Number(c.total_expired || 0).toLocaleString('pt-BR')}</span>
                                             </div>
                                         </td>
                                         <td>${escapeHTML(formatDateShort(c.last_activity_at))}</td>
                                         <td>
-                                            <div class="loyalty-actions">
+                                            <div class="points-actions-cell">
                                                 <button class="action-btn edit" onclick="openExtratoModal('${escapeHTML(email)}')">Ver extrato</button>
                                                 <button class="action-btn warn" onclick="openAdjustModal('${escapeHTML(email)}', ${balance}, '${escapeHTML(userId)}')">Ajustar</button>
                                                 <button class="action-btn" onclick="copyClientEmail('${escapeHTML(email)}')">Copiar email</button>
@@ -5872,9 +6082,9 @@
             currentExtratoDays = null;
             currentExtratoOffset = 0;
 
-            document.querySelectorAll('#points-extrato-modal .filter-tab').forEach(t => t.classList.remove('active'));
-            const firstTypeTab = document.querySelector('#points-extrato-modal .filter-tab[data-extrato-type="all"]');
-            const firstDaysTab = document.querySelector('#points-extrato-modal .filter-tab[data-extrato-days="0"]');
+            document.querySelectorAll('#points-extrato-modal .extrato-filter-btn').forEach(t => t.classList.remove('active'));
+            const firstTypeTab = document.querySelector('#points-extrato-modal .extrato-filter-btn[data-extrato-type="all"]');
+            const firstDaysTab = document.querySelector('#points-extrato-modal .extrato-filter-btn[data-extrato-days="0"]');
             if (firstTypeTab) firstTypeTab.classList.add('active');
             if (firstDaysTab) firstDaysTab.classList.add('active');
 
@@ -5938,11 +6148,11 @@
 
         function extratoTypeMeta(type) {
             switch (type) {
-                case 'earned': return { icon: '💎', cls: 'earned', valueCls: 'positive' };
-                case 'redeemed': return { icon: '🎟️', cls: 'redeemed', valueCls: 'negative' };
-                case 'expired': return { icon: '⏰', cls: 'expired', valueCls: 'expired' };
-                case 'adjustment': return { icon: '⚙️', cls: 'adjustment', valueCls: 'adjustment' };
-                default: return { icon: '💎', cls: 'earned', valueCls: 'positive' };
+                case 'earned': return { icon: '💎', valueCls: 'earned' };
+                case 'redeemed': return { icon: '🎟️', valueCls: 'redeemed' };
+                case 'expired': return { icon: '⏰', valueCls: 'expired' };
+                case 'adjustment': return { icon: '⚙️', valueCls: 'adjustment' };
+                default: return { icon: '💎', valueCls: 'earned' };
             }
         }
 
@@ -5960,26 +6170,26 @@
 
                 return `
                     <div class="extrato-item">
-                        <span class="extrato-icon ${meta.cls}">${meta.icon}</span>
-                        <div class="extrato-info">
-                            <div class="extrato-desc">${escapeHTML(desc)}</div>
-                            ${date ? `<div class="extrato-date">${escapeHTML(date)}</div>` : ''}
+                        <span class="extrato-item-icon">${meta.icon}</span>
+                        <div class="extrato-item-info">
+                            <div class="extrato-item-desc">${escapeHTML(desc)}</div>
+                            ${date ? `<div class="extrato-item-date">${escapeHTML(date)}</div>` : ''}
                         </div>
-                        <span class="extrato-value ${meta.valueCls}">${sign}${points.toLocaleString('pt-BR')}</span>
+                        <span class="extrato-item-value ${meta.valueCls}">${sign}${points.toLocaleString('pt-BR')}</span>
                     </div>`;
             }).join('');
         }
 
         function setExtratoType(type, el) {
             currentExtratoType = (type === 'all') ? null : type;
-            document.querySelectorAll('#points-extrato-modal .filter-tab[data-extrato-type]').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#points-extrato-modal .extrato-filter-btn[data-extrato-type]').forEach(t => t.classList.remove('active'));
             if (el) el.classList.add('active');
             applyExtratoFilters();
         }
 
         function setExtratoDays(days, el) {
             currentExtratoDays = (days === '0') ? null : days;
-            document.querySelectorAll('#points-extrato-modal .filter-tab[data-extrato-days]').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#points-extrato-modal .extrato-filter-btn[data-extrato-days]').forEach(t => t.classList.remove('active'));
             if (el) el.classList.add('active');
             applyExtratoFilters();
         }
@@ -6009,6 +6219,7 @@
 
             document.getElementById('adjust-client-name').innerText = name;
             document.getElementById('adjust-client-email').innerText = email || '—';
+            document.getElementById('adjust-client-balance').innerText = currentAdjustBalance.toLocaleString('pt-BR');
             document.getElementById('adjust-amount').value = 100;
             document.getElementById('adjust-reason').value = '';
 
@@ -6035,8 +6246,8 @@
             let valid = true;
 
             if (newBalance < 0) {
-                preview.className = 'adjust-preview error';
-                preview.innerHTML = `Saldo atual: <strong>${currentAdjustBalance.toLocaleString('pt-BR')}</strong> → Novo saldo: <strong>${newBalance.toLocaleString('pt-BR')}</strong><small>Remoção maior que o saldo disponível.</small>`;
+                preview.className = 'adjust-preview danger';
+                preview.innerHTML = `Saldo atual: <strong>${currentAdjustBalance.toLocaleString('pt-BR')}</strong> → Novo saldo: <strong>${newBalance.toLocaleString('pt-BR')}</strong><br>Remoção maior que o saldo disponível.`;
                 valid = false;
             } else {
                 preview.className = 'adjust-preview';
