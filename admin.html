@@ -2522,9 +2522,17 @@
             gap: 0.2rem;
         }
 
-        .points-metric.positive { color: var(--success); }
-        .points-metric.negative { color: var(--danger); }
-        .points-metric.expired  { color: var(--text-dim); }
+        .points-metric.positive {
+            color: var(--success);
+        }
+
+        .points-metric.negative {
+            color: var(--danger);
+        }
+
+        .points-metric.expired {
+            color: var(--text-dim);
+        }
 
         .points-actions-cell {
             display: flex;
@@ -2624,10 +2632,22 @@
             flex-shrink: 0;
         }
 
-        .extrato-item-value.earned     { color: var(--success); }
-        .extrato-item-value.redeemed   { color: var(--danger); }
-        .extrato-item-value.expired    { color: var(--text-dim); text-decoration: line-through; }
-        .extrato-item-value.adjustment { color: var(--gold); }
+        .extrato-item-value.earned {
+            color: var(--success);
+        }
+
+        .extrato-item-value.redeemed {
+            color: var(--danger);
+        }
+
+        .extrato-item-value.expired {
+            color: var(--text-dim);
+            text-decoration: line-through;
+        }
+
+        .extrato-item-value.adjustment {
+            color: var(--gold);
+        }
 
         /* Modal de ajuste */
         .adjust-info {
@@ -2763,6 +2783,7 @@
            ========================================================================== */
         .pedido-etiqueta-section {
             margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
@@ -3203,9 +3224,12 @@
                     <div class="section-header">
                         <div class="section-actions">
                             <div class="filter-tabs">
-                                <button class="filter-tab active" onclick="setReviewFilter('pending', this)">Pendentes</button>
-                                <button class="filter-tab" onclick="setReviewFilter('approved', this)">Aprovadas</button>
-                                <button class="filter-tab" onclick="setReviewFilter('rejected', this)">Rejeitadas</button>
+                                <button class="filter-tab active"
+                                    onclick="setReviewFilter('pending', this)">Pendentes</button>
+                                <button class="filter-tab"
+                                    onclick="setReviewFilter('approved', this)">Aprovadas</button>
+                                <button class="filter-tab"
+                                    onclick="setReviewFilter('rejected', this)">Rejeitadas</button>
                                 <button class="filter-tab" onclick="setReviewFilter('all', this)">Todas</button>
                             </div>
                             <input type="text" class="search-input" id="review-search"
@@ -3231,8 +3255,10 @@
                                 <button class="filter-tab active" onclick="setCouponFilter('all', this)">Todos</button>
                                 <button class="filter-tab" onclick="setCouponFilter('active', this)">Ativos</button>
                                 <button class="filter-tab" onclick="setCouponFilter('expired', this)">Expirados</button>
-                                <button class="filter-tab" onclick="setCouponFilter('individual', this)">Individuais</button>
-                                <button class="filter-tab" onclick="setCouponFilter('first_purchase', this)">1ª Compra</button>
+                                <button class="filter-tab"
+                                    onclick="setCouponFilter('individual', this)">Individuais</button>
+                                <button class="filter-tab" onclick="setCouponFilter('first_purchase', this)">1ª
+                                    Compra</button>
                             </div>
                         </div>
                         <div class="section-actions">
@@ -3261,8 +3287,10 @@
                                 placeholder="🔍 Buscar por nome ou email..." oninput="renderLoyaltyTable()">
                             <div class="filter-tabs">
                                 <button class="filter-tab active" onclick="setPointsFilter('all', this)">Todos</button>
-                                <button class="filter-tab" onclick="setPointsFilter('with_balance', this)">Com Saldo</button>
-                                <button class="filter-tab" onclick="setPointsFilter('without_balance', this)">Sem Saldo</button>
+                                <button class="filter-tab" onclick="setPointsFilter('with_balance', this)">Com
+                                    Saldo</button>
+                                <button class="filter-tab" onclick="setPointsFilter('without_balance', this)">Sem
+                                    Saldo</button>
                             </div>
                         </div>
                         <div class="section-actions">
@@ -3531,10 +3559,13 @@
                             </svg>
                             <div class="gallery-dropzone-text">Arraste fotos ou vídeos aqui</div>
                             <div class="gallery-dropzone-actions" id="gallery-dropzone-actions">
-                                <button type="button" class="gallery-btn" id="gallery-pick-btn">Escolher arquivos</button>
-                                <button type="button" class="gallery-btn gallery-btn-camera" id="gallery-camera-btn">Tirar foto</button>
+                                <button type="button" class="gallery-btn" id="gallery-pick-btn">Escolher
+                                    arquivos</button>
+                                <button type="button" class="gallery-btn gallery-btn-camera"
+                                    id="gallery-camera-btn">Tirar foto</button>
                             </div>
-                            <div class="gallery-limit-msg" id="gallery-limit-msg" hidden>Limite de 10 arquivos atingido.</div>
+                            <div class="gallery-limit-msg" id="gallery-limit-msg" hidden>Limite de 10 arquivos atingido.
+                            </div>
                             <input type="file" id="gallery-file-input"
                                 accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime" multiple hidden>
                             <input type="file" id="gallery-camera-input" accept="image/*" capture="environment" hidden>
@@ -3622,8 +3653,8 @@
                 <div class="form-group">
                     <label for="coupon-code">Código <span class="required">*</span></label>
                     <div class="input-with-btn">
-                        <input type="text" id="coupon-code" required maxlength="30"
-                            placeholder="Ex: BEMVINDA10" style="text-transform: uppercase;">
+                        <input type="text" id="coupon-code" required maxlength="30" placeholder="Ex: BEMVINDA10"
+                            style="text-transform: uppercase;">
                         <button type="button" class="btn-inline-search" onclick="generateCouponCode()">
                             🎲 Gerar
                         </button>
@@ -3646,7 +3677,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="coupon-value" id="coupon-value-label">Valor do desconto (%) <span class="required">*</span></label>
+                        <label for="coupon-value" id="coupon-value-label">Valor do desconto (%) <span
+                                class="required">*</span></label>
                         <input type="text" id="coupon-value" required placeholder="10" inputmode="decimal">
                     </div>
                 </div>
@@ -3685,8 +3717,7 @@
 
                 <div class="form-group">
                     <label for="coupon-customer-email">Email específico (cupom individual)</label>
-                    <input type="email" id="coupon-customer-email"
-                        placeholder="Deixe vazio para cupom público">
+                    <input type="email" id="coupon-customer-email" placeholder="Deixe vazio para cupom público">
                     <small class="form-hint">Se preenchido, o cupom só vale para esse email.</small>
                 </div>
 
@@ -3736,18 +3767,27 @@
             </div>
 
             <div class="extrato-filters">
-                <button class="extrato-filter-btn active" data-extrato-type="all" onclick="setExtratoType('all', this)">Todos</button>
-                <button class="extrato-filter-btn" data-extrato-type="earned" onclick="setExtratoType('earned', this)">Ganhos</button>
-                <button class="extrato-filter-btn" data-extrato-type="redeemed" onclick="setExtratoType('redeemed', this)">Resgates</button>
-                <button class="extrato-filter-btn" data-extrato-type="expired" onclick="setExtratoType('expired', this)">Expirados</button>
-                <button class="extrato-filter-btn" data-extrato-type="adjustment" onclick="setExtratoType('adjustment', this)">Ajustes</button>
+                <button class="extrato-filter-btn active" data-extrato-type="all"
+                    onclick="setExtratoType('all', this)">Todos</button>
+                <button class="extrato-filter-btn" data-extrato-type="earned"
+                    onclick="setExtratoType('earned', this)">Ganhos</button>
+                <button class="extrato-filter-btn" data-extrato-type="redeemed"
+                    onclick="setExtratoType('redeemed', this)">Resgates</button>
+                <button class="extrato-filter-btn" data-extrato-type="expired"
+                    onclick="setExtratoType('expired', this)">Expirados</button>
+                <button class="extrato-filter-btn" data-extrato-type="adjustment"
+                    onclick="setExtratoType('adjustment', this)">Ajustes</button>
             </div>
 
             <div class="extrato-filters">
-                <button class="extrato-filter-btn active" data-extrato-days="0" onclick="setExtratoDays('0', this)">Todo período</button>
-                <button class="extrato-filter-btn" data-extrato-days="30" onclick="setExtratoDays('30', this)">30d</button>
-                <button class="extrato-filter-btn" data-extrato-days="90" onclick="setExtratoDays('90', this)">90d</button>
-                <button class="extrato-filter-btn" data-extrato-days="365" onclick="setExtratoDays('365', this)">365d</button>
+                <button class="extrato-filter-btn active" data-extrato-days="0" onclick="setExtratoDays('0', this)">Todo
+                    período</button>
+                <button class="extrato-filter-btn" data-extrato-days="30"
+                    onclick="setExtratoDays('30', this)">30d</button>
+                <button class="extrato-filter-btn" data-extrato-days="90"
+                    onclick="setExtratoDays('90', this)">90d</button>
+                <button class="extrato-filter-btn" data-extrato-days="365"
+                    onclick="setExtratoDays('365', this)">365d</button>
             </div>
 
             <div id="extrato-list" class="extrato-list"></div>
@@ -3772,7 +3812,8 @@
 
             <div class="form-group">
                 <label for="adjust-amount">Quantidade (aceita + e -)</label>
-                <input type="number" id="adjust-amount" class="adjust-input" value="100" oninput="updateAdjustPreview()">
+                <input type="number" id="adjust-amount" class="adjust-input" value="100"
+                    oninput="updateAdjustPreview()">
             </div>
 
             <div class="adjust-quick-btns">
@@ -3784,14 +3825,16 @@
 
             <div class="form-group">
                 <label for="adjust-reason">Motivo <span class="required">*</span></label>
-                <input type="text" id="adjust-reason" placeholder="Ex: bônus de boas-vindas" maxlength="120" oninput="updateAdjustPreview()">
+                <input type="text" id="adjust-reason" placeholder="Ex: bônus de boas-vindas" maxlength="120"
+                    oninput="updateAdjustPreview()">
             </div>
 
             <div class="adjust-preview" id="adjust-preview">Saldo atual: 0 → Novo saldo: 0</div>
 
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeAdjustModal()">Cancelar</button>
-                <button type="button" class="btn-save" id="adjust-submit-btn" onclick="saveAdjust()">Aplicar ajuste</button>
+                <button type="button" class="btn-save" id="adjust-submit-btn" onclick="saveAdjust()">Aplicar
+                    ajuste</button>
             </div>
         </div>
     </div>
@@ -6495,11 +6538,11 @@
                         </thead>
                         <tbody>
                             ${filtered.map(c => {
-                                const email = c.customer_email || '';
-                                const name = c.customer_name || (email ? email.split('@')[0] : 'Cliente');
-                                const balance = Number(c.balance || 0);
-                                const userId = c.user_id || '';
-                                return `
+                const email = c.customer_email || '';
+                const name = c.customer_name || (email ? email.split('@')[0] : 'Cliente');
+                const balance = Number(c.balance || 0);
+                const userId = c.user_id || '';
+                return `
                                     <tr>
                                         <td>
                                             <div class="points-client-cell">
@@ -6524,7 +6567,7 @@
                                             </div>
                                         </td>
                                     </tr>`;
-                            }).join('')}
+            }).join('')}
                         </tbody>
                     </table>
                 </div>`;
@@ -6618,8 +6661,8 @@
                 const points = Number(t.points || 0);
                 const desc = t.description || t.reason ||
                     (type === 'earned' ? 'Pontos ganhos' :
-                     type === 'redeemed' ? 'Resgate de pontos' :
-                     type === 'expired' ? 'Pontos expirados' : 'Ajuste manual');
+                        type === 'redeemed' ? 'Resgate de pontos' :
+                            type === 'expired' ? 'Pontos expirados' : 'Ajuste manual');
                 const date = t.created_at ? formatDateShort(t.created_at) : '';
                 const sign = points > 0 ? '+' : '';
 
