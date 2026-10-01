@@ -2757,6 +2757,161 @@
                 flex: 1 1 calc(50% - 0.25rem);
             }
         }
+
+        /* ==========================================================================
+           ETIQUETA DE ENVIO (modal do pedido)
+           ========================================================================== */
+        .pedido-etiqueta-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .pedido-section-title {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 0.7rem;
+            font-weight: 700;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pedido-etiqueta-status {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            margin-bottom: 0.8rem;
+        }
+
+        .pedido-etiqueta-status.pending { border-left: 3px solid var(--text-dim); }
+        .pedido-etiqueta-status.ready { border-left: 3px solid var(--success); }
+        .pedido-etiqueta-status.warning { border-left: 3px solid var(--warning); }
+        .pedido-etiqueta-status.error { border-left: 3px solid var(--danger); }
+
+        .pedido-etiqueta-icon { font-size: 1.4rem; flex-shrink: 0; }
+
+        .pedido-etiqueta-info { flex: 1; min-width: 0; }
+
+        .pedido-etiqueta-label { font-size: 0.9rem; color: var(--text); font-weight: 600; }
+
+        .pedido-etiqueta-me-id { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+
+        .pedido-etiqueta-tracking {
+            background: rgba(212, 175, 55, 0.06);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .pedido-etiqueta-tracking-label {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+        }
+
+        .pedido-etiqueta-tracking-code {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .pedido-etiqueta-tracking-code code {
+            flex: 1;
+            background: #0e0e10;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gold);
+            padding: 0.45rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-copy-tracking {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.45rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .btn-copy-tracking:hover { border-color: var(--gold); color: var(--gold); }
+
+        .pedido-etiqueta-erro {
+            background: rgba(255, 85, 85, 0.08);
+            border: 1px solid rgba(255, 85, 85, 0.25);
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .pedido-etiqueta-erro strong { color: var(--danger); }
+
+        .pedido-etiqueta-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-gerar-etiqueta,
+        .btn-buscar-pdf,
+        .btn-abrir-pdf {
+            padding: 0.6rem 1.1rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            font-family: var(--font-body);
+            transition: all 0.25s ease;
+            border: none;
+        }
+
+        .btn-gerar-etiqueta {
+            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+            color: #0e0e10;
+        }
+
+        .btn-gerar-etiqueta:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
+
+        .btn-buscar-pdf {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--gold);
+        }
+
+        .btn-buscar-pdf:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.08); }
+
+        .btn-abrir-pdf {
+            background: var(--success);
+            color: #0e0e10;
+        }
+
+        .btn-abrir-pdf:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+        .btn-gerar-etiqueta:disabled,
+        .btn-buscar-pdf:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
     </style>
 </head>
 
@@ -5296,6 +5451,11 @@
                     </div>
                 </div>
 
+                <div class="pedido-etiqueta-section" id="pedido-etiqueta-section">
+                    <h3 class="pedido-section-title">📦 Etiqueta de Envio</h3>
+                    <div id="pedido-etiqueta-content"></div>
+                </div>
+
                 ${o.notes ? `<div class="order-detail-section"><h4>Observações</h4><p style="color:var(--text-muted);font-size:0.9rem;line-height:1.6;">${escapeHTML(o.notes)}</p></div>` : ''}
 
                 <div class="order-detail-section">
@@ -5305,10 +5465,189 @@
             `;
 
             document.getElementById('order-modal').classList.add('open');
+            renderEtiquetaSection(o);
         }
 
         function closeOrderModal() {
             document.getElementById('order-modal').classList.remove('open');
+        }
+
+        // ==========================================================================
+        // ETIQUETA DE ENVIO (Melhor Envio)
+        // ==========================================================================
+        let currentOrderInModal = null;
+
+        function renderEtiquetaSection(order) {
+            currentOrderInModal = order;
+            const container = document.getElementById('pedido-etiqueta-content');
+            if (!container) return;
+
+            const hasMeId = !!order.melhorenvio_order_id;
+            const hasLabelUrl = !!order.label_url;
+            const hasTracking = !!order.tracking_code;
+            const labelStatus = order.label_status;
+
+            // Status visual
+            let statusIcon = '⏳';
+            let statusText = 'Não gerada';
+            let statusClass = 'pending';
+
+            if (hasLabelUrl) {
+                statusIcon = '✅';
+                statusText = 'Pronta';
+                statusClass = 'ready';
+            } else if (labelStatus === 'generated') {
+                statusIcon = '⚠️';
+                statusText = 'Gerada, PDF pendente';
+                statusClass = 'warning';
+            } else if (labelStatus === 'error') {
+                statusIcon = '❌';
+                statusText = 'Erro na geração';
+                statusClass = 'error';
+            }
+
+            container.innerHTML = `
+                <div class="pedido-etiqueta-status ${statusClass}">
+                    <span class="pedido-etiqueta-icon">${statusIcon}</span>
+                    <div class="pedido-etiqueta-info">
+                        <div class="pedido-etiqueta-label">${statusText}</div>
+                        ${hasMeId ? `<div class="pedido-etiqueta-me-id">ME ID: ${escapeHTML(order.melhorenvio_order_id.slice(0, 13))}...</div>` : ''}
+                    </div>
+                </div>
+
+                ${hasTracking ? `
+                    <div class="pedido-etiqueta-tracking">
+                        <div class="pedido-etiqueta-tracking-label">📬 Código de rastreio</div>
+                        <div class="pedido-etiqueta-tracking-code">
+                            <code>${escapeHTML(order.tracking_code)}</code>
+                            <button type="button" class="btn-copy-tracking" onclick="copyTrackingCode('${escapeHTML(order.tracking_code)}')">
+                                Copiar
+                            </button>
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${labelStatus === 'error' ? `
+                    <div class="pedido-etiqueta-erro">
+                        <strong>Erro:</strong> ${escapeHTML(order.label_error || 'Erro desconhecido')}
+                    </div>
+                ` : ''}
+
+                <div class="pedido-etiqueta-actions">
+                    ${!hasMeId ? `
+                        <button type="button" class="btn-gerar-etiqueta" id="btn-gerar-etiqueta" onclick="handleGerarEtiqueta()">
+                            📦 Gerar Etiqueta
+                        </button>
+                    ` : ''}
+
+                    ${hasMeId && !hasLabelUrl ? `
+                        <button type="button" class="btn-buscar-pdf" id="btn-buscar-pdf" onclick="handleBuscarPdf()">
+                            🔍 Buscar PDF
+                        </button>
+                    ` : ''}
+
+                    ${hasLabelUrl ? `
+                        <button type="button" class="btn-abrir-pdf" onclick="handleAbrirPdf()">
+                            📄 Abrir PDF
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        async function handleGerarEtiqueta() {
+            if (!currentOrderInModal) return;
+            const btn = document.getElementById('btn-gerar-etiqueta');
+            if (!btn) return;
+
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Gerando...';
+
+            try {
+                const r = await fetch('https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/generate-shipping-label', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: currentOrderInModal.id })
+                });
+                const data = await r.json();
+
+                if (data.success) {
+                    currentOrderInModal.melhorenvio_order_id = data.melhorenvio_order_id;
+                    currentOrderInModal.label_status = 'generated';
+                    currentOrderInModal.label_url = data.label_url;
+                    currentOrderInModal.label_error = data.label_url ? null : 'URL do PDF ainda não disponível';
+
+                    if (data.label_url) {
+                        showToast('Etiqueta gerada e PDF pronto!', 'success');
+                    } else {
+                        showToast('Etiqueta gerada! PDF sendo processado...', 'info');
+                    }
+
+                    renderEtiquetaSection(currentOrderInModal);
+                } else {
+                    showToast(data.message || 'Erro ao gerar etiqueta', 'error');
+                }
+            } catch (e) {
+                console.error('Erro:', e);
+                showToast('Erro inesperado ao gerar etiqueta', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function handleBuscarPdf() {
+            if (!currentOrderInModal) return;
+            const btn = document.getElementById('btn-buscar-pdf');
+            if (!btn) return;
+
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '🔍 Buscando...';
+
+            try {
+                const r = await fetch('https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/fetch-label-url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: currentOrderInModal.id })
+                });
+                const data = await r.json();
+
+                if (data.success && data.label_url) {
+                    currentOrderInModal.label_url = data.label_url;
+                    currentOrderInModal.label_error = null;
+                    showToast('PDF encontrado!', 'success');
+                    renderEtiquetaSection(currentOrderInModal);
+                } else {
+                    showToast(data.message || 'PDF ainda não está pronto. Tente novamente em alguns segundos.', 'info');
+                }
+            } catch (e) {
+                console.error('Erro:', e);
+                showToast('Erro ao buscar PDF', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function handleAbrirPdf() {
+            if (!currentOrderInModal || !currentOrderInModal.label_url) return;
+            window.open(currentOrderInModal.label_url, '_blank', 'noopener');
+        }
+
+        function copyTrackingCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showToast(`Código ${code} copiado!`, 'success');
+            }).catch(() => {
+                const input = document.createElement('input');
+                input.value = code;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast(`Código ${code} copiado!`, 'success');
+            });
         }
 
         async function updateOrderStatus(orderId, newStatus) {
