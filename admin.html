@@ -2381,6 +2381,170 @@
                 font-size: 1.25rem;
             }
         }
+
+        /* ==========================================================================
+           PONTOS (programa de fidelidade)
+           ========================================================================== */
+        .loyalty-table-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow-x: auto;
+        }
+
+        .loyalty-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 780px;
+            font-size: 0.85rem;
+        }
+
+        .loyalty-table thead th {
+            text-align: left;
+            padding: 0.9rem 1rem;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .loyalty-table tbody td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            vertical-align: middle;
+        }
+
+        .loyalty-table tbody tr:last-child td { border-bottom: none; }
+        .loyalty-table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .loyalty-client-name { color: var(--text); font-weight: 600; }
+        .loyalty-client-email { font-size: 0.75rem; color: var(--text-dim); }
+
+        .loyalty-balance {
+            color: var(--gold);
+            font-weight: 700;
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            white-space: nowrap;
+        }
+
+        .loyalty-stats { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+        .loyalty-stat { font-size: 0.72rem; white-space: nowrap; }
+        .loyalty-stat b { color: var(--text); font-weight: 700; }
+        .loyalty-stat.earned b { color: var(--success); }
+        .loyalty-stat.redeemed b { color: var(--warning); }
+        .loyalty-stat.expired b { color: var(--text-dim); }
+
+        .loyalty-actions { display: flex; gap: 0.4rem; }
+        .loyalty-actions .action-btn { flex: 0 0 auto; padding: 0.4rem 0.6rem; }
+
+        /* Extrato */
+        .points-extrato-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .points-extrato-client { flex: 1; min-width: 0; }
+        .points-extrato-name { font-family: var(--font-title); font-size: 1.2rem; color: var(--text); font-weight: 700; }
+        .points-extrato-email { font-size: 0.8rem; color: var(--text-dim); word-break: break-all; }
+
+        .points-extrato-balance {
+            text-align: center;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 10px;
+            padding: 0.6rem 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .points-extrato-balance span {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .points-extrato-balance strong { font-family: var(--font-title); font-size: 1.4rem; color: var(--gold); }
+
+        .extrato-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+
+        .extrato-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.7rem 0.9rem;
+        }
+
+        .extrato-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .extrato-icon.earned { background: rgba(81, 207, 102, 0.14); }
+        .extrato-icon.redeemed { background: rgba(255, 85, 85, 0.14); }
+        .extrato-icon.expired { background: rgba(255, 255, 255, 0.07); }
+        .extrato-icon.adjustment { background: rgba(212, 175, 55, 0.14); }
+
+        .extrato-info { flex: 1; min-width: 0; }
+        .extrato-desc { font-size: 0.85rem; color: var(--text); line-height: 1.3; }
+        .extrato-date { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+
+        .extrato-value { font-weight: 700; font-size: 0.9rem; white-space: nowrap; }
+        .extrato-value.positive { color: var(--success); }
+        .extrato-value.negative { color: var(--danger); }
+        .extrato-value.expired { color: var(--text-dim); text-decoration: line-through; }
+        .extrato-value.adjustment { color: var(--gold); }
+
+        /* Ajuste */
+        .adjust-quick-btns { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+
+        .adjust-quick-btn {
+            flex: 1;
+            min-width: 70px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: all 0.25s;
+        }
+
+        .adjust-quick-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(212, 175, 55, 0.08); }
+
+        .adjust-preview {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.9rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .adjust-preview strong { color: var(--gold); }
+        .adjust-preview small { display: block; margin-top: 0.3rem; color: var(--danger); }
+        .adjust-preview.error { border-color: var(--danger); color: var(--danger); }
     </style>
 </head>
 
@@ -2432,6 +2596,10 @@
                 <a href="#" class="nav-item" data-section="cupons">
                     <span class="icon">🎟️</span> Cupons
                     <span class="nav-badge" id="nav-badge-coupons" style="display: none;">0</span>
+                </a>
+                <a href="#" class="nav-item" data-section="pontos">
+                    <span class="icon">💎</span> Pontos
+                    <span class="nav-badge" id="nav-badge-pontos" style="display: none;">0</span>
                 </a>
                 <a href="#" class="nav-item" data-section="clientes">
                     <span class="icon">👥</span> Clientes
@@ -2598,6 +2766,52 @@
                         <div class="empty-state">
                             <span class="icon">🎟️</span>
                             <p>Carregando cupons...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== PONTOS ==================== -->
+                <section class="content-section" id="section-pontos">
+                    <div class="section-header">
+                        <div class="section-actions">
+                            <input type="text" class="search-input" id="points-search"
+                                placeholder="🔍 Buscar por nome ou email..." oninput="renderLoyaltyTable()">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" onclick="setPointsFilter('all', this)">Todos</button>
+                                <button class="filter-tab" onclick="setPointsFilter('with_balance', this)">Com Saldo</button>
+                                <button class="filter-tab" onclick="setPointsFilter('without_balance', this)">Sem Saldo</button>
+                            </div>
+                        </div>
+                        <div class="section-actions">
+                            <button class="btn-export" onclick="exportLoyaltyCSV()">
+                                ⬇️ Exportar CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid" id="points-summary">
+                        <div class="metric-card">
+                            <span class="metric-label">Total em circulação</span>
+                            <span class="metric-value" id="points-sum-circulation">0</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Total ganho (histórico)</span>
+                            <span class="metric-value" id="points-sum-earned">0</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Total resgatado (histórico)</span>
+                            <span class="metric-value" id="points-sum-redeemed">0</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Total expirado (histórico)</span>
+                            <span class="metric-value" id="points-sum-expired">0</span>
+                        </div>
+                    </div>
+
+                    <div id="points-table-container">
+                        <div class="empty-state">
+                            <span class="icon">💎</span>
+                            <p>Carregando pontos...</p>
                         </div>
                     </div>
                 </section>
@@ -3026,6 +3240,83 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL: EXTRATO DE PONTOS ==================== -->
+    <div id="points-extrato-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeExtratoModal()">&times;</button>
+            <h2 class="modal-title">Extrato de Pontos</h2>
+
+            <div class="points-extrato-header">
+                <div class="points-extrato-client">
+                    <div class="points-extrato-name" id="extrato-client-name">—</div>
+                    <div class="points-extrato-email" id="extrato-client-email">—</div>
+                </div>
+                <div class="points-extrato-balance">
+                    <span>Saldo</span>
+                    <strong id="extrato-client-balance">0</strong>
+                </div>
+            </div>
+
+            <div class="filter-tabs" style="margin-bottom: 0.8rem;">
+                <button class="filter-tab active" data-extrato-type="all" onclick="setExtratoType('all', this)">Todos</button>
+                <button class="filter-tab" data-extrato-type="earned" onclick="setExtratoType('earned', this)">Ganhos</button>
+                <button class="filter-tab" data-extrato-type="redeemed" onclick="setExtratoType('redeemed', this)">Resgates</button>
+                <button class="filter-tab" data-extrato-type="expired" onclick="setExtratoType('expired', this)">Expirados</button>
+                <button class="filter-tab" data-extrato-type="adjustment" onclick="setExtratoType('adjustment', this)">Ajustes</button>
+            </div>
+
+            <div class="filter-tabs" style="margin-bottom: 1rem;">
+                <button class="filter-tab active" data-extrato-days="0" onclick="setExtratoDays('0', this)">Todo período</button>
+                <button class="filter-tab" data-extrato-days="30" onclick="setExtratoDays('30', this)">30d</button>
+                <button class="filter-tab" data-extrato-days="90" onclick="setExtratoDays('90', this)">90d</button>
+                <button class="filter-tab" data-extrato-days="365" onclick="setExtratoDays('365', this)">365d</button>
+            </div>
+
+            <div id="extrato-list" class="extrato-list"></div>
+            <button class="btn-export" id="extrato-load-more" onclick="loadMoreExtrato()"
+                style="width: 100%; justify-content: center; display: none;">Carregar mais</button>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: AJUSTE DE PONTOS ==================== -->
+    <div id="points-adjust-modal" class="modal-overlay">
+        <div class="modal-box narrow">
+            <button class="modal-close" onclick="closeAdjustModal()">&times;</button>
+            <h2 class="modal-title">Ajustar Pontos</h2>
+
+            <div class="points-extrato-client" style="margin-bottom: 1rem;">
+                <div class="points-extrato-name" id="adjust-client-name">—</div>
+                <div class="points-extrato-email" id="adjust-client-email">—</div>
+            </div>
+
+            <div id="adjust-feedback" class="modal-feedback"></div>
+
+            <div class="form-group">
+                <label for="adjust-amount">Quantidade (aceita + e -)</label>
+                <input type="number" id="adjust-amount" value="100" oninput="updateAdjustPreview()">
+            </div>
+
+            <div class="adjust-quick-btns">
+                <button type="button" class="adjust-quick-btn" onclick="setAdjustAmount(100)">+100</button>
+                <button type="button" class="adjust-quick-btn" onclick="setAdjustAmount(500)">+500</button>
+                <button type="button" class="adjust-quick-btn" onclick="setAdjustAmount(-100)">-100</button>
+                <button type="button" class="adjust-quick-btn" onclick="setAdjustAmount(-500)">-500</button>
+            </div>
+
+            <div class="form-group">
+                <label for="adjust-reason">Motivo <span class="required">*</span></label>
+                <input type="text" id="adjust-reason" placeholder="Ex: bônus de boas-vindas" maxlength="120" oninput="updateAdjustPreview()">
+            </div>
+
+            <div class="adjust-preview" id="adjust-preview">Saldo atual: 0 → Novo saldo: 0</div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeAdjustModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="adjust-submit-btn" onclick="saveAdjust()">Aplicar ajuste</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
@@ -3046,6 +3337,17 @@
         let pendingDeleteId = null;
         let allClients = [];
         let currentSettings = null;
+
+        // Pontos (fidelidade)
+        let allLoyaltySummary = [];
+        let currentPointsFilter = 'all';
+        let currentExtratoEmail = null;
+        let currentExtratoType = null;
+        let currentExtratoDays = null;
+        let currentExtratoOffset = 0;
+        let currentAdjustEmail = null;
+        let currentAdjustBalance = 0;
+        let currentAdjustUserId = null;
 
         let financeCharts = { sales: null, category: null };
         let financeState = { from: null, to: null, preset: 'month' };
@@ -3151,6 +3453,7 @@
                 await loadReviews();
                 await loadSettings();
                 await loadCoupons();
+                await loadLoyaltySummary();
                 updateDashboardMetrics();
 
             } catch (e) {
@@ -3173,6 +3476,7 @@
             pedidos: 'Pedidos',
             avaliacoes: 'Avaliações',
             cupons: 'Cupons',
+            pontos: 'Pontos',
             clientes: 'Clientes',
             financeiro: 'Financeiro',
             config: 'Configurações'
@@ -3190,6 +3494,7 @@
             if (sectionName === 'clientes') renderClients();
             if (sectionName === 'avaliacoes' && !reviewsLoaded) loadReviews();
             if (sectionName === 'cupons') loadCoupons();
+            if (sectionName === 'pontos') loadLoyaltySummary();
             if (sectionName === 'config') loadSettings();
             if (sectionName === 'financeiro') {
                 if (!financeState.from) {
@@ -5420,6 +5725,410 @@
 
             currentSettings = { ...currentSettings, ...payload };
             showToast('Configurações salvas!');
+        }
+
+        // ==========================================================================
+        // PONTOS (fidelidade)
+        // ==========================================================================
+        async function loadLoyaltySummary() {
+            const container = document.getElementById('points-table-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">💎</span>
+                        <p>Carregando pontos...</p>
+                    </div>`;
+            }
+
+            const { data, error } = await supabaseClient.rpc('get_loyalty_summary');
+
+            if (error) {
+                console.error('Erro ao carregar resumo de pontos:', error);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <span class="icon">💎</span>
+                            <p>Erro ao carregar pontos.</p>
+                        </div>`;
+                }
+                return;
+            }
+
+            allLoyaltySummary = Array.isArray(data) ? data : [];
+            updateLoyaltyBadge();
+            renderPointsSummary();
+            renderLoyaltyTable();
+        }
+
+        function updateLoyaltyBadge() {
+            const count = allLoyaltySummary.filter(c => Number(c.balance || 0) > 0).length;
+            const badge = document.getElementById('nav-badge-pontos');
+            if (badge) {
+                badge.innerText = count;
+                badge.style.display = count > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        function setPointsFilter(filter, el) {
+            currentPointsFilter = filter;
+            document.querySelectorAll('#section-pontos .filter-tab').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderLoyaltyTable();
+        }
+
+        function renderPointsSummary() {
+            const circulation = allLoyaltySummary.reduce((s, c) => s + Math.max(0, Number(c.balance || 0)), 0);
+            const earned = allLoyaltySummary.reduce((s, c) => s + Number(c.total_earned || 0), 0);
+            const redeemed = allLoyaltySummary.reduce((s, c) => s + Number(c.total_redeemed || 0), 0);
+            const expired = allLoyaltySummary.reduce((s, c) => s + Number(c.total_expired || 0), 0);
+
+            document.getElementById('points-sum-circulation').innerText = circulation.toLocaleString('pt-BR');
+            document.getElementById('points-sum-earned').innerText = earned.toLocaleString('pt-BR');
+            document.getElementById('points-sum-redeemed').innerText = redeemed.toLocaleString('pt-BR');
+            document.getElementById('points-sum-expired').innerText = expired.toLocaleString('pt-BR');
+        }
+
+        function renderLoyaltyTable() {
+            const container = document.getElementById('points-table-container');
+            if (!container) return;
+
+            const searchTerm = (document.getElementById('points-search')?.value || '').trim().toLowerCase();
+
+            let filtered = allLoyaltySummary.slice();
+
+            if (currentPointsFilter === 'with_balance') {
+                filtered = filtered.filter(c => Number(c.balance || 0) > 0);
+            } else if (currentPointsFilter === 'without_balance') {
+                filtered = filtered.filter(c => Number(c.balance || 0) <= 0);
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(c =>
+                    (c.customer_name || '').toLowerCase().includes(searchTerm) ||
+                    (c.customer_email || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">💎</span>
+                        <p>${allLoyaltySummary.length === 0 ? 'Nenhum cliente no programa de pontos ainda.' : 'Nenhum cliente com esse filtro.'}</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="loyalty-table-wrapper">
+                    <table class="loyalty-table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Saldo</th>
+                                <th>Ganho / Resgatado / Expirado</th>
+                                <th>Última atividade</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filtered.map(c => {
+                                const email = c.customer_email || '';
+                                const name = c.customer_name || (email ? email.split('@')[0] : 'Cliente');
+                                const balance = Number(c.balance || 0);
+                                const userId = c.user_id || '';
+                                return `
+                                    <tr>
+                                        <td>
+                                            <div class="loyalty-client-name">${escapeHTML(name)}</div>
+                                            ${email ? `<div class="loyalty-client-email">${escapeHTML(email)}</div>` : ''}
+                                        </td>
+                                        <td><span class="loyalty-balance">${balance.toLocaleString('pt-BR')}</span></td>
+                                        <td>
+                                            <div class="loyalty-stats">
+                                                <span class="loyalty-stat earned">+<b>${Number(c.total_earned || 0).toLocaleString('pt-BR')}</b></span>
+                                                <span class="loyalty-stat redeemed">-<b>${Number(c.total_redeemed || 0).toLocaleString('pt-BR')}</b></span>
+                                                <span class="loyalty-stat expired">~<b>${Number(c.total_expired || 0).toLocaleString('pt-BR')}</b></span>
+                                            </div>
+                                        </td>
+                                        <td>${escapeHTML(formatDateShort(c.last_activity_at))}</td>
+                                        <td>
+                                            <div class="loyalty-actions">
+                                                <button class="action-btn edit" onclick="openExtratoModal('${escapeHTML(email)}')">Ver extrato</button>
+                                                <button class="action-btn warn" onclick="openAdjustModal('${escapeHTML(email)}', ${balance}, '${escapeHTML(userId)}')">Ajustar</button>
+                                                <button class="action-btn" onclick="copyClientEmail('${escapeHTML(email)}')">Copiar email</button>
+                                            </div>
+                                        </td>
+                                    </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
+        // --- Extrato ---
+        async function openExtratoModal(email) {
+            currentExtratoEmail = email;
+            currentExtratoType = null;
+            currentExtratoDays = null;
+            currentExtratoOffset = 0;
+
+            document.querySelectorAll('#points-extrato-modal .filter-tab').forEach(t => t.classList.remove('active'));
+            const firstTypeTab = document.querySelector('#points-extrato-modal .filter-tab[data-extrato-type="all"]');
+            const firstDaysTab = document.querySelector('#points-extrato-modal .filter-tab[data-extrato-days="0"]');
+            if (firstTypeTab) firstTypeTab.classList.add('active');
+            if (firstDaysTab) firstDaysTab.classList.add('active');
+
+            const c = allLoyaltySummary.find(x => (x.customer_email || '') === email);
+            const name = c?.customer_name || (email ? email.split('@')[0] : 'Cliente');
+
+            document.getElementById('extrato-client-name').innerText = name;
+            document.getElementById('extrato-client-email').innerText = email || '—';
+            document.getElementById('extrato-client-balance').innerText = (c ? Number(c.balance || 0) : 0).toLocaleString('pt-BR');
+
+            document.getElementById('points-extrato-modal').classList.add('open');
+            document.getElementById('extrato-list').innerHTML = '<div class="empty-state"><span class="icon">💎</span><p>Carregando extrato...</p></div>';
+            document.getElementById('extrato-load-more').style.display = 'none';
+
+            await fetchExtrato(true);
+        }
+
+        async function fetchExtrato(reset) {
+            if (!currentExtratoEmail) return;
+
+            const listEl = document.getElementById('extrato-list');
+            const loadMoreBtn = document.getElementById('extrato-load-more');
+            if (loadMoreBtn) loadMoreBtn.disabled = true;
+
+            if (reset) currentExtratoOffset = 0;
+
+            const { data, error } = await supabaseClient.rpc('get_loyalty_extrato', {
+                p_customer_email: currentExtratoEmail,
+                p_type: currentExtratoType,
+                p_days: currentExtratoDays,
+                p_limit: 100,
+                p_offset: currentExtratoOffset
+            });
+
+            if (loadMoreBtn) loadMoreBtn.disabled = false;
+
+            if (error || !data || !data.success) {
+                console.error('Erro ao carregar extrato:', error || data?.error);
+                if (listEl && reset) {
+                    listEl.innerHTML = '<div class="empty-state"><span class="icon">💎</span><p>Erro ao carregar extrato.</p></div>';
+                }
+                return;
+            }
+
+            const transactions = data.transactions || [];
+            const total = Number(data.total || 0);
+            const html = renderExtratoItems(transactions);
+
+            if (reset) {
+                listEl.innerHTML = html || '<div class="empty-state"><span class="icon">💎</span><p>Nenhuma movimentação encontrada.</p></div>';
+            } else if (html) {
+                listEl.insertAdjacentHTML('beforeend', html);
+            }
+
+            currentExtratoOffset += transactions.length;
+
+            if (loadMoreBtn) {
+                loadMoreBtn.style.display = (currentExtratoOffset < total) ? 'flex' : 'none';
+            }
+        }
+
+        function extratoTypeMeta(type) {
+            switch (type) {
+                case 'earned': return { icon: '💎', cls: 'earned', valueCls: 'positive' };
+                case 'redeemed': return { icon: '🎟️', cls: 'redeemed', valueCls: 'negative' };
+                case 'expired': return { icon: '⏰', cls: 'expired', valueCls: 'expired' };
+                case 'adjustment': return { icon: '⚙️', cls: 'adjustment', valueCls: 'adjustment' };
+                default: return { icon: '💎', cls: 'earned', valueCls: 'positive' };
+            }
+        }
+
+        function renderExtratoItems(transactions) {
+            return (transactions || []).map(t => {
+                const type = t.type || 'earned';
+                const meta = extratoTypeMeta(type);
+                const points = Number(t.points || 0);
+                const desc = t.description || t.reason ||
+                    (type === 'earned' ? 'Pontos ganhos' :
+                     type === 'redeemed' ? 'Resgate de pontos' :
+                     type === 'expired' ? 'Pontos expirados' : 'Ajuste manual');
+                const date = t.created_at ? formatDateShort(t.created_at) : '';
+                const sign = points > 0 ? '+' : '';
+
+                return `
+                    <div class="extrato-item">
+                        <span class="extrato-icon ${meta.cls}">${meta.icon}</span>
+                        <div class="extrato-info">
+                            <div class="extrato-desc">${escapeHTML(desc)}</div>
+                            ${date ? `<div class="extrato-date">${escapeHTML(date)}</div>` : ''}
+                        </div>
+                        <span class="extrato-value ${meta.valueCls}">${sign}${points.toLocaleString('pt-BR')}</span>
+                    </div>`;
+            }).join('');
+        }
+
+        function setExtratoType(type, el) {
+            currentExtratoType = (type === 'all') ? null : type;
+            document.querySelectorAll('#points-extrato-modal .filter-tab[data-extrato-type]').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
+            applyExtratoFilters();
+        }
+
+        function setExtratoDays(days, el) {
+            currentExtratoDays = (days === '0') ? null : days;
+            document.querySelectorAll('#points-extrato-modal .filter-tab[data-extrato-days]').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
+            applyExtratoFilters();
+        }
+
+        async function applyExtratoFilters() {
+            document.getElementById('extrato-list').innerHTML = '<div class="empty-state"><span class="icon">💎</span><p>Carregando extrato...</p></div>';
+            document.getElementById('extrato-load-more').style.display = 'none';
+            await fetchExtrato(true);
+        }
+
+        async function loadMoreExtrato() {
+            await fetchExtrato(false);
+        }
+
+        function closeExtratoModal() {
+            document.getElementById('points-extrato-modal').classList.remove('open');
+        }
+
+        // --- Ajuste ---
+        function openAdjustModal(email, balance, userId) {
+            currentAdjustEmail = email;
+            currentAdjustBalance = Number(balance || 0);
+            currentAdjustUserId = userId || null;
+
+            const c = allLoyaltySummary.find(x => (x.customer_email || '') === email);
+            const name = c?.customer_name || (email ? email.split('@')[0] : 'Cliente');
+
+            document.getElementById('adjust-client-name').innerText = name;
+            document.getElementById('adjust-client-email').innerText = email || '—';
+            document.getElementById('adjust-amount').value = 100;
+            document.getElementById('adjust-reason').value = '';
+
+            const fb = document.getElementById('adjust-feedback');
+            if (fb) { fb.className = 'modal-feedback'; fb.innerText = ''; }
+
+            document.getElementById('points-adjust-modal').classList.add('open');
+            updateAdjustPreview();
+        }
+
+        function setAdjustAmount(value) {
+            document.getElementById('adjust-amount').value = value;
+            updateAdjustPreview();
+        }
+
+        function updateAdjustPreview() {
+            const amount = parseInt(document.getElementById('adjust-amount').value, 10) || 0;
+            const reason = document.getElementById('adjust-reason').value.trim();
+            const newBalance = currentAdjustBalance + amount;
+
+            const preview = document.getElementById('adjust-preview');
+            const submitBtn = document.getElementById('adjust-submit-btn');
+
+            let valid = true;
+
+            if (newBalance < 0) {
+                preview.className = 'adjust-preview error';
+                preview.innerHTML = `Saldo atual: <strong>${currentAdjustBalance.toLocaleString('pt-BR')}</strong> → Novo saldo: <strong>${newBalance.toLocaleString('pt-BR')}</strong><small>Remoção maior que o saldo disponível.</small>`;
+                valid = false;
+            } else {
+                preview.className = 'adjust-preview';
+                preview.innerHTML = `Saldo atual: <strong>${currentAdjustBalance.toLocaleString('pt-BR')}</strong> → Novo saldo: <strong>${newBalance.toLocaleString('pt-BR')}</strong>`;
+            }
+
+            if (reason.length < 5) valid = false;
+
+            submitBtn.disabled = !valid;
+        }
+
+        async function saveAdjust() {
+            const amount = parseInt(document.getElementById('adjust-amount').value, 10) || 0;
+            const reason = document.getElementById('adjust-reason').value.trim();
+
+            if (!currentAdjustEmail) return;
+            if (amount === 0) { showToast('Informe uma quantidade diferente de zero.', 'error'); return; }
+            if (reason.length < 5) { showToast('Motivo precisa ter pelo menos 5 caracteres.', 'error'); return; }
+            if (currentAdjustBalance + amount < 0) { showToast('Remoção maior que o saldo disponível.', 'error'); return; }
+
+            const btn = document.getElementById('adjust-submit-btn');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Aplicando...';
+
+            const { data, error } = await supabaseClient.rpc('adjust_loyalty_points', {
+                p_customer_email: currentAdjustEmail,
+                p_points: amount,
+                p_reason: reason,
+                p_user_id: currentAdjustUserId || null
+            });
+
+            btn.disabled = false;
+            btn.innerText = originalText;
+
+            if (error || !data || !data.success) {
+                console.error('Erro ao ajustar pontos:', error || data?.error);
+                showToast(data?.message || data?.error || 'Erro ao ajustar pontos.', 'error');
+                return;
+            }
+
+            showToast(data.message || 'Ajuste aplicado!');
+            closeAdjustModal();
+            await loadLoyaltySummary();
+        }
+
+        function closeAdjustModal() {
+            document.getElementById('points-adjust-modal').classList.remove('open');
+        }
+
+        async function copyClientEmail(email) {
+            if (!email) return;
+            try {
+                await navigator.clipboard.writeText(email);
+                showToast('Email copiado!');
+            } catch (e) {
+                const ta = document.createElement('textarea');
+                ta.value = email;
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); showToast('Email copiado!'); }
+                catch (e2) { showToast('Não foi possível copiar.', 'error'); }
+                document.body.removeChild(ta);
+            }
+        }
+
+        function exportLoyaltyCSV() {
+            if (allLoyaltySummary.length === 0) { showToast('Nada pra exportar ainda.', 'error'); return; }
+
+            const header = ['nome', 'email', 'saldo', 'total_ganho', 'total_resgatado', 'total_expirado', 'ultima_atividade'];
+            const rows = allLoyaltySummary.map(c => {
+                const email = c.customer_email || '';
+                return [
+                    (c.customer_name || (email ? email.split('@')[0] : 'Cliente')).replace(/;/g, ' '),
+                    email,
+                    Number(c.balance || 0),
+                    Number(c.total_earned || 0),
+                    Number(c.total_redeemed || 0),
+                    Number(c.total_expired || 0),
+                    c.last_activity_at ? formatDateShort(c.last_activity_at) : ''
+                ];
+            });
+
+            const csv = [header.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pontos-fidelidade.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('CSV exportado!');
         }
 
         // ==========================================================================
