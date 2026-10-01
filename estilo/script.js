@@ -3125,7 +3125,21 @@ function sendToWhatsApp(itemsParam = null) {
         finalShipping = 0;
     }
 
-    if (freeApplied || (appliedCoupon && appliedCoupon.free_shipping)) {
+    if (selectedShipping) {
+        // Frete real escolhido (Melhor Envio)
+        const carrier = selectedShipping.company?.name || '';
+        const method = selectedShipping.name || '';
+        const shippingLabel = [method, carrier].filter(Boolean).join(' — ');
+        message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(finalShipping)} (${shippingLabel})\n`;
+        if (selectedShipping.delivery_time) {
+            const days = Number(selectedShipping.delivery_time);
+            const daysText = days === 1 ? '1 dia útil' : `${days} dias úteis`;
+            message += ` *Prazo estimado:* ${daysText}\n`;
+        }
+    } else if (shippingDetails && shippingDetails.method === 'free') {
+        message += EMOJI_TRUCK + ` *Frete:* GRÁTIS ✨\n`;
+        message += ` *Prazo estimado:* 7 dias úteis\n`;
+    } else if (freeApplied || (appliedCoupon && appliedCoupon.free_shipping)) {
         message += EMOJI_TRUCK + ` *Frete:* GRÁTIS ✨\n`;
     } else if (shippingDetails) {
         message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(finalShipping)}\n`;
@@ -4191,6 +4205,35 @@ async function saveOrderToDb() {
 
     const finalTotal = subtotalPrice + finalShipping - discountAmount;
 
+    // Prepara os campos de frete do Melhor Envio
+    let meShippingFields = {
+        shipping_method: null,
+        shipping_service_id: null,
+        shipping_carrier: null,
+        shipping_estimated_days: null,
+        shipping_quote_data: null
+    };
+
+    if (selectedShipping) {
+        // Cliente escolheu frete real
+        meShippingFields = {
+            shipping_method: selectedShipping.name || null,
+            shipping_service_id: selectedShipping.id ? String(selectedShipping.id) : null,
+            shipping_carrier: selectedShipping.company?.name || null,
+            shipping_estimated_days: selectedShipping.delivery_time || null,
+            shipping_quote_data: selectedShipping
+        };
+    } else if (shippingDetails && shippingDetails.method === 'free') {
+        // Cliente ganhou frete grátis
+        meShippingFields = {
+            shipping_method: 'FREE',
+            shipping_service_id: null,
+            shipping_carrier: 'Grátis',
+            shipping_estimated_days: 7,
+            shipping_quote_data: null
+        };
+    }
+
     const orderPayload = {
         user_id: user?.id || null,
         customer_name: checkoutData.name,
@@ -4208,6 +4251,7 @@ async function saveOrderToDb() {
         items: items,
         subtotal: subtotalPrice,
         shipping_cost: finalShipping,
+        ...meShippingFields,
         discount_amount: discountAmount,
         discount_code: discountCode,
         total: finalTotal,
