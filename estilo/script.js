@@ -2176,13 +2176,24 @@ async function restoreCartFromStorage() {
 // Frete
 // ==========================================================================
 function getEffectiveShipping(subtotal) {
-    if (siteSettings.free_shipping_min > 0 && subtotal >= siteSettings.free_shipping_min) {
+    // a) Cliente escolheu frete real (Melhor Envio)
+    if (selectedShipping) {
+        return Number(selectedShipping.price) || 0;
+    }
+
+    // b) Frete grátis (método 'free' ou mínimo atingido)
+    if ((shippingDetails && shippingDetails.method === 'free') || isFreeShippingApplied(subtotal)) {
         return 0;
     }
 
-    if (!shippingDetails) return 0;
+    // c) Frete fixo ativo (fallback)
+    const shippingFixed = Number(siteSettings?.shipping_fixed) || 0;
+    if (shippingFixed > 0) {
+        return shippingFixed;
+    }
 
-    return shippingCost;
+    // d) Frete fixo desativado e nenhum frete escolhido → a calcular
+    return null;
 }
 
 function isFreeShippingApplied(subtotal) {
@@ -2504,7 +2515,6 @@ function updateCartUI() {
         });
     }
 
-    const freeApplied = isFreeShippingApplied(subtotalPrice);
     let effectiveShipping = getEffectiveShipping(subtotalPrice);
 
     // Calcula desconto do cupom
@@ -2522,21 +2532,21 @@ function updateCartUI() {
         discountCode = appliedCoupon.code;
     }
 
-    const finalTotal = subtotalPrice + effectiveShipping - discountAmount;
+    const finalTotal = subtotalPrice + (effectiveShipping || 0) - discountAmount;
 
     if (cartCount) cartCount.innerText = totalItems;
     if (cartSubtotalElement) cartSubtotalElement.innerText = formatCurrency(subtotalPrice);
 
     if (cartShippingElement) {
-        if (freeApplied || (appliedCoupon && appliedCoupon.free_shipping)) {
+        if (effectiveShipping === null) {
+            cartShippingElement.innerText = 'A calcular';
+            cartShippingElement.style.color = '#888';
+        } else if (effectiveShipping === 0) {
             cartShippingElement.innerText = 'GRÁTIS ✨';
             cartShippingElement.style.color = '#51cf66';
-        } else if (shippingDetails) {
-            cartShippingElement.innerText = formatCurrency(effectiveShipping);
-            cartShippingElement.style.color = '';
         } else {
-            cartShippingElement.innerText = 'A calcular';
-            cartShippingElement.style.color = '';
+            cartShippingElement.innerText = formatCurrency(effectiveShipping);
+            cartShippingElement.style.color = '#d4af37';
         }
     }
 
@@ -2555,7 +2565,13 @@ function updateCartUI() {
         }
     }
 
-    if (cartTotalElement) cartTotalElement.innerText = formatCurrency(finalTotal);
+    if (cartTotalElement) {
+        if (effectiveShipping === null) {
+            cartTotalElement.innerHTML = `${formatCurrency(finalTotal)} <small style="font-size: 0.7rem; color: #888; font-weight: 400;">(frete não incluso)</small>`;
+        } else {
+            cartTotalElement.innerText = formatCurrency(finalTotal);
+        }
+    }
 
     // Atualiza o botão "Ver meus cupons"
     updateCouponsSeeAllBtn();
@@ -3124,6 +3140,7 @@ function sendToWhatsApp(itemsParam = null) {
     if (appliedCoupon && appliedCoupon.free_shipping) {
         finalShipping = 0;
     }
+    if (finalShipping === null) finalShipping = 0;
 
     if (selectedShipping) {
         // Frete real escolhido (Melhor Envio)
@@ -3141,7 +3158,7 @@ function sendToWhatsApp(itemsParam = null) {
         message += ` *Prazo estimado:* 7 dias úteis\n`;
     } else if (freeApplied || (appliedCoupon && appliedCoupon.free_shipping)) {
         message += EMOJI_TRUCK + ` *Frete:* GRÁTIS ✨\n`;
-    } else if (shippingDetails) {
+    } else if (finalShipping > 0) {
         message += EMOJI_TRUCK + ` *Frete:* ${formatCurrency(finalShipping)}\n`;
     } else {
         message += EMOJI_TRUCK + ` *Frete:* Pendente (calcular por CEP)\n`;
@@ -3882,8 +3899,28 @@ async function handleTestimonialSubmit(event) {
 // ==========================================================================
 // Checkout
 // ==========================================================================
-function openCheckoutModal() {
+async function openCheckoutModal() {
     if (cart.length === 0) { showToast('Seu carrinho está vazio.', 'error'); return; }
+
+    // Se o frete ainda não foi definido (shipping_fixed = 0 e sem Melhor Envio),
+    // e o cliente tem dados de checkout (logado ou CEP salvo), bloqueia.
+    const subtotalForShipping = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    if (getEffectiveShipping(subtotalForShipping) === null) {
+        const checkoutData = JSON.parse(localStorage.getItem('gemas_checkout_data') || 'null');
+        let hasCheckoutInfo = !!(checkoutData && checkoutData.cep);
+
+        if (!hasCheckoutInfo) {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                hasCheckoutInfo = !!user;
+            } catch (e) { hasCheckoutInfo = false; }
+        }
+
+        if (hasCheckoutInfo) {
+            showToast('Calcule o frete antes de finalizar', 'error');
+            return;
+        }
+    }
 
     const cartDrawer = document.getElementById('cart-drawer');
     const wishlistDrawer = document.getElementById('wishlist-drawer');
@@ -4202,6 +4239,8 @@ async function saveOrderToDb() {
         discountCode = appliedCoupon.code;
         if (appliedCoupon.free_shipping) finalShipping = 0;
     }
+
+    if (finalShipping === null) finalShipping = 0;
 
     const finalTotal = subtotalPrice + finalShipping - discountAmount;
 
