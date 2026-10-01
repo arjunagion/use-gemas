@@ -2759,158 +2759,274 @@
         }
 
         /* ==========================================================================
-           ETIQUETA DE ENVIO (modal do pedido)
+           ETIQUETA DE ENVIO — Modal do Pedido (Admin)
            ========================================================================== */
         .pedido-etiqueta-section {
-            margin-bottom: 1.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .pedido-section-title {
-            font-size: 0.75rem;
-            color: var(--text-dim);
+        .pedido-etiqueta-section .pedido-section-title {
+            font-size: 0.72rem;
+            color: var(--text-dim, #888);
             text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin-bottom: 0.7rem;
+            letter-spacing: 1.5px;
             font-weight: 700;
-            padding-bottom: 0.4rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 0 0 0.8rem 0;
         }
 
+        /* ---------- Status badge ---------- */
         .pedido-etiqueta-status {
             display: flex;
             align-items: center;
-            gap: 0.7rem;
-            padding: 0.8rem 1rem;
+            gap: 0.8rem;
+            padding: 0.9rem 1rem;
             border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
             margin-bottom: 0.8rem;
+            border: 1px solid;
+            transition: all 0.2s ease;
         }
 
-        .pedido-etiqueta-status.pending { border-left: 3px solid var(--text-dim); }
-        .pedido-etiqueta-status.ready { border-left: 3px solid var(--success); }
-        .pedido-etiqueta-status.warning { border-left: 3px solid var(--warning); }
-        .pedido-etiqueta-status.error { border-left: 3px solid var(--danger); }
+        .pedido-etiqueta-status.pending {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
 
-        .pedido-etiqueta-icon { font-size: 1.4rem; flex-shrink: 0; }
+        .pedido-etiqueta-status.ready {
+            background: rgba(81, 207, 102, 0.08);
+            border-color: rgba(81, 207, 102, 0.3);
+        }
 
-        .pedido-etiqueta-info { flex: 1; min-width: 0; }
+        .pedido-etiqueta-status.warning {
+            background: rgba(255, 193, 7, 0.08);
+            border-color: rgba(255, 193, 7, 0.3);
+        }
 
-        .pedido-etiqueta-label { font-size: 0.9rem; color: var(--text); font-weight: 600; }
+        .pedido-etiqueta-status.error {
+            background: rgba(255, 85, 85, 0.08);
+            border-color: rgba(255, 85, 85, 0.3);
+        }
 
-        .pedido-etiqueta-me-id { font-size: 0.72rem; color: var(--text-dim); margin-top: 2px; }
+        .pedido-etiqueta-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
 
+        .pedido-etiqueta-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .pedido-etiqueta-label {
+            font-size: 0.9rem;
+            color: var(--text-primary, #fff);
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .pedido-etiqueta-status.ready .pedido-etiqueta-label {
+            color: #6bfbce;
+        }
+
+        .pedido-etiqueta-status.warning .pedido-etiqueta-label {
+            color: #ffc107;
+        }
+
+        .pedido-etiqueta-status.error .pedido-etiqueta-label {
+            color: #ff6b6b;
+        }
+
+        .pedido-etiqueta-me-id {
+            font-size: 0.72rem;
+            color: var(--text-dim, #888);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* ---------- Rastreio ---------- */
         .pedido-etiqueta-tracking {
             background: rgba(212, 175, 55, 0.06);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.25);
             border-radius: 10px;
             padding: 0.8rem 1rem;
             margin-bottom: 0.8rem;
         }
 
         .pedido-etiqueta-tracking-label {
-            font-size: 0.72rem;
-            color: var(--text-dim);
+            font-size: 0.68rem;
+            color: var(--text-dim, #888);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
+            font-weight: 700;
             margin-bottom: 0.4rem;
-            font-weight: 600;
         }
 
         .pedido-etiqueta-tracking-code {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            justify-content: space-between;
+            gap: 0.8rem;
         }
 
         .pedido-etiqueta-tracking-code code {
-            flex: 1;
-            background: #0e0e10;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--gold);
-            padding: 0.45rem 0.7rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--gold, #d4af37);
             letter-spacing: 1px;
+            background: transparent;
+            padding: 0;
         }
 
         .btn-copy-tracking {
             background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 0.45rem 0.8rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: var(--gold, #d4af37);
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
             font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             cursor: pointer;
-            font-family: var(--font-body);
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
+            font-family: inherit;
             white-space: nowrap;
         }
 
-        .btn-copy-tracking:hover { border-color: var(--gold); color: var(--gold); }
-
-        .pedido-etiqueta-erro {
-            background: rgba(255, 85, 85, 0.08);
-            border: 1px solid rgba(255, 85, 85, 0.25);
-            border-radius: 8px;
-            padding: 0.7rem 0.9rem;
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-bottom: 0.8rem;
-            line-height: 1.5;
+        .btn-copy-tracking:hover {
+            background: rgba(212, 175, 55, 0.12);
+            border-color: var(--gold, #d4af37);
         }
 
-        .pedido-etiqueta-erro strong { color: var(--danger); }
+        /* ---------- Erro ---------- */
+        .pedido-etiqueta-erro {
+            background: rgba(255, 85, 85, 0.08);
+            border-left: 3px solid #ff5555;
+            border-radius: 6px;
+            padding: 0.7rem 0.9rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.82rem;
+            color: #ff9b9b;
+            line-height: 1.5;
+            word-break: break-word;
+        }
 
+        .pedido-etiqueta-erro strong {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+
+        /* ---------- Ações (botões) ---------- */
         .pedido-etiqueta-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.6rem;
             flex-wrap: wrap;
         }
 
-        .btn-gerar-etiqueta,
-        .btn-buscar-pdf,
-        .btn-abrir-pdf {
-            padding: 0.6rem 1.1rem;
+        .pedido-etiqueta-actions button {
+            flex: 1;
+            min-width: 140px;
+            padding: 0.75rem 1.2rem;
             border-radius: 8px;
-            font-size: 0.78rem;
-            font-weight: 600;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
             cursor: pointer;
-            letter-spacing: 0.5px;
-            font-family: var(--font-body);
             transition: all 0.25s ease;
-            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
         }
 
+        /* Botão "Gerar Etiqueta" */
         .btn-gerar-etiqueta {
             background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
             color: #0e0e10;
+            border: none;
         }
 
-        .btn-gerar-etiqueta:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3); }
-
-        .btn-buscar-pdf {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--gold);
+        .btn-gerar-etiqueta:hover:not(:disabled) {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
         }
 
-        .btn-buscar-pdf:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.08); }
-
-        .btn-abrir-pdf {
-            background: var(--success);
-            color: #0e0e10;
-        }
-
-        .btn-abrir-pdf:hover { transform: translateY(-1px); filter: brightness(1.05); }
-
-        .btn-gerar-etiqueta:disabled,
-        .btn-buscar-pdf:disabled {
+        .btn-gerar-etiqueta:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
+            filter: none;
+        }
+
+        /* Botão "Buscar PDF" */
+        .btn-buscar-pdf {
+            background: transparent;
+            color: var(--gold, #d4af37);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-buscar-pdf:hover:not(:disabled) {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold, #d4af37);
+        }
+
+        .btn-buscar-pdf:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Botão "Abrir PDF" */
+        .btn-abrir-pdf {
+            background: linear-gradient(135deg, #51cf66 0%, #2f9e44 100%);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-abrir-pdf:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.08);
+            box-shadow: 0 4px 14px rgba(81, 207, 102, 0.3);
+        }
+
+        /* ---------- Mobile ---------- */
+        @media (max-width: 600px) {
+            .pedido-etiqueta-status {
+                padding: 0.75rem 0.9rem;
+                gap: 0.6rem;
+            }
+
+            .pedido-etiqueta-icon {
+                font-size: 1.2rem;
+            }
+
+            .pedido-etiqueta-label {
+                font-size: 0.82rem;
+            }
+
+            .pedido-etiqueta-tracking-code {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .btn-copy-tracking {
+                align-self: flex-end;
+            }
+
+            .pedido-etiqueta-actions {
+                flex-direction: column;
+            }
+
+            .pedido-etiqueta-actions button {
+                width: 100%;
+                min-width: auto;
+            }
         }
     </style>
 </head>
