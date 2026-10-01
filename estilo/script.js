@@ -2191,58 +2191,262 @@ function isFreeShippingApplied(subtotal) {
 }
 
 async function calculateShipping() {
-    const cepInput = document.getElementById('cep-input');
-    const shippingResult = document.getElementById('shipping-result');
-    if (!cepInput || !shippingResult) return;
+    const input = document.getElementById('cep-input');
+    const btn = document.getElementById('btn-calculate-shipping');
+    const feedback = document.getElementById('shipping-feedback');
+    const optionsEl = document.getElementById('shipping-options');
+    const inputWrapper = document.getElementById('shipping-input-wrapper');
 
-    const cep = cepInput.value.replace(/\D/g, '');
+    if (!input || !btn || !feedback || !optionsEl) return;
+
+    // Pega CEP limpo
+    const cep = input.value.replace(/\D/g, '');
+
     if (cep.length !== 8) {
-        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Digite um CEP com 8 dígitos.</span>`;
+        feedback.className = 'shipping-feedback error';
+        feedback.innerText = 'Digite um CEP válido (8 dígitos)';
         return;
     }
 
-    shippingResult.innerHTML = `<span style="color: #d4af37;">Buscando localidade...</span>`;
+    // Salva no localStorage
+    try { localStorage.setItem('gemas_shipping_cep', cep); } catch (e) {}
+
+    // Bloqueia botão
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Calculando...';
+    feedback.className = 'shipping-feedback';
+    feedback.innerText = '';
 
     try {
-        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        // Calcula subtotal + valor declarado
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const valorDeclarado = subtotal;
+
+        // Chama Edge Function
+        const response = await fetch(
+            'https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/calculate-shipping',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cep_destino: cep,
+                    peso_kg: 1.0,
+                    valor_declarado: valorDeclarado
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error('Falha ao calcular frete');
+        }
+
         const data = await response.json();
 
-        if (data.erro) {
-            shippingResult.innerHTML = `<span style="color: #ff6b6b;">CEP não encontrado.</span>`;
-            shippingCost = 0;
-            shippingDetails = null;
-        } else {
-            shippingCost = Number(siteSettings.shipping_fixed) || 0;
-            shippingDetails = { cep: data.cep, city: data.localidade, uf: data.uf };
-
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const freeApplied = isFreeShippingApplied(subtotal);
-
-            if (freeApplied) {
-                shippingResult.innerHTML = `
-                    <div style="color: #6bfbce; font-weight: 500;">${EMOJI_PIN} ${data.localidade} - ${data.uf}</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
-                        <span style="color: #aaa;">Entrega Estimada:</span>
-                        <strong style="color: #51cf66;">GRÁTIS ✨</strong>
-                    </div>
-                `;
-            } else {
-                shippingResult.innerHTML = `
-                    <div style="color: #6bfbce; font-weight: 500;">${EMOJI_PIN} ${data.localidade} - ${data.uf}</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.3rem;">
-                        <span style="color: #aaa;">Entrega Estimada:</span>
-                        <strong style="color: #d4af37;">${formatCurrency(shippingCost)}</strong>
-                    </div>
-                `;
-            }
+        if (!data.success || !data.quotes || data.quotes.length === 0) {
+            feedback.className = 'shipping-feedback error';
+            feedback.innerText = 'Nenhuma opção de frete disponível pra esse CEP';
+            return;
         }
-    } catch (error) {
-        shippingResult.innerHTML = `<span style="color: #ff6b6b;">Erro de conexão. Tente novamente.</span>`;
+
+        // Salva quotes global
+        shippingQuotes = data.quotes;
+
+        // Verifica frete grátis
+        const freeShippingMin = Number(siteSettings?.free_shipping_min || 400);
+        const isFreeShipping = subtotal >= freeShippingMin;
+
+        // Renderiza
+        renderShippingOptions(isFreeShipping);
+
+        // Esconde input de CEP, mostra opções
+        inputWrapper.style.display = 'none';
+        optionsEl.style.display = 'block';
+
+    } catch (e) {
+        console.error('Erro ao calcular frete:', e);
+        feedback.className = 'shipping-feedback error';
+        feedback.innerText = 'Erro ao calcular frete. Tente novamente.';
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+}
+
+function renderShippingOptions(isFreeShipping) {
+    const optionsEl = document.getElementById('shipping-options');
+    if (!optionsEl) return;
+
+    // Caso 1: frete grátis
+    if (isFreeShipping) {
+        optionsEl.innerHTML = `
+            <div class="shipping-option selected free-shipping" 
+                 onclick="selectShippingOption('free')">
+                <div class="shipping-option-radio">
+                    <input type="radio" name="shipping-option" value="free" checked>
+                </div>
+                <div class="shipping-option-info">
+                    <div class="shipping-option-name">FRETE GRÁTIS ✨</div>
+                    <div class="shipping-option-meta">Aproveite! Sua compra passou do mínimo</div>
+                </div>
+                <div class="shipping-option-price">GRÁTIS</div>
+            </div>
+            <button type="button" class="btn-change-cep" onclick="resetShipping()">
+                Calcular outro CEP
+            </button>
+        `;
+
+        // Aplica frete grátis
         shippingCost = 0;
-        shippingDetails = null;
+        shippingDetails = { method: 'free', carrier: 'Grátis', price: 0 };
+        updateCartUI();
+        return;
     }
 
+    // Caso 2: cotações normais
+    optionsEl.innerHTML = shippingQuotes.map((quote, idx) => {
+        const isSelected = idx === 0;
+        const selectedClass = isSelected ? 'selected' : '';
+        const checkedAttr = isSelected ? 'checked' : '';
+        const days = quote.delivery_time;
+        const daysText = days === 1 ? '1 dia útil' : `${days} dias úteis`;
+        const carrierName = quote.company.name;
+
+        return `
+            <div class="shipping-option ${selectedClass}" 
+                 onclick="selectShippingOption(${idx})">
+                <div class="shipping-option-radio">
+                    <input type="radio" name="shipping-option" 
+                           value="${idx}" ${checkedAttr}>
+                </div>
+                <div class="shipping-option-info">
+                    <div class="shipping-option-name">
+                        ${escapeHTML(carrierName)} ${escapeHTML(quote.name)}
+                    </div>
+                    <div class="shipping-option-meta">${daysText}</div>
+                </div>
+                <div class="shipping-option-price">
+                    ${escapeHTML(quote.price_formatted)}
+                </div>
+            </div>
+        `;
+    }).join('') + `
+        <button type="button" class="btn-change-cep" onclick="resetShipping()">
+            Calcular outro CEP
+        </button>
+    `;
+
+    // Seleciona automaticamente a primeira opção (menor preço)
+    if (shippingQuotes.length > 0) {
+        selectShippingOption(0);
+    }
+}
+
+function selectShippingOption(index) {
+    const optionsEl = document.getElementById('shipping-options');
+    if (!optionsEl) return;
+
+    // Remove seleção visual anterior
+    optionsEl.querySelectorAll('.shipping-option').forEach(el => {
+        el.classList.remove('selected');
+    });
+
+    // Caso frete grátis
+    if (index === 'free') {
+        const freeEl = optionsEl.querySelector('.shipping-option.free-shipping');
+        if (freeEl) freeEl.classList.add('selected');
+        const radio = freeEl?.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+
+        selectedShipping = null;
+        shippingCost = 0;
+        shippingDetails = { method: 'free', carrier: 'Grátis', price: 0 };
+        updateCartUI();
+        return;
+    }
+
+    // Caso normal
+    const idx = Number(index);
+    const options = optionsEl.querySelectorAll('.shipping-option:not(.free-shipping)');
+    const selectedEl = options[idx];
+    if (!selectedEl) return;
+
+    selectedEl.classList.add('selected');
+    const radio = selectedEl.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
+
+    const quote = shippingQuotes[idx];
+    if (!quote) return;
+
+    selectedShipping = quote;
+    shippingCost = Number(quote.price);
+    shippingDetails = {
+        method: quote.name,
+        carrier: quote.company.name,
+        price: Number(quote.price),
+        delivery_time: quote.delivery_time,
+        service_id: quote.id
+    };
+
     updateCartUI();
+}
+
+function resetShipping() {
+    const inputWrapper = document.getElementById('shipping-input-wrapper');
+    const optionsEl = document.getElementById('shipping-options');
+    const input = document.getElementById('cep-input');
+    const feedback = document.getElementById('shipping-feedback');
+
+    shippingQuotes = [];
+    selectedShipping = null;
+    shippingCost = 0;
+    shippingDetails = null;
+
+    if (inputWrapper) inputWrapper.style.display = 'block';
+    if (optionsEl) {
+        optionsEl.style.display = 'none';
+        optionsEl.innerHTML = '';
+    }
+    if (input) input.value = '';
+    if (feedback) {
+        feedback.className = 'shipping-feedback';
+        feedback.innerText = '';
+    }
+
+    // Limpa CEP salvo
+    try { localStorage.removeItem('gemas_shipping_cep'); } catch (e) {}
+
+    updateCartUI();
+}
+
+// Máscara automática do CEP
+function applyCEPMask(value) {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    if (digits.length <= 5) return digits;
+    return digits.slice(0, 5) + '-' + digits.slice(5);
+}
+
+// Inicializa máscara + restaura CEP salvo
+function initShipping() {
+    const input = document.getElementById('cep-input');
+    if (!input) return;
+
+    // Aplica máscara enquanto digita
+    input.addEventListener('input', (e) => {
+        e.target.value = applyCEPMask(e.target.value);
+    });
+
+    // Restaura CEP salvo (se tiver)
+    try {
+        const savedCep = localStorage.getItem('gemas_shipping_cep');
+        if (savedCep && savedCep.length === 8) {
+            input.value = applyCEPMask(savedCep);
+            // Só calcula automaticamente se o carrinho tiver itens
+            if (cart.length > 0) {
+                setTimeout(() => calculateShipping(), 300);
+            }
+        }
+    } catch (e) {}
 }
 
 function updateCartUI() {
@@ -4568,6 +4772,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateFavoritesUI();
     updateCartUI();
     updateCouponsSeeAllBtn();
+    initShipping();
 
     // Verifica se deve abrir o carrinho automaticamente (?open_cart=1)
     const openCartParams = new URLSearchParams(window.location.search);
