@@ -5,6 +5,8 @@ let cart = [];
 let shippingCost = 0;
 let shippingDetails = null;
 let cartRestored = false; // flag: carrinho já restaurado do storage no boot
+let shippingQuotes = [];       // array de cotações retornadas pela API
+let selectedShipping = null;   // cotação escolhida pelo cliente (objeto)
 
 // ==========================================================================
 // Persistência do carrinho (localStorage)
