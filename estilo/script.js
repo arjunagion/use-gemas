@@ -2,7 +2,6 @@
 // Estado Global
 // ==========================================================================
 let cart = [];
-let shippingCost = 0;
 let shippingDetails = null;
 let cartRestored = false; // flag: carrinho já restaurado do storage no boot
 let shippingQuotes = [];       // array de cotações retornadas pela API
@@ -2308,7 +2307,6 @@ function renderShippingOptions(isFreeShipping) {
         `;
 
         // Aplica frete grátis
-        shippingCost = 0;
         shippingDetails = { method: 'free', carrier: 'Grátis', price: 0 };
         updateCartUI();
         return;
@@ -2370,7 +2368,6 @@ function selectShippingOption(index) {
         if (radio) radio.checked = true;
 
         selectedShipping = null;
-        shippingCost = 0;
         shippingDetails = { method: 'free', carrier: 'Grátis', price: 0 };
         updateCartUI();
         return;
@@ -2390,7 +2387,6 @@ function selectShippingOption(index) {
     if (!quote) return;
 
     selectedShipping = quote;
-    shippingCost = Number(quote.price);
     shippingDetails = {
         method: quote.name,
         carrier: quote.company.name,
@@ -2410,7 +2406,6 @@ function resetShipping() {
 
     shippingQuotes = [];
     selectedShipping = null;
-    shippingCost = 0;
     shippingDetails = null;
 
     if (inputWrapper) inputWrapper.style.display = 'block';
@@ -2475,7 +2470,6 @@ function updateCartUI() {
 
     if (cart.length === 0) {
         cartItemsContainer.innerHTML = `<p style="color: #888; text-align: center; margin-top: 2rem;">Seu carrinho está vazio.</p>`;
-        shippingCost = 0;
         shippingDetails = null;
         const cepInput = document.getElementById('cep-input');
         if (cepInput) cepInput.value = '';
@@ -4436,7 +4430,6 @@ async function fetchShippingForCheckout(cepRaw) {
         const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const data = await response.json();
         if (!data.erro) {
-            shippingCost = Number(siteSettings.shipping_fixed) || 0;
             shippingDetails = { cep: data.cep, city: data.localidade, uf: data.uf };
             updateCartUI();
         }
