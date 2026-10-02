@@ -2209,6 +2209,39 @@ async function calculateShipping() {
 
     if (!input || !btn || !feedback || !optionsEl) return;
 
+    // Modo 'fixed' — ignora ME completamente
+    const mode = siteSettings?.shipping_mode || 'me';
+    if (mode === 'fixed') {
+        const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const freeMin = Number(siteSettings?.free_shipping_min || 0);
+        const isFree = freeMin > 0 && subtotal >= freeMin;
+        const fixed = Number(siteSettings?.shipping_fixed || 0);
+
+        selectedShipping = null;
+        shippingDetails = {
+            method: 'Fixo',
+            carrier: 'Padrão',
+            price: isFree ? 0 : fixed,
+            is_fallback: false
+        };
+
+        feedback.className = 'shipping-feedback';
+        feedback.innerText = '';
+        inputWrapper.style.display = 'none';
+        optionsEl.style.display = 'block';
+        optionsEl.innerHTML = `
+            <div class="shipping-option selected ${isFree ? 'free-shipping' : ''}">
+                <div class="shipping-option-info">
+                    <div class="shipping-option-name">${isFree ? 'FRETE GRÁTIS ✨' : 'Frete padrão'}</div>
+                    <div class="shipping-option-meta">${isFree ? 'Sua compra passou do mínimo' : 'Valor fixo aplicado'}</div>
+                </div>
+                <div class="shipping-option-price">${isFree ? 'GRÁTIS' : formatCurrency(fixed)}</div>
+            </div>
+        `;
+        updateCartUI();
+        return;
+    }
+
     // Pega CEP limpo
     const cep = input.value.replace(/\D/g, '');
 
@@ -2254,9 +2287,7 @@ async function calculateShipping() {
         const data = await response.json();
 
         if (!data.success || !data.quotes || data.quotes.length === 0) {
-            feedback.className = 'shipping-feedback error';
-            feedback.innerText = 'Nenhuma opção de frete disponível pra esse CEP';
-            return;
+            throw new Error('Nenhuma opção de frete disponível pra esse CEP');
         }
 
         // Salva quotes global
@@ -2275,8 +2306,40 @@ async function calculateShipping() {
 
     } catch (e) {
         console.error('Erro ao calcular frete:', e);
+
+        // ME falhou — tenta fallback fixo (só se shipping_fixed > 0)
+        const fixedFallback = Number(siteSettings?.shipping_fixed || 0);
+        const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+        const freeMin = Number(siteSettings?.free_shipping_min || 0);
+        const isFree = freeMin > 0 && subtotal >= freeMin;
+
+        if (fixedFallback > 0) {
+            selectedShipping = null;
+            shippingDetails = {
+                method: 'Fixo',
+                carrier: 'Padrão',
+                price: isFree ? 0 : fixedFallback,
+                is_fallback: true
+            };
+
+            inputWrapper.style.display = 'none';
+            optionsEl.style.display = 'block';
+            optionsEl.innerHTML = `
+                <div class="shipping-option selected ${isFree ? 'free-shipping' : ''}">
+                    <div class="shipping-option-info">
+                        <div class="shipping-option-name">${isFree ? 'FRETE GRÁTIS ✨' : 'Frete padrão'}</div>
+                        <div class="shipping-option-meta">${isFree ? 'Sua compra passou do mínimo' : 'Frete fixo aplicado como reserva'}</div>
+                    </div>
+                    <div class="shipping-option-price">${isFree ? 'GRÁTIS' : formatCurrency(fixedFallback)}</div>
+                </div>
+            `;
+            updateCartUI();
+            return;
+        }
+
+        // Sem fallback — mostra erro
         feedback.className = 'shipping-feedback error';
-        feedback.innerText = 'Erro ao calcular frete. Tente novamente.';
+        feedback.innerText = 'Frete indisponível no momento. Fale com a gente no WhatsApp.';
     } finally {
         btn.disabled = false;
         btn.innerText = originalText;
