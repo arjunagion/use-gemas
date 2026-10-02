@@ -18,4 +18,9 @@
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
+<!--
+  Sitemap dinâmico de produtos (Edge Function):
+  https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/sitemap-products
+  Referenciado em robots.txt.
+-->
 </urlset>

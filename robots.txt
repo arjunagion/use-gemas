@@ -5,3 +5,4 @@ Disallow: /reset-password.html
 Disallow: /avaliar.html
 
 Sitemap: https://usegemas.com.br/sitemap.xml
+Sitemap: https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/sitemap-products
