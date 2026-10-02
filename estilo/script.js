@@ -2477,9 +2477,7 @@ function updateCartUI() {
         cartItemsContainer.innerHTML = `<p style="color: #888; text-align: center; margin-top: 2rem;">Seu carrinho está vazio.</p>`;
         shippingCost = 0;
         shippingDetails = null;
-        const shippingResult = document.getElementById('shipping-result');
         const cepInput = document.getElementById('cep-input');
-        if (shippingResult) shippingResult.innerHTML = '';
         if (cepInput) cepInput.value = '';
 
         // Só remove cupom se o carrinho JÁ foi restaurado
