@@ -2306,6 +2306,9 @@ async function calculateShipping() {
                 </div>
                 <div class="shipping-option-price">${isFree ? 'GRÁTIS' : formatCurrency(fixedValue)}</div>
             </div>
+            <button type="button" class="btn-change-cep" onclick="resetShipping()">
+                Calcular outro CEP
+            </button>
         `;
         updateCartUI();
         return;
@@ -2404,6 +2407,9 @@ async function calculateShipping() {
                     </div>
                     <div class="shipping-option-price">${isFree ? 'GRÁTIS' : formatCurrency(fixedFallback)}</div>
                 </div>
+                <button type="button" class="btn-change-cep" onclick="resetShipping()">
+                    Calcular outro CEP
+                </button>
             `;
             updateCartUI();
             return;
