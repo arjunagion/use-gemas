@@ -4934,11 +4934,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const cepInput = document.getElementById('cep-input');
     if (cepInput) {
-        cepInput.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 5) value = value.replace(/^(\d{5})(\d)/, '$1-$2');
-            e.target.value = value;
-        });
         cepInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') { e.preventDefault(); calculateShipping(); }
         });
