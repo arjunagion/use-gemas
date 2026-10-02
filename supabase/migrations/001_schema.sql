@@ -1,0 +1,22 @@
+-- ==========================================================================
+-- USE GEMAS — Schema do banco (Supabase)
+-- ==========================================================================
+--
+-- ⚠️ PLACEHOLDER — substituir pelo dump real do Supabase
+--
+-- COMO PEGAR O DUMP COMPLETO:
+--   1. Supabase → SQL Editor
+--   2. Rodar os 7 SELECTs (ver README.md do projeto)
+--   3. Colar o resultado (formatado como CREATE TABLE/POLICY/TRIGGER) aqui
+--
+-- OU usar pg_dump (via Supabase CLI):
+--   supabase db dump --schema public > 001_schema.sql
+--
+-- ESTRUTURA DO BANCO (tabelas conhecidas):
+--   products, orders, reviews, notifications, coupons, coupon_usages,
+--   loyalty_points, settings, admins, profiles, favorites, checkout_data,
+--   shipping_quotes_cache
+--
+-- ==========================================================================
+
+-- TODO: colar schema real aqui

@@ -1,0 +1,4 @@
+# Ignorar arquivos locais do Supabase CLI
+.branches
+.temp
+.env

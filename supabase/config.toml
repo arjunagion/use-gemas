@@ -1,0 +1,30 @@
+# ==========================================================================
+# Supabase CLI — config.toml
+# ==========================================================================
+# Arquivo de configuração local do Supabase CLI (opcional).
+# Usado apenas se você rodar `supabase link` + `supabase db pull` localmente.
+#
+# Se NÃO estiver usando Supabase CLI, deixe comentado.
+# ==========================================================================
+
+# project_id = "dytdnemwqbzgrekamwla"
+
+# [api]
+# enabled = true
+# port = 54321
+# schemas = ["public", "storage", "graphql_public"]
+
+# [db]
+# port = 54322
+# major_version = 15
+
+# [studio]
+# enabled = true
+# port = 54323
+
+# [auth]
+# enabled = true
+# site_url = "https://usegemas.com.br"
+
+# [functions.<nome>]
+# verify_jwt = false
