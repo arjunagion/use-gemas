@@ -3891,140 +3891,140 @@ function closePhotoSwipeIfOpen() {
 }
 
 // ==========================================================================
-// Depoimentos
+// Reviews da home (Fase 10.4) — featured + fallback recentes
 // ==========================================================================
-const WEB3FORMS_KEY = '69a758b3-d87b-4ea5-a666-424321663f86';
-let currentTestimonialStars = 0;
-
-function toggleTestimonialForm() {
-    const wrapper = document.getElementById('testimonial-form-wrapper');
-    if (!wrapper) return;
-
-    if (wrapper.classList.contains('open')) {
-        wrapper.classList.remove('open');
-        resetTestimonialForm();
-    } else {
-        wrapper.classList.add('open');
-        setTimeout(() => {
-            const nameInput = document.getElementById('t-name');
-            if (nameInput) nameInput.focus();
-            wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 120);
-    }
-}
-
-function setupStarRating() {
-    const starRating = document.getElementById('star-rating');
-    const starsInput = document.getElementById('t-stars');
-    if (!starRating) return;
-
-    const stars = starRating.querySelectorAll('.star');
-
-    stars.forEach(star => {
-        star.addEventListener('click', () => {
-            const value = parseInt(star.getAttribute('data-value'), 10);
-            currentTestimonialStars = value;
-            if (starsInput) starsInput.value = value;
-            updateStarsUI(value);
-        });
-
-        star.addEventListener('mouseenter', () => {
-            const value = parseInt(star.getAttribute('data-value'), 10);
-            highlightStars(value);
-        });
-    });
-
-    starRating.addEventListener('mouseleave', () => {
-        updateStarsUI(currentTestimonialStars);
-    });
-}
-
-function updateStarsUI(value) {
-    document.querySelectorAll('#star-rating .star').forEach((star, index) => {
-        star.classList.toggle('active', index < value);
-        star.classList.remove('hovered');
-    });
-}
-
-function highlightStars(value) {
-    document.querySelectorAll('#star-rating .star').forEach((star, index) => {
-        star.classList.toggle('hovered', index < value);
-        star.classList.remove('active');
-    });
-}
-
-function showTestimonialFeedback(message, type = 'error') {
-    const el = document.getElementById('testimonial-feedback');
-    if (!el) return;
-    el.className = `testimonial-feedback ${type}`;
-    el.innerText = message;
-}
-
-function clearTestimonialFeedback() {
-    const el = document.getElementById('testimonial-feedback');
-    if (!el) return;
-    el.className = 'testimonial-feedback';
-    el.innerText = '';
-}
-
-function resetTestimonialForm() {
-    const form = document.getElementById('testimonial-form');
-    if (form) form.reset();
-    currentTestimonialStars = 0;
-    updateStarsUI(0);
-    clearTestimonialFeedback();
-    const starsInput = document.getElementById('t-stars');
-    if (starsInput) starsInput.value = '';
-}
-
-async function handleTestimonialSubmit(event) {
-    event.preventDefault();
-    clearTestimonialFeedback();
-
-    const form = event.target;
-    const nameInput = form.querySelector('#t-name');
-    const commentInput = form.querySelector('#t-comment');
-    const starsInput = form.querySelector('#t-stars');
-    const submitBtn = form.querySelector('#testimonial-submit');
-
-    const name = nameInput ? nameInput.value.trim() : '';
-    const comment = commentInput ? commentInput.value.trim() : '';
-    const stars = starsInput ? starsInput.value : '';
-
-    if (!name || name.length < 2) { showTestimonialFeedback('Por favor, informe seu nome.', 'error'); if (nameInput) nameInput.focus(); return; }
-    if (!stars || parseInt(stars, 10) < 1) { showTestimonialFeedback('Por favor, escolha uma avaliação de 1 a 5 estrelas.', 'error'); return; }
-    if (!comment || comment.length < 10) { showTestimonialFeedback('Conte um pouco mais sobre sua experiência (mínimo 10 caracteres).', 'error'); if (commentInput) commentInput.focus(); return; }
-
-    const originalText = submitBtn ? submitBtn.innerText : 'Enviar';
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Enviando...'; }
+async function loadHomeReviews() {
+    const grid = document.getElementById('testimonials-grid');
+    const emptyEl = document.getElementById('testimonials-empty');
+    if (!grid) return;
 
     try {
-        const formData = new FormData(form);
-        formData.set('stars', `${stars} de 5`);
+        // 1. Busca destacadas primeiro
+        const { data: featured, error: errF } = await supabaseClient
+            .from('reviews')
+            .select('id, product_ref, customer_name, rating, title, comment, photos, verified_purchase, created_at, featured')
+            .eq('status', 'approved')
+            .eq('featured', true)
+            .order('created_at', { ascending: false })
+            .limit(6);
 
-        const response = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData });
-        const result = await response.json();
+        if (errF) throw errF;
 
-        if (result.success) {
-            showTestimonialFeedback(EMOJI_SPARKLE + ' Depoimento enviado com sucesso! Obrigado por compartilhar.', 'success');
-            form.reset();
-            currentTestimonialStars = 0;
-            updateStarsUI(0);
+        let reviews = featured || [];
 
-            setTimeout(() => {
-                const wrapper = document.getElementById('testimonial-form-wrapper');
-                if (wrapper) wrapper.classList.remove('open');
-                clearTestimonialFeedback();
-            }, 3500);
-        } else {
-            showTestimonialFeedback('Não foi possível enviar. Tente novamente em instantes.', 'error');
+        // 2. Se faltar, completa com recentes aprovadas (sem duplicar)
+        if (reviews.length < 6) {
+            const excludeIds = reviews.map(r => r.id);
+            let query = supabaseClient
+                .from('reviews')
+                .select('id, product_ref, customer_name, rating, title, comment, photos, verified_purchase, created_at, featured')
+                .eq('status', 'approved')
+                .order('created_at', { ascending: false })
+                .limit(6 - reviews.length);
+
+            if (excludeIds.length > 0) {
+                query = query.not('id', 'in', `(${excludeIds.join(',')})`);
+            }
+
+            const { data: recent, error: errR } = await query;
+            if (errR) throw errR;
+
+            reviews = reviews.concat(recent || []);
         }
-    } catch (err) {
-        console.error('Erro no envio do depoimento:', err);
-        showTestimonialFeedback('Erro de conexão. Tente novamente em instantes.', 'error');
-    } finally {
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = originalText; }
+
+        // 3. Renderiza
+        if (reviews.length === 0) {
+            grid.style.display = 'none';
+            if (emptyEl) emptyEl.hidden = false;
+            return;
+        }
+
+        // Mapa de nomes de produtos (busca de 1 query)
+        const refs = [...new Set(reviews.map(r => r.product_ref))];
+        const { data: products } = await supabaseClient
+            .from('products')
+            .select('ref, name')
+            .in('ref', refs);
+
+        const productMap = new Map((products || []).map(p => [p.ref, p.name]));
+
+        grid.innerHTML = reviews.map(r => renderHomeReviewCard(r, productMap)).join('');
+
+        // JSON-LD AggregateRating (SEO)
+        injectAggregateRatingSchema(reviews);
+
+    } catch (e) {
+        console.error('[HomeReviews] Erro:', e);
+        grid.innerHTML = '';
+        if (emptyEl) emptyEl.hidden = false;
     }
+}
+
+function renderHomeReviewCard(review, productMap) {
+    const rating = Math.max(0, Math.min(5, Number(review.rating) || 0));
+    const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    const productName = productMap.get(review.product_ref) || review.product_ref;
+
+    // Foto (primeira da lista)
+    const photos = (review.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+    const photoHTML = photos.length > 0
+        ? `<div class="testimonial-photo"><img src="${escapeHTML(photos[0])}" alt="Foto da avaliação" loading="lazy"></div>`
+        : '';
+
+    // Nome com abreviação (Marina R.)
+    const nameParts = (review.customer_name || '').trim().split(/\s+/);
+    const displayName = nameParts.length > 1
+        ? `${nameParts[0]} ${nameParts[nameParts.length - 1][0]}.`
+        : nameParts[0] || 'Cliente';
+
+    // Trunca comentário longo
+    const comment = (review.comment || '').slice(0, 180) + ((review.comment || '').length > 180 ? '...' : '');
+
+    const verifiedHTML = review.verified_purchase
+        ? '<span class="testimonial-verified">✅ Compra verificada</span>'
+        : '';
+
+    return `
+        <article class="testimonial-card">
+            <div class="testimonial-stars" aria-label="Avaliação: ${rating} estrelas">${stars}</div>
+            ${photoHTML}
+            <p class="testimonial-text">${escapeHTML(comment)}</p>
+            <footer class="testimonial-author">
+                ${verifiedHTML}
+                <span class="testimonial-name">${escapeHTML(displayName)}</span>
+                <span class="testimonial-product">${escapeHTML(productName)}</span>
+            </footer>
+        </article>
+    `;
+}
+
+function injectAggregateRatingSchema(reviews) {
+    if (reviews.length === 0) return;
+
+    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Use Gemas",
+        "url": "https://usegemas.com.br/",
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": avg.toFixed(1),
+            "reviewCount": reviews.length,
+            "bestRating": "5",
+            "worstRating": "1"
+        }
+    };
+
+    const existing = document.getElementById('ug-aggregate-schema');
+    if (existing) existing.remove();
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'ug-aggregate-schema';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
 }
 
 // ==========================================================================
@@ -4963,12 +4963,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadReviewsSummary();
 
+    loadHomeReviews();
+
     await loadProductsFromDb();
 
     processPendingReorder();
 
     setupRegisterLiveValidation();
-    setupStarRating();
     setupCheckoutMasks();
 
     await updateUserSessionUI();
@@ -5038,9 +5039,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (e.target === checkoutOverlay) closeCheckoutModal();
         });
     }
-
-    const testimonialForm = document.getElementById('testimonial-form');
-    if (testimonialForm) testimonialForm.addEventListener('submit', handleTestimonialSubmit);
 
     const formLogin = document.getElementById('form-login');
     if (formLogin) formLogin.addEventListener('submit', handleLogin);

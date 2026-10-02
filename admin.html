@@ -3322,6 +3322,7 @@
                                 <button class="filter-tab"
                                     onclick="setReviewFilter('rejected', this)">Rejeitadas</button>
                                 <button class="filter-tab" onclick="setReviewFilter('all', this)">Todas</button>
+                                <button class="filter-tab" onclick="setReviewFilter('featured', this)">⭐ Destacadas</button>
                             </div>
                             <input type="text" class="search-input" id="review-search"
                                 placeholder="🔍 Buscar por produto, cliente..." oninput="renderReviews()">
@@ -4839,7 +4840,9 @@
 
             let filtered = allReviews.slice();
 
-            if (currentReviewFilter !== 'all') {
+            if (currentReviewFilter === 'featured') {
+                filtered = filtered.filter(r => r.featured === true && r.status === 'approved');
+            } else if (currentReviewFilter !== 'all') {
                 filtered = filtered.filter(r => r.status === currentReviewFilter);
             }
 
@@ -4927,6 +4930,7 @@
                     <div class="review-admin-actions">
                         ${approveBtn}
                         ${rejectBtn}
+                        <button class="action-btn ${review.featured ? 'edit' : ''}" onclick="toggleReviewFeatured('${review.id}')">${review.featured ? '★ Destacada' : '⭐ Destacar'}</button>
                         <button class="action-btn" onclick="openResponseModal('${review.id}')">💛 Responder</button>
                         <button class="action-btn danger" onclick="confirmDeleteReview('${review.id}')">🗑️ Excluir</button>
                     </div>
@@ -4954,6 +4958,27 @@
             if (error) { showToast('Erro ao rejeitar.', 'error'); return; }
             showToast('Avaliação rejeitada.');
             await loadReviews();
+        }
+
+        async function toggleReviewFeatured(reviewId) {
+            const review = allReviews.find(r => r.id === reviewId);
+            if (!review) return;
+
+            const newValue = !review.featured;
+
+            const { error } = await supabaseClient
+                .from('reviews')
+                .update({ featured: newValue })
+                .eq('id', reviewId);
+
+            if (error) {
+                showToast('Erro ao atualizar destaque.', 'error');
+                return;
+            }
+
+            review.featured = newValue;
+            renderReviews();
+            showToast(newValue ? 'Avaliação destacada!' : 'Destaque removido.');
         }
 
         let currentReviewForResponse = null;

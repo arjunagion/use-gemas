@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliações das Clientes | Use Gemas</title>
+
+    <!-- SEO -->
+    <meta name="description"
+        content="Avaliações reais de clientes da Use Gemas. Veja o que dizem sobre nossas joias artesanais em microcrochê e pedras naturais.">
+    <meta name="author" content="Use Gemas">
+    <meta name="theme-color" content="#0e0e10">
+
+    <link rel="canonical" href="https://usegemas.com.br/avaliacoes.html">
+
+    <!-- Open Graph (WhatsApp, Instagram, Facebook) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Avaliações das Clientes | Use Gemas">
+    <meta property="og:description"
+        content="Avaliações reais de clientes da Use Gemas. Joias artesanais em microcrochê e pedras naturais.">
+    <meta property="og:url" content="https://usegemas.com.br/avaliacoes.html">
+    <meta property="og:image" content="https://usegemas.com.br/estilo/midias/og-capa.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="pt_BR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Avaliações das Clientes | Use Gemas">
+    <meta name="twitter:description" content="Avaliações reais de clientes da Use Gemas.">
+    <meta name="twitter:image" content="https://usegemas.com.br/estilo/midias/og-capa.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="estilo/midias/favicon.png">
+    <link rel="apple-touch-icon" href="estilo/midias/favicon.png">
+
+    <!-- PWA Cliente -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Use Gemas">
+    <link rel="apple-touch-icon" href="estilo/midias/icone-admin-192.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Link para o CSS -->
+    <link rel="stylesheet" href="estilo/style.css?v=58.0">
+    <link rel="stylesheet" href="estilo/avaliacoes.css?v=1.0">
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5S8HJR13T8"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied',
+            'wait_for_update': 500
+        });
+
+        gtag('config', 'G-5S8HJR13T8');
+    </script>
+
+    <!-- Meta Pixel Code -->
+    <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq) return; n = f.fbq = function () {
+                n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+            n.queue = []; t = b.createElement(e); t.async = !0;
+            t.src = v; s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window, document, 'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('consent', 'revoke');
+        fbq('init', '1408966774044848');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=1408966774044848&ev=PageView&noscript=1" /></noscript>
+    <!-- End Meta Pixel Code -->
+</head>
+
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">USE GEMAS</a>
+            <nav aria-label="Navegação principal">
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="index.html#colecao">Coleções</a></li>
+                    <li><a href="index.html#experiencia">Nossa História</a></li>
+                    <li><a href="index.html#experiencia">Guia de Cuidados</a></li>
+                    <li><a href="index.html#contato">Contato</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                <a href="https://instagram.com/use.gemas" target="_blank" rel="noopener"
+                    class="btn-secondary">Instagram</a>
+
+                <button class="btn-icon" id="user-btn" onclick="openAuthModal('login')" title="Minha Conta"
+                    aria-label="Minha conta">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                        aria-hidden="true">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+
+                <div class="nav-cart-icon" onclick="toggleCart()" role="button" tabindex="0"
+                    aria-label="Carrinho de compras">
+                    🛒 <span id="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main id="avaliacoes-main" class="avaliacoes-main">
+        <div class="container">
+
+            <!-- Hero + Resumo -->
+            <section class="avaliacoes-hero">
+                <span class="avaliacoes-badge">Avaliações</span>
+                <h1>Avaliações das clientes</h1>
+                <p class="avaliacoes-subtitle">Histórias reais de quem escolheu a Use Gemas.</p>
+
+                <div class="avaliacoes-summary">
+                    <div class="avaliacoes-media-wrap">
+                        <span class="avaliacoes-media" id="avaliacoes-media">—</span>
+                        <span class="avaliacoes-media-label">média geral</span>
+                    </div>
+                    <div class="avaliacoes-stars" id="avaliacoes-estrelas">☆☆☆☆☆</div>
+                    <div class="avaliacoes-count" id="avaliacoes-total">0 avaliações</div>
+                </div>
+            </section>
+
+            <!-- Filtros -->
+            <section class="avaliacoes-filters">
+                <div class="avaliacoes-filter-chips" role="group" aria-label="Filtrar avaliações">
+                    <button class="avaliacoes-chip active" data-filter="all" onclick="setAvaliacaoFilter('all', this)">Todas</button>
+                    <button class="avaliacoes-chip" data-filter="5" onclick="setAvaliacaoFilter('5', this)">5 estrelas</button>
+                    <button class="avaliacoes-chip" data-filter="foto" onclick="setAvaliacaoFilter('foto', this)">Com foto</button>
+                </div>
+
+                <div class="avaliacoes-filter-select">
+                    <label for="avaliacoes-product-filter">Produto</label>
+                    <select id="avaliacoes-product-filter" onchange="onProductFilterChange(this)">
+                        <option value="">Todos os produtos</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Grid -->
+            <section class="avaliacoes-grid-wrap">
+                <div class="testimonials-grid" id="avaliacoes-grid">
+                    <div class="testimonials-loading">
+                        <div class="spinner-mini"></div>
+                        <p>Carregando avaliações...</p>
+                    </div>
+                </div>
+
+                <div id="avaliacoes-empty" class="testimonials-empty" hidden>
+                    <p>💛 Ainda não temos avaliações publicadas. Seja a primeira a avaliar!</p>
+                </div>
+
+                <div class="avaliacoes-load-more-wrap">
+                    <button type="button" class="avaliacoes-load-more" id="avaliacoes-load-more"
+                        onclick="loadMoreAvaliacoes()" style="display: none;">Carregar mais</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer id="contato" class="footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <h3>USE GEMAS</h3>
+                <p>Arte viva em pedras e microcristais.</p>
+            </div>
+            <div class="footer-social">
+                <a href="https://instagram.com/use.gemas" target="_blank" rel="noopener">@use.gemas</a>
+                <a href="https://api.whatsapp.com/send?phone=5511982053330" target="_blank" rel="noopener">WhatsApp
+                    Direct</a>
+            </div>
+        </div>
+
+        <div class="container footer-legal">
+            <a href="politica-troca.html">Política de Troca e Devolução</a>
+            <span class="footer-legal-sep">·</span>
+            <a href="politica-privacidade.html">Política de Privacidade</a>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Use Gemas. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Banner de Cookies (LGPD / GDPR) -->
+    <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Aviso de cookies" aria-live="polite">
+        <div class="cookie-banner-content">
+            <div class="cookie-banner-text">
+                <strong>🍪 Cookies</strong>
+                <p>Usamos cookies pra melhorar sua experiência e entender como o site é usado. Você escolhe o que
+                    aceitar.</p>
+            </div>
+            <div class="cookie-banner-actions">
+                <button type="button" class="cookie-btn cookie-btn-ghost" onclick="handleCookieChoice('essential')">
+                    Só essenciais
+                </button>
+                <button type="button" class="cookie-btn cookie-btn-primary" onclick="handleCookieChoice('all')">
+                    Aceitar tudo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner de Instalação PWA -->
+    <div id="pwa-install-banner" class="pwa-install-banner" role="dialog" aria-label="Instalar app Use Gemas" aria-live="polite">
+        <div class="pwa-install-content">
+            <div class="pwa-install-icon">📱</div>
+            <div class="pwa-install-text">
+                <strong>Instale o app Use Gemas</strong>
+                <p>Acesso rápido e sem sair do navegador</p>
+            </div>
+            <div class="pwa-install-actions">
+                <button type="button" class="pwa-install-btn-skip" onclick="handlePwaSkip()">
+                    Agora não
+                </button>
+                <button type="button" class="pwa-install-btn-install" onclick="handlePwaInstall()">
+                    Instalar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid oculto p/ script.js carregar productsFromDb -->
+    <div id="products-grid" style="display: none;"></div>
+
+    <!-- Toast notifications -->
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+    <!-- Botão flutuante "Voltar ao topo" -->
+    <button id="back-to-top-btn" class="back-to-top" type="button" aria-label="Voltar ao topo" title="Voltar ao topo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <!-- Registro do Service Worker (PWA Cliente) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js', { scope: '/' })
+                    .then((registration) => {
+                        console.log('[PWA Cliente] Service Worker registrado:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.warn('[PWA Cliente] Falha ao registrar SW:', error);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Importação do JS compartilhado -->
+    <script src="estilo/script.js?v=80.0"></script>
+
+    <script>
+        // ==========================================================================
+        // AVALIACOES.HTML — Lógica específica da página (Fase 10.4)
+        // ==========================================================================
+        const AVALIACOES_PAGE_SIZE = 20;
+
+        let allAvaliacoes = [];
+        let displayedCount = 0;
+        let currentRatingFilter = 'all';
+        let currentProductFilter = '';
+        let productNameMap = {};
+
+        document.addEventListener('DOMContentLoaded', initAvaliacoes);
+
+        async function initAvaliacoes() {
+            const urlProduto = new URLSearchParams(window.location.search).get('produto');
+            if (urlProduto) currentProductFilter = urlProduto;
+
+            await loadAvaliacoes();
+        }
+
+        async function loadAvaliacoes() {
+            const { data, error } = await supabaseClient
+                .from('reviews')
+                .select('id, product_ref, customer_name, rating, title, comment, photos, verified_purchase, created_at')
+                .eq('status', 'approved')
+                .order('created_at', { ascending: false })
+                .limit(1000);
+
+            if (error) {
+                console.error('[Avaliacoes] Erro ao carregar:', error);
+                const grid = document.getElementById('avaliacoes-grid');
+                if (grid) grid.innerHTML = '';
+                document.getElementById('avaliacoes-empty').hidden = false;
+                return;
+            }
+
+            allAvaliacoes = data || [];
+
+            await loadProductNames();
+            renderSummary();
+            renderGrid(true);
+        }
+
+        async function loadProductNames() {
+            const refs = [...new Set(allAvaliacoes.map(r => r.product_ref).filter(Boolean))];
+            if (refs.length === 0) return;
+
+            try {
+                const { data: products } = await supabaseClient
+                    .from('products')
+                    .select('ref, name')
+                    .in('ref', refs);
+
+                productNameMap = {};
+                (products || []).forEach(p => { productNameMap[p.ref] = p.name; });
+            } catch (e) {
+                console.warn('[Avaliacoes] Erro ao buscar nomes de produtos:', e);
+            }
+
+            // Popula dropdown de filtro por produto
+            const select = document.getElementById('avaliacoes-product-filter');
+            if (select) {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Todos os produtos</option>' +
+                    refs.map(ref =>
+                        `<option value="${escapeHTML(ref)}" ${ref === currentProductFilter ? 'selected' : ''}>${escapeHTML(productNameMap[ref] || ref)}</option>`
+                    ).join('');
+            }
+        }
+
+        function renderSummary() {
+            const total = allAvaliacoes.length;
+            const mediaEl = document.getElementById('avaliacoes-media');
+            const estrelasEl = document.getElementById('avaliacoes-estrelas');
+            const totalEl = document.getElementById('avaliacoes-total');
+
+            if (total === 0) {
+                if (mediaEl) mediaEl.innerText = '—';
+                if (estrelasEl) estrelasEl.innerText = '☆☆☆☆☆';
+                if (totalEl) totalEl.innerText = '0 avaliações';
+                return;
+            }
+
+            const avg = allAvaliacoes.reduce((s, r) => s + (Number(r.rating) || 0), 0) / total;
+            const rounded = Math.round(avg);
+
+            if (mediaEl) mediaEl.innerText = avg.toFixed(1).replace('.', ',');
+            if (estrelasEl) estrelasEl.innerText = '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+            if (totalEl) totalEl.innerText = `${total} avaliação${total === 1 ? '' : 'ões'}`;
+
+            // JSON-LD AggregateRating (reuso do helper global)
+            if (typeof injectAggregateRatingSchema === 'function') {
+                injectAggregateRatingSchema(allAvaliacoes);
+            }
+        }
+
+        function getFilteredAvaliacoes() {
+            let filtered = allAvaliacoes.slice();
+
+            if (currentRatingFilter === '5') {
+                filtered = filtered.filter(r => Number(r.rating) === 5);
+            } else if (currentRatingFilter === 'foto') {
+                filtered = filtered.filter(r => (r.photos || '').split(',').map(s => s.trim()).filter(Boolean).length > 0);
+            }
+
+            if (currentProductFilter) {
+                filtered = filtered.filter(r => r.product_ref === currentProductFilter);
+            }
+
+            return filtered;
+        }
+
+        function setAvaliacaoFilter(filter, el) {
+            currentRatingFilter = filter;
+            document.querySelectorAll('.avaliacoes-chip').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderGrid(true);
+        }
+
+        function onProductFilterChange(select) {
+            currentProductFilter = select.value || '';
+            renderGrid(true);
+        }
+
+        function loadMoreAvaliacoes() {
+            renderGrid(false);
+        }
+
+        function renderGrid(reset) {
+            const filtered = getFilteredAvaliacoes();
+
+            if (reset) {
+                displayedCount = AVALIACOES_PAGE_SIZE;
+            } else {
+                displayedCount += AVALIACOES_PAGE_SIZE;
+            }
+            if (displayedCount > filtered.length) displayedCount = filtered.length;
+
+            const grid = document.getElementById('avaliacoes-grid');
+            const emptyEl = document.getElementById('avaliacoes-empty');
+            const loadMore = document.getElementById('avaliacoes-load-more');
+
+            if (filtered.length === 0) {
+                grid.style.display = 'none';
+                emptyEl.hidden = false;
+                loadMore.style.display = 'none';
+                return;
+            }
+
+            emptyEl.hidden = true;
+            grid.style.display = 'grid';
+            grid.innerHTML = filtered.slice(0, displayedCount).map(r => renderAvaliacaoCard(r)).join('');
+            loadMore.style.display = displayedCount < filtered.length ? 'block' : 'none';
+        }
+
+        function renderAvaliacaoCard(r) {
+            const rating = Math.max(0, Math.min(5, Number(r.rating) || 0));
+            const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+
+            const photos = (r.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+            const photoHTML = photos.length > 0
+                ? `<div class="testimonial-photo"><img src="${escapeHTML(photos[0])}" alt="Foto da avaliação" loading="lazy"></div>`
+                : '';
+
+            const name = (r.customer_name || 'Cliente').trim();
+            const productName = productNameMap[r.product_ref] || r.product_ref;
+            const verifiedHTML = r.verified_purchase
+                ? '<span class="testimonial-verified">✅ Compra verificada</span>'
+                : '';
+
+            return `
+                <article class="testimonial-card">
+                    <div class="testimonial-stars" aria-label="Avaliação: ${rating} estrelas">${stars}</div>
+                    ${photoHTML}
+                    ${r.title ? `<h3 class="avaliacoes-card-title">${escapeHTML(r.title)}</h3>` : ''}
+                    <p class="testimonial-text">${escapeHTML(r.comment || '')}</p>
+                    <footer class="testimonial-author">
+                        ${verifiedHTML}
+                        <span class="testimonial-name">${escapeHTML(name)}</span>
+                        <a class="testimonial-product avaliacoes-product-link" href="produto.html?ref=${encodeURIComponent(r.product_ref)}">${escapeHTML(productName)}</a>
+                    </footer>
+                </article>
+            `;
+        }
+    </script>
+</body>
+
+</html>
