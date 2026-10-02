@@ -5647,20 +5647,20 @@
             const labelStatus = order.label_status;
 
             // Status visual
-            let statusIcon = '⏳';
+            let statusIcon = String.fromCodePoint(0x23F3);
             let statusText = 'Não gerada';
             let statusClass = 'pending';
 
             if (hasLabelUrl) {
-                statusIcon = '✅';
+                statusIcon = String.fromCodePoint(0x2705);
                 statusText = 'Pronta';
                 statusClass = 'ready';
             } else if (labelStatus === 'generated') {
-                statusIcon = '⚠️';
+                statusIcon = String.fromCodePoint(0x26A0, 0xFE0F);
                 statusText = 'Gerada, PDF pendente';
                 statusClass = 'warning';
             } else if (labelStatus === 'error') {
-                statusIcon = '❌';
+                statusIcon = String.fromCodePoint(0x274C);
                 statusText = 'Erro na geração';
                 statusClass = 'error';
             }
@@ -5676,7 +5676,7 @@
 
                 ${hasTracking ? `
                     <div class="pedido-etiqueta-tracking">
-                        <div class="pedido-etiqueta-tracking-label">📬 Código de rastreio</div>
+                        <div class="pedido-etiqueta-tracking-label">${String.fromCodePoint(0x1F4EC)} Código de rastreio</div>
                         <div class="pedido-etiqueta-tracking-code">
                             <code>${escapeHTML(order.tracking_code)}</code>
                             <button type="button" class="btn-copy-tracking" onclick="copyTrackingCode('${escapeHTML(order.tracking_code)}')">
@@ -5695,19 +5695,19 @@
                 <div class="pedido-etiqueta-actions">
                     ${!hasMeId ? `
                         <button type="button" class="btn-gerar-etiqueta" id="btn-gerar-etiqueta" onclick="handleGerarEtiqueta()">
-                            📦 Gerar Etiqueta
+                            ${String.fromCodePoint(0x1F4E6)} Gerar Etiqueta
                         </button>
                     ` : ''}
 
                     ${hasMeId && !hasLabelUrl ? `
                         <button type="button" class="btn-buscar-pdf" id="btn-buscar-pdf" onclick="handleBuscarPdf()">
-                            🔍 Buscar PDF
+                            ${String.fromCodePoint(0x1F50D)} Buscar PDF
                         </button>
                     ` : ''}
 
                     ${hasLabelUrl ? `
                         <button type="button" class="btn-abrir-pdf" onclick="handleAbrirPdf()">
-                            📄 Abrir PDF
+                            ${String.fromCodePoint(0x1F4C4)} Abrir PDF
                         </button>
                     ` : ''}
                 </div>
@@ -5721,7 +5721,7 @@
 
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '⏳ Gerando...';
+            btn.innerHTML = String.fromCodePoint(0x23F3) + ' Gerando...';
 
             try {
                 const r = await fetch('https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/generate-shipping-label', {
@@ -5763,7 +5763,7 @@
 
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '🔍 Buscando...';
+            btn.innerHTML = String.fromCodePoint(0x1F50D) + ' Buscando...';
 
             try {
                 const r = await fetch('https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/fetch-label-url', {
