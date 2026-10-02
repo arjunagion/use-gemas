@@ -1,6 +1,7 @@
-# PROJETO-MESTRE — Use Gemas (v3.0)
+# PROJETO-MESTRE — Use Gemas (v3.1)
 
-> **Documento de referência oficial — v3.0 definitiva** — estado do código em **02/10/2026**.
+> **Documento de referência oficial — v3.1** — estado do código em **02/10/2026**.
+> **Novo em v3.1:** Seção 17 (Observações técnicas da varredura) + pendências reorganizadas por prioridade real.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -25,6 +26,7 @@
 14. [Decisões arquiteturais (ADRs)](#14-decisões-arquiteturais-adrs)
 15. [Roadmap sugerido](#15-roadmap-sugerido)
 16. [Changelog resumido](#16-changelog-resumido)
+17. [Observações técnicas da varredura](#17-observações-técnicas-da-varredura)
 
 ---
 
@@ -352,21 +354,36 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 
 ## 8. Pendências conhecidas
 
-### 🔥 Crítica
-- **Fotos oficiais dos produtos** — há fotos temporárias (`photo_2026-09-17_*.jpg`) e vídeos placeholder.
+> Revisado em 02/out/2026 após varredura completa do repo + Supabase.
 
-### ⚠️ Alta
-- **Testar PWA cliente em iOS/Android reais** (instalação, offline, ícone).
-- **Otimização de performance** — compressão de imagens, lazy-load.
-- **Deletar Pixel Meta antigo** (`9288...`) — garantir que só o `1408966774044848` esteja ativo.
+### 🔥 Crítica — bloqueia operação
 
-### 🟡 Média
-- **`produto.html` ainda usa o HTML antigo de frete** (`shipping-box`/`btn-shipping`).
-- **`sitemap.xml` estático desatualizado** (só 3 URLs — existe Edge `sitemap-products`, mas o arquivo estático é manual).
+- **Fotos oficiais dos produtos** — hoje há apenas imagens temporárias (`photo_2026-09-17_*.jpg`) e vídeos placeholder. Sem fotos reais, não roda tráfego pago e não converte bem.
 
-### 🟢 Baixa
-- **Emoji via `innerHTML`** na seção de etiqueta (padrão do projeto é `String.fromCodePoint`).
-- **Limpeza de código morto** (`shippingCost` write-only, `shipping-result` órfão, listener duplicado de máscara de CEP).
+### ⚠️ Alta — impacta UX ou negócio
+
+- **`produto.html` ainda usa o HTML antigo de frete** (`shipping-box` + `btn-shipping` + `shipping-result`) — o seletor novo do Melhor Envio só existe em `index.html`. O cliente que compra pela página de produto **cai no frete fixo antigo**.
+- **`MELHORENVIO_SANDBOX=true`** — a integração ainda tá em ambiente sandbox. Antes de operar de verdade, precisa trocar pra produção + novo Access Token.
+- **Testar PWA cliente em iOS e Android reais** — instalação, offline, ícone na home, comportamento do SW.
+- **Deletar Pixel Meta antigo (`9288...`)** — garante que só o `1408966774044848` (novo) esteja ativo.
+- **`MELHORENVIO_ACCESS_TOKEN` expira em 30/09/2027** — renovar antes; rotação de rotina.
+
+### 🟡 Média — melhorias técnicas
+
+- **`notify-order-status/index.ts` usa `Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")`** — enquanto todas as outras functions usam `Deno.env.get("SERVICE_ROLE_KEY")`. Inconsistência de fallback: se só o custom existir, essa function quebra.
+- **`feed-xml/index.ts` usa `SUPABASE_ANON_KEY`** (não `SERVICE_ROLE_KEY`) — decisão aparentemente consciente (feed público), mas vale documentar no comentário do arquivo pra não gerar dúvida.
+- **`sitemap.xml` estático desatualizado** — só 3 URLs. Existe a Edge Function `sitemap-products` (dinâmica), mas não está referenciada no `sitemap.xml` raiz nem no `robots.txt`.
+- **Otimização de performance** — vídeos do hero são pesados; falta compressão de imagens + lazy-load explícito.
+
+### 🟢 Baixa — polimento
+
+- **`index.html` tem 2 listeners de máscara de CEP** (o antigo + o `initShipping()`) — idempotente, mas código morto latente.
+- **`shippingCost` ficou write-only** após o refactor de 3 estados do frete (grátis / fixo / ME). Não quebra, mas é lixo.
+- **`shipping-result` órfão** em `updateCartUI` (guardado por `if`, nunca renderiza).
+- **Emoji via `innerHTML`** na seção de etiqueta do admin (o padrão do projeto é `String.fromCodePoint`).
+- **`description` selecionado mas não usado** no extrato / notificação de pontos.
+- **Trigger HTTP `notify-order-status`** usa `supabase_functions.http_request()` — se recriar o banco sem essa extensão, o trigger falha silenciosamente.
+- **Cron jobs `request-review` e `expire-loyalty-points` rodam no mesmo horário** (`0 6 * * *`) — não colidem, mas vale separar pra logs mais limpos.
 
 ---
 
@@ -569,6 +586,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **02/out/2026** — `PROJETO-MESTRE.md` v3.1: seção 17 (observações de varredura) + pendências reorganizadas; `.gitignore` e `docs/` completos na pasta `supabase/`.
 - **02/out/2026** — Estrutura `supabase/` completa (10 Edge Functions + schema 001 + docs secrets/storage/auth).
 - **01/out/2026** — FASE 9.7: webhook de rastreio do Melhor Envio.
 - **01/out/2026** — FASE 9.6: etiquetas ME (geração + PDF + CSS admin).
@@ -581,4 +599,185 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.0.*
+## 17. Observações técnicas da varredura (02/out/2026)
+
+> Notas de auditoria do código. Nem tudo é bug — algumas são apenas pontos de atenção ou decisões conscientes que valem documentar.
+
+### 17.1 Inconsistências detectadas
+
+#### Edge Function `notify-order-status` — env var diferente
+
+Arquivo: `supabase/functions/notify-order-status/index.ts`
+
+```typescript
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+```
+
+Todas as outras functions usam:
+```typescript
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SERVICE_ROLE_KEY") 
+    || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+```
+
+**Impacto:** se o secret custom `SERVICE_ROLE_KEY` for usado (e o `SUPABASE_SERVICE_ROLE_KEY` continuar deprecated/vazio), essa function **falha** ao conectar no banco.
+
+**Correção:** padronizar o fallback.
+
+---
+
+#### Edge Function `feed-xml` — usa ANON_KEY
+
+Arquivo: `supabase/functions/feed-xml/index.ts`
+
+```typescript
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
+```
+
+**Status:** decisão aparentemente consciente (feed público, RLS já bloqueia produtos inativos). **Não é bug.** Só falta documentar no cabeçalho do arquivo.
+
+---
+
+#### Trigger HTTP `notify-order-status`
+
+Arquivo: `001_schema.sql` (seção 5. triggers)
+
+```sql
+CREATE TRIGGER "notify-order-status"
+    AFTER UPDATE ON public.orders
+    FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request(
+        'https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/notify-order-status',
+        'POST',
+        '{"Content-type":"application/json"}',
+        '{}',
+        '5000'
+    );
+```
+
+**Dependência:** `supabase_functions.http_request()` é uma função especial do Supabase. Se o projeto for recriado sem essa extensão, o trigger falha.
+
+**Alternativa:** migrar pra `pg_net` (mais nativo e portátil).
+
+---
+
+### 17.2 Código morto / lixo latente
+
+#### `shippingCost` write-only
+
+Arquivo: `estilo/script.js`
+
+Após o refactor do frete pra 3 estados (grátis / fixo / Melhor Envio), a variável `shippingCost` continua sendo escrita em alguns pontos mas **nunca é lida** com significado. Não quebra nada, mas confunde.
+
+**Ação:** remover nas próximas limpezas.
+
+---
+
+#### `shipping-result` órfão
+
+Arquivo: `index.html` + `estilo/script.js`
+
+Elemento `#shipping-result` (frete fixo antigo) ainda existe em `produto.html`, mas no `index.html` foi substituído por `#shipping-options`. A referência órfã fica guardada por `if` em `updateCartUI`.
+
+**Ação:** limpar junto com o refactor do frete no `produto.html`.
+
+---
+
+#### Listener duplicado de máscara de CEP
+
+Arquivo: `index.html`
+
+Existem 2 listeners aplicando máscara `00000-000` no `#cep-input`:
+1. Um antigo (linha ~X)
+2. Um novo, dentro de `initShipping()`
+
+Idempotente (o segundo sobrescreve o primeiro), mas código morto.
+
+**Ação:** remover o antigo.
+
+---
+
+#### Emoji via `innerHTML`
+
+Arquivo: `admin.html` (seção "Etiqueta de Envio" no modal do pedido)
+
+```html
+<span class="pedido-etiqueta-icon">${statusIcon}</span>
+```
+
+`statusIcon` contém emoji literal (`⏳`, `⚠️`, `✅`, `❌`) passado via `innerHTML`. Funciona, mas o padrão do projeto é `String.fromCodePoint`.
+
+**Ação:** padronizar nas próximas refatorações.
+
+---
+
+### 17.3 Observações menores
+
+#### `description` selecionado mas não usado
+
+Arquivo: `estilo/script.js` (`updateCartUI`) + `minha-conta.html` (`loadMyPoints`)
+
+O campo `description` de `loyalty_points` é selecionado na query mas nunca renderizado no extrato do cliente (que usa `type` pra montar label). Não é bug, mas desperdício de banda.
+
+---
+
+#### Cron jobs no mesmo horário
+
+`request-review` (0 6 * * *) + `expire-loyalty-points` (0 6 * * *)
+
+Ambos rodam às **06h UTC (03h BRT)**. Não há conflito real (pg_cron executa em paralelo), mas logs misturados podem atrapalhar debug.
+
+**Ação (opcional):** separar — ex: `expire-loyalty-points` às 06h, `request-review` às 09h.
+
+---
+
+#### `melhorenvio_sender_doc` vs `customer_doc` — mesmo CPF
+
+O `docs/secrets.md` e o `PROJETO-MESTRE.md` mencionam que, ao gerar etiqueta, o ME recusa se `sender_doc === customer_doc`. Isso aconteceu em testes locais onde o admin testava consigo mesmo. **Não é bug** — é proteção do ME contra auto-envio.
+
+**Documentar em comentário na Edge Function `generate-shipping-label`** pro próximo dev não tropeçar.
+
+---
+
+#### Access Token do ME — expira em 12 meses
+
+`MELHORENVIO_ACCESS_TOKEN` **expira em 30/09/2027**. Sem renovação automática configurada, o projeto vai **parar de gerar etiquetas e cotações** nessa data.
+
+**Ação futura:** documentar em calendário + criar alerta 30 dias antes. Alternativa robusta: implementar refresh automático via `MELHORENVIO_CLIENT_ID` + `MELHORENVIO_CLIENT_SECRET`.
+
+---
+
+#### Trigger `handle_new_user` — schema `auth`
+
+O trigger `on_auth_user_created` (que cria linha em `public.profiles` quando alguém se cadastra) roda em **`auth.users`**, não em `public`. Por isso, **não está no `001_schema.sql`** (que só cobre `public`).
+
+Se recriar o projeto do zero, **precisa criar esse trigger manualmente**:
+
+```sql
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+```
+
+**Documentar em `supabase/README.md`** como passo obrigatório pós-restore.
+
+---
+
+### 17.4 Checklist para recriação completa do banco
+
+Se um dia o Supabase precisar ser recriado do zero (disaster recovery / novo projeto):
+
+1. ✅ Rodar `001_schema.sql` no SQL Editor (cria 13 tabelas + 40 policies + 24 funções + 14 triggers + 42 índices + 5 crons)
+2. ⚠️ **Habilitar extensões:** `pg_cron`, `pg_net`, `supabase_functions`
+3. ⚠️ **Criar trigger manual** em `auth.users`: `on_auth_user_created` → `public.handle_new_user()`
+4. ⚠️ **Criar buckets** em Storage: `review-images` (15MB, jpeg/png/webp) + `product-images` (30MB, jpeg/png/webp/mp4/mov)
+5. ⚠️ **Criar 9 policies de Storage** (5 review-images + 4 product-images)
+6. ⚠️ **Configurar Secrets:** `BREVO_API_KEY`, `MELHORENVIO_*` (4), `SERVICE_ROLE_KEY`
+7. ⚠️ **Configurar Auth:** 2 providers (Email + Google) + 8 redirect URLs
+8. ⚠️ **Deploy das 10 Edge Functions** (`supabase/functions/*`)
+9. ⚠️ **Configurar webhook** no Melhor Envio → `melhorenvio-webhook`
+10. ⚠️ **Inserir linha única** em `settings` (id=1) com defaults
+
+**Tempo estimado:** ~2h.
+
+---
+
+*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.1.*
