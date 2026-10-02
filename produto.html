@@ -286,13 +286,31 @@
         <div id="cart-items" class="cart-items"></div>
 
         <div class="cart-footer">
-            <div class="shipping-box">
-                <label class="shipping-label" for="cep-input">Calcular Entrega / CEP</label>
-                <div class="shipping-input-group">
-                    <input type="text" id="cep-input" class="shipping-input" placeholder="00000-000" maxlength="9">
-                    <button type="button" class="btn-shipping" onclick="calculateShipping()">Calcular</button>
+            <div class="cart-shipping-box" id="cart-shipping-box">
+                <label class="shipping-label" for="cep-input">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    Calcular frete
+                </label>
+
+                <div id="shipping-input-wrapper">
+                    <div class="shipping-input-group">
+                        <input type="text" id="cep-input" class="shipping-cep-input"
+                               placeholder="00000-000" maxlength="9" inputmode="numeric"
+                               autocomplete="postal-code">
+                        <button type="button" class="btn-calculate-shipping"
+                                id="btn-calculate-shipping" onclick="calculateShipping()">
+                            Calcular
+                        </button>
+                    </div>
+                    <div id="shipping-feedback" class="shipping-feedback"></div>
                 </div>
-                <div id="shipping-result" class="shipping-result-info"></div>
+
+                <div id="shipping-options" class="shipping-options" style="display: none;">
+                    <!-- Preenchido via JS -->
+                </div>
             </div>
 
             <div class="cart-coupon-box" id="cart-coupon-box">
@@ -501,6 +519,26 @@
                     Já possui uma conta? <a href="#" onclick="switchAuthTab('login'); return false;">Entre aqui</a>
                 </p>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de Cupons Disponíveis -->
+    <div id="coupons-modal" class="modal-overlay">
+        <div class="modal-content coupons-modal-content">
+            <button class="modal-close" onclick="closeCouponsModal()" aria-label="Fechar">&times;</button>
+
+            <div class="coupons-modal-header">
+                <h3>Meus Cupons</h3>
+                <p>Escolha um cupom pra aplicar no seu pedido</p>
+            </div>
+
+            <div class="coupons-modal-list" id="coupons-modal-list">
+                <!-- Preenchido via JS -->
+            </div>
+
+            <div class="coupons-modal-footer">
+                <button type="button" class="btn-ghost" onclick="closeCouponsModal()">Fechar</button>
+            </div>
         </div>
     </div>
 
