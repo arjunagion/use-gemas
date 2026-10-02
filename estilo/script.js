@@ -2211,33 +2211,31 @@ function isFreeShippingApplied(subtotal) {
 }
 
 /**
- * Identifica a região pelo primeiro dígito do CEP.
- * Retorna a chave do campo em siteSettings com o valor do frete fixo.
+ * Identifica a região pelo PREFIXO (2 primeiros dígitos) do CEP.
+ * Alinhado com a tabela dos Correios:
+ *   01-19 → SP
+ *   20-39 → RJ/ES/MG (Sudeste)
+ *   40-79 → BA/SE/NE/PA/AM/DF/GO/MT/MS/TO (Centro-Oeste + Norte + Nordeste)
+ *   80-99 → PR/SC/RS (Sul)
  */
 function getRegionKeyFromCep(cep) {
     const cepClean = String(cep || '').replace(/\D/g, '');
-    if (cepClean.length < 1) return null;
+    if (cepClean.length < 2) return null;
 
-    const d = cepClean[0];
-    // Mapa simplificado por 1º dígito do CEP (padrão Correios):
-    //   0,1 → SP
-    //   2,3 → RJ, ES (Sudeste)
-    //   4 → MG, BA, SE (Sudeste/NE)
-    //   5 → PE, AL, PB, RN (Nordeste)
-    //   6 → CE, PI, MA, PA, AM, AC, AP, RR, TO (Norte/NE)
-    //   7 → DF, GO, TO, MT, MS, RO (Centro-Oeste/Norte)
-    //   8 → PR, SC (Sul)
-    //   9 → RS (Sul)
+    const prefix2 = parseInt(cepClean.slice(0, 2), 10);
+    if (isNaN(prefix2)) return null;
 
-    if (d === '0' || d === '1') return 'shipping_fixed_sp';
-    if (d === '2' || d === '3') return 'shipping_fixed_sudeste';
-    if (d === '4') return 'shipping_fixed_sudeste'; // MG/BA/SE — usa sudeste como proxy
-    if (d === '5') return 'shipping_fixed_centro_norte_ne';
-    if (d === '6') return 'shipping_fixed_centro_norte_ne';
-    if (d === '7') return 'shipping_fixed_centro_norte_ne';
-    if (d === '8' || d === '9') return 'shipping_fixed_sul';
+    // SP: 01-19
+    if (prefix2 <= 19) return 'shipping_fixed_sp';
 
-    return null;
+    // Sudeste (RJ/ES/MG): 20-39
+    if (prefix2 <= 39) return 'shipping_fixed_sudeste';
+
+    // Sul (PR/SC/RS): 80-99
+    if (prefix2 >= 80) return 'shipping_fixed_sul';
+
+    // Centro-Oeste + Norte + Nordeste (BA/SE/PE/CE/PA/DF/etc): 40-79
+    return 'shipping_fixed_centro_norte_ne';
 }
 
 /**
