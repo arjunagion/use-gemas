@@ -4527,3 +4527,193 @@ a {
         font-size: 0.88rem;
     }
 }
+
+/* ==========================================================================
+   MODAL DE FEEDBACK (Fase 10.4 — reciclagem Web3Forms)
+   ========================================================================== */
+.feedback-cta {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.feedback-cta-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.6rem;
+    letter-spacing: 0.3px;
+}
+
+.feedback-modal-content {
+    max-width: 520px;
+}
+
+.feedback-modal-header {
+    margin-bottom: 1.5rem;
+    padding-right: 2rem;
+}
+
+.feedback-modal-header h3 {
+    font-family: var(--font-title);
+    font-size: 1.6rem;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+}
+
+.feedback-modal-header p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.feedback-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.feedback-form label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.feedback-form input,
+.feedback-form select,
+.feedback-form textarea {
+    width: 100%;
+    background: var(--bg-elevated);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: var(--font-body);
+    outline: none;
+    transition: all 0.3s;
+}
+
+.feedback-form textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.5;
+}
+
+.feedback-form input:focus,
+.feedback-form select:focus,
+.feedback-form textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+}
+
+.feedback-form .char-counter {
+    display: block;
+    text-align: right;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.feedback-stars {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+
+.feedback-star {
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    color: rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.feedback-star:hover,
+.feedback-star.active {
+    color: var(--gold);
+    transform: scale(1.1);
+}
+
+.feedback-form-feedback {
+    display: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.feedback-form-feedback.error {
+    display: block;
+    background: rgba(255, 85, 85, 0.12);
+    border: 1px solid rgba(255, 85, 85, 0.4);
+    color: #ff8e8e;
+}
+
+.feedback-form-feedback.success {
+    display: block;
+    background: rgba(81, 207, 102, 0.12);
+    border: 1px solid rgba(81, 207, 102, 0.4);
+    color: #7ae096;
+}
+
+.feedback-modal-actions {
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.feedback-modal-actions .btn-cancel {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-muted);
+}
+
+.feedback-modal-actions .btn-primary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+    color: #0e0e10;
+    border: none;
+}
+
+.feedback-modal-actions .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.feedback-modal-actions .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .feedback-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .feedback-modal-actions button {
+        width: 100%;
+    }
+}

@@ -3188,6 +3188,10 @@
                     <span class="icon">⭐</span> Avaliações
                     <span class="nav-badge" id="nav-badge-reviews" style="display: none;">0</span>
                 </a>
+                <a href="#" class="nav-item" data-section="feedbacks">
+                    <span class="icon">💬</span> Feedbacks
+                    <span class="nav-badge" id="nav-badge-feedbacks" style="display: none;">0</span>
+                </a>
                 <a href="#" class="nav-item" data-section="cupons">
                     <span class="icon">🎟️</span> Cupons
                     <span class="nav-badge" id="nav-badge-coupons" style="display: none;">0</span>
@@ -3333,6 +3337,29 @@
                         <div class="empty-state">
                             <span class="icon">⭐</span>
                             <p>Carregando avaliações...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== FEEDBACKS ==================== -->
+                <section class="content-section" id="section-feedbacks">
+                    <div class="section-header">
+                        <div class="section-actions">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" onclick="setFeedbackFilter('all', this)">Todos</button>
+                                <button class="filter-tab" onclick="setFeedbackFilter('new', this)">Novos</button>
+                                <button class="filter-tab" onclick="setFeedbackFilter('read', this)">Lidos</button>
+                                <button class="filter-tab" onclick="setFeedbackFilter('archived', this)">Arquivados</button>
+                            </div>
+                            <input type="text" class="search-input" id="feedback-search"
+                                placeholder="🔍 Buscar por nome, email ou texto..." oninput="renderFeedbacks()">
+                        </div>
+                    </div>
+
+                    <div id="feedbacks-container">
+                        <div class="empty-state">
+                            <span class="icon">💬</span>
+                            <p>Carregando feedbacks...</p>
                         </div>
                     </div>
                 </section>
@@ -4116,6 +4143,7 @@
                 await loadProducts();
                 await loadOrders();
                 await loadReviews();
+                await loadFeedbacks();
                 await loadSettings();
                 await loadCoupons();
                 await loadLoyaltySummary();
@@ -4140,6 +4168,7 @@
             produtos: 'Produtos',
             pedidos: 'Pedidos',
             avaliacoes: 'Avaliações',
+            feedbacks: 'Feedbacks',
             cupons: 'Cupons',
             pontos: 'Pontos',
             clientes: 'Clientes',
@@ -4158,6 +4187,7 @@
             if (sectionName === 'dashboard') updateDashboardMetrics();
             if (sectionName === 'clientes') renderClients();
             if (sectionName === 'avaliacoes' && !reviewsLoaded) loadReviews();
+            if (sectionName === 'feedbacks') loadFeedbacks();
             if (sectionName === 'cupons') loadCoupons();
             if (sectionName === 'pontos') loadLoyaltySummary();
             if (sectionName === 'config') loadSettings();
@@ -4798,6 +4828,8 @@
         let allReviews = [];
         let currentReviewFilter = 'pending';
         let reviewsLoaded = false;
+        let allFeedbacks = [];
+        let currentFeedbackFilter = 'all';
 
         async function loadReviews() {
             const { data, error } = await supabaseClient
@@ -4979,6 +5011,174 @@
             review.featured = newValue;
             renderReviews();
             showToast(newValue ? 'Avaliação destacada!' : 'Destaque removido.');
+        }
+
+        // ==========================================================================
+        // FEEDBACKS
+        // ==========================================================================
+        async function loadFeedbacks() {
+            const { data, error } = await supabaseClient
+                .from('feedbacks')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Erro ao carregar feedbacks:', error);
+                return;
+            }
+
+            allFeedbacks = data || [];
+            renderFeedbacks();
+            updateFeedbackBadge();
+        }
+
+        function updateFeedbackBadge() {
+            const newCount = allFeedbacks.filter(f => f.status === 'new').length;
+            const badge = document.getElementById('nav-badge-feedbacks');
+            if (badge) {
+                badge.innerText = newCount;
+                badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        function setFeedbackFilter(filter, el) {
+            currentFeedbackFilter = filter;
+            document.querySelectorAll('#section-feedbacks .filter-tab').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderFeedbacks();
+        }
+
+        function renderFeedbacks() {
+            const container = document.getElementById('feedbacks-container');
+            if (!container) return;
+
+            const searchTerm = (document.getElementById('feedback-search')?.value || '').trim().toLowerCase();
+
+            let filtered = allFeedbacks.slice();
+            if (currentFeedbackFilter !== 'all') {
+                filtered = filtered.filter(f => f.status === currentFeedbackFilter);
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(f =>
+                    (f.customer_name || '').toLowerCase().includes(searchTerm) ||
+                    (f.customer_email || '').toLowerCase().includes(searchTerm) ||
+                    (f.message || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">💬</span>
+                        <p>${allFeedbacks.length === 0 ? 'Nenhum feedback recebido ainda.' : 'Nenhum feedback com esse filtro.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '<div class="reviews-admin-list">' +
+                filtered.map(f => renderFeedbackCard(f)).join('') +
+                '</div>';
+        }
+
+        function renderFeedbackCard(f) {
+            const statusMap = {
+                new: { label: 'Novo', class: 'pending' },
+                read: { label: 'Lido', class: 'approved' },
+                archived: { label: 'Arquivado', class: 'rejected' }
+            };
+            const statusInfo = statusMap[f.status] || statusMap.new;
+
+            const ratingStars = f.rating
+                ? '★'.repeat(f.rating) + '☆'.repeat(5 - f.rating)
+                : '';
+
+            const categoryMap = {
+                suggestion: '💡 Sugestão',
+                compliment: '💛 Elogio',
+                complaint: '⚠️ Reclamação',
+                bug: '🐛 Problema',
+                other: '📝 Outro'
+            };
+            const categoryLabel = f.category ? (categoryMap[f.category] || f.category) : '';
+
+            return `
+                <div class="review-admin-card">
+                    <div class="review-admin-header">
+                        <div>
+                            ${ratingStars ? `<div class="review-admin-stars">${ratingStars}</div>` : ''}
+                            <div class="review-admin-product">
+                                ${categoryLabel ? `<strong>${categoryLabel}</strong>` : '<em>Sem categoria</em>'}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <span class="review-status-badge ${statusInfo.class}">${statusInfo.label}</span>
+                            <span class="review-admin-date">${formatDateShort(f.created_at)}</span>
+                        </div>
+                    </div>
+
+                    <div class="review-admin-meta">
+                        <strong>${escapeHTML(f.customer_name || 'Anônimo')}</strong>
+                        ${f.customer_email ? `<span style="color:var(--text-dim);">${escapeHTML(f.customer_email)}</span>` : ''}
+                    </div>
+
+                    <div class="review-admin-comment" style="white-space: pre-wrap;">${escapeHTML(f.message)}</div>
+
+                    <div class="review-admin-actions">
+                        ${f.status !== 'read' ? `<button class="action-btn" onclick="setFeedbackStatus('${f.id}', 'read')">✓ Marcar como lido</button>` : ''}
+                        ${f.status !== 'archived' ? `<button class="action-btn warn" onclick="setFeedbackStatus('${f.id}', 'archived')">📦 Arquivar</button>` : ''}
+                        <button class="action-btn danger" onclick="confirmDeleteFeedback('${f.id}')">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function setFeedbackStatus(id, newStatus) {
+            const { error } = await supabaseClient
+                .from('feedbacks')
+                .update({ status: newStatus })
+                .eq('id', id);
+
+            if (error) { showToast('Erro ao atualizar.', 'error'); return; }
+            await loadFeedbacks();
+            showToast('Feedback atualizado!');
+        }
+
+        function confirmDeleteFeedback(id) {
+            const f = allFeedbacks.find(x => x.id === id);
+            if (!f) return;
+
+            pendingDeleteId = id;
+            document.getElementById('confirm-title').innerText = 'Excluir feedback?';
+            document.getElementById('confirm-text').innerHTML =
+                `Você está prestes a excluir o feedback de <strong>${escapeHTML(f.customer_name || 'Anônimo')}</strong>.<br><br>Essa ação não pode ser desfeita.`;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.innerText = 'Excluir';
+            confirmBtn.onclick = executeDeleteFeedback;
+
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        async function executeDeleteFeedback() {
+            if (!pendingDeleteId) return;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            const originalText = confirmBtn.innerText;
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Excluindo...';
+
+            const { error } = await supabaseClient.from('feedbacks').delete().eq('id', pendingDeleteId);
+
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = originalText;
+
+            if (error) { showToast('Erro ao excluir.', 'error'); return; }
+
+            closeConfirmModal();
+            showToast('Feedback excluído.');
+            await loadFeedbacks();
         }
 
         let currentReviewForResponse = null;

@@ -4028,6 +4028,165 @@ function injectAggregateRatingSchema(reviews) {
 }
 
 // ==========================================================================
+// FEEDBACK (Fase 10.4 — reciclagem Web3Forms → tabela feedbacks)
+// ==========================================================================
+let feedbackRating = 0;
+
+function openFeedbackModal() {
+    const modal = document.getElementById('feedback-modal');
+    if (!modal) return;
+
+    // Reset
+    const form = document.getElementById('feedback-form');
+    if (form) form.reset();
+    const counter = document.getElementById('fb-char-count');
+    if (counter) counter.textContent = '0';
+
+    const fb = document.getElementById('feedback-form-feedback');
+    if (fb) { fb.className = 'feedback-form-feedback'; fb.textContent = ''; }
+
+    // Reset estrelas
+    feedbackRating = 0;
+    document.querySelectorAll('.feedback-star').forEach(s => s.classList.remove('active'));
+
+    // Pré-preenche com dados do usuário logado (se houver)
+    if (typeof supabaseClient !== 'undefined') {
+        supabaseClient.auth.getUser().then(({ data: { user } }) => {
+            if (user) {
+                const emailInput = document.getElementById('fb-email');
+                if (emailInput && !emailInput.value) emailInput.value = user.email || '';
+            }
+        }).catch(() => {});
+    }
+
+    modal.classList.add('open');
+}
+
+function closeFeedbackModal() {
+    const modal = document.getElementById('feedback-modal');
+    if (modal) modal.classList.remove('open');
+}
+
+function paintFeedbackStars(value) {
+    document.querySelectorAll('.feedback-star').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.value, 10) <= value);
+    });
+}
+
+async function submitFeedback(event) {
+    event.preventDefault();
+
+    const fb = document.getElementById('feedback-form-feedback');
+    const btn = document.getElementById('feedback-submit-btn');
+
+    if (fb) { fb.className = 'feedback-form-feedback'; fb.textContent = ''; }
+
+    const name = (document.getElementById('fb-name')?.value || '').trim();
+    const email = (document.getElementById('fb-email')?.value || '').trim();
+    const category = document.getElementById('fb-category')?.value || null;
+    const message = (document.getElementById('fb-message')?.value || '').trim();
+
+    if (message.length < 5) {
+        if (fb) {
+            fb.className = 'feedback-form-feedback error';
+            fb.textContent = 'Escreva uma mensagem com pelo menos 5 caracteres.';
+        }
+        return;
+    }
+
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'Enviando...';
+
+    try {
+        // Pega user_id se estiver logado (opcional)
+        let userId = null;
+        try {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            userId = user?.id || null;
+        } catch (e) { /* anônimo */ }
+
+        const payload = {
+            user_id: userId,
+            customer_name: name || null,
+            customer_email: email || null,
+            rating: feedbackRating > 0 ? feedbackRating : null,
+            category: category,
+            message: message,
+            status: 'new'
+        };
+
+        const { error } = await supabaseClient
+            .from('feedbacks')
+            .insert(payload);
+
+        if (error) throw error;
+
+        // Sucesso
+        if (fb) {
+            fb.className = 'feedback-form-feedback success';
+            fb.textContent = '💛 Obrigada! Seu feedback foi recebido.';
+        }
+
+        // Fecha após 1.5s
+        setTimeout(() => {
+            closeFeedbackModal();
+            if (typeof trackGA === 'function') {
+                trackGA('feedback_submitted', { category, has_rating: feedbackRating > 0 });
+            }
+        }, 1500);
+
+    } catch (e) {
+        console.error('[Feedback] Erro:', e);
+        if (fb) {
+            fb.className = 'feedback-form-feedback error';
+            fb.textContent = 'Não foi possível enviar. Tente novamente em alguns instantes.';
+        }
+    } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+}
+
+// Bind (roda após DOMContentLoaded)
+document.addEventListener('DOMContentLoaded', () => {
+    // Estrelas
+    document.querySelectorAll('.feedback-star').forEach(btn => {
+        const v = parseInt(btn.dataset.value, 10);
+        btn.addEventListener('mouseenter', () => paintFeedbackStars(v));
+        btn.addEventListener('mouseleave', () => paintFeedbackStars(feedbackRating));
+        btn.addEventListener('click', () => {
+            feedbackRating = v;
+            paintFeedbackStars(v);
+        });
+    });
+
+    // Contador do textarea
+    const msgEl = document.getElementById('fb-message');
+    const counterEl = document.getElementById('fb-char-count');
+    if (msgEl && counterEl) {
+        msgEl.addEventListener('input', () => {
+            counterEl.textContent = msgEl.value.length;
+        });
+    }
+
+    // Submit
+    const form = document.getElementById('feedback-form');
+    if (form) form.addEventListener('submit', submitFeedback);
+
+    // Fecha com ESC / clique fora
+    const modal = document.getElementById('feedback-modal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeFeedbackModal();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('open')) closeFeedbackModal();
+        });
+    }
+});
+
+// ==========================================================================
 // Checkout
 // ==========================================================================
 async function openCheckoutModal() {

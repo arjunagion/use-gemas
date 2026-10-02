@@ -54,7 +54,7 @@
 
     <!-- Link para o CSS -->
     <!-- ⬇️ BUMP: 56.0 → 57.0 -->
-    <link rel="stylesheet" href="estilo/style.css?v=58.0">
+    <link rel="stylesheet" href="estilo/style.css?v=59.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css">
@@ -407,6 +407,14 @@
 
                 <div class="testimonial-cta">
                     <a href="avaliacoes.html" class="btn-outline">Ver todas as avaliações</a>
+                </div>
+
+                <!-- Botão de feedback (canal privado, não aparece no site) -->
+                <div class="feedback-cta">
+                    <button type="button" class="btn-outline" onclick="openFeedbackModal()">
+                        💬 Deixe seu feedback
+                    </button>
+                    <p class="feedback-cta-hint">Sua opinião nos ajuda a melhorar (não é publicado)</p>
                 </div>
             </div>
         </section>
@@ -923,7 +931,7 @@
 
     <!-- Importação do JS -->
     <!-- ⬇️ BUMP: 71.0 → 72.0 -->
-    <script src="estilo/script.js?v=80.0"></script>
+    <script src="estilo/script.js?v=81.0"></script>
 
     <!-- Toast notifications -->
     <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
@@ -950,6 +958,67 @@
             });
         }
     </script>
+
+    <!-- Modal de Feedback -->
+    <div id="feedback-modal" class="modal-overlay">
+        <div class="modal-content feedback-modal-content">
+            <button class="modal-close" onclick="closeFeedbackModal()" aria-label="Fechar">&times;</button>
+
+            <div class="feedback-modal-header">
+                <h3>Deixe seu feedback</h3>
+                <p>Sua opinião é ouvida e nos ajuda a melhorar. Este feedback é privado — não aparece no site.</p>
+            </div>
+
+            <form id="feedback-form" class="feedback-form" novalidate>
+                <div class="form-group">
+                    <label for="fb-name">Seu nome (opcional)</label>
+                    <input type="text" id="fb-name" maxlength="80" placeholder="Como quer ser chamada(o)" autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="fb-email">E-mail (opcional)</label>
+                    <input type="email" id="fb-email" maxlength="120" placeholder="seu@email.com" autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label>Como você avalia sua experiência?</label>
+                    <div class="feedback-stars" id="feedback-stars" role="radiogroup" aria-label="Avaliação de 1 a 5 estrelas">
+                        <button type="button" class="feedback-star" data-value="1" aria-label="1 estrela">★</button>
+                        <button type="button" class="feedback-star" data-value="2" aria-label="2 estrelas">★</button>
+                        <button type="button" class="feedback-star" data-value="3" aria-label="3 estrelas">★</button>
+                        <button type="button" class="feedback-star" data-value="4" aria-label="4 estrelas">★</button>
+                        <button type="button" class="feedback-star" data-value="5" aria-label="5 estrelas">★</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="fb-category">Sobre o que é seu feedback?</label>
+                    <select id="fb-category">
+                        <option value="">Selecione (opcional)</option>
+                        <option value="suggestion">💡 Sugestão</option>
+                        <option value="compliment">💛 Elogio</option>
+                        <option value="complaint">⚠️ Reclamação</option>
+                        <option value="bug">🐛 Problema no site</option>
+                        <option value="other">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="fb-message">Sua mensagem <span class="required">*</span></label>
+                    <textarea id="fb-message" rows="5" required minlength="5" maxlength="2000"
+                        placeholder="Conta pra gente o que você pensa..."></textarea>
+                    <small class="char-counter"><span id="fb-char-count">0</span>/2000</small>
+                </div>
+
+                <div id="feedback-form-feedback" class="feedback-form-feedback"></div>
+
+                <div class="feedback-modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeFeedbackModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="feedback-submit-btn">Enviar feedback</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </body>
 
