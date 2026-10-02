@@ -3104,6 +3104,42 @@
             color: var(--text-dim);
             line-height: 1.4;
         }
+
+        .region-freight-block {
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+        }
+
+        .region-freight-block summary {
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gold);
+            letter-spacing: 0.3px;
+            padding: 0.3rem 0;
+            list-style: none;
+        }
+
+        .region-freight-block summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .region-freight-block summary::before {
+            content: '▸ ';
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .region-freight-block[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .region-freight-block .form-row-2 {
+            margin-top: 0.8rem;
+        }
     </style>
 </head>
 
@@ -3530,6 +3566,36 @@
                                     <input type="text" id="cfg-free-shipping-min" placeholder="0" inputmode="decimal">
                                 </div>
                             </div>
+
+                            <details class="region-freight-block">
+                                <summary>Frete fixo por região (opcional)</summary>
+                                <p class="config-hint" style="margin: 0.6rem 0;">
+                                    Se preenchido, sobrepõe o "Frete fixo" global pra CEPs daquela região.
+                                    Deixe 0 pra usar o valor global.
+                                </p>
+
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label for="cfg-shipping-fixed-sp">SP (CEP 0-1)</label>
+                                        <input type="text" id="cfg-shipping-fixed-sp" placeholder="0" inputmode="decimal">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cfg-shipping-fixed-sudeste">Sudeste — RJ/ES/MG (CEP 2-4)</label>
+                                        <input type="text" id="cfg-shipping-fixed-sudeste" placeholder="0" inputmode="decimal">
+                                    </div>
+                                </div>
+
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label for="cfg-shipping-fixed-sul">Sul — PR/SC/RS (CEP 8-9)</label>
+                                        <input type="text" id="cfg-shipping-fixed-sul" placeholder="0" inputmode="decimal">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cfg-shipping-fixed-centro-norte-ne">Centro-Oeste + Norte + Nordeste (CEP 5-7)</label>
+                                        <input type="text" id="cfg-shipping-fixed-centro-norte-ne" placeholder="0" inputmode="decimal">
+                                    </div>
+                                </div>
+                            </details>
 
                             <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa
                                 regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o
@@ -6438,7 +6504,11 @@
                 'cfg-instagram': data?.instagram || '',
                 'cfg-shipping-fixed': data?.shipping_fixed != null ? Number(data.shipping_fixed).toFixed(2).replace('.', ',') : '20,00',
                 'cfg-free-shipping-min': data?.free_shipping_min != null ? Number(data.free_shipping_min).toFixed(2).replace('.', ',') : '0,00',
-                'cfg-banner-message': data?.banner_message || ''
+                'cfg-banner-message': data?.banner_message || '',
+                'cfg-shipping-fixed-sp': data?.shipping_fixed_sp != null ? Number(data.shipping_fixed_sp).toFixed(2).replace('.', ',') : '0,00',
+                'cfg-shipping-fixed-sudeste': data?.shipping_fixed_sudeste != null ? Number(data.shipping_fixed_sudeste).toFixed(2).replace('.', ',') : '0,00',
+                'cfg-shipping-fixed-sul': data?.shipping_fixed_sul != null ? Number(data.shipping_fixed_sul).toFixed(2).replace('.', ',') : '0,00',
+                'cfg-shipping-fixed-centro-norte-ne': data?.shipping_fixed_centro_norte_ne != null ? Number(data.shipping_fixed_centro_norte_ne).toFixed(2).replace('.', ',') : '0,00'
             };
 
             Object.entries(fields).forEach(([id, value]) => {
@@ -6470,6 +6540,10 @@
             const shippingFixed = normalizePrice(document.getElementById('cfg-shipping-fixed')?.value || '0');
             const freeShippingMin = normalizePrice(document.getElementById('cfg-free-shipping-min')?.value || '0');
             const bannerMessage = (document.getElementById('cfg-banner-message')?.value || '').trim();
+            const shippingFixedSp = normalizePrice(document.getElementById('cfg-shipping-fixed-sp')?.value || '0');
+            const shippingFixedSudeste = normalizePrice(document.getElementById('cfg-shipping-fixed-sudeste')?.value || '0');
+            const shippingFixedSul = normalizePrice(document.getElementById('cfg-shipping-fixed-sul')?.value || '0');
+            const shippingFixedCentroNorteNe = normalizePrice(document.getElementById('cfg-shipping-fixed-centro-norte-ne')?.value || '0');
 
             if (!whatsapp || whatsapp.length < 10) {
                 showToast('WhatsApp inválido (precisa de DDI + DDD + número).', 'error');
@@ -6510,6 +6584,10 @@
                 shipping_mode: shippingMode,
                 free_shipping_min: freeShippingMin,
                 banner_message: bannerMessage,
+                shipping_fixed_sp: isNaN(shippingFixedSp) ? 0 : shippingFixedSp,
+                shipping_fixed_sudeste: isNaN(shippingFixedSudeste) ? 0 : shippingFixedSudeste,
+                shipping_fixed_sul: isNaN(shippingFixedSul) ? 0 : shippingFixedSul,
+                shipping_fixed_centro_norte_ne: isNaN(shippingFixedCentroNorteNe) ? 0 : shippingFixedCentroNorteNe,
                 updated_at: new Date().toISOString()
             };
 

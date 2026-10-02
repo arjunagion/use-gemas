@@ -84,9 +84,14 @@ let appliedCoupon = null; // { code, discount, free_shipping, discount_type, dis
 let siteSettings = {
     whatsapp: '5511982053330',
     instagram: 'use.gemas',
-    shipping_fixed: 20.00,
+    shipping_fixed: 0,
     free_shipping_min: 0,
-    banner_message: ''
+    banner_message: '',
+    shipping_mode: 'me',
+    shipping_fixed_sp: 0,
+    shipping_fixed_sudeste: 0,
+    shipping_fixed_sul: 0,
+    shipping_fixed_centro_norte_ne: 0
 };
 
 // ==========================================================================
@@ -495,7 +500,12 @@ async function loadSiteSettings() {
                 instagram: data.instagram || siteSettings.instagram,
                 shipping_fixed: Number(data.shipping_fixed) || 0,
                 free_shipping_min: Number(data.free_shipping_min) || 0,
-                banner_message: data.banner_message || ''
+                banner_message: data.banner_message || '',
+                shipping_mode: data.shipping_mode || 'me',
+                shipping_fixed_sp: Number(data.shipping_fixed_sp) || 0,
+                shipping_fixed_sudeste: Number(data.shipping_fixed_sudeste) || 0,
+                shipping_fixed_sul: Number(data.shipping_fixed_sul) || 0,
+                shipping_fixed_centro_norte_ne: Number(data.shipping_fixed_centro_norte_ne) || 0
             };
             whatsappNumber = siteSettings.whatsapp;
         }
@@ -2200,6 +2210,53 @@ function isFreeShippingApplied(subtotal) {
         && subtotal >= siteSettings.free_shipping_min;
 }
 
+/**
+ * Identifica a região pelo primeiro dígito do CEP.
+ * Retorna a chave do campo em siteSettings com o valor do frete fixo.
+ */
+function getRegionKeyFromCep(cep) {
+    const cepClean = String(cep || '').replace(/\D/g, '');
+    if (cepClean.length < 1) return null;
+
+    const d = cepClean[0];
+    // Mapa simplificado por 1º dígito do CEP (padrão Correios):
+    //   0,1 → SP
+    //   2,3 → RJ, ES (Sudeste)
+    //   4 → MG, BA, SE (Sudeste/NE)
+    //   5 → PE, AL, PB, RN (Nordeste)
+    //   6 → CE, PI, MA, PA, AM, AC, AP, RR, TO (Norte/NE)
+    //   7 → DF, GO, TO, MT, MS, RO (Centro-Oeste/Norte)
+    //   8 → PR, SC (Sul)
+    //   9 → RS (Sul)
+
+    if (d === '0' || d === '1') return 'shipping_fixed_sp';
+    if (d === '2' || d === '3') return 'shipping_fixed_sudeste';
+    if (d === '4') return 'shipping_fixed_sudeste'; // MG/BA/SE — usa sudeste como proxy
+    if (d === '5') return 'shipping_fixed_centro_norte_ne';
+    if (d === '6') return 'shipping_fixed_centro_norte_ne';
+    if (d === '7') return 'shipping_fixed_centro_norte_ne';
+    if (d === '8' || d === '9') return 'shipping_fixed_sul';
+
+    return null;
+}
+
+/**
+ * Retorna o valor do frete fixo aplicável pro CEP.
+ * Ordem de prioridade:
+ *   1. Valor específico da região (se > 0)
+ *   2. Valor global shipping_fixed (se > 0)
+ *   3. 0 (sem fallback)
+ */
+function getFixedShippingForCep(cep) {
+    const regionKey = getRegionKeyFromCep(cep);
+    const regional = regionKey ? Number(siteSettings?.[regionKey] || 0) : 0;
+    const global = Number(siteSettings?.shipping_fixed || 0);
+
+    if (regional > 0) return { value: regional, source: regionKey };
+    if (global > 0) return { value: global, source: 'shipping_fixed' };
+    return { value: 0, source: null };
+}
+
 async function calculateShipping() {
     const input = document.getElementById('cep-input');
     const btn = document.getElementById('btn-calculate-shipping');
@@ -2212,17 +2269,29 @@ async function calculateShipping() {
     // Modo 'fixed' — ignora ME completamente
     const mode = siteSettings?.shipping_mode || 'me';
     if (mode === 'fixed') {
+        const cepDigitado = input.value.replace(/\D/g, '');
+
+        if (cepDigitado.length !== 8) {
+            feedback.className = 'shipping-feedback error';
+            feedback.innerText = 'Digite seu CEP pra calcular o frete.';
+            return;
+        }
+
         const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         const freeMin = Number(siteSettings?.free_shipping_min || 0);
         const isFree = freeMin > 0 && subtotal >= freeMin;
-        const fixed = Number(siteSettings?.shipping_fixed || 0);
+
+        // Valor aplicável: específico da região > global
+        const fixedInfo = getFixedShippingForCep(cepDigitado);
+        const fixedValue = fixedInfo.value;
 
         selectedShipping = null;
         shippingDetails = {
             method: 'Fixo',
             carrier: 'Padrão',
-            price: isFree ? 0 : fixed,
-            is_fallback: false
+            price: isFree ? 0 : fixedValue,
+            is_fallback: false,
+            region: fixedInfo.source
         };
 
         feedback.className = 'shipping-feedback';
@@ -2233,9 +2302,9 @@ async function calculateShipping() {
             <div class="shipping-option selected ${isFree ? 'free-shipping' : ''}">
                 <div class="shipping-option-info">
                     <div class="shipping-option-name">${isFree ? 'FRETE GRÁTIS ✨' : 'Frete padrão'}</div>
-                    <div class="shipping-option-meta">${isFree ? 'Sua compra passou do mínimo' : 'Valor fixo aplicado'}</div>
+                    <div class="shipping-option-meta">${isFree ? 'Sua compra passou do mínimo' : 'Valor fixo aplicado pra sua região'}</div>
                 </div>
-                <div class="shipping-option-price">${isFree ? 'GRÁTIS' : formatCurrency(fixed)}</div>
+                <div class="shipping-option-price">${isFree ? 'GRÁTIS' : formatCurrency(fixedValue)}</div>
             </div>
         `;
         updateCartUI();
@@ -2307,8 +2376,10 @@ async function calculateShipping() {
     } catch (e) {
         console.error('Erro ao calcular frete:', e);
 
-        // ME falhou — tenta fallback fixo (só se shipping_fixed > 0)
-        const fixedFallback = Number(siteSettings?.shipping_fixed || 0);
+        // ME falhou — tenta fallback fixo (região > global)
+        const fixedInfo = getFixedShippingForCep(cep);
+        const fixedFallback = fixedInfo.value;
+
         const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
         const freeMin = Number(siteSettings?.free_shipping_min || 0);
         const isFree = freeMin > 0 && subtotal >= freeMin;
@@ -2319,7 +2390,8 @@ async function calculateShipping() {
                 method: 'Fixo',
                 carrier: 'Padrão',
                 price: isFree ? 0 : fixedFallback,
-                is_fallback: true
+                is_fallback: true,
+                region: fixedInfo.source
             };
 
             inputWrapper.style.display = 'none';
