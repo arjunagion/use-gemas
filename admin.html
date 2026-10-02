@@ -3049,6 +3049,61 @@
                 min-width: auto;
             }
         }
+
+        /* Toggle de modo de frete */
+        .shipping-mode-toggle {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.4rem;
+        }
+
+        .shipping-mode-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            padding: 0.8rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .shipping-mode-option:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            background: rgba(212, 175, 55, 0.04);
+        }
+
+        .shipping-mode-option input[type="radio"] {
+            accent-color: var(--gold);
+            margin-top: 3px;
+            flex-shrink: 0;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            appearance: auto;
+            -webkit-appearance: auto;
+        }
+
+        .shipping-mode-option input[type="radio"]:checked + span strong {
+            color: var(--gold);
+        }
+
+        .shipping-mode-option span strong {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .shipping-mode-option span small {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
     </style>
 </head>
 
@@ -3443,6 +3498,27 @@
 
                         <div class="config-block">
                             <h3 class="config-block-title">Frete</h3>
+
+                            <div class="form-group">
+                                <label>Modo de frete operando</label>
+                                <div class="shipping-mode-toggle">
+                                    <label class="shipping-mode-option">
+                                        <input type="radio" name="cfg-shipping-mode" value="me" id="cfg-shipping-mode-me">
+                                        <span>
+                                            <strong>Melhor Envio</strong>
+                                            <small>Cotação real por CEP (Correios + Jadlog)</small>
+                                        </span>
+                                    </label>
+                                    <label class="shipping-mode-option">
+                                        <input type="radio" name="cfg-shipping-mode" value="fixed" id="cfg-shipping-mode-fixed">
+                                        <span>
+                                            <strong>Frete fixo</strong>
+                                            <small>Valor único pra todas as regiões (modo reserva)</small>
+                                        </span>
+                                    </label>
+                                </div>
+                                <small class="config-hint">Define qual modo está ativo. O valor do frete fixo (abaixo) é usado quando o modo "Frete fixo" está selecionado ou como fallback automático se o ME falhar.</small>
+                            </div>
 
                             <div class="form-row-2">
                                 <div class="form-group">
@@ -6369,6 +6445,16 @@
                 const el = document.getElementById(id);
                 if (el) el.value = value;
             });
+
+            // Popula radio de modo de frete
+            const shippingMode = data?.shipping_mode || 'me';
+            const radioMe = document.getElementById('cfg-shipping-mode-me');
+            const radioFixed = document.getElementById('cfg-shipping-mode-fixed');
+            if (shippingMode === 'fixed' && radioFixed) {
+                radioFixed.checked = true;
+            } else if (radioMe) {
+                radioMe.checked = true;
+            }
         }
 
         async function saveSettings() {
@@ -6406,10 +6492,22 @@
                 return;
             }
 
+            const shippingModeEl = document.querySelector('input[name="cfg-shipping-mode"]:checked');
+            const shippingMode = shippingModeEl ? shippingModeEl.value : 'me';
+
+            // Validação: modo 'fixed' exige shipping_fixed > 0
+            if (shippingMode === 'fixed' && (!shippingFixed || shippingFixed <= 0)) {
+                showToast('Modo "Frete fixo" exige um valor maior que zero em "Frete fixo (R$)".', 'error');
+                btn.disabled = false;
+                btn.innerText = originalText;
+                return;
+            }
+
             const payload = {
                 whatsapp,
                 instagram,
                 shipping_fixed: shippingFixed,
+                shipping_mode: shippingMode,
                 free_shipping_min: freeShippingMin,
                 banner_message: bannerMessage,
                 updated_at: new Date().toISOString()
