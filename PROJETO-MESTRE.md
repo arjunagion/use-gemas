@@ -1,7 +1,7 @@
-# PROJETO-MESTRE — Use Gemas (v3.1)
+# PROJETO-MESTRE — Use Gemas (v3.2)
 
-> **Documento de referência oficial — v3.1** — estado do código em **02/10/2026**.
-> **Novo em v3.1:** Seção 17 (Observações técnicas da varredura) + pendências reorganizadas por prioridade real.
+> **Documento de referência oficial — v3.2** — estado do código em **02/10/2026**.
+> **Novo em v3.2:** Seção 18 (Sistema de Frete Dual Mode) + ADR 13 + pendências atualizadas.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -27,6 +27,7 @@
 15. [Roadmap sugerido](#15-roadmap-sugerido)
 16. [Changelog resumido](#16-changelog-resumido)
 17. [Observações técnicas da varredura](#17-observações-técnicas-da-varredura)
+18. [Sistema de Frete — Dual Mode](#18-sistema-de-frete--dual-mode)
 
 ---
 
@@ -362,7 +363,6 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 
 ### ⚠️ Alta — impacta UX ou negócio
 
-- **`produto.html` ainda usa o HTML antigo de frete** (`shipping-box` + `btn-shipping` + `shipping-result`) — o seletor novo do Melhor Envio só existe em `index.html`. O cliente que compra pela página de produto **cai no frete fixo antigo**.
 - **`MELHORENVIO_SANDBOX=true`** — a integração ainda tá em ambiente sandbox. Antes de operar de verdade, precisa trocar pra produção + novo Access Token.
 - **Testar PWA cliente em iOS e Android reais** — instalação, offline, ícone na home, comportamento do SW.
 - **Deletar Pixel Meta antigo (`9288...`)** — garante que só o `1408966774044848` (novo) esteja ativo.
@@ -556,6 +556,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 10 | Ledger pra pontos (não saldo) | Coluna `balance` | Auditoria + histórico + expiração por lote |
 | 11 | Carrinho em localStorage (não servidor) | Session server-side | Sem auth obrigatória, UX imediata |
 | 12 | Notificações virtuais calculadas (não todas reais) | Gravar todas no banco | Reduz writes + sempre atualizadas |
+| 13 | Frete dual-mode (ME principal + fixo reserva) | Só ME / só fixo | Continuidade do serviço se o ME cair; toggle explícito no admin |
 
 ---
 
@@ -586,6 +587,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **02/out/2026** — Sistema de frete dual-mode: toggle ME/fixo no admin + fallback automático + port do seletor ME pro produto.html + seção 18 do doc mestre.
 - **02/out/2026** — `PROJETO-MESTRE.md` v3.1: seção 17 (observações de varredura) + pendências reorganizadas; `.gitignore` e `docs/` completos na pasta `supabase/`.
 - **02/out/2026** — Estrutura `supabase/` completa (10 Edge Functions + schema 001 + docs secrets/storage/auth).
 - **01/out/2026** — FASE 9.7: webhook de rastreio do Melhor Envio.
@@ -780,4 +782,66 @@ Se um dia o Supabase precisar ser recriado do zero (disaster recovery / novo pro
 
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.1.*
+## 18. Sistema de Frete — Dual Mode (ME + Fixo de reserva)
+
+> Documentado em 02/out/2026 após implementação do toggle no admin.
+
+### 18.1 Objetivo
+
+Garantir continuidade da operação caso o Melhor Envio (ME) apresente instabilidade, timeout ou indisponibilidade. O frete fixo atua como **reserva automática** sem que o cliente perceba interrupção.
+
+### 18.2 Modelo de dados
+
+Coluna nova em `settings`:
+
+| Coluna | Tipo | Valores | Default |
+|---|---|---|---|
+| `shipping_mode` | TEXT | `'me'` \| `'fixed'` | `'me'` |
+
+Colunas relacionadas (já existentes):
+- `shipping_fixed` — valor do frete fixo de reserva (R$)
+- `free_shipping_min` — mínimo pro frete grátis (R$)
+
+### 18.3 Lógica de decisão
+
+**Prioridade 1 — Frete grátis**
+Se `subtotal >= free_shipping_min` → frete = R$ 0. Regra soberana, aplica em qualquer modo.
+
+**Prioridade 2 — Modo explícito**
+- `shipping_mode = 'fixed'` → ignora ME, usa `shipping_fixed`.
+- `shipping_mode = 'me'` → tenta ME primeiro.
+
+**Prioridade 3 — Fallback automático (só em `me`)**
+- ME OK → usa cotações ME.
+- ME falha (timeout, indisponível, lista vazia) E `shipping_fixed > 0` → usa `shipping_fixed` automaticamente.
+- ME falha E `shipping_fixed = 0` → mostra erro "Frete indisponível. Fale no WhatsApp."
+
+### 18.4 UI do admin
+
+Em **Configurações → Frete**, toggle de rádio com 2 opções:
+- **Melhor Envio** (padrão) — cotação real por CEP
+- **Frete fixo** — valor único pra todas as regiões (modo reserva)
+
+Validação: se modo `fixed` for escolhido, `shipping_fixed` precisa ser > 0.
+
+### 18.5 Estados do carrinho (UI do cliente)
+
+| Estado | Aparência |
+|---|---|
+| ME carregando | Input de CEP + botão "Calcular" |
+| ME OK | Radio com 3-4 opções (menor preço primeiro) |
+| ME falhou + fallback fixo | Card único "Frete padrão: R$ X,XX" (sem radio) |
+| ME falhou + sem fallback | Feedback vermelho "Frete indisponível" |
+| Modo fixo | Card único "Frete padrão: R$ X,XX" (sem input de CEP) |
+| Frete grátis (qualquer modo) | Card verde "FRETE GRÁTIS ✨" |
+
+### 18.6 Arquivos envolvidos
+
+- `settings` (banco) — coluna `shipping_mode`
+- `admin.html` — toggle + validação
+- `estilo/script.js` — lógica de decisão + fallback em `calculateShipping()`
+- `index.html` + `produto.html` — estrutura DOM do seletor (idêntica)
+
+---
+
+*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.2.*
