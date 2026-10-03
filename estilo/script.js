@@ -5378,6 +5378,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyFooterSettings();
     applyMetaSettings();
     applyNavLinks();
+
+    // Recalcula subtotal atual e atualiza banner de frete grátis
+    const subtotalAtual = (typeof cart !== 'undefined' && Array.isArray(cart))
+        ? cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0)
+        : 0;
+    updateFreeShippingBanner(subtotalAtual);
+
+    // Fase 10.3 — garante que o banner apareça mesmo se o carrinho foi restaurado
+    // do localStorage antes do loadSiteSettings resolver
+    setTimeout(() => {
+        const subtotal = (typeof cart !== 'undefined' && Array.isArray(cart))
+            ? cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0)
+            : 0;
+        updateFreeShippingBanner(subtotal);
+    }, 500);
+
     renderBanner();
     updateDynamicLinks();
 
