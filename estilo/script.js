@@ -576,7 +576,29 @@ function applyNavLinks() {
 // Banner condicional de frete grátis (só se ativo + dentro do threshold)
 function updateFreeShippingBanner(subtotal) {
     const banner = document.getElementById('free-shipping-banner');
+    const goldenBanner = document.getElementById('site-banner');
     if (!banner) return;
+
+    // Helper: mostra o dourado + reajusta a navbar
+    const showGolden = () => {
+        if (!goldenBanner) return;
+        goldenBanner.style.display = 'block';
+        // Recalcula altura do dourado e empurra navbar
+        requestAnimationFrame(() => {
+            const h = goldenBanner.offsetHeight || 0;
+            const navbar = document.querySelector('.navbar');
+            if (navbar && h > 0) navbar.style.top = h + 'px';
+        });
+    };
+
+    // Helper: esconde o dourado + empurra navbar pro topo (o dinâmico assume)
+    const hideGolden = () => {
+        if (!goldenBanner) return;
+        goldenBanner.style.display = 'none';
+        const navbar = document.querySelector('.navbar');
+        const dynamicH = banner.offsetHeight || 0;
+        if (navbar) navbar.style.top = dynamicH + 'px';
+    };
 
     const enabled = siteSettings?.free_shipping_banner_enabled;
     const min = Number(siteSettings?.free_shipping_min || 0);
@@ -584,12 +606,14 @@ function updateFreeShippingBanner(subtotal) {
 
     if (!enabled || min <= 0 || subtotal <= 0) {
         banner.style.display = 'none';
+        showGolden();
         return;
     }
 
     // Se já passou do mínimo → esconde (frete grátis já tá ativo, banner é redundante)
     if (subtotal >= min) {
         banner.style.display = 'none';
+        showGolden();
         return;
     }
 
@@ -599,6 +623,7 @@ function updateFreeShippingBanner(subtotal) {
     // Se ainda falta MUITO (> threshold), esconde
     if (falta > thresholdValue) {
         banner.style.display = 'none';
+        showGolden();
         return;
     }
 
@@ -607,6 +632,7 @@ function updateFreeShippingBanner(subtotal) {
 
     banner.textContent = message;
     banner.style.display = 'block';
+    hideGolden();
 }
 
 function applyHeroSettings() {

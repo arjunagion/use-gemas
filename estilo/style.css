@@ -4750,9 +4750,12 @@ a {
     font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 998;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    width: 100%;
 }
 
 .free-shipping-banner strong {
