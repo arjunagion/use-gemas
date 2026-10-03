@@ -104,7 +104,13 @@ let siteSettings = {
     footer_tagline: null,
     meta_title: null,
     meta_description: null,
-    meta_og_image_url: null
+    meta_og_image_url: null,
+    // Fase 10.3 — Refinos
+    nav_links: [],
+    low_stock_threshold: 2,
+    free_shipping_banner_enabled: false,
+    free_shipping_banner_message: 'Faltam {falta} pro frete grátis ✨',
+    free_shipping_banner_threshold_pct: 30
 };
 
 // ==========================================================================
@@ -531,7 +537,13 @@ async function loadSiteSettings() {
                 footer_tagline: data.footer_tagline || null,
                 meta_title: data.meta_title || null,
                 meta_description: data.meta_description || null,
-                meta_og_image_url: data.meta_og_image_url || null
+                meta_og_image_url: data.meta_og_image_url || null,
+                // Fase 10.3 — Refinos
+                nav_links: Array.isArray(data.nav_links) ? data.nav_links : [],
+                low_stock_threshold: data.low_stock_threshold != null ? Number(data.low_stock_threshold) : 2,
+                free_shipping_banner_enabled: !!data.free_shipping_banner_enabled,
+                free_shipping_banner_message: data.free_shipping_banner_message || 'Faltam {falta} pro frete grátis ✨',
+                free_shipping_banner_threshold_pct: data.free_shipping_banner_threshold_pct != null ? Number(data.free_shipping_banner_threshold_pct) : 30
             };
             whatsappNumber = siteSettings.whatsapp;
         }
@@ -544,6 +556,57 @@ function getSiteMediaUrl(path) {
     if (/^https?:\/\//i.test(path)) return path;
     // Path relativo (ex: "hero/1234-abc.mp4") → URL pública do bucket site-media
     return `${SUPABASE_URL}/storage/v1/object/public/site-media/${path}`;
+}
+
+// Aplica o menu (nav_links) nos 2 pontos do site (index + produto)
+function applyNavLinks() {
+    const links = Array.isArray(siteSettings?.nav_links) ? siteSettings.nav_links : [];
+    if (links.length === 0) return;
+
+    const navUl = document.querySelector('.nav-links');
+    if (!navUl) return;
+
+    navUl.innerHTML = links.map(link => {
+        const onclickAttr = link.onclick ? ` onclick="${escapeHTML(link.onclick)}"` : '';
+        const href = escapeHTML(link.href || '#');
+        return `<li><a href="${href}"${onclickAttr}>${escapeHTML(link.label || '')}</a></li>`;
+    }).join('');
+}
+
+// Banner condicional de frete grátis (só se ativo + dentro do threshold)
+function updateFreeShippingBanner(subtotal) {
+    const banner = document.getElementById('free-shipping-banner');
+    if (!banner) return;
+
+    const enabled = siteSettings?.free_shipping_banner_enabled;
+    const min = Number(siteSettings?.free_shipping_min || 0);
+    const thresholdPct = Number(siteSettings?.free_shipping_banner_threshold_pct || 30);
+
+    if (!enabled || min <= 0 || subtotal <= 0) {
+        banner.style.display = 'none';
+        return;
+    }
+
+    // Se já passou do mínimo → esconde (frete grátis já tá ativo, banner é redundante)
+    if (subtotal >= min) {
+        banner.style.display = 'none';
+        return;
+    }
+
+    const falta = min - subtotal;
+    const thresholdValue = min * (thresholdPct / 100);
+
+    // Se ainda falta MUITO (> threshold), esconde
+    if (falta > thresholdValue) {
+        banner.style.display = 'none';
+        return;
+    }
+
+    const message = (siteSettings?.free_shipping_banner_message || 'Faltam {falta} pro frete grátis ✨')
+        .replace('{falta}', formatCurrency(falta));
+
+    banner.textContent = message;
+    banner.style.display = 'block';
 }
 
 function applyHeroSettings() {
@@ -2859,6 +2922,10 @@ function updateCartUI() {
 
     // Atualiza o botão "Ver meus cupons"
     updateCouponsSeeAllBtn();
+
+    // Atualiza banner de frete grátis (Fase 10.3)
+    const subtotal = cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0);
+    updateFreeShippingBanner(subtotal);
 }
 
 // ==========================================================================
@@ -5310,6 +5377,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyCarouselSettings();
     applyFooterSettings();
     applyMetaSettings();
+    applyNavLinks();
     renderBanner();
     updateDynamicLinks();
 

@@ -4589,15 +4589,23 @@
             renderProducts();
         }
 
+        function getLowStockThreshold() {
+            // Fonte: currentSettings.low_stock_threshold (carregado em loadSettings)
+            const v = currentSettings?.low_stock_threshold;
+            return (v != null && !isNaN(v)) ? Number(v) : 2;
+        }
+
         function getStockBadgeClass(stock) {
             if (stock <= 0) return 'zero';
-            if (stock <= 2) return 'low';
+            if (stock <= getLowStockThreshold()) return 'low';
             return 'ok';
         }
 
         function getStockBadgeText(stock) {
+            const threshold = getLowStockThreshold();
             if (stock <= 0) return '⛔ Esgotado';
             if (stock === 1) return '⚠️ 1 un.';
+            if (stock <= threshold) return '⚠️ ' + stock + ' un.';
             return '📦 ' + stock + ' un.';
         }
 

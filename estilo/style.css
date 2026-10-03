@@ -4738,3 +4738,23 @@ a {
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   Banner de frete grátis (Fase 10.3)
+   ========================================================================== */
+.free-shipping-banner {
+    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+    color: #0e0e10;
+    text-align: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 998;
+}
+
+.free-shipping-banner strong {
+    font-weight: 700;
+}

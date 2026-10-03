@@ -51,7 +51,7 @@
         rel="stylesheet">
 
     <!-- Link para o CSS -->
-    <link rel="stylesheet" href="estilo/style.css?v=61.0">
+    <link rel="stylesheet" href="estilo/style.css?v=62.0">
     <link rel="stylesheet" href="estilo/produto.css?v=1.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
@@ -638,7 +638,7 @@
     </script>
 
     <!-- Importação do JS compartilhado -->
-    <script src="estilo/script.js?v=83.0"></script>
+    <script src="estilo/script.js?v=84.0"></script>
 
     <script>
         // ==========================================================================
@@ -769,7 +769,7 @@
                 document.getElementById('produto-add-cart').disabled = true;
                 document.getElementById('produto-add-cart').innerText = 'Em produção';
                 document.getElementById('produto-add-cart').classList.add('disabled');
-            } else if (stockNum <= 2) {
+            } else if (stockNum <= (siteSettings?.low_stock_threshold || 2)) {
                 stockEl.innerHTML = `<span class="stock-badge-low">⚡ Últimas ${stockNum} unidades</span>`;
             } else {
                 stockEl.innerHTML = '<span class="stock-badge-ok">✓ Disponível</span>';
