@@ -1,7 +1,7 @@
-# PROJETO-MESTRE — Use Gemas (v3.5)
+# PROJETO-MESTRE — Use Gemas (v3.6)
 
-> **Documento de referência oficial — v3.5** — estado do código em **02/10/2026**.
-> **Novo em v3.5:** Fase 10.1 — Conteúdo do Site configurável. Hero, Carrossel (4 slides), Rodapé e Meta Tags/SEO podem ser editados pelo admin sem tocar em código. Novo bucket `site-media` pra upload de vídeos e imagens.
+> **Documento de referência oficial — v3.6** — estado do código em **02/10/2026**.
+> **Novo em v3.6:** Fase 10.2 — Área do Cliente configurável. Hero, Tabs, Labels de status, Timeline, Mensagens vazias e Labels de fidelidade agora são editáveis pelo admin. `settings` é a fonte única da verdade — cliente e admin leem os mesmos labels.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -131,6 +131,7 @@
 
 | Funcionalidade | Status |
 |---|---|
+| **Área do Cliente configurável (Fase 10.2)** | Hero, Tabs, Status, Timeline, Vazios, Pontos — editáveis via admin | ✅ |
 | Meus Pedidos (lista + modal + carrossel de notificações) | ✅ |
 | Meus Dados (perfil) | ✅ |
 | Favoritos | ✅ |
@@ -238,7 +239,7 @@
 | `coupons` | id, code (UNIQUE), description, discount_type, discount_value, min_purchase, max_discount, free_shipping, first_purchase_only, usage_limit_total, usage_limit_per_user, times_used, customer_email, starts_at, expires_at, active, created_by, email_notified_at |
 | `coupon_usages` | id, coupon_id (FK), order_id, user_id, customer_email, discount_applied, used_at |
 | `loyalty_points` | id, user_id, customer_email, order_id, coupon_id, points, type (CHECK earned/redeemed/expired/adjustment), description, expires_at, created_by, created_at, expired_at |
-| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, **hero_tagline, hero_title, hero_subtitle, hero_cta_text, hero_cta_link, hero_video_url, carousel_title, carousel_slides (JSONB), footer_brand, footer_tagline, meta_title, meta_description, meta_og_image_url** |
+| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, hero_*, carousel_*, footer_*, meta_*, **account_hero_badge, account_hero_subtitle, account_tabs (JSONB), account_status_labels (JSONB), account_timeline_labels (JSONB), account_empty_states (JSONB), account_loyalty_labels (JSONB)** |
 | `profiles` | id (PK, = auth.users.id), name, email, phone, created_at |
 | `favorites` | id, user_id, product_name, product_ref, product_price, created_at, UNIQUE(user_id, product_ref) |
 | `checkout_data` | user_id (PK), name, doc, phone, cep, street, number, complement, neighborhood, city, state, notes, updated_at |
@@ -343,13 +344,13 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Triggers | 14 |
 | Índices | 44 |
 | Cron jobs | 5 |
-| Storage buckets | **3** |
-| Storage policies | **13** |
+| Storage buckets | 3 |
+| Storage policies | 13 |
 | Secrets custom | 6 |
 | RPCs | 10 |
 | Linhas de código (frontend) | ~29,5k |
 | Linhas de código (backend: schema + functions) | ~4,9k |
-| **Progresso geral** | **~99,7%** |
+| **Progresso geral** | **~99,8%** |
 
 ---
 
@@ -569,6 +570,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 13 | Frete dual-mode regionalizado (ME + fixo por região) | Só ME / só fixo global | Continuidade do serviço se o ME cair + proteção contra prejuízo em CEPs distantes |
 | 14 | Central de Reviews híbrida (featured + fallback) | Só automático / só manual | Controle quando quer + nunca fica vazio. Reaproveita infra de reviews existente. |
 | 15 | Conteúdo do Site configurável (admin) | Hardcode no HTML | Zero manutenção pra trocar Hero/Carrossel/Rodapé/SEO. Fallback pros valores originais se `settings` falhar. |
+| 16 | Labels do cliente em `settings` (fonte única) | Hardcode em cada arquivo | Cliente e admin leem os mesmos labels — zero risco de inconsistência. Fallback hardcoded se `settings` falhar. |
 
 ---
 
@@ -601,6 +603,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **02/out/2026** — Fase 10.2 completa: Área do Cliente configurável (Hero + Tabs + Status + Timeline + Mensagens vazias + Labels de fidelidade via admin) + `settings` como fonte única da verdade dos labels + seção 20 do doc mestre.
 - **02/out/2026** — Fase 10.1 completa: Conteúdo do Site configurável (Hero + Carrossel + Rodapé + Meta Tags via admin) + novo bucket `site-media` + fallback hardcoded + seção 20 do doc mestre.
 - **02/out/2026** — Fase 10.4 completa: Central de Reviews dinâmica (home + `/avaliacoes.html` + admin com curadoria híbrida `featured`) + reciclagem do Web3Forms em canal de feedback privado (nova tabela `feedbacks` + aba no admin) + cards clicáveis com PhotoSwipe + JSON-LD AggregateRating.
 - **02/out/2026** — Frete dual-mode regionalizado (toggle ME/fixo + 5 faixas + fallback + botão "Calcular outro CEP").
@@ -1041,4 +1044,64 @@ Nova seção **Configurações → Conteúdo do Site** com 4 subseções colaps�
 
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.5.*
+## 21. Área do Cliente configurável (Fase 10.2)
+
+### 21.1 Objetivo
+
+Tornar configurável tudo que o cliente vê em `minha-conta.html`: hero, tabs,
+labels de status do pedido, timeline, mensagens de estado vazio e labels de
+fidelidade. `settings` é a **fonte única da verdade** — cliente e admin leem
+os mesmos dados, eliminando risco de inconsistência.
+
+### 21.2 O que virou configurável
+
+| Bloco | Campos | Estrutura |
+|---|---|---|
+| **Hero** | badge, subtítulo | 2 flat |
+| **Tabs** | 4 items (id, label, icon) | 1 JSONB |
+| **Status do pedido** | 5 labels (novo/pago/produzindo/enviado/cancelado) | 1 JSONB |
+| **Timeline** | 4 steps + label cancelado | 1 JSONB |
+| **Mensagens vazias** | 6 contextos × {title, subtitle} | 1 JSONB |
+| **Labels de fidelidade** | 8 labels | 1 JSONB |
+
+### 21.3 Modelo de dados
+
+Colunas novas em `settings`:
+
+**Flat:**
+- `account_hero_badge` TEXT
+- `account_hero_subtitle` TEXT
+
+**JSONB:**
+- `account_tabs` — `[{id, label, icon}]`
+- `account_status_labels` — `{novo, pago, produzindo, enviado, cancelado}`
+- `account_timeline_labels` — `{steps: [{label}], canceled}`
+- `account_empty_states` — `{orders, favorites, coupons, coupon_history, points_extrato, loading_error}` com `{title, subtitle}`
+- `account_loyalty_labels` — `{balance_label, value_suffix, brl_prefix, brl_suffix, btn_redeem, btn_no_points, modal_title, modal_subtitle}`
+
+### 21.4 Fluxo
+
+1. `minha-conta.html` chama `loadAccountSettings()` no `DOMContentLoaded`
+2. `applyAccountSettings()` aplica os textos via `textContent` (seguro contra XSS)
+3. `getStatusLabel()` em **ambos** `minha-conta.html` e `admin.html` leem de `settings.account_status_labels`
+4. Fallback hardcoded em todos os consumos — se `settings` falhar, mantém os textos atuais
+
+### 21.5 Admin — UI
+
+Subseção **Configurações → Conteúdo do Site → 🧑 Área do Cliente** com:
+- Hero (badge + subtítulo)
+- Tabs editor (4 items)
+- Status editor (5 labels)
+- Timeline editor (4 steps + cancelado)
+- Empty states editor (6 contextos)
+- Loyalty labels editor (8 labels)
+
+### 21.6 Arquivos envolvidos
+
+- `settings` (banco) — 2 flat + 5 JSONB
+- `admin.html` — UI de edição + `getStatusLabel()` lê de `settings` + ordem de carga corrigida (`loadSettings()` antes de `loadProducts/loadOrders`)
+- `minha-conta.html` — `loadAccountSettings()` + `applyAccountSettings()` + consumo em 6 blocos + `getStatusLabel()` dinâmico
+
+---
+
+*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.6.*
