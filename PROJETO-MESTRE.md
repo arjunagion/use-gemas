@@ -1,7 +1,7 @@
-# PROJETO-MESTRE — Use Gemas (v3.6)
+# PROJETO-MESTRE — Use Gemas (v3.7)
 
-> **Documento de referência oficial — v3.6** — estado do código em **02/10/2026**.
-> **Novo em v3.6:** Fase 10.2 — Área do Cliente configurável. Hero, Tabs, Labels de status, Timeline, Mensagens vazias e Labels de fidelidade agora são editáveis pelo admin. `settings` é a fonte única da verdade — cliente e admin leem os mesmos labels.
+> **Documento de referência oficial — v3.7** — estado do código em **03/10/2026**.
+> **Novo em v3.7:** Fase 10.3 — Refinos. Menu, threshold de estoque baixo, banner de frete grátis condicional e regras de fidelidade (SQL) configuráveis via admin. Consolidação de banners (dourado ↔ dinâmico). Fix de Service Worker (network-first pra JS/CSS + bump CACHE_VERSION).
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -121,6 +121,7 @@
 | Cupom no carrinho | Aplicar/remover cupom, desconto no total | ✅ |
 | Favoritos (wishlist) | Drawer + "adicionar todos ao carrinho" | ✅ |
 | Página de produto | Galeria (PhotoSwipe), reviews, relacionados, compartilhar | ✅ |
+| **Refinos configuráveis (Fase 10.3)** | Menu + Estoque baixo + Banner frete grátis + Regras de fidelidade editáveis | ✅ |
 | **Conteúdo do Site configurável (Fase 10.1)** | Hero + Carrossel (4 slides) + Rodapé + Meta Tags editáveis no admin | ✅ |
 | **Central de Reviews (Fase 10.4)** | Grid dinâmico na home (6 reviews: `featured` + fallback recentes) | ✅ |
 | **Página pública `/avaliacoes.html`** | Listagem completa + filtros (5★, com foto, produto) + paginação | ✅ |
@@ -239,7 +240,7 @@
 | `coupons` | id, code (UNIQUE), description, discount_type, discount_value, min_purchase, max_discount, free_shipping, first_purchase_only, usage_limit_total, usage_limit_per_user, times_used, customer_email, starts_at, expires_at, active, created_by, email_notified_at |
 | `coupon_usages` | id, coupon_id (FK), order_id, user_id, customer_email, discount_applied, used_at |
 | `loyalty_points` | id, user_id, customer_email, order_id, coupon_id, points, type (CHECK earned/redeemed/expired/adjustment), description, expires_at, created_by, created_at, expired_at |
-| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, hero_*, carousel_*, footer_*, meta_*, **account_hero_badge, account_hero_subtitle, account_tabs (JSONB), account_status_labels (JSONB), account_timeline_labels (JSONB), account_empty_states (JSONB), account_loyalty_labels (JSONB)** |
+| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, hero_*, carousel_*, footer_*, meta_*, **account_hero_badge, account_hero_subtitle, account_tabs (JSONB), account_status_labels (JSONB), account_timeline_labels (JSONB), account_empty_states (JSONB), account_loyalty_labels (JSONB)**, **nav_links (JSONB), low_stock_threshold, free_shipping_banner_enabled, free_shipping_banner_message, free_shipping_banner_threshold_pct, loyalty_rules (JSONB)** |
 | `profiles` | id (PK, = auth.users.id), name, email, phone, created_at |
 | `favorites` | id, user_id, product_name, product_ref, product_price, created_at, UNIQUE(user_id, product_ref) |
 | `checkout_data` | user_id (PK), name, doc, phone, cep, street, number, complement, neighborhood, city, state, notes, updated_at |
@@ -262,6 +263,8 @@ Distribuídas entre as 13 tabelas (destaques):
 
 **10 RPCs** (chamadas pelo frontend):
 `get_product_by_ref`, `validate_coupon`, `apply_coupon_to_order`, `get_loyalty_balance`, `redeem_points_as_coupon`, `get_loyalty_summary`, `get_loyalty_extrato`, `adjust_loyalty_points`, `decrease_product_stock`, `restore_product_stock`
+
+> **Nota (Fase 10.3):** as 3 funções de fidelidade (`credit_loyalty_points_on_paid`, `redeem_points_as_coupon`, `get_loyalty_balance`) leem `settings.loyalty_rules` em runtime, permitindo mudar regras (pontos/R$, valor de resgate, validade) sem deploy.
 
 **14 trigger functions**:
 `update_coupons_updated_at`, `update_products_updated_at`, `update_reviews_updated_at`, `normalize_coupon_code`, `generate_guest_token`, `set_guest_token`, `set_shipped_at`, `handle_new_user`, `notify_order_status_change`, `notify_review_status_change`, `credit_loyalty_points_on_paid`, `notify_points_earned`, `cleanup_old_notifications`, `expire_loyalty_points`
@@ -348,9 +351,9 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Storage policies | 13 |
 | Secrets custom | 6 |
 | RPCs | 10 |
-| Linhas de código (frontend) | ~29,5k |
-| Linhas de código (backend: schema + functions) | ~4,9k |
-| **Progresso geral** | **~99,8%** |
+| Linhas de código (frontend) | ~30k |
+| Linhas de código (backend: schema + functions) | ~5k |
+| **Progresso geral** | **~99,9%** |
 
 ---
 
@@ -571,6 +574,8 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 14 | Central de Reviews híbrida (featured + fallback) | Só automático / só manual | Controle quando quer + nunca fica vazio. Reaproveita infra de reviews existente. |
 | 15 | Conteúdo do Site configurável (admin) | Hardcode no HTML | Zero manutenção pra trocar Hero/Carrossel/Rodapé/SEO. Fallback pros valores originais se `settings` falhar. |
 | 16 | Labels do cliente em `settings` (fonte única) | Hardcode em cada arquivo | Cliente e admin leem os mesmos labels — zero risco de inconsistência. Fallback hardcoded se `settings` falhar. |
+| 17 | Regras de fidelidade em `settings` (não no SQL) | Hardcode em função SQL | Permite ajustar promoções (ex: dobrar pontos) sem deploy |
+| 18 | Consolidação de banners (dinâmico substitui dourado) | Mostrar os 2 ao mesmo tempo | Evita sobreposição visual + mensagem mais relevante tem prioridade |
 
 ---
 
@@ -603,6 +608,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **03/out/2026** — Fase 10.3 completa: Menu + Estoque baixo + Banner frete grátis + Regras de fidelidade configuráveis + Consolidação de banners + Fix Service Worker (network-first) + seção 22 do doc mestre.
 - **02/out/2026** — Fase 10.2 completa: Área do Cliente configurável (Hero + Tabs + Status + Timeline + Mensagens vazias + Labels de fidelidade via admin) + `settings` como fonte única da verdade dos labels + seção 20 do doc mestre.
 - **02/out/2026** — Fase 10.1 completa: Conteúdo do Site configurável (Hero + Carrossel + Rodapé + Meta Tags via admin) + novo bucket `site-media` + fallback hardcoded + seção 20 do doc mestre.
 - **02/out/2026** — Fase 10.4 completa: Central de Reviews dinâmica (home + `/avaliacoes.html` + admin com curadoria híbrida `featured`) + reciclagem do Web3Forms em canal de feedback privado (nova tabela `feedbacks` + aba no admin) + cards clicáveis com PhotoSwipe + JSON-LD AggregateRating.
@@ -1104,4 +1110,71 @@ Subseção **Configurações → Conteúdo do Site → 🧑 Área do Cliente** c
 
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.6.*
+## 22. Refinos configuráveis (Fase 10.3)
+
+### 22.1 Objetivo
+
+Fechar os últimos hardcodes relevantes do projeto: menu, threshold de estoque
+baixo, banner de frete grátis condicional e regras de fidelidade.
+
+### 22.2 O que virou configurável
+
+| Bloco | Campos | Tipo |
+|---|---|---|
+| **Menu (nav)** | array de `{label, href, onclick?}` | JSONB (`nav_links`) |
+| **Estoque baixo** | threshold (default 2) | Flat |
+| **Banner frete grátis** | enabled, message, threshold_pct | 3 flat |
+| **Regras de fidelidade** | points_per_brl, points_per_real_redeem, min_redeem_points, points_expiry_months, redeem_multiple | JSONB (`loyalty_rules`) |
+
+### 22.3 Regras de fidelidade — SQL dinâmico
+
+As 3 funções SQL de fidelidade foram reescritas pra ler `settings.loyalty_rules`
+em runtime (com fallback pra valores atuais):
+
+- **`credit_loyalty_points_on_paid()`** — usa `points_per_brl` + `points_expiry_months`
+- **`redeem_points_as_coupon()`** — usa `points_per_real_redeem` + `min_redeem_points` + `redeem_multiple`
+- **`get_loyalty_balance()`** — usa `points_per_real_redeem` pra calcular `brl_value`
+
+Isso permite ajustar promoções (ex: dobrar pontos em datas especiais) sem deploy.
+
+### 22.4 Banner de frete grátis — lógica condicional + consolidação
+
+Só aparece quando **todas** as condições são verdadeiras:
+1. `free_shipping_banner_enabled = true`
+2. `free_shipping_min > 0`
+3. `subtotal > 0`
+4. `subtotal < free_shipping_min`
+5. `falta <= (free_shipping_min × threshold_pct / 100)`
+
+**Consolidação com o banner dourado (`#site-banner`, Fase 10.1):**
+- Quando o dinâmico aparece → esconde o dourado
+- Quando o dinâmico some → mostra o dourado de volta
+- A navbar (`position: fixed`) é empurrada dinamicamente pra baixo com base na altura do banner visível
+
+**Ordem de camadas (CSS):**
+| Camada | position | z-index |
+|---|---|---|
+| Navbar | fixed | 1000 |
+| Banner dourado | fixed | 999 |
+| Banner dinâmico | fixed | 999 |
+
+### 22.5 Fix do Service Worker
+
+Bump do `CACHE_VERSION` (`ug-cliente-v1` → `v2`, `ug-admin-v4` → `v5`) +
+estratégia `network-first` pra JS/CSS (era `cache-first`). Isso resolve o problema
+de conteúdo antigo sendo servido após deploy.
+
+### 22.6 Arquivos envolvidos
+
+- `settings` (banco) — nav_links (JSONB), low_stock_threshold, 3 flat banner, loyalty_rules (JSONB)
+- 3 funções SQL reescritas
+- `admin.html` — UI de Refinos
+- `estilo/script.js` — `applyNavLinks()`, `updateFreeShippingBanner()`, `getLowStockThreshold()`
+- `estilo/style.css` — `.free-shipping-banner` (fixed + z-index 999)
+- `index.html` — `<div id="free-shipping-banner">` (após `</header>`)
+- `produto.html` — threshold dinâmico no badge
+- `sw.js` / `sw-admin.js` — bump cache + network-first
+
+---
+
+*Fim do documento. Gerado por varredura do repositório local em 03/10/2026 — v3.7.*
