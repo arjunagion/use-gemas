@@ -669,6 +669,45 @@ function lighten(hex, percent) {
     }
 }
 
+function getSaturation(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    const max = Math.max(r, g, b) / 255;
+    const min = Math.min(r, g, b) / 255;
+    const l = (max + min) / 2;
+    if (max === min) return 0;
+    const d = max - min;
+    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    return Math.round(s * 100);
+}
+
+function getLuminance01(hex) {
+    const { r, g, b } = hexToRgb(hex);
+    const a = [r, g, b].map(v => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
+function isLightColor(hex) {
+    return getLuminance01(hex) > 0.5;
+}
+
+// Dessatura uma cor em X% (0-100). Retorna hex.
+function desaturate(hex, percent) {
+    const { r, g, b } = hexToRgb(hex);
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const gray = (max + min) / 2;
+
+    const factor = 1 - (percent / 100);
+    const nr = Math.round(gray + (r - gray) * factor);
+    const ng = Math.round(gray + (g - gray) * factor);
+    const nb = Math.round(gray + (b - gray) * factor);
+
+    return rgbToHex(nr, ng, nb);
+}
+
 const ALLOWED_HEADING_FONTS = ['Cormorant Garamond', 'Playfair Display', 'Libre Baskerville', 'DM Serif Display', 'Italiana', 'Lora'];
 const ALLOWED_BODY_FONTS = ['Montserrat', 'Inter', 'DM Sans', 'Work Sans', 'Lato', 'Jost'];
 
@@ -711,34 +750,81 @@ function applyThemeToRoot(theme) {
     const t = theme.typography || {};
 
     // ============================================================
+    // Auto-dessaturar bg se saturação > 40%
+    // ============================================================
+    const bgSat = getSaturation(p.bg);
+    const effectiveBg = bgSat > 40 ? desaturate(p.bg, 60) : p.bg;
+
+    // ============================================================
+    // Detectar modo (light/dark) pelo bg efetivo
+    // ============================================================
+    const isLight = isLightColor(effectiveBg);
+
+    // Limpa classes antigas e aplica nova
+    root.classList.remove('theme-light', 'theme-dark');
+    root.classList.add(isLight ? 'theme-light' : 'theme-dark');
+    root.dataset.themeMode = isLight ? 'light' : 'dark';
+
+    // ============================================================
     // Accent (dourado)
     // ============================================================
     if (p.accent) {
         root.style.setProperty('--gold', p.accent);
         root.style.setProperty('--gold-hover', lighten(p.accent, 15));
         root.style.setProperty('--gold-dark', lighten(p.accent, -25));
+        root.style.setProperty('--cr-gold', p.accent);
         root.style.setProperty('--cr-gold-dark', lighten(p.accent, -25));
         const { r, g, b } = hexToRgb(p.accent);
         root.style.setProperty('--gold-rgb', `${r}, ${g}, ${b}`);
     }
 
     // ============================================================
-    // Fundos (nomes REAIS do CSS)
+    // Fundos
     // ============================================================
-    if (p.bg) {
-        root.style.setProperty('--bg-main', p.bg);
-        root.style.setProperty('--bg-card', lighten(p.bg, 5));
-        root.style.setProperty('--bg-elevated', lighten(p.bg, 3));
+    if (effectiveBg) {
+        root.style.setProperty('--bg-main', effectiveBg);
+        root.style.setProperty('--bg', effectiveBg);
+        root.style.setProperty('--bg-card', lighten(effectiveBg, isLight ? -3 : 5));
+        root.style.setProperty('--bg-elevated', lighten(effectiveBg, isLight ? -6 : 3));
+        root.style.setProperty('--bg-panel', lighten(effectiveBg, isLight ? -6 : 3));
+        root.style.setProperty('--bg-hover', lighten(effectiveBg, isLight ? -10 : 8));
     }
 
     // ============================================================
-    // Textos (nomes REAIS do CSS)
+    // Textos
     // ============================================================
     if (p.text) {
         root.style.setProperty('--text-primary', p.text);
+        root.style.setProperty('--text', p.text);
     }
     if (p.text_muted) {
         root.style.setProperty('--text-muted', p.text_muted);
+        root.style.setProperty('--text-dim', p.text_muted);
+    }
+
+    // ============================================================
+    // Variáveis semânticas (light/dark adaptativas)
+    // ============================================================
+    if (isLight) {
+        // Modo claro
+        root.style.setProperty('--navbar-bg', 'rgba(255, 255, 255, 0.75)');
+        root.style.setProperty('--modal-overlay-bg', 'rgba(20, 15, 10, 0.4)');
+        root.style.setProperty('--border-subtle', 'rgba(0, 0, 0, 0.08)');
+        root.style.setProperty('--border-strong', 'rgba(0, 0, 0, 0.18)');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.15)');
+        root.style.setProperty('--card-overlay', 'rgba(0, 0, 0, 0.02)');
+        root.style.setProperty('--input-bg', 'rgba(0, 0, 0, 0.03)');
+        root.style.setProperty('--btn-text-on-accent', '#ffffff');
+    } else {
+        // Modo escuro (comportamento original)
+        root.style.setProperty('--navbar-bg', 'rgba(14, 14, 16, 0.85)');
+        root.style.setProperty('--modal-overlay-bg', 'rgba(0, 0, 0, 0.88)');
+        root.style.setProperty('--border-subtle', 'rgba(255, 255, 255, 0.06)');
+        root.style.setProperty('--border-strong', 'rgba(255, 255, 255, 0.15)');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.5)');
+        root.style.setProperty('--card-overlay', 'rgba(255, 255, 255, 0.02)');
+        root.style.setProperty('--input-bg', 'rgba(255, 255, 255, 0.03)');
+        root.style.setProperty('--btn-text-on-accent', '#0e0e10');
     }
 
     // ============================================================
@@ -748,11 +834,22 @@ function applyThemeToRoot(theme) {
         root.style.setProperty('--font-title', `'${t.heading_font}', serif`);
         ensureGoogleFont(t.heading_font, ['400', '600', '700']);
     }
-
     if (t.body_font && ALLOWED_BODY_FONTS.includes(t.body_font)) {
         root.style.setProperty('--font-body', `'${t.body_font}', sans-serif`);
         ensureGoogleFont(t.body_font, ['300', '400', '500', '600', '700']);
     }
+
+    // ============================================================
+    // Debug
+    // ============================================================
+    window.__useGemasTheme = theme;
+    window.__useGemasThemeDerived = {
+        isLight,
+        originalBg: p.bg,
+        effectiveBg,
+        autoDesaturated: bgSat > 40,
+        bgSaturation: bgSat
+    };
 }
 
 function hexToRgba(hex, alpha) {

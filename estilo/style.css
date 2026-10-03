@@ -13,6 +13,15 @@
     --gold-dark: #aa820a;
     --font-title: 'Cormorant Garamond', serif;
     --font-body: 'Montserrat', sans-serif;
+    /* Variáveis semânticas (defaults dark — sobrescritas via JS no boot) */
+    --navbar-bg: rgba(14, 14, 16, 0.85);
+    --modal-overlay-bg: rgba(0, 0, 0, 0.88);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --card-overlay: rgba(255, 255, 255, 0.02);
+    --input-bg: rgba(255, 255, 255, 0.03);
+    --btn-text-on-accent: #0e0e10;
     --drawer-width: 380px;
     --transition-drawer: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -70,7 +79,7 @@ a {
     top: 0;
     left: 0;
     width: 100%;
-    background: rgba(14, 14, 16, 0.85);
+    background: var(--navbar-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
@@ -262,7 +271,7 @@ a {
 .btn-primary {
     display: inline-block;
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
     padding: 0.9rem 2.2rem;
     border-radius: 30px;
     font-weight: 600;
@@ -634,7 +643,7 @@ a {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.88);
+    background: var(--modal-overlay-bg);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     z-index: 2000;
@@ -1514,7 +1523,7 @@ a {
 
 .btn-shipping {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
     border: none;
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
@@ -1555,7 +1564,7 @@ a {
     overflow: hidden;
     border: 1px solid rgba(212, 175, 55, 0.3);
     background-color: #0b0b0b;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 15px 35px var(--shadow-color);
 }
 
 .carousel-track {
@@ -2396,7 +2405,7 @@ a {
 
 .btn-inline-search {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
     border: none;
     padding: 0.75rem 1.2rem;
     border-radius: 8px;
@@ -2609,7 +2618,7 @@ a {
 
 .cookie-btn-primary {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
 }
 
 .cookie-btn-primary:hover {
@@ -2768,7 +2777,7 @@ a {
     padding: 0.85rem 0.9rem 0.85rem 1.1rem;
     font-size: 0.88rem;
     color: var(--text-primary);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 10px 30px var(--shadow-color);
     pointer-events: auto;
     opacity: 0;
     transform: translateY(20px);
@@ -3066,8 +3075,8 @@ a {
 }
 
 .review-item {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--card-overlay);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
     padding: 0.9rem 1rem;
     margin-bottom: 0.7rem;
@@ -3381,7 +3390,7 @@ a {
 }
 
 .notification-item.read {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--card-overlay);
     opacity: 0.7;
 }
 
@@ -3568,7 +3577,7 @@ a {
 /* Botão aplicar */
 .btn-apply-coupon {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
     border: none;
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
@@ -4015,7 +4024,7 @@ a {
 
 .btn-apply-coupon-modal {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
     border: none;
     padding: 0.75rem 1.2rem;
     border-radius: 30px;
@@ -4192,7 +4201,7 @@ a {
 
 .pwa-install-btn-install {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
     border: none;
     padding: 0.55rem 1.1rem;
     border-radius: 20px;
@@ -4339,7 +4348,7 @@ a {
 
 .btn-calculate-shipping {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
     border: none;
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
@@ -4391,8 +4400,8 @@ a {
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    background: var(--card-overlay);
+    border: 1.5px solid var(--border-subtle);
     border-radius: 8px;
     padding: 0.75rem 0.9rem;
     cursor: pointer;
@@ -4717,7 +4726,7 @@ a {
     text-transform: uppercase;
     cursor: pointer;
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: var(--bg-main);
+    color: var(--btn-text-on-accent);
     border: none;
 }
 
