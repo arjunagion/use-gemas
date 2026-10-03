@@ -1,7 +1,7 @@
-# PROJETO-MESTRE — Use Gemas (v3.2)
+# PROJETO-MESTRE — Use Gemas (v3.4)
 
-> **Documento de referência oficial — v3.2** — estado do código em **02/10/2026**.
-> **Novo em v3.2:** Seção 18 (Sistema de Frete Dual Mode) + ADR 13 + pendências atualizadas.
+> **Documento de referência oficial — v3.4** — estado do código em **02/10/2026**.
+> **Novo em v3.4:** Fase 10.4 completa — Central de Reviews dinâmica (home + `/avaliacoes.html` + admin com curadoria híbrida `featured`) + reciclagem do Web3Forms em canal de feedback privado (nova tabela `feedbacks` + aba no admin).
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -28,25 +28,27 @@
 16. [Changelog resumido](#16-changelog-resumido)
 17. [Observações técnicas da varredura](#17-observações-técnicas-da-varredura)
 18. [Sistema de Frete — Dual Mode](#18-sistema-de-frete--dual-mode)
+19. [Central de Reviews (Fase 10.4)](#19-central-de-reviews-fase-104)
 
 ---
 
 ## 1. Arquivos do repositório
 
-### 1.1 HTML (8 arquivos)
+### 1.1 HTML (9 arquivos)
 
 | Arquivo | Linhas | Tamanho | Propósito |
 |---|---|---|---|
-| `admin.html` | 6.924 | 263,5 KB | Painel administrativo (HTML + CSS + JS inline) |
+| `admin.html` | ~7.100 | ~270 KB | Painel administrativo (HTML + CSS + JS inline) |
 | `minha-conta.html` | 2.672 | 115,6 KB | Área do cliente (pedidos, dados, favoritos, cupons, benefícios) |
+| `index.html` | ~1.100 | ~60 KB | Loja principal (vitrine + checkout + auth + reviews dinâmicas) |
 | `produto.html` | 1.100 | 53,5 KB | Página de detalhe do produto |
-| `index.html` | 1.038 | 55,8 KB | Loja principal (vitrine + checkout + auth) |
 | `reset-password.html` | 601 | 22,5 KB | Redefinição de senha (PKCE do Supabase) |
 | `avaliar.html` | 455 | 19,2 KB | Página de avaliação guest (link do email) |
+| `avaliacoes.html` | ~350 | ~15 KB | **NOVO** — Central de Reviews pública (filtros + paginação) |
 | `politica-privacidade.html` | 263 | 15,5 KB | Política de privacidade |
 | `politica-troca.html` | 190 | 10,8 KB | Política de troca/devolução |
 
-### 1.2 CSS (5 arquivos)
+### 1.2 CSS (6 arquivos)
 
 | Arquivo | Linhas | Tamanho | Propósito |
 |---|---|---|---|
@@ -54,6 +56,7 @@
 | `estilo/perfil.css` | 2.929 | 64,4 KB | Estilo da área do cliente (cream mode) |
 | `estilo/produto.css` | 869 | 17,7 KB | Estilo da página de produto |
 | `estilo/avaliar.css` | 542 | 11,7 KB | Estilo da página de avaliação guest |
+| `estilo/avaliacoes.css` | ~200 | ~4 KB | **NOVO** — Estilo da Central de Reviews pública |
 | `estilo/paginas-legais.css` | 401 | 8,9 KB | Estilo das páginas legais |
 
 > O `admin.html` tem CSS **inline** (não há `admin.css` separado).
@@ -117,7 +120,10 @@
 | Cupom no carrinho | Aplicar/remover cupom, desconto no total | ✅ |
 | Favoritos (wishlist) | Drawer + "adicionar todos ao carrinho" | ✅ |
 | Página de produto | Galeria (PhotoSwipe), reviews, relacionados, compartilhar | ✅ |
-| Depoimentos (Web3Forms) | Form de depoimento via Web3Forms | ✅ |
+| **Central de Reviews (Fase 10.4)** | Grid dinâmico na home (6 reviews: `featured` + fallback recentes) | ✅ |
+| **Página pública `/avaliacoes.html`** | Listagem completa + filtros (5★, com foto, produto) + paginação | ✅ |
+| **Curadoria híbrida de reviews** | Admin marca reviews como "destacada"; fallback automático pras recentes | ✅ |
+| **Feedback privado (Web3Forms reciclado)** | Form na home → tabela `feedbacks` (status: new/read/archived) | ✅ |
 
 ### 👤 Área do Cliente (`minha-conta.html`)
 
@@ -147,7 +153,8 @@
 | Clientes | ✅ |
 | Cupons (CRUD + usos) | ✅ |
 | 💎 Pontos (resumo, tabela, extrato, ajuste, CSV) | ✅ |
-| Avaliações (moderação) | ✅ |
+| Avaliações (moderação + destaque + resposta) | ✅ |
+| **Feedbacks (canal privado, novo)** | ✅ |
 | Financeiro (Chart.js) | ✅ |
 | Configurações (frete, contato, banner) | ✅ |
 
@@ -199,7 +206,8 @@
 | **Supabase** | Auth, DB, Edge Functions, Storage, Cron | `script.js:96-97`, `admin.html:3848-3849` etc. | `SUPABASE_URL` = `https://dytdnemwqbzgrekamwla.supabase.co`; `SUPABASE_KEY` (anon) |
 | **Google Analytics 4** | Analytics | `index.html:66-80`, `produto.html:64-78` | `G-5S8HJR13T8` |
 | **Meta Pixel** | Ads/eventos | `index.html`, `produto.html` | `1408966774044848` |
-| **Web3Forms** | Depoimentos | `index.html` | `access_key` = `69a758b3-...` |
+| **Web3Forms** | ~~Depoimentos~~ (removido) | — | — |
+| **Supabase `feedbacks`** | Canal de feedback privado (substitui Web3Forms) | `index.html` + `admin.html` | — |
 | **ViaCEP** | Endereço por CEP | `script.js` | — |
 | **Melhor Envio** | Cotação + etiqueta + rastreio | Edge Functions + `settings` | `MELHORENVIO_*` (secrets) |
 | **Brevo** | Email transacional | Edge Functions | `BREVO_API_KEY` (secret) |
@@ -216,14 +224,14 @@
 
 > ✅ O schema agora está **versionado** em `supabase/migrations/001_schema.sql` (2.113 linhas). Fonte da verdade segue sendo o Supabase.
 
-### 4.1 Tabelas (13 — com RLS habilitado em todas)
+### 4.1 Tabelas (14 — com RLS habilitado em todas)
 
 | Tabela | Colunas principais |
 |---|---|
 | `admins` | user_id (PK), created_at |
 | `products` | id, ref (UNIQUE), name, price, category, gem, description, materials, gallery, stock, active, created_at, updated_at |
 | `orders` | id, user_id, customer_name/doc/phone/email, cep, street, number, complement, neighborhood, city, state, notes, items (JSONB), subtotal, shipping_cost, total, status, created_at, updated_at, shipped_at, review_requested_at, review_reminder_sent_at, guest_token, discount_amount, discount_code, shipping_method, shipping_service_id, shipping_carrier, shipping_estimated_days, shipping_quote_data (JSONB), tracking_code, tracking_url, melhorenvio_order_id, label_url, label_generated_at, label_status, label_error |
-| `reviews` | id, order_id, product_ref, user_id, customer_name, customer_email, rating, title, comment, photos, verified_purchase, admin_response, status, created_at, updated_at |
+| `reviews` | id, order_id, product_ref, user_id, customer_name, customer_email, rating, title, comment, photos, verified_purchase, admin_response, status, **featured**, created_at, updated_at |
 | `notifications` | id, user_id, type, title, message, link, metadata (JSONB), read_at, created_at |
 | `coupons` | id, code (UNIQUE), description, discount_type, discount_value, min_purchase, max_discount, free_shipping, first_purchase_only, usage_limit_total, usage_limit_per_user, times_used, customer_email, starts_at, expires_at, active, created_by, email_notified_at |
 | `coupon_usages` | id, coupon_id (FK), order_id, user_id, customer_email, discount_applied, used_at |
@@ -233,8 +241,9 @@
 | `favorites` | id, user_id, product_name, product_ref, product_price, created_at, UNIQUE(user_id, product_ref) |
 | `checkout_data` | user_id (PK), name, doc, phone, cep, street, number, complement, neighborhood, city, state, notes, updated_at |
 | `shipping_quotes_cache` | id, cep_origem, cep_destino, peso_kg, valor_declarado, quotes (JSONB), expires_at (24h), created_at |
+| `feedbacks` | id, user_id, customer_name, customer_email, rating, category, message, status (new/read/archived), created_at |
 
-### 4.2 Policies (40)
+### 4.2 Policies (42)
 
 Distribuídas entre as 13 tabelas (destaques):
 - **orders**: "Anyone can create orders", "Guests can view guest orders", "Users can view own orders", "Admins can view/update/delete all orders"
@@ -244,6 +253,7 @@ Distribuídas entre as 13 tabelas (destaques):
 - **notifications**: leitura/update/delete própria + admin full
 - **settings**: `settings_read_all`, `settings_insert_admins`, `settings_update_admins`
 - **shipping_quotes_cache**: "Only service_role manages shipping cache"
+- **feedbacks**: "Anyone can create feedback" (anon + authenticated), "Admins can manage all feedbacks" (admin only)
 
 ### 4.3 Funções SQL (24)
 
@@ -257,9 +267,12 @@ Distribuídas entre as 13 tabelas (destaques):
 
 `trigger_normalize_coupon_code`, `trigger_coupons_updated_at`, `trigger_notify_points_earned`, `trigger_set_guest_token`, `trigger_set_shipped_at`, `trigger_credit_loyalty_points`, `trigger_notify_order_status_change`, `"notify-order-status"`, `trigger_products_updated_at`, `trigger_reviews_updated_at`, `trigger_notify_review_status_change` + `on_auth_user_created` (comentado, roda em `auth.users` via `handle_new_user`).
 
-### 4.5 Índices (42)
+### 4.5 Índices (44)
 
 Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notifications` (3), `orders` (7), `reviews` (5), `shipping_quotes_cache` (2) — mais PKs/UNIQUEs do CREATE TABLE.
+
+- `idx_reviews_featured` (parcial, WHERE featured = true AND status = 'approved')
+- `idx_feedbacks_status_created`
 
 ### 4.6 Cron jobs (5 — pg_cron + pg_net)
 
@@ -315,22 +328,22 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 
 | Métrica | Valor |
 |---|---|
-| Páginas HTML | 8 |
-| Arquivos CSS | 5 |
+| Páginas HTML | 9 |
+| Arquivos CSS | 6 |
 | Arquivos JS | 3 |
 | Edge Functions | 10 |
-| Tabelas | 13 |
-| Policies | 40 |
+| Tabelas | 14 |
+| Policies | 42 |
 | Funções SQL | 24 |
-| Triggers | 14 (13 public + 1 auth) |
-| Índices | 42 |
+| Triggers | 14 |
+| Índices | 44 |
 | Cron jobs | 5 |
-| Storage buckets | 2 (9 policies) |
+| Storage buckets | 2 |
 | Secrets custom | 6 |
 | RPCs | 10 |
-| Linhas de código (frontend) | ~28,3k |
+| Linhas de código (frontend) | ~29k |
 | Linhas de código (backend: schema + functions) | ~4,9k |
-| **Progresso geral** | **~99%** |
+| **Progresso geral** | **~99,5%** |
 
 ---
 
@@ -355,35 +368,26 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 
 ## 8. Pendências conhecidas
 
-> Revisado em 02/out/2026 após varredura completa do repo + Supabase.
-
 ### 🔥 Crítica — bloqueia operação
 
-- **Fotos oficiais dos produtos** — hoje há apenas imagens temporárias (`photo_2026-09-17_*.jpg`) e vídeos placeholder. Sem fotos reais, não roda tráfego pago e não converte bem.
+- **Fotos oficiais dos produtos** — hoje há apenas imagens temporárias e vídeos placeholder.
 
 ### ⚠️ Alta — impacta UX ou negócio
 
-- **`MELHORENVIO_SANDBOX=true`** — a integração ainda tá em ambiente sandbox. Antes de operar de verdade, precisa trocar pra produção + novo Access Token.
-- **Testar PWA cliente em iOS e Android reais** — instalação, offline, ícone na home, comportamento do SW.
-- **Deletar Pixel Meta antigo (`9288...`)** — garante que só o `1408966774044848` (novo) esteja ativo.
-- **`MELHORENVIO_ACCESS_TOKEN` expira em 30/09/2027** — renovar antes; rotação de rotina.
+- **`MELHORENVIO_SANDBOX=true`** — trocar pra produção antes de operar de verdade.
+- **Testar PWA cliente em iOS e Android reais.**
+- **Deletar Pixel Meta antigo (`9288...`)** — garantir que só o `1408966774044848` esteja ativo.
+- **`MELHORENVIO_ACCESS_TOKEN` expira em 30/09/2027** — renovar antes.
 
-### 🟡 Média — melhorias técnicas
+### 🟡 Média
 
-- **`notify-order-status/index.ts` usa `Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")`** — enquanto todas as outras functions usam `Deno.env.get("SERVICE_ROLE_KEY")`. Inconsistência de fallback: se só o custom existir, essa function quebra.
-- **`feed-xml/index.ts` usa `SUPABASE_ANON_KEY`** (não `SERVICE_ROLE_KEY`) — decisão aparentemente consciente (feed público), mas vale documentar no comentário do arquivo pra não gerar dúvida.
-- **`sitemap.xml` estático desatualizado** — só 3 URLs. Existe a Edge Function `sitemap-products` (dinâmica), mas não está referenciada no `sitemap.xml` raiz nem no `robots.txt`.
-- **Otimização de performance** — vídeos do hero são pesados; falta compressão de imagens + lazy-load explícito.
+- **Otimização de performance** — compressão de imagens + lazy-load.
+- **Cron jobs `request-review` e `expire-loyalty-points` rodam no mesmo horário (06h UTC)** — separar pra logs mais limpos.
 
 ### 🟢 Baixa — polimento
 
-- **`index.html` tem 2 listeners de máscara de CEP** (o antigo + o `initShipping()`) — idempotente, mas código morto latente.
-- **`shippingCost` ficou write-only** após o refactor de 3 estados do frete (grátis / fixo / ME). Não quebra, mas é lixo.
-- **`shipping-result` órfão** em `updateCartUI` (guardado por `if`, nunca renderiza).
-- **Emoji via `innerHTML`** na seção de etiqueta do admin (o padrão do projeto é `String.fromCodePoint`).
-- **`description` selecionado mas não usado** no extrato / notificação de pontos.
-- **Trigger HTTP `notify-order-status`** usa `supabase_functions.http_request()` — se recriar o banco sem essa extensão, o trigger falha silenciosamente.
-- **Cron jobs `request-review` e `expire-loyalty-points` rodam no mesmo horário** (`0 6 * * *`) — não colidem, mas vale separar pra logs mais limpos.
+- **Emoji via `innerHTML`** fora da etiqueta do admin — padronizar com `String.fromCodePoint`.
+- **Documentar `melhorenvio_sender_doc` vs `customer_doc`** em comentário na Edge Function.
 
 ---
 
@@ -556,18 +560,21 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 10 | Ledger pra pontos (não saldo) | Coluna `balance` | Auditoria + histórico + expiração por lote |
 | 11 | Carrinho em localStorage (não servidor) | Session server-side | Sem auth obrigatória, UX imediata |
 | 12 | Notificações virtuais calculadas (não todas reais) | Gravar todas no banco | Reduz writes + sempre atualizadas |
-| 13 | Frete dual-mode (ME principal + fixo reserva) | Só ME / só fixo | Continuidade do serviço se o ME cair; toggle explícito no admin |
+| 13 | Frete dual-mode regionalizado (ME + fixo por região) | Só ME / só fixo global | Continuidade do serviço se o ME cair + proteção contra prejuízo em CEPs distantes |
+| 14 | Central de Reviews híbrida (featured + fallback) | Só automático / só manual | Controle quando quer + nunca fica vazio. Reaproveita infra de reviews existente. |
 
 ---
 
 ## 15. Roadmap sugerido
 
 ### Agora (esta semana)
+0. ✅ ~~Fase 10.4 — Central de Reviews + Feedbacks~~ (concluída em 02/out/2026)
 1. Substituir fotos/vídeos placeholder dos produtos.
 2. Testar PWA cliente em iOS/Android reais.
 3. Deletar Pixel Meta antigo (`9288...`).
 
 ### Depois (este mês)
+- **Fase 10.1 — Conteúdo configurável** (Hero + Carrossel + Rodapé + Meta tags via admin) — sem depoimentos
 4. Aplicar o seletor de frete novo no `produto.html`.
 5. Atualizar `sitemap.xml` estático (ou automatizar com `sitemap-products`).
 6. Otimização de performance (compressão, lazy-load).
@@ -587,6 +594,9 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **02/out/2026** — Fase 10.4 completa: Central de Reviews dinâmica (home + `/avaliacoes.html` + admin com curadoria híbrida `featured`) + reciclagem do Web3Forms em canal de feedback privado (nova tabela `feedbacks` + aba no admin) + cards clicáveis com PhotoSwipe + JSON-LD AggregateRating.
+- **02/out/2026** — Frete dual-mode regionalizado (toggle ME/fixo + 5 faixas + fallback + botão "Calcular outro CEP").
+- **02/out/2026** — Frete dual-mode completo: toggle ME/fixo no admin + 5 faixas regionais (SP/Sudeste/Sul/Centro-Norte-NE) + fallback automático + botão "Calcular outro CEP" + refatoração do helper `getRegionKeyFromCep()` pra usar 2 dígitos do CEP.
 - **02/out/2026** — Sistema de frete dual-mode: toggle ME/fixo no admin + fallback automático + port do seletor ME pro produto.html + seção 18 do doc mestre.
 - **02/out/2026** — `PROJETO-MESTRE.md` v3.1: seção 17 (observações de varredura) + pendências reorganizadas; `.gitignore` e `docs/` completos na pasta `supabase/`.
 - **02/out/2026** — Estrutura `supabase/` completa (10 Edge Functions + schema 001 + docs secrets/storage/auth).
@@ -782,66 +792,165 @@ Se um dia o Supabase precisar ser recriado do zero (disaster recovery / novo pro
 
 ---
 
-## 18. Sistema de Frete — Dual Mode (ME + Fixo de reserva)
+## 18. Sistema de Frete — Dual Mode (ME + Fixo por região)
 
-> Documentado em 02/out/2026 após implementação do toggle no admin.
+> Documentado em 02/out/2026 — versão final implementada.
 
 ### 18.1 Objetivo
 
-Garantir continuidade da operação caso o Melhor Envio (ME) apresente instabilidade, timeout ou indisponibilidade. O frete fixo atua como **reserva automática** sem que o cliente perceba interrupção.
+Garantir continuidade da operação caso o Melhor Envio (ME) apresente instabilidade, timeout ou indisponibilidade. O frete fixo atua como **reserva automática** sem que o cliente perceba interrupção. Além disso, a reserva é **regionalizada** (5 faixas) pra evitar prejuízo em CEPs distantes.
 
 ### 18.2 Modelo de dados
 
-Coluna nova em `settings`:
+Coluna em `settings`:
 
 | Coluna | Tipo | Valores | Default |
 |---|---|---|---|
 | `shipping_mode` | TEXT | `'me'` \| `'fixed'` | `'me'` |
+| `shipping_fixed` | NUMERIC | (fallback global) | 0 |
+| `shipping_fixed_sp` | NUMERIC | SP (CEP 01-19) | 0 |
+| `shipping_fixed_sudeste` | NUMERIC | RJ/ES/MG (CEP 20-39) | 0 |
+| `shipping_fixed_sul` | NUMERIC | PR/SC/RS (CEP 80-99) | 0 |
+| `shipping_fixed_centro_norte_ne` | NUMERIC | BA/SE/PE/CE/PA/DF/etc (CEP 40-79) | 0 |
+| `free_shipping_min` | NUMERIC | (frete grátis) | 400 |
 
-Colunas relacionadas (já existentes):
-- `shipping_fixed` — valor do frete fixo de reserva (R$)
-- `free_shipping_min` — mínimo pro frete grátis (R$)
+### 18.3 Lógica de decisão (prioridade)
 
-### 18.3 Lógica de decisão
+**1. Frete grátis (soberano)** — Se `subtotal >= free_shipping_min` → frete = R$ 0. Aplica em qualquer modo.
 
-**Prioridade 1 — Frete grátis**
-Se `subtotal >= free_shipping_min` → frete = R$ 0. Regra soberana, aplica em qualquer modo.
+**2. Modo explícito (`shipping_mode`)**:
+- `'fixed'` → ignora ME completamente; usa valor regional (ou global como reserva).
+- `'me'` → tenta ME.
 
-**Prioridade 2 — Modo explícito**
-- `shipping_mode = 'fixed'` → ignora ME, usa `shipping_fixed`.
-- `shipping_mode = 'me'` → tenta ME primeiro.
-
-**Prioridade 3 — Fallback automático (só em `me`)**
+**3. Fallback automático (só em `'me'`)**:
 - ME OK → usa cotações ME.
-- ME falha (timeout, indisponível, lista vazia) E `shipping_fixed > 0` → usa `shipping_fixed` automaticamente.
-- ME falha E `shipping_fixed = 0` → mostra erro "Frete indisponível. Fale no WhatsApp."
+- ME falha + `shipping_fixed_*` da região > 0 → usa valor regional.
+- ME falha + região vazia + `shipping_fixed` global > 0 → usa valor global.
+- ME falha + sem nenhum fallback → erro "Frete indisponível".
 
-### 18.4 UI do admin
+### 18.4 Identificação de região
 
-Em **Configurações → Frete**, toggle de rádio com 2 opções:
-- **Melhor Envio** (padrão) — cotação real por CEP
-- **Frete fixo** — valor único pra todas as regiões (modo reserva)
+Helper `getRegionKeyFromCep(cep)` usa os **2 primeiros dígitos** do CEP (alinhado com a tabela dos Correios):
 
-Validação: se modo `fixed` for escolhido, `shipping_fixed` precisa ser > 0.
+| Prefixo CEP | Região | Coluna em `settings` |
+|---|---|---|
+| 01-19 | SP | `shipping_fixed_sp` |
+| 20-39 | RJ/ES/MG (Sudeste) | `shipping_fixed_sudeste` |
+| 40-79 | BA/SE/PE/CE/PA/DF/GO/MT/MS/TO (Centro-Oeste + Norte + Nordeste) | `shipping_fixed_centro_norte_ne` |
+| 80-99 | PR/SC/RS (Sul) | `shipping_fixed_sul` |
 
-### 18.5 Estados do carrinho (UI do cliente)
+### 18.5 UI do admin
+
+Em **Configurações → Frete**:
+- Toggle radio de modo: "Melhor Envio" (padrão) ou "Frete fixo"
+- Campo "Frete fixo (R$)" (fallback global)
+- Campo "Frete grátis acima de (R$)"
+- Subseção colapsável "Frete fixo por região (opcional)" com 4 inputs regionais
+
+Validação: se modo `'fixed'` escolhido, `shipping_fixed` global precisa ser > 0.
+
+### 18.6 Estados do carrinho (UI do cliente)
 
 | Estado | Aparência |
 |---|---|
 | ME carregando | Input de CEP + botão "Calcular" |
 | ME OK | Radio com 3-4 opções (menor preço primeiro) |
-| ME falhou + fallback fixo | Card único "Frete padrão: R$ X,XX" (sem radio) |
+| ME falhou + fallback regional | Card único "Frete padrão: R$ X,XX" + botão "Calcular outro CEP" |
 | ME falhou + sem fallback | Feedback vermelho "Frete indisponível" |
-| Modo fixo | Card único "Frete padrão: R$ X,XX" (sem input de CEP) |
-| Frete grátis (qualquer modo) | Card verde "FRETE GRÁTIS ✨" |
+| Modo fixo + CEP digitado | Card único "Frete padrão: R$ X,XX" + botão "Calcular outro CEP" |
+| Frete grátis (qualquer modo) | Card verde "FRETE GRÁTIS ✨" + botão "Calcular outro CEP" |
 
-### 18.6 Arquivos envolvidos
+### 18.7 Arquivos envolvidos
 
-- `settings` (banco) — coluna `shipping_mode`
-- `admin.html` — toggle + validação
-- `estilo/script.js` — lógica de decisão + fallback em `calculateShipping()`
+- `settings` (banco) — `shipping_mode` + 4 colunas regionais
+- `admin.html` — toggle + 4 inputs regionais + validação
+- `estilo/script.js` — `getRegionKeyFromCep()` + `getFixedShippingForCep()` + decisão em `calculateShipping()`
 - `index.html` + `produto.html` — estrutura DOM do seletor (idêntica)
 
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.2.*
+## 19. Central de Reviews (Fase 10.4)
+
+### 19.1 Objetivo
+
+Substituir depoimentos fictícios hardcoded por um feed dinâmico de reviews reais
+aprovadas. Zero manutenção, prova social autêntica, e SEO com rich snippets
+(AggregateRating).
+
+### 19.2 Modelo de dados
+
+Coluna nova em `reviews`:
+
+| Coluna | Tipo | Valores | Default |
+|---|---|---|---|
+| `featured` | BOOLEAN | true/false | false |
+
+Nova tabela `feedbacks` (canal privado, separado de reviews):
+
+| Coluna | Tipo | Valores |
+|---|---|---|
+| `id` | UUID | PK |
+| `user_id` | UUID | nullable (FK auth.users) |
+| `customer_name` | TEXT | nullable |
+| `customer_email` | TEXT | nullable |
+| `rating` | INTEGER | nullable (1-5) |
+| `category` | TEXT | suggestion/compliment/complaint/bug/other |
+| `message` | TEXT | NOT NULL |
+| `status` | TEXT | new / read / archived (default: new) |
+| `created_at` | TIMESTAMPTZ | default now() |
+
+### 19.3 Lógica de exibição na home
+
+**Curadoria híbrida:**
+1. Busca reviews `status='approved' AND featured=true` (máx 6)
+2. Se faltar, completa com recentes aprovadas (sem duplicar)
+3. Renderiza grid responsivo (3 col home, 2 col tablet, 1 col mobile)
+4. Cada card: estrelas + foto (se tiver) + texto truncado (180 chars) + nome abreviado (Marina R.) + nome do produto + selo "compra verificada"
+
+**Fallback vazio:** se zero reviews aprovadas, mostra estado vazio "💛 Ainda não temos avaliações publicadas."
+
+### 19.4 Página `/avaliacoes.html`
+
+- Listagem completa com paginação client-side (20 por vez)
+- Filtros: Todas / 5 estrelas / Com foto / por produto (`?produto=UG-XXX`)
+- JSON-LD AggregateRating no `<head>`
+- Reusa componente `.testimonial-card` da home
+- Cards clicáveis → PhotoSwipe lightbox
+
+### 19.5 Admin — Curadoria + Feedbacks
+
+**Avaliações:**
+- Filtro "⭐ Destacadas" adicionado
+- Botão "⭐ Destacar" / "★ Destacada" no card de moderação
+
+**Feedbacks (novo):**
+- Aba dedicada com badge de novos
+- Filtros: Todos / Novos / Lidos / Arquivados
+- Ações: Marcar como lido / Arquivar / Restaurar / Excluir
+- Busca por nome, email ou texto
+
+### 19.6 Reciclagem do Web3Forms
+
+**Antes:** form Web3Forms → email do dono (depoimentos fictícios apareciam no site)
+
+**Agora:** botão "💬 Deixe seu feedback" na home → modal → tabela `feedbacks`
+- Canal privado (não aparece no site)
+- Rating opcional (1-5)
+- Categoria opcional
+- Status: new → read → archived
+
+### 19.7 Arquivos envolvidos
+
+- `reviews` (banco) — coluna `featured`
+- `feedbacks` (banco) — tabela nova
+- `index.html` — seção dinâmica + modal de feedback
+- `avaliacoes.html` (novo) — Central pública
+- `estilo/avaliacoes.css` (novo) — CSS da página
+- `estilo/style.css` — estilos dos cards de review + modal de feedback
+- `estilo/script.js` — `loadHomeReviews()`, `openFeedbackModal()`, `openReviewPhotosLightbox()`
+- `admin.html` — aba Feedbacks + toggle `featured` em reviews
+- `sitemap.xml` — entrada `/avaliacoes.html`
+
+---
+
+*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.4.*
