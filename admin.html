@@ -3250,6 +3250,284 @@
             background: rgba(255, 85, 85, 0.1);
             border-color: var(--danger);
         }
+
+        /* ==========================================================================
+           IDENTIDADE VISUAL — Biblioteca de Temas
+           ========================================================================== */
+        .theme-active-card,
+        .theme-scheduled-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .theme-active-name {
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .themes-modal-box {
+            max-width: 720px;
+        }
+
+        .themes-modal-toolbar {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .themes-modal-toolbar .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .themes-library {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 0.4rem;
+        }
+
+        .themes-group-title {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .theme-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            position: relative;
+        }
+
+        .theme-card:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .theme-card.active {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        .theme-card-preview {
+            display: flex;
+            gap: 4px;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .theme-card-swatch {
+            flex: 1;
+        }
+
+        .theme-card-name {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .theme-card-meta {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 0.5px;
+        }
+
+        .theme-card-actions {
+            display: flex;
+            gap: 0.4rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .theme-card-actions button {
+            flex: 1;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 0.4rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .theme-card-actions button:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--text);
+        }
+
+        .theme-card-actions button.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .theme-card-actions button.favorite {
+            color: var(--gold);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .theme-editor-modal-box {
+            max-width: 640px;
+        }
+
+        .theme-editor-section-title {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            color: var(--gold);
+            margin: 1.5rem 0 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .theme-color-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+        }
+
+        .theme-color-field {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .theme-color-field label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .theme-color-field input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .theme-color-hex {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .theme-contrast-feedback {
+            margin-top: 0.8rem;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .theme-contrast-feedback.ok {
+            display: block;
+            background: rgba(81, 207, 102, 0.08);
+            border: 1px solid rgba(81, 207, 102, 0.3);
+            color: #7ae096;
+        }
+
+        .theme-contrast-feedback.error {
+            display: block;
+            background: rgba(255, 85, 85, 0.08);
+            border: 1px solid rgba(255, 85, 85, 0.3);
+            color: #ff8e8e;
+        }
+
+        .theme-preview {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .theme-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .theme-preview-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            font-size: 1rem;
+        }
+
+        .theme-preview-nav {
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+        }
+
+        .theme-preview-body {
+            padding: 1.5rem 1rem;
+        }
+
+        .theme-preview-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            line-height: 1.2;
+        }
+
+        .theme-preview-text {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .theme-preview-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+        }
     </style>
 </head>
 
@@ -3963,6 +4241,34 @@
 
                                 <div id="loyalty-rules-editor"></div>
                             </details>
+
+                            <!-- ==================== IDENTIDADE VISUAL ==================== -->
+                            <details class="content-section-details">
+                                <summary>🎨 Identidade Visual (biblioteca de temas)</summary>
+
+                                <div class="form-group">
+                                    <label>Tema ativo</label>
+                                    <div class="theme-active-card" id="theme-active-card">
+                                        <span class="theme-active-name" id="theme-active-name">Carregando...</span>
+                                        <button type="button" class="gallery-btn" onclick="openThemesLibrary()">
+                                            📚 Abrir biblioteca
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Tema agendado (opcional)</label>
+                                    <div id="theme-scheduled-info" class="theme-scheduled-info">
+                                        <span id="theme-scheduled-name">Nenhum tema agendado</span>
+                                        <button type="button" class="gallery-btn" onclick="openScheduleModal()" id="theme-schedule-btn">
+                                            📅 Agendar
+                                        </button>
+                                        <button type="button" class="gallery-btn" onclick="cancelScheduledTheme()" id="theme-cancel-schedule-btn" style="display: none;">
+                                            ✕ Cancelar agendamento
+                                        </button>
+                                    </div>
+                                </div>
+                            </details>
                         </div>
 
                         <div class="config-actions">
@@ -4332,6 +4638,160 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL: BIBLIOTECA DE TEMAS ==================== -->
+    <div id="themes-modal" class="modal-overlay">
+        <div class="modal-box themes-modal-box">
+            <button class="modal-close" onclick="closeThemesModal()">&times;</button>
+            <h2 class="modal-title">Biblioteca de Temas</h2>
+
+            <div class="themes-modal-toolbar">
+                <input type="text" class="search-input" id="theme-search" placeholder="🔍 Buscar tema..." oninput="renderThemesLibrary()">
+                <button type="button" class="btn-new-product" onclick="openThemeEditor(null)">
+                    <span>+</span> Criar tema
+                </button>
+            </div>
+
+            <div id="themes-library-content" class="themes-library">
+                <p style="color: var(--text-dim); text-align: center; padding: 2rem;">Carregando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: EDITOR DE TEMA ==================== -->
+    <div id="theme-editor-modal" class="modal-overlay">
+        <div class="modal-box theme-editor-modal-box">
+            <button class="modal-close" onclick="closeThemeEditor()">&times;</button>
+            <h2 class="modal-title" id="theme-editor-title">Novo Tema</h2>
+
+            <div id="theme-editor-feedback" class="modal-feedback"></div>
+
+            <div class="form-group">
+                <label for="theme-name">Nome <span class="required">*</span></label>
+                <input type="text" id="theme-name" maxlength="60" placeholder="Ex: Verão 2026">
+            </div>
+
+            <div class="form-group">
+                <label for="theme-description">Descrição (opcional)</label>
+                <input type="text" id="theme-description" maxlength="120" placeholder="Ex: Tons de areia e céu">
+            </div>
+
+            <div class="form-group">
+                <label>Base (duplicar de)</label>
+                <select id="theme-base-preset" onchange="applyBasePreset()">
+                    <option value="">— Nenhuma (do zero) —</option>
+                </select>
+                <small class="config-hint">Duplicar um tema existente ajuda a manter a coerência.</small>
+            </div>
+
+            <h4 class="theme-editor-section-title">Paleta</h4>
+
+            <div class="theme-color-grid">
+                <div class="theme-color-field">
+                    <label>Cor de destaque</label>
+                    <input type="color" id="theme-accent" oninput="onThemeColorChange()">
+                    <span class="theme-color-hex" id="theme-accent-hex">#d4af37</span>
+                </div>
+                <div class="theme-color-field">
+                    <label>Fundo</label>
+                    <input type="color" id="theme-bg" oninput="onThemeColorChange()">
+                    <span class="theme-color-hex" id="theme-bg-hex">#0e0e10</span>
+                </div>
+                <div class="theme-color-field">
+                    <label>Texto principal</label>
+                    <input type="color" id="theme-text" oninput="onThemeColorChange()">
+                    <span class="theme-color-hex" id="theme-text-hex">#f5f5f5</span>
+                </div>
+                <div class="theme-color-field">
+                    <label>Texto suave</label>
+                    <input type="color" id="theme-text-muted" oninput="onThemeColorChange()">
+                    <span class="theme-color-hex" id="theme-text-muted-hex">#c5c5c5</span>
+                </div>
+            </div>
+
+            <div id="theme-contrast-feedback" class="theme-contrast-feedback"></div>
+
+            <h4 class="theme-editor-section-title">Tipografia</h4>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="theme-heading-font">Fonte do título</label>
+                    <select id="theme-heading-font" onchange="onThemeFontChange()">
+                        <option value="Cormorant Garamond">Cormorant Garamond</option>
+                        <option value="Playfair Display">Playfair Display</option>
+                        <option value="Libre Baskerville">Libre Baskerville</option>
+                        <option value="DM Serif Display">DM Serif Display</option>
+                        <option value="Italiana">Italiana</option>
+                        <option value="Lora">Lora</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="theme-body-font">Fonte do corpo</label>
+                    <select id="theme-body-font" onchange="onThemeFontChange()">
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Inter">Inter</option>
+                        <option value="DM Sans">DM Sans</option>
+                        <option value="Work Sans">Work Sans</option>
+                        <option value="Lato">Lato</option>
+                        <option value="Jost">Jost</option>
+                    </select>
+                </div>
+            </div>
+
+            <h4 class="theme-editor-section-title">Preview</h4>
+
+            <div class="theme-preview" id="theme-preview">
+                <div class="theme-preview-header">
+                    <span class="theme-preview-logo" id="prev-logo">USE GEMAS</span>
+                    <span class="theme-preview-nav">Início · Coleção · Contato</span>
+                </div>
+                <div class="theme-preview-body">
+                    <h3 class="theme-preview-title" id="prev-title">A sua vida brilha</h3>
+                    <p class="theme-preview-text" id="prev-text">Joias artesanais em microcrochê e pedras naturais.</p>
+                    <button type="button" class="theme-preview-btn" id="prev-btn">Conheça a Coleção</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="theme-context">Aplicar em</label>
+                <select id="theme-context">
+                    <option value="both">Site + Área do Cliente (accent compartilhado)</option>
+                    <option value="site">Só no site principal</option>
+                    <option value="account">Só na área do cliente</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeThemeEditor()">Cancelar</button>
+                <button type="button" class="btn-save" id="theme-save-btn" onclick="saveTheme()">Salvar tema</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: AGENDAMENTO ==================== -->
+    <div id="theme-schedule-modal" class="modal-overlay">
+        <div class="modal-box narrow">
+            <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
+            <h2 class="modal-title">Agendar Troca de Tema</h2>
+
+            <div id="schedule-feedback" class="modal-feedback"></div>
+
+            <div class="form-group">
+                <label for="schedule-theme-id">Tema</label>
+                <select id="schedule-theme-id"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="schedule-date">Ativar em</label>
+                <input type="datetime-local" id="schedule-date">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeScheduleModal()">Cancelar</button>
+                <button type="button" class="btn-save" onclick="saveScheduledTheme()">Agendar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
@@ -4464,6 +4924,7 @@
                 showScreen('screen-admin');
 
                 await loadSettings();
+                await loadThemes();
                 await loadProducts();
                 await loadOrders();
                 await loadReviews();
@@ -7550,6 +8011,585 @@
             const num = parseInt(value, 10);
             if (isNaN(num)) return;
             loyaltyRulesState[key] = num;
+        }
+
+        // ==========================================================================
+        // BIBLIOTECA DE TEMAS (Fase 10.5)
+        // ==========================================================================
+        let allThemes = [];
+        let currentEditingTheme = null;
+        let pendingDeleteThemeId = null;
+
+        async function loadThemes() {
+            const { data, error } = await supabaseClient
+                .from('themes')
+                .select('*')
+                .order('source', { ascending: true })
+                .order('is_favorite', { ascending: false })
+                .order('created_at', { ascending: true });
+
+            if (error) {
+                console.error('Erro ao carregar temas:', error);
+                return;
+            }
+
+            allThemes = data || [];
+            updateActiveThemeDisplay();
+            updateScheduledThemeDisplay();
+        }
+
+        function updateActiveThemeDisplay() {
+            const activeId = currentSettings?.active_theme_id;
+            const active = allThemes.find(t => t.id === activeId);
+            const nameEl = document.getElementById('theme-active-name');
+            if (nameEl) nameEl.textContent = active?.name || 'Clássico Dourado';
+        }
+
+        function updateScheduledThemeDisplay() {
+            const scheduledId = currentSettings?.scheduled_theme_id;
+            const nameEl = document.getElementById('theme-scheduled-name');
+            const cancelBtn = document.getElementById('theme-cancel-schedule-btn');
+            const scheduleBtn = document.getElementById('theme-schedule-btn');
+
+            if (scheduledId) {
+                const scheduled = allThemes.find(t => t.id === scheduledId);
+                const date = currentSettings?.scheduled_theme_starts_at
+                    ? new Date(currentSettings.scheduled_theme_starts_at).toLocaleDateString('pt-BR')
+                    : '';
+                if (nameEl) nameEl.textContent = `${scheduled?.name || '?'} — ativa em ${date}`;
+                if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+                if (scheduleBtn) scheduleBtn.style.display = 'none';
+            } else {
+                if (nameEl) nameEl.textContent = 'Nenhum tema agendado';
+                if (cancelBtn) cancelBtn.style.display = 'none';
+                if (scheduleBtn) scheduleBtn.style.display = 'inline-flex';
+            }
+        }
+
+        function openThemesLibrary() {
+            const modal = document.getElementById('themes-modal');
+            if (!modal) return;
+            renderThemesLibrary();
+            modal.classList.add('open');
+        }
+
+        function closeThemesModal() {
+            document.getElementById('themes-modal').classList.remove('open');
+        }
+
+        function renderThemesLibrary() {
+            const container = document.getElementById('themes-library-content');
+            if (!container) return;
+
+            const searchTerm = (document.getElementById('theme-search')?.value || '').trim().toLowerCase();
+            const activeId = currentSettings?.active_theme_id;
+
+            let filtered = allThemes.slice();
+            if (searchTerm) {
+                filtered = filtered.filter(t =>
+                    (t.name || '').toLowerCase().includes(searchTerm) ||
+                    (t.description || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-dim); text-align: center; padding: 2rem;">Nenhum tema encontrado.</p>';
+                return;
+            }
+
+            const favorites = filtered.filter(t => t.is_favorite);
+            const system = filtered.filter(t => t.source === 'system' && !t.is_favorite);
+            const custom = filtered.filter(t => t.source === 'custom' && !t.is_favorite);
+
+            let html = '';
+            if (favorites.length > 0) {
+                html += `<div><h3 class="themes-group-title">⭐ Favoritos</h3><div class="themes-grid">${favorites.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
+            }
+            if (system.length > 0) {
+                html += `<div><h3 class="themes-group-title">📚 Sistema</h3><div class="themes-grid">${system.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
+            }
+            if (custom.length > 0) {
+                html += `<div><h3 class="themes-group-title">✨ Meus temas</h3><div class="themes-grid">${custom.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function renderThemeCard(theme, activeId) {
+            const isActive = theme.id === activeId;
+            const p = theme.palette || {};
+            const t = theme.typography || {};
+
+            return `
+                <div class="theme-card ${isActive ? 'active' : ''}">
+                    <div class="theme-card-preview">
+                        <div class="theme-card-swatch" style="background: ${p.bg || '#0e0e10'}"></div>
+                        <div class="theme-card-swatch" style="background: ${p.accent || '#d4af37'}"></div>
+                        <div class="theme-card-swatch" style="background: ${p.text || '#f5f5f5'}"></div>
+                        <div class="theme-card-swatch" style="background: ${p.text_muted || '#c5c5c5'}"></div>
+                    </div>
+                    <div class="theme-card-name">${escapeHTML(theme.name)}</div>
+                    <div class="theme-card-meta">${t.heading_font || '?'} + ${t.body_font || '?'}</div>
+                    ${theme.description ? `<div class="theme-card-meta">${escapeHTML(theme.description)}</div>` : ''}
+                    <div class="theme-card-actions">
+                        ${!isActive ? `<button type="button" onclick="applyTheme('${theme.id}')">Aplicar</button>` : '<button type="button" disabled>Aplicando</button>'}
+                        <button type="button" class="favorite" onclick="toggleThemeFavorite('${theme.id}')">${theme.is_favorite ? '★' : '☆'}</button>
+                        ${theme.source === 'custom' ? `
+                            <button type="button" onclick="openThemeEditor('${theme.id}')">✏️</button>
+                            <button type="button" class="danger" onclick="confirmDeleteTheme('${theme.id}')">🗑️</button>
+                        ` : `<button type="button" onclick="openThemeEditor('${theme.id}', true)">📋</button>`}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function applyTheme(themeId) {
+            const { error } = await supabaseClient
+                .from('settings')
+                .update({ active_theme_id: themeId, updated_at: new Date().toISOString() })
+                .eq('id', 1);
+
+            if (error) { showToast('Erro ao aplicar tema.', 'error'); return; }
+
+            if (currentSettings) currentSettings.active_theme_id = themeId;
+            updateActiveThemeDisplay();
+            renderThemesLibrary();
+            showToast('Tema aplicado!');
+        }
+
+        async function toggleThemeFavorite(themeId) {
+            const theme = allThemes.find(t => t.id === themeId);
+            if (!theme) return;
+            const newValue = !theme.is_favorite;
+
+            const { error } = await supabaseClient
+                .from('themes')
+                .update({ is_favorite: newValue })
+                .eq('id', themeId);
+
+            if (error) { showToast('Erro ao favoritar.', 'error'); return; }
+
+            theme.is_favorite = newValue;
+            renderThemesLibrary();
+        }
+
+        const ALLOWED_HEADING_FONTS = ['Cormorant Garamond', 'Playfair Display', 'Libre Baskerville', 'DM Serif Display', 'Italiana', 'Lora'];
+        const ALLOWED_BODY_FONTS = ['Montserrat', 'Inter', 'DM Sans', 'Work Sans', 'Lato', 'Jost'];
+
+        function openThemeEditor(themeId, duplicating = false) {
+            const modal = document.getElementById('theme-editor-modal');
+            const title = document.getElementById('theme-editor-title');
+            const feedback = document.getElementById('theme-editor-feedback');
+            if (!modal) return;
+
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            // Popula o select de base
+            const baseSelect = document.getElementById('theme-base-preset');
+            baseSelect.innerHTML = '<option value="">— Nenhuma (do zero) —</option>' +
+                allThemes.map(t => `<option value="${t.id}">${escapeHTML(t.name)}</option>`).join('');
+
+            if (themeId && !duplicating) {
+                // Editar tema existente
+                const theme = allThemes.find(t => t.id === themeId);
+                if (!theme || theme.source === 'system') return;
+
+                currentEditingTheme = { id: theme.id };
+                title.textContent = 'Editar Tema';
+
+                document.getElementById('theme-name').value = theme.name || '';
+                document.getElementById('theme-description').value = theme.description || '';
+                document.getElementById('theme-accent').value = theme.palette?.accent || '#d4af37';
+                document.getElementById('theme-bg').value = theme.palette?.bg || '#0e0e10';
+                document.getElementById('theme-text').value = theme.palette?.text || '#f5f5f5';
+                document.getElementById('theme-text-muted').value = theme.palette?.text_muted || '#c5c5c5';
+                document.getElementById('theme-heading-font').value = theme.typography?.heading_font || 'Cormorant Garamond';
+                document.getElementById('theme-body-font').value = theme.typography?.body_font || 'Montserrat';
+                document.getElementById('theme-context').value = theme.context || 'both';
+            } else if (themeId && duplicating) {
+                // Duplicar tema do sistema
+                const theme = allThemes.find(t => t.id === themeId);
+                if (!theme) return;
+
+                currentEditingTheme = null;
+                title.textContent = 'Duplicar Tema';
+
+                document.getElementById('theme-name').value = `${theme.name} (cópia)`;
+                document.getElementById('theme-description').value = theme.description || '';
+                document.getElementById('theme-accent').value = theme.palette?.accent || '#d4af37';
+                document.getElementById('theme-bg').value = theme.palette?.bg || '#0e0e10';
+                document.getElementById('theme-text').value = theme.palette?.text || '#f5f5f5';
+                document.getElementById('theme-text-muted').value = theme.palette?.text_muted || '#c5c5c5';
+                document.getElementById('theme-heading-font').value = theme.typography?.heading_font || 'Cormorant Garamond';
+                document.getElementById('theme-body-font').value = theme.typography?.body_font || 'Montserrat';
+                document.getElementById('theme-context').value = theme.context || 'both';
+            } else {
+                // Novo
+                currentEditingTheme = null;
+                title.textContent = 'Novo Tema';
+
+                document.getElementById('theme-name').value = '';
+                document.getElementById('theme-description').value = '';
+                document.getElementById('theme-accent').value = '#d4af37';
+                document.getElementById('theme-bg').value = '#0e0e10';
+                document.getElementById('theme-text').value = '#f5f5f5';
+                document.getElementById('theme-text-muted').value = '#c5c5c5';
+                document.getElementById('theme-heading-font').value = 'Cormorant Garamond';
+                document.getElementById('theme-body-font').value = 'Montserrat';
+                document.getElementById('theme-context').value = 'both';
+            }
+
+            onThemeColorChange();
+            onThemeFontChange();
+            modal.classList.add('open');
+        }
+
+        function closeThemeEditor() {
+            document.getElementById('theme-editor-modal').classList.remove('open');
+            currentEditingTheme = null;
+        }
+
+        function applyBasePreset() {
+            const baseId = document.getElementById('theme-base-preset').value;
+            if (!baseId) return;
+
+            const base = allThemes.find(t => t.id === baseId);
+            if (!base) return;
+
+            document.getElementById('theme-accent').value = base.palette?.accent || '#d4af37';
+            document.getElementById('theme-bg').value = base.palette?.bg || '#0e0e10';
+            document.getElementById('theme-text').value = base.palette?.text || '#f5f5f5';
+            document.getElementById('theme-text-muted').value = base.palette?.text_muted || '#c5c5c5';
+            document.getElementById('theme-heading-font').value = base.typography?.heading_font || 'Cormorant Garamond';
+            document.getElementById('theme-body-font').value = base.typography?.body_font || 'Montserrat';
+
+            onThemeColorChange();
+            onThemeFontChange();
+        }
+
+        function onThemeColorChange() {
+            const accent = document.getElementById('theme-accent').value;
+            const bg = document.getElementById('theme-bg').value;
+            const text = document.getElementById('theme-text').value;
+            const textMuted = document.getElementById('theme-text-muted').value;
+
+            document.getElementById('theme-accent-hex').textContent = accent;
+            document.getElementById('theme-bg-hex').textContent = bg;
+            document.getElementById('theme-text-hex').textContent = text;
+            document.getElementById('theme-text-muted-hex').textContent = textMuted;
+
+            // Validação de contraste
+            const contrastText = getContrastRatio(text, bg);
+            const contrastMuted = getContrastRatio(textMuted, bg);
+            const contrastAccent = getContrastRatio(accent, bg);
+
+            const feedback = document.getElementById('theme-contrast-feedback');
+            const errors = [];
+
+            if (contrastText < 4.5) errors.push(`Texto principal × Fundo: ${contrastText.toFixed(1)}:1 (mín 4.5)`);
+            if (contrastMuted < 3) errors.push(`Texto suave × Fundo: ${contrastMuted.toFixed(1)}:1 (mín 3.0)`);
+            if (contrastAccent < 3) errors.push(`Destaque × Fundo: ${contrastAccent.toFixed(1)}:1 (mín 3.0)`);
+
+            if (errors.length > 0) {
+                feedback.className = 'theme-contrast-feedback error';
+                feedback.innerHTML = '⚠️ Contraste insuficiente:<br>' + errors.join('<br>');
+            } else {
+                feedback.className = 'theme-contrast-feedback ok';
+                feedback.innerHTML = `✅ Contraste OK — Texto ${contrastText.toFixed(1)}:1 · Suave ${contrastMuted.toFixed(1)}:1 · Destaque ${contrastAccent.toFixed(1)}:1`;
+            }
+
+            updateThemePreview();
+        }
+
+        function onThemeFontChange() {
+            updateThemePreview();
+        }
+
+        function updateThemePreview() {
+            const accent = document.getElementById('theme-accent').value;
+            const bg = document.getElementById('theme-bg').value;
+            const text = document.getElementById('theme-text').value;
+            const textMuted = document.getElementById('theme-text-muted').value;
+            const headingFont = document.getElementById('theme-heading-font').value;
+            const bodyFont = document.getElementById('theme-body-font').value;
+
+            const prev = document.getElementById('theme-preview');
+            prev.style.background = bg;
+
+            const header = prev.querySelector('.theme-preview-header');
+            header.style.color = text;
+            header.style.borderBottomColor = textMuted + '33';
+
+            document.getElementById('prev-logo').style.color = accent;
+            document.getElementById('prev-logo').style.fontFamily = `'${headingFont}', serif`;
+
+            document.querySelector('.theme-preview-nav').style.color = textMuted;
+            document.querySelector('.theme-preview-nav').style.fontFamily = `'${bodyFont}', sans-serif`;
+
+            const title = document.getElementById('prev-title');
+            title.style.color = text;
+            title.style.fontFamily = `'${headingFont}', serif`;
+
+            const txt = document.getElementById('prev-text');
+            txt.style.color = textMuted;
+            txt.style.fontFamily = `'${bodyFont}', sans-serif`;
+
+            const btn = document.getElementById('prev-btn');
+            btn.style.background = accent;
+            btn.style.color = bg;
+            btn.style.fontFamily = `'${bodyFont}', sans-serif`;
+        }
+
+        // WCAG contrast helper
+        function hexToRgb(hex) {
+            const h = hex.replace('#', '');
+            return {
+                r: parseInt(h.substr(0, 2), 16),
+                g: parseInt(h.substr(2, 2), 16),
+                b: parseInt(h.substr(4, 2), 16)
+            };
+        }
+
+        function getLuminance(hex) {
+            const { r, g, b } = hexToRgb(hex);
+            const a = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+        }
+
+        function getContrastRatio(hex1, hex2) {
+            const l1 = getLuminance(hex1);
+            const l2 = getLuminance(hex2);
+            const lighter = Math.max(l1, l2);
+            const darker = Math.min(l1, l2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        async function saveTheme() {
+            const feedback = document.getElementById('theme-editor-feedback');
+            const btn = document.getElementById('theme-save-btn');
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            const name = (document.getElementById('theme-name').value || '').trim();
+            if (!name || name.length < 2) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Informe um nome para o tema.';
+                return;
+            }
+
+            const palette = {
+                accent: document.getElementById('theme-accent').value,
+                bg: document.getElementById('theme-bg').value,
+                text: document.getElementById('theme-text').value,
+                text_muted: document.getElementById('theme-text-muted').value
+            };
+
+            const typography = {
+                heading_font: document.getElementById('theme-heading-font').value,
+                body_font: document.getElementById('theme-body-font').value
+            };
+
+            const context = document.getElementById('theme-context').value;
+            const description = (document.getElementById('theme-description').value || '').trim();
+
+            // Revalida contraste
+            if (getContrastRatio(palette.text, palette.bg) < 4.5) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Contraste insuficiente. Ajuste as cores.';
+                return;
+            }
+
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Salvando...';
+
+            try {
+                const payload = { name, description, palette, typography, context, source: 'custom' };
+
+                let result;
+                if (currentEditingTheme?.id) {
+                    result = await supabaseClient.from('themes').update(payload).eq('id', currentEditingTheme.id).select().single();
+                } else {
+                    // Verifica limite de 20 custom
+                    const customCount = allThemes.filter(t => t.source === 'custom').length;
+                    if (customCount >= 20) {
+                        feedback.className = 'modal-feedback error';
+                        feedback.innerText = 'Limite de 20 temas custom atingido. Exclua algum antes de criar.';
+                        btn.disabled = false;
+                        btn.innerText = originalText;
+                        return;
+                    }
+                    result = await supabaseClient.from('themes').insert(payload).select().single();
+                }
+
+                if (result.error) {
+                    feedback.className = 'modal-feedback error';
+                    feedback.innerText = result.error.message || 'Erro ao salvar.';
+                    return;
+                }
+
+                await loadThemes();
+                closeThemeEditor();
+                renderThemesLibrary();
+                showToast(currentEditingTheme?.id ? 'Tema atualizado!' : 'Tema criado!');
+            } catch (e) {
+                console.error(e);
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Erro inesperado.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        function confirmDeleteTheme(themeId) {
+            const theme = allThemes.find(t => t.id === themeId);
+            if (!theme) return;
+
+            pendingDeleteThemeId = themeId;
+            document.getElementById('confirm-title').innerText = 'Excluir tema?';
+            document.getElementById('confirm-text').innerHTML =
+                `Você está prestes a excluir o tema <strong>${escapeHTML(theme.name)}</strong>.<br><br>Se for o tema ativo, o Clássico Dourado será aplicado.`;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.innerText = 'Excluir';
+            confirmBtn.onclick = executeDeleteTheme;
+
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        async function executeDeleteTheme() {
+            if (!pendingDeleteThemeId) return;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            const originalText = confirmBtn.innerText;
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Excluindo...';
+
+            const themeId = pendingDeleteThemeId;
+            const isActive = currentSettings?.active_theme_id === themeId;
+
+            // Se for o ativo, aplica Clássico Dourado primeiro
+            if (isActive) {
+                const defaultTheme = allThemes.find(t => t.name === 'Clássico Dourado');
+                if (defaultTheme) {
+                    await supabaseClient.from('settings').update({ active_theme_id: defaultTheme.id }).eq('id', 1);
+                    if (currentSettings) currentSettings.active_theme_id = defaultTheme.id;
+                }
+            }
+
+            const { error } = await supabaseClient.from('themes').delete().eq('id', themeId);
+
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = originalText;
+
+            if (error) { showToast('Erro ao excluir.', 'error'); return; }
+
+            closeConfirmModal();
+            await loadThemes();
+            renderThemesLibrary();
+            updateActiveThemeDisplay();
+            showToast('Tema excluído.');
+        }
+
+        function openScheduleModal() {
+            const modal = document.getElementById('theme-schedule-modal');
+            const select = document.getElementById('schedule-theme-id');
+            if (!modal || !select) return;
+
+            select.innerHTML = allThemes.map(t =>
+                `<option value="${t.id}">${escapeHTML(t.name)}</option>`
+            ).join('');
+
+            const feedback = document.getElementById('schedule-feedback');
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            // Default: amanhã às 9h
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(9, 0, 0, 0);
+            const iso = tomorrow.toISOString().slice(0, 16);
+            document.getElementById('schedule-date').value = iso;
+
+            modal.classList.add('open');
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('theme-schedule-modal').classList.remove('open');
+        }
+
+        async function saveScheduledTheme() {
+            const feedback = document.getElementById('schedule-feedback');
+            const themeId = document.getElementById('schedule-theme-id').value;
+            const dateStr = document.getElementById('schedule-date').value;
+
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            if (!themeId || !dateStr) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Preencha tema e data.';
+                return;
+            }
+
+            const date = new Date(dateStr);
+            if (date <= new Date()) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'A data precisa ser no futuro.';
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('settings')
+                .update({
+                    scheduled_theme_id: themeId,
+                    scheduled_theme_starts_at: date.toISOString(),
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', 1);
+
+            if (error) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Erro ao agendar.';
+                return;
+            }
+
+            if (currentSettings) {
+                currentSettings.scheduled_theme_id = themeId;
+                currentSettings.scheduled_theme_starts_at = date.toISOString();
+            }
+
+            closeScheduleModal();
+            updateScheduledThemeDisplay();
+            showToast('Tema agendado!');
+        }
+
+        async function cancelScheduledTheme() {
+            if (!confirm('Cancelar o agendamento?')) return;
+
+            const { error } = await supabaseClient
+                .from('settings')
+                .update({
+                    scheduled_theme_id: null,
+                    scheduled_theme_starts_at: null,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', 1);
+
+            if (error) { showToast('Erro ao cancelar.', 'error'); return; }
+
+            if (currentSettings) {
+                currentSettings.scheduled_theme_id = null;
+                currentSettings.scheduled_theme_starts_at = null;
+            }
+
+            updateScheduledThemeDisplay();
+            showToast('Agendamento cancelado.');
         }
 
         // ==========================================================================
