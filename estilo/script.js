@@ -3967,8 +3967,14 @@ function renderHomeReviewCard(review, productMap) {
 
     // Foto (primeira da lista)
     const photos = (review.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+    const photosJson = JSON.stringify(photos).replace(/"/g, '&quot;');
     const photoHTML = photos.length > 0
-        ? `<div class="testimonial-photo"><img src="${escapeHTML(photos[0])}" alt="Foto da avaliação" loading="lazy"></div>`
+        ? `<div class="testimonial-photo" role="button" tabindex="0"
+                onclick='openReviewPhotosLightbox(${photosJson}, 0)'
+                onkeydown='if(event.key==="Enter"||event.key===" "){event.preventDefault();openReviewPhotosLightbox(${photosJson}, 0);}'>
+                <img src="${escapeHTML(photos[0])}" alt="Foto da avaliação" loading="lazy">
+                ${photos.length > 1 ? `<span class="testimonial-photo-count">${photos.length} fotos</span>` : ''}
+           </div>`
         : '';
 
     // Nome com abreviação (Marina R.)
@@ -4025,6 +4031,38 @@ function injectAggregateRatingSchema(reviews) {
     script.id = 'ug-aggregate-schema';
     script.textContent = JSON.stringify(schema);
     document.head.appendChild(script);
+}
+
+async function openReviewPhotosLightbox(photos, startIndex = 0) {
+    if (!photos || photos.length === 0) return;
+
+    try {
+        const [lb, pswp] = await Promise.all([
+            import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js'),
+            import('https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.esm.min.js')
+        ]);
+        const PhotoSwipeLightbox = lb.default;
+        const PhotoSwipe = pswp.default;
+
+        const dataSource = photos.map(url => ({
+            src: url,
+            width: 1200,
+            height: 1600,
+            msrc: url
+        }));
+
+        const lightbox = new PhotoSwipeLightbox({
+            dataSource,
+            pswpModule: () => Promise.resolve(PhotoSwipe),
+            bgOpacity: 0.95,
+            showHideAnimationType: 'zoom'
+        });
+        lightbox.init();
+        lightbox.loadAndOpen(startIndex);
+    } catch (e) {
+        console.warn('PhotoSwipe fallback:', e);
+        window.open(photos[startIndex], '_blank');
+    }
 }
 
 // ==========================================================================

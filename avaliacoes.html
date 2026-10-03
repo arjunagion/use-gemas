@@ -447,8 +447,14 @@
             const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
 
             const photos = (r.photos || '').split(',').map(s => s.trim()).filter(Boolean);
+            const photosJson = JSON.stringify(photos).replace(/"/g, '&quot;');
             const photoHTML = photos.length > 0
-                ? `<div class="testimonial-photo"><img src="${escapeHTML(photos[0])}" alt="Foto da avaliação" loading="lazy"></div>`
+                ? `<div class="testimonial-photo" role="button" tabindex="0"
+                        onclick='openReviewPhotosLightbox(${photosJson}, 0)'
+                        onkeydown='if(event.key==="Enter"||event.key===" "){event.preventDefault();openReviewPhotosLightbox(${photosJson}, 0);}'>
+                        <img src="${escapeHTML(photos[0])}" alt="Foto da avaliação" loading="lazy">
+                        ${photos.length > 1 ? `<span class="testimonial-photo-count">${photos.length} fotos</span>` : ''}
+                   </div>`
                 : '';
 
             const name = (r.customer_name || 'Cliente').trim();

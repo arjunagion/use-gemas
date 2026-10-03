@@ -5128,6 +5128,7 @@
                     <div class="review-admin-actions">
                         ${f.status !== 'read' ? `<button class="action-btn" onclick="setFeedbackStatus('${f.id}', 'read')">✓ Marcar como lido</button>` : ''}
                         ${f.status !== 'archived' ? `<button class="action-btn warn" onclick="setFeedbackStatus('${f.id}', 'archived')">📦 Arquivar</button>` : ''}
+                        ${f.status === 'archived' ? `<button class="action-btn" onclick="setFeedbackStatus('${f.id}', 'new')">↩️ Restaurar</button>` : ''}
                         <button class="action-btn danger" onclick="confirmDeleteFeedback('${f.id}')">🗑️ Excluir</button>
                     </div>
                 </div>
@@ -5140,9 +5141,21 @@
                 .update({ status: newStatus })
                 .eq('id', id);
 
-            if (error) { showToast('Erro ao atualizar.', 'error'); return; }
-            await loadFeedbacks();
-            showToast('Feedback atualizado!');
+            if (error) {
+                showToast('Erro ao atualizar.', 'error');
+                return;
+            }
+
+            // Atualiza localmente (evita reload + flicker)
+            const f = allFeedbacks.find(x => x.id === id);
+            if (f) f.status = newStatus;
+
+            // Re-renderiza
+            renderFeedbacks();
+            updateFeedbackBadge();
+
+            const labels = { read: 'lido', archived: 'arquivado', new: 'novo' };
+            showToast(`Feedback ${labels[newStatus] || 'atualizado'}!`);
         }
 
         function confirmDeleteFeedback(id) {

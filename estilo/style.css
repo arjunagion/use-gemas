@@ -2100,6 +2100,26 @@ a {
     overflow: hidden;
     background: var(--bg-elevated);
     margin-bottom: 0.4rem;
+    cursor: zoom-in;
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.testimonial-photo:hover {
+    transform: scale(1.02);
+}
+
+.testimonial-photo-count {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 .testimonial-photo img {
@@ -4545,6 +4565,7 @@ a {
 
 .feedback-modal-content {
     max-width: 520px;
+    padding: 2rem 1.8rem;
 }
 
 .feedback-modal-header {
@@ -4583,7 +4604,7 @@ a {
 .feedback-form select,
 .feedback-form textarea {
     width: 100%;
-    background: var(--bg-elevated);
+    background: var(--bg-card);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
     padding: 0.75rem 1rem;
