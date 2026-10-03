@@ -6,7 +6,7 @@
 //   - Navegação HTML: network-first com fallback pro cache
 // ==========================================================================
 
-const CACHE_NAME = 'ug-admin-v4';
+const CACHE_NAME = 'ug-admin-v5';
 const CACHE_URLS = [
     '/admin.html',
     '/estilo/midias/favicon.png',
@@ -131,11 +131,10 @@ self.addEventListener('fetch', (event) => {
             return;
         }
 
-        // Assets estáticos: cache-first
+        // Assets estáticos: network-first com fallback pro cache
         event.respondWith(
-            caches.match(request).then((cached) => {
-                if (cached) return cached;
-                return fetch(request).then((response) => {
+            fetch(request)
+                .then((response) => {
                     if (response.status === 200) {
                         const clone = response.clone();
                         caches.open(CACHE_NAME).then((cache) => {
@@ -145,8 +144,11 @@ self.addEventListener('fetch', (event) => {
                         });
                     }
                     return response;
-                });
-            })
+                })
+                .catch(() => {
+                    // Offline: serve do cache
+                    return caches.match(request);
+                })
         );
     }
 });

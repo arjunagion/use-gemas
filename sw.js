@@ -7,7 +7,7 @@
 // - Imagens de produto: cache-first com limite de 50 imagens
 // ==========================================================================
 
-const CACHE_VERSION = 'ug-cliente-v1';
+const CACHE_VERSION = 'ug-cliente-v2';
 const CACHE_STATIC = `${CACHE_VERSION}-static`;
 const CACHE_IMAGES = `${CACHE_VERSION}-images`;
 
@@ -21,8 +21,6 @@ const PRECACHE_URLS = [
     '/reset-password.html',
     '/politica-troca.html',
     '/politica-privacidade.html',
-    '/estilo/style.css',
-    '/estilo/script.js',
     '/estilo/perfil.css',
     '/estilo/paginas-legais.css',
     '/estilo/midias/favicon.png',
@@ -199,12 +197,12 @@ self.addEventListener('fetch', (event) => {
     }
 
     // ==========================================================================
-    // C) Assets locais (CSS, JS, fontes) — cache-first
+    // C — Assets locais (CSS, JS, fontes) — network-first com fallback pro cache
+    // Isso garante que mudanças sejam pegas na primeira visita após deploy.
     // ==========================================================================
     event.respondWith(
-        caches.match(request).then((cached) => {
-            if (cached) return cached;
-            return fetch(request).then((response) => {
+        fetch(request)
+            .then((response) => {
                 if (response.status === 200) {
                     const clone = response.clone();
                     caches.open(CACHE_STATIC).then((cache) => {
@@ -212,8 +210,11 @@ self.addEventListener('fetch', (event) => {
                     });
                 }
                 return response;
-            });
-        })
+            })
+            .catch(() => {
+                // Offline: serve do cache
+                return caches.match(request);
+            })
     );
 });
 
