@@ -3872,6 +3872,49 @@
                                     </div>
                                 </div>
                             </details>
+
+                            <!-- ==================== ÁREA DO CLIENTE ==================== -->
+                            <details class="content-section-details">
+                                <summary>🧑 Área do Cliente (minha-conta.html)</summary>
+
+                                <!-- Hero -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Hero</h4>
+
+                                <div class="form-group">
+                                    <label for="cfg-account-hero-badge">Badge (linha acima da saudação)</label>
+                                    <input type="text" id="cfg-account-hero-badge" maxlength="60" placeholder="Área do Cliente">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cfg-account-hero-subtitle">Subtítulo</label>
+                                    <textarea id="cfg-account-hero-subtitle" rows="2" maxlength="220" placeholder="Aqui você acompanha seus pedidos..."></textarea>
+                                </div>
+
+                                <!-- Tabs -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Tabs (navegação)</h4>
+
+                                <div id="account-tabs-editor"></div>
+
+                                <!-- Status do pedido -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Labels de status do pedido</h4>
+
+                                <div id="account-status-editor"></div>
+
+                                <!-- Timeline -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Timeline do pedido</h4>
+
+                                <div id="account-timeline-editor"></div>
+
+                                <!-- Mensagens vazias -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Mensagens de estado vazio</h4>
+
+                                <div id="account-empty-editor"></div>
+
+                                <!-- Labels de pontos -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Labels de pontos/fidelidade</h4>
+
+                                <div id="account-loyalty-editor"></div>
+                            </details>
                         </div>
 
                         <div class="config-actions">
@@ -4372,11 +4415,11 @@
 
                 showScreen('screen-admin');
 
+                await loadSettings();
                 await loadProducts();
                 await loadOrders();
                 await loadReviews();
                 await loadFeedbacks();
-                await loadSettings();
                 await loadCoupons();
                 await loadLoyaltySummary();
                 updateDashboardMetrics();
@@ -6121,11 +6164,13 @@
         }
 
         function getStatusLabel(status) {
-            const map = {
+            // Fonte da verdade: settings.account_status_labels (carregado em currentSettings)
+            const map = currentSettings?.account_status_labels || {};
+            const fallback = {
                 novo: 'Novo', pago: 'Pago', produzindo: 'Produzindo',
                 enviado: 'Enviado', cancelado: 'Cancelado'
             };
-            return map[status] || status;
+            return map[status] || fallback[status] || status;
         }
 
         function renderOrders() {
@@ -6990,7 +7035,9 @@
                 'cfg-footer-tagline': data?.footer_tagline || '',
                 'cfg-meta-title': data?.meta_title || '',
                 'cfg-meta-description': data?.meta_description || '',
-                'cfg-meta-og-image-url': data?.meta_og_image_url || ''
+                'cfg-meta-og-image-url': data?.meta_og_image_url || '',
+                'cfg-account-hero-badge': data?.account_hero_badge || '',
+                'cfg-account-hero-subtitle': data?.account_hero_subtitle || ''
             };
 
             Object.entries(fields).forEach(([id, value]) => {
@@ -7015,6 +7062,13 @@
             // Slides do carrossel
             const slides = Array.isArray(data?.carousel_slides) ? data.carousel_slides : [];
             renderCarouselSlidesEditor(slides);
+
+            // Área do Cliente — editores dinâmicos
+            renderAccountTabsEditor(Array.isArray(data?.account_tabs) ? data.account_tabs : []);
+            renderAccountStatusEditor(data?.account_status_labels || {});
+            renderAccountTimelineEditor(data?.account_timeline_labels || {});
+            renderAccountEmptyStatesEditor(data?.account_empty_states || {});
+            renderAccountLoyaltyEditor(data?.account_loyalty_labels || {});
         }
 
         async function saveSettings() {
@@ -7048,6 +7102,8 @@
             const metaTitle = (document.getElementById('cfg-meta-title')?.value || '').trim();
             const metaDescription = (document.getElementById('cfg-meta-description')?.value || '').trim();
             const metaOgImageUrl = (document.getElementById('cfg-meta-og-image-url')?.value || '').trim() || null;
+            const accountHeroBadge = (document.getElementById('cfg-account-hero-badge')?.value || '').trim();
+            const accountHeroSubtitle = (document.getElementById('cfg-account-hero-subtitle')?.value || '').trim();
 
             if (!whatsapp || whatsapp.length < 10) {
                 showToast('WhatsApp inválido (precisa de DDI + DDD + número).', 'error');
@@ -7105,6 +7161,13 @@
                 meta_title: metaTitle || null,
                 meta_description: metaDescription || null,
                 meta_og_image_url: metaOgImageUrl,
+                account_hero_badge: accountHeroBadge || null,
+                account_hero_subtitle: accountHeroSubtitle || null,
+                account_tabs: accountTabsState,
+                account_status_labels: accountStatusState,
+                account_timeline_labels: accountTimelineState,
+                account_empty_states: accountEmptyStatesState,
+                account_loyalty_labels: accountLoyaltyState,
                 updated_at: new Date().toISOString()
             };
 
@@ -7124,6 +7187,186 @@
 
             currentSettings = { ...currentSettings, ...payload };
             showToast('Configurações salvas!');
+        }
+
+        // ==========================================================================
+        // ÁREA DO CLIENTE (Fase 10.2)
+        // ==========================================================================
+        let accountTabsState = [];
+        let accountStatusState = {};
+        let accountTimelineState = {};
+        let accountEmptyStatesState = {};
+        let accountLoyaltyState = {};
+
+        // ---------- Tabs ----------
+        function renderAccountTabsEditor(tabs) {
+            accountTabsState = Array.isArray(tabs) ? JSON.parse(JSON.stringify(tabs)) : [];
+            const container = document.getElementById('account-tabs-editor');
+            if (!container) return;
+
+            container.innerHTML = accountTabsState.map((tab, i) => `
+                <div class="form-row-2" style="align-items: end; margin-bottom: 0.8rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Label da tab ${i + 1}</label>
+                        <input type="text" value="${escapeHTML(tab.label || '')}" maxlength="30"
+                            oninput="updateAccountTab(${i}, 'label', this.value)">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Emoji/ícone</label>
+                        <input type="text" value="${escapeHTML(tab.icon || '')}" maxlength="4"
+                            oninput="updateAccountTab(${i}, 'icon', this.value)">
+                    </div>
+                </div>
+            `).join('');
+
+            if (accountTabsState.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">Nenhuma tab configurada.</p>';
+            }
+        }
+
+        function updateAccountTab(index, key, value) {
+            if (!accountTabsState[index]) return;
+            accountTabsState[index][key] = value;
+        }
+
+        // ---------- Status do pedido ----------
+        function renderAccountStatusEditor(labels) {
+            accountStatusState = { ...labels };
+
+            const keys = [
+                { id: 'novo', default: 'Novo' },
+                { id: 'pago', default: 'Pago' },
+                { id: 'produzindo', default: 'Produzindo' },
+                { id: 'enviado', default: 'Enviado' },
+                { id: 'cancelado', default: 'Cancelado' }
+            ];
+
+            const container = document.getElementById('account-status-editor');
+            if (!container) return;
+
+            container.innerHTML = keys.map(k => `
+                <div class="form-group">
+                    <label for="cfg-status-${k.id}">Status: <code style="color: var(--gold);">${k.id}</code></label>
+                    <input type="text" id="cfg-status-${k.id}" maxlength="30"
+                        value="${escapeHTML(labels[k.id] || k.default)}"
+                        oninput="updateAccountStatus('${k.id}', this.value)">
+                </div>
+            `).join('');
+        }
+
+        function updateAccountStatus(key, value) {
+            accountStatusState[key] = value;
+        }
+
+        // ---------- Timeline ----------
+        function renderAccountTimelineEditor(data) {
+            accountTimelineState = {
+                steps: Array.isArray(data?.steps) ? JSON.parse(JSON.stringify(data.steps)) : [],
+                canceled: data?.canceled || 'Cancelado'
+            };
+
+            const container = document.getElementById('account-timeline-editor');
+            if (!container) return;
+
+            const stepsHTML = accountTimelineState.steps.map((step, i) => `
+                <div class="form-group">
+                    <label>Passo ${i + 1}</label>
+                    <input type="text" value="${escapeHTML(step.label || '')}" maxlength="30"
+                        oninput="updateAccountTimelineStep(${i}, this.value)">
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                ${stepsHTML}
+                <div class="form-group">
+                    <label>Label do estado cancelado</label>
+                    <input type="text" value="${escapeHTML(accountTimelineState.canceled)}" maxlength="30"
+                        oninput="updateAccountTimelineCanceled(this.value)">
+                </div>
+            `;
+        }
+
+        function updateAccountTimelineStep(index, value) {
+            if (!accountTimelineState.steps[index]) return;
+            accountTimelineState.steps[index].label = value;
+        }
+
+        function updateAccountTimelineCanceled(value) {
+            accountTimelineState.canceled = value;
+        }
+
+        // ---------- Mensagens vazias ----------
+        function renderAccountEmptyStatesEditor(data) {
+            accountEmptyStatesState = JSON.parse(JSON.stringify(data || {}));
+
+            const contexts = [
+                { id: 'orders', label: 'Meus Pedidos — vazio' },
+                { id: 'favorites', label: 'Favoritos — vazio' },
+                { id: 'coupons', label: 'Cupons disponíveis — vazio' },
+                { id: 'coupon_history', label: 'Histórico de cupons — vazio' },
+                { id: 'points_extrato', label: 'Extrato de pontos — vazio' },
+                { id: 'loading_error', label: 'Erro de carregamento' }
+            ];
+
+            const container = document.getElementById('account-empty-editor');
+            if (!container) return;
+
+            container.innerHTML = contexts.map(ctx => {
+                const state = accountEmptyStatesState[ctx.id] || { title: '', subtitle: '' };
+                return `
+                    <div class="carousel-slide-editor">
+                        <div class="carousel-slide-editor-header">
+                            <h4>${escapeHTML(ctx.label)}</h4>
+                        </div>
+                        <div class="form-group">
+                            <label>Título</label>
+                            <input type="text" value="${escapeHTML(state.title || '')}" maxlength="80"
+                                oninput="updateAccountEmpty('${ctx.id}', 'title', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Subtítulo</label>
+                            <input type="text" value="${escapeHTML(state.subtitle || '')}" maxlength="140"
+                                oninput="updateAccountEmpty('${ctx.id}', 'subtitle', this.value)">
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateAccountEmpty(contextId, key, value) {
+            if (!accountEmptyStatesState[contextId]) accountEmptyStatesState[contextId] = { title: '', subtitle: '' };
+            accountEmptyStatesState[contextId][key] = value;
+        }
+
+        // ---------- Labels de pontos ----------
+        function renderAccountLoyaltyEditor(data) {
+            accountLoyaltyState = { ...(data || {}) };
+
+            const fields = [
+                { key: 'balance_label', label: 'Label do saldo' },
+                { key: 'value_suffix', label: 'Sufixo do valor (ex: "pontos")' },
+                { key: 'brl_prefix', label: 'Prefixo do valor em R$ (ex: "= ")' },
+                { key: 'brl_suffix', label: 'Sufixo do valor em R$ (ex: " de desconto")' },
+                { key: 'btn_redeem', label: 'Texto do botão "Trocar"' },
+                { key: 'btn_no_points', label: 'Texto do botão quando sem pontos' },
+                { key: 'modal_title', label: 'Título do modal de troca' },
+                { key: 'modal_subtitle', label: 'Subtítulo do modal de troca' }
+            ];
+
+            const container = document.getElementById('account-loyalty-editor');
+            if (!container) return;
+
+            container.innerHTML = fields.map(f => `
+                <div class="form-group">
+                    <label>${escapeHTML(f.label)}</label>
+                    <input type="text" value="${escapeHTML(accountLoyaltyState[f.key] || '')}" maxlength="80"
+                        oninput="updateAccountLoyalty('${f.key}', this.value)">
+                </div>
+            `).join('');
+        }
+
+        function updateAccountLoyalty(key, value) {
+            accountLoyaltyState[key] = value;
         }
 
         // ==========================================================================
