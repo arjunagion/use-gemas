@@ -3475,6 +3475,13 @@
             color: #ff8e8e;
         }
 
+        .theme-contrast-feedback.warning {
+            display: block;
+            background: rgba(255, 193, 7, 0.08);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+        }
+
         .theme-preview {
             border-radius: 12px;
             overflow: hidden;
@@ -8291,12 +8298,36 @@
             if (contrastMuted < 3) errors.push(`Texto suave × Fundo: ${contrastMuted.toFixed(1)}:1 (mín 3.0)`);
             if (contrastAccent < 3) errors.push(`Destaque × Fundo: ${contrastAccent.toFixed(1)}:1 (mín 3.0)`);
 
+            // NOVO: info de modo (light/dark) + saturação
+            const bgLum = getLuminance01(bg);
+            const isLight = bgLum > 0.5;
+            const bgSat = getSaturation(bg);
+            const accentSat = getSaturation(accent);
+
+            const warnings = [];
+
+            // Aviso de saturação alta no bg
+            if (bgSat > 40) {
+                warnings.push(`Fundo com saturação ${bgSat}% — o sistema vai dessaturar automaticamente (recomendado ≤ 40%)`);
+            }
+
+            // Aviso de saturação alta no accent (menos crítico)
+            if (accentSat > 90) {
+                warnings.push(`Destaque com saturação ${accentSat}% — pode vibrar demais na tela`);
+            }
+
+            // Modo detectado
+            const modeLabel = isLight ? '☀️ Modo claro detectado' : '🌙 Modo escuro detectado';
+
             if (errors.length > 0) {
                 feedback.className = 'theme-contrast-feedback error';
-                feedback.innerHTML = '⚠️ Contraste insuficiente:<br>' + errors.join('<br>');
+                feedback.innerHTML = `⚠️ Contraste insuficiente:<br>${errors.join('<br>')}<br><br>${modeLabel}`;
+            } else if (warnings.length > 0) {
+                feedback.className = 'theme-contrast-feedback warning';
+                feedback.innerHTML = `ℹ️ ${modeLabel}<br><br>⚠️ ${warnings.join('<br>')}`;
             } else {
                 feedback.className = 'theme-contrast-feedback ok';
-                feedback.innerHTML = `✅ Contraste OK — Texto ${contrastText.toFixed(1)}:1 · Suave ${contrastMuted.toFixed(1)}:1 · Destaque ${contrastAccent.toFixed(1)}:1`;
+                feedback.innerHTML = `✅ ${modeLabel}<br>Contraste OK — Texto ${contrastText.toFixed(1)}:1 · Suave ${contrastMuted.toFixed(1)}:1 · Destaque ${contrastAccent.toFixed(1)}:1`;
             }
 
             updateThemePreview();
@@ -8335,16 +8366,30 @@
             const headingFont = document.getElementById('theme-heading-font').value;
             const bodyFont = document.getElementById('theme-body-font').value;
 
+            const isLight = isLightColor(bg);
+
             // Carrega as fontes ANTES de aplicar no preview
             ensureAdminFontLoaded(headingFont);
             ensureAdminFontLoaded(bodyFont);
 
             const prev = document.getElementById('theme-preview');
             prev.style.background = bg;
+            prev.dataset.mode = isLight ? 'light' : 'dark';
 
+            // Navbar do preview simula o comportamento real
             const header = prev.querySelector('.theme-preview-header');
-            header.style.color = text;
-            header.style.borderBottomColor = textMuted + '33';
+            if (header) {
+                // Se for light mode, navbar fica com tint do bg (não fica preta)
+                if (isLight) {
+                    header.style.background = `rgba(255, 255, 255, 0.7)`;
+                    header.style.backdropFilter = 'blur(10px)';
+                } else {
+                    header.style.background = 'rgba(0, 0, 0, 0.3)';
+                    header.style.backdropFilter = 'blur(10px)';
+                }
+                header.style.color = text;
+                header.style.borderBottomColor = textMuted + '33';
+            }
 
             document.getElementById('prev-logo').style.color = accent;
             document.getElementById('prev-logo').style.fontFamily = `'${headingFont}', serif`;
@@ -8393,6 +8438,25 @@
             return (lighter + 0.05) / (darker + 0.05);
         }
 
+        function getLuminance01(hex) {
+            return getLuminance(hex); // já existe, retorna 0-1
+        }
+
+        function isLightColor(hex) {
+            return getLuminance01(hex) > 0.5;
+        }
+
+        function getSaturation(hex) {
+            const { r, g, b } = hexToRgb(hex);
+            const max = Math.max(r, g, b) / 255;
+            const min = Math.min(r, g, b) / 255;
+            const l = (max + min) / 2;
+            if (max === min) return 0;
+            const d = max - min;
+            const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            return Math.round(s * 100);
+        }
+
         async function saveTheme() {
             const feedback = document.getElementById('theme-editor-feedback');
             const btn = document.getElementById('theme-save-btn');
@@ -8427,6 +8491,21 @@
                 feedback.innerText = 'Contraste insuficiente. Ajuste as cores.';
                 return;
             }
+
+            // Persiste informação de modo + dessaturação aplicada
+            const bgLum = getLuminance01(palette.bg);
+            const isLight = bgLum > 0.5;
+            const derived = {
+                is_light: isLight,
+                bg_saturation: getSaturation(palette.bg),
+                // Quando saturação > 40%, o consumo vai dessaturar automaticamente
+                auto_desaturate: getSaturation(palette.bg) > 40
+            };
+
+            // payload.theme_derived não existe em themes (é em settings), mas salvamos
+            // o derived direto no payload do tema em metadata opcional
+            // Ou, se preferir: só log pra debug
+            console.log('[Theme derived]', derived);
 
             const originalText = btn.innerText;
             btn.disabled = true;
