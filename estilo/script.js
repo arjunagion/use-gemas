@@ -710,32 +710,36 @@ function applyThemeToRoot(theme) {
     const p = theme.palette;
     const t = theme.typography || {};
 
-    // Paleta — só sobrescreve se valor existe
+    // ============================================================
+    // Accent (dourado)
+    // ============================================================
     if (p.accent) {
         root.style.setProperty('--gold', p.accent);
         root.style.setProperty('--gold-hover', lighten(p.accent, 15));
-        root.style.setProperty('--border', hexToRgba(p.accent, 0.15));
-        root.style.setProperty('--border-hover', hexToRgba(p.accent, 0.4));
     }
 
+    // ============================================================
+    // Fundos (nomes REAIS do CSS)
+    // ============================================================
     if (p.bg) {
-        root.style.setProperty('--bg', p.bg);
         root.style.setProperty('--bg-main', p.bg);
         root.style.setProperty('--bg-card', lighten(p.bg, 5));
-        root.style.setProperty('--bg-panel', lighten(p.bg, 3));
-        root.style.setProperty('--bg-hover', lighten(p.bg, 8));
+        root.style.setProperty('--bg-elevated', lighten(p.bg, 3));
     }
 
+    // ============================================================
+    // Textos (nomes REAIS do CSS)
+    // ============================================================
     if (p.text) {
-        root.style.setProperty('--text', p.text);
+        root.style.setProperty('--text-primary', p.text);
     }
-
     if (p.text_muted) {
         root.style.setProperty('--text-muted', p.text_muted);
-        root.style.setProperty('--text-dim', hexToRgba(p.text_muted, 0.6));
     }
 
+    // ============================================================
     // Tipografia
+    // ============================================================
     if (t.heading_font && ALLOWED_HEADING_FONTS.includes(t.heading_font)) {
         root.style.setProperty('--font-title', `'${t.heading_font}', serif`);
         ensureGoogleFont(t.heading_font, ['400', '600', '700']);
