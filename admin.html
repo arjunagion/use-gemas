@@ -3915,6 +3915,54 @@
 
                                 <div id="account-loyalty-editor"></div>
                             </details>
+
+                            <!-- ==================== REFINOS ==================== -->
+                            <details class="content-section-details">
+                                <summary>⚙️ Refinos (menu, estoque, banner, fidelidade)</summary>
+
+                                <!-- Menu -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Menu de navegação</h4>
+
+                                <div id="nav-links-editor"></div>
+
+                                <button type="button" class="gallery-btn" onclick="addNavLink()" style="margin-top: 0.6rem;">
+                                    + Adicionar link
+                                </button>
+
+                                <!-- Estoque baixo -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.5rem 0 0.6rem;">Threshold de estoque baixo</h4>
+
+                                <div class="form-group">
+                                    <label for="cfg-low-stock-threshold">Mostrar "últimas X unidades" a partir de</label>
+                                    <input type="number" id="cfg-low-stock-threshold" min="0" max="50" placeholder="2">
+                                    <small class="config-hint">Usado em <code>admin.html</code> (badge amarelo) e <code>produto.html</code> ("⚡ Últimas X unidades").</small>
+                                </div>
+
+                                <!-- Banner de frete grátis -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.5rem 0 0.6rem;">Banner de frete grátis</h4>
+
+                                <div class="form-check">
+                                    <input type="checkbox" id="cfg-free-shipping-banner-enabled">
+                                    <label for="cfg-free-shipping-banner-enabled">Ativar banner "faltam X pro frete grátis"</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cfg-free-shipping-banner-message">Mensagem do banner</label>
+                                    <input type="text" id="cfg-free-shipping-banner-message" maxlength="120" placeholder="Faltam {falta} pro frete grátis ✨">
+                                    <small class="config-hint">Use <code>{falta}</code> pra inserir o valor que falta (ex: R$ 87,00).</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cfg-free-shipping-banner-threshold-pct">Mostrar quando faltar até (% do mínimo)</label>
+                                    <input type="number" id="cfg-free-shipping-banner-threshold-pct" min="1" max="100" placeholder="30">
+                                    <small class="config-hint">Ex: 30 = mostra o banner quando o subtotal já atingiu 70% do mínimo pro frete grátis.</small>
+                                </div>
+
+                                <!-- Fidelidade -->
+                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.5rem 0 0.6rem;">Regras de fidelidade</h4>
+
+                                <div id="loyalty-rules-editor"></div>
+                            </details>
                         </div>
 
                         <div class="config-actions">
@@ -7037,7 +7085,10 @@
                 'cfg-meta-description': data?.meta_description || '',
                 'cfg-meta-og-image-url': data?.meta_og_image_url || '',
                 'cfg-account-hero-badge': data?.account_hero_badge || '',
-                'cfg-account-hero-subtitle': data?.account_hero_subtitle || ''
+                'cfg-account-hero-subtitle': data?.account_hero_subtitle || '',
+                'cfg-low-stock-threshold': data?.low_stock_threshold != null ? String(data.low_stock_threshold) : '2',
+                'cfg-free-shipping-banner-message': data?.free_shipping_banner_message || 'Faltam {falta} pro frete grátis ✨',
+                'cfg-free-shipping-banner-threshold-pct': data?.free_shipping_banner_threshold_pct != null ? String(data.free_shipping_banner_threshold_pct) : '30'
             };
 
             Object.entries(fields).forEach(([id, value]) => {
@@ -7069,6 +7120,13 @@
             renderAccountTimelineEditor(data?.account_timeline_labels || {});
             renderAccountEmptyStatesEditor(data?.account_empty_states || {});
             renderAccountLoyaltyEditor(data?.account_loyalty_labels || {});
+
+            // Fase 10.3 — Refinos
+            const fsbEl = document.getElementById('cfg-free-shipping-banner-enabled');
+            if (fsbEl) fsbEl.checked = !!data?.free_shipping_banner_enabled;
+
+            renderNavLinksEditor(Array.isArray(data?.nav_links) ? data.nav_links : []);
+            renderLoyaltyRulesEditor(data?.loyalty_rules || {});
         }
 
         async function saveSettings() {
@@ -7104,6 +7162,12 @@
             const metaOgImageUrl = (document.getElementById('cfg-meta-og-image-url')?.value || '').trim() || null;
             const accountHeroBadge = (document.getElementById('cfg-account-hero-badge')?.value || '').trim();
             const accountHeroSubtitle = (document.getElementById('cfg-account-hero-subtitle')?.value || '').trim();
+
+            // Fase 10.3 — Refinos
+            const lowStockThreshold = parseInt(document.getElementById('cfg-low-stock-threshold')?.value || '2', 10) || 2;
+            const freeShippingBannerEnabled = document.getElementById('cfg-free-shipping-banner-enabled')?.checked || false;
+            const freeShippingBannerMessage = (document.getElementById('cfg-free-shipping-banner-message')?.value || '').trim();
+            const freeShippingBannerThresholdPct = parseInt(document.getElementById('cfg-free-shipping-banner-threshold-pct')?.value || '30', 10) || 30;
 
             if (!whatsapp || whatsapp.length < 10) {
                 showToast('WhatsApp inválido (precisa de DDI + DDD + número).', 'error');
@@ -7168,6 +7232,12 @@
                 account_timeline_labels: accountTimelineState,
                 account_empty_states: accountEmptyStatesState,
                 account_loyalty_labels: accountLoyaltyState,
+                nav_links: navLinksState,
+                low_stock_threshold: lowStockThreshold,
+                free_shipping_banner_enabled: freeShippingBannerEnabled,
+                free_shipping_banner_message: freeShippingBannerMessage || null,
+                free_shipping_banner_threshold_pct: freeShippingBannerThresholdPct,
+                loyalty_rules: loyaltyRulesState,
                 updated_at: new Date().toISOString()
             };
 
@@ -7367,6 +7437,111 @@
 
         function updateAccountLoyalty(key, value) {
             accountLoyaltyState[key] = value;
+        }
+
+        // ==========================================================================
+        // REFINOS (Fase 10.3)
+        // ==========================================================================
+        let navLinksState = [];
+        let loyaltyRulesState = {};
+
+        // ---------- Menu ----------
+        function renderNavLinksEditor(links) {
+            navLinksState = Array.isArray(links) ? JSON.parse(JSON.stringify(links)) : [];
+            const container = document.getElementById('nav-links-editor');
+            if (!container) return;
+
+            if (navLinksState.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">Nenhum link configurado.</p>';
+                return;
+            }
+
+            container.innerHTML = navLinksState.map((link, i) => `
+                <div class="carousel-slide-editor">
+                    <div class="carousel-slide-editor-header">
+                        <h4>Link ${i + 1}</h4>
+                        <button type="button" class="carousel-slide-editor-remove" onclick="removeNavLink(${i})">
+                            🗑️ Remover
+                        </button>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Label</label>
+                            <input type="text" value="${escapeHTML(link.label || '')}" maxlength="30"
+                                oninput="updateNavLink(${i}, 'label', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Link (href)</label>
+                            <input type="text" value="${escapeHTML(link.href || '')}" maxlength="120"
+                                oninput="updateNavLink(${i}, 'href', this.value)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>onclick (avançado — opcional)</label>
+                        <input type="text" value="${escapeHTML(link.onclick || '')}" maxlength="200"
+                            placeholder="Ex: setTimeout(function(){ goToSlide(2); }, 250);"
+                            oninput="updateNavLink(${i}, 'onclick', this.value)">
+                        <small class="config-hint">Deixe vazio se não precisar. Aceita código JS (rodado ao clicar).</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateNavLink(index, key, value) {
+            if (!navLinksState[index]) return;
+            if (key === 'onclick' && !value.trim()) {
+                delete navLinksState[index].onclick;
+            } else {
+                navLinksState[index][key] = value;
+            }
+        }
+
+        function removeNavLink(index) {
+            if (!confirm(`Remover o link ${index + 1}?`)) return;
+            navLinksState.splice(index, 1);
+            renderNavLinksEditor(navLinksState);
+        }
+
+        function addNavLink() {
+            if (navLinksState.length >= 10) {
+                showToast('Máximo de 10 links.', 'error');
+                return;
+            }
+            navLinksState.push({ label: '', href: '#' });
+            renderNavLinksEditor(navLinksState);
+        }
+
+        // ---------- Regras de fidelidade ----------
+        function renderLoyaltyRulesEditor(rules) {
+            loyaltyRulesState = { ...(rules || {}) };
+
+            const fields = [
+                { key: 'points_per_brl', label: 'Pontos ganhos por R$ 1 gasto', type: 'number', min: 1, max: 100 },
+                { key: 'points_per_real_redeem', label: 'Pontos necessários pra R$ 1 de desconto', type: 'number', min: 1, max: 10000 },
+                { key: 'min_redeem_points', label: 'Pontos mínimos pra resgatar', type: 'number', min: 1, max: 100000 },
+                { key: 'points_expiry_months', label: 'Validade dos pontos (meses)', type: 'number', min: 1, max: 120 },
+                { key: 'redeem_multiple', label: 'Múltiplo do resgate (ex: 100 = só resgata múltiplos de 100)', type: 'number', min: 1, max: 10000 }
+            ];
+
+            const container = document.getElementById('loyalty-rules-editor');
+            if (!container) return;
+
+            container.innerHTML = fields.map(f => `
+                <div class="form-group">
+                    <label>${escapeHTML(f.label)}</label>
+                    <input type="number" value="${escapeHTML(String(loyaltyRulesState[f.key] ?? ''))}"
+                        min="${f.min}" max="${f.max}"
+                        oninput="updateLoyaltyRule('${f.key}', this.value)">
+                </div>
+            `).join('');
+        }
+
+        function updateLoyaltyRule(key, value) {
+            const num = parseInt(value, 10);
+            if (isNaN(num)) return;
+            loyaltyRulesState[key] = num;
         }
 
         // ==========================================================================
