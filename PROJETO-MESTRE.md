@@ -1,7 +1,7 @@
-# PROJETO-MESTRE — Use Gemas (v3.4)
+# PROJETO-MESTRE — Use Gemas (v3.5)
 
-> **Documento de referência oficial — v3.4** — estado do código em **02/10/2026**.
-> **Novo em v3.4:** Fase 10.4 completa — Central de Reviews dinâmica (home + `/avaliacoes.html` + admin com curadoria híbrida `featured`) + reciclagem do Web3Forms em canal de feedback privado (nova tabela `feedbacks` + aba no admin).
+> **Documento de referência oficial — v3.5** — estado do código em **02/10/2026**.
+> **Novo em v3.5:** Fase 10.1 — Conteúdo do Site configurável. Hero, Carrossel (4 slides), Rodapé e Meta Tags/SEO podem ser editados pelo admin sem tocar em código. Novo bucket `site-media` pra upload de vídeos e imagens.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -29,6 +29,7 @@
 17. [Observações técnicas da varredura](#17-observações-técnicas-da-varredura)
 18. [Sistema de Frete — Dual Mode](#18-sistema-de-frete--dual-mode)
 19. [Central de Reviews (Fase 10.4)](#19-central-de-reviews-fase-104)
+20. [Conteúdo do Site configurável](#20-conteúdo-do-site-configurável)
 
 ---
 
@@ -76,7 +77,7 @@
 | `supabase/migrations/001_schema.sql` | 2.113 | Schema completo do banco (13 tabelas, 40 policies, 24 funções, 14 triggers, 42 índices, 5 crons) |
 | `supabase/functions/` (10 `index.ts`) | 2.828 | Código real das 10 Edge Functions |
 | `supabase/docs/secrets.md` | 134 | Nomes dos secrets (sem valores) |
-| `supabase/docs/storage.md` | 101 | Buckets + policies |
+| `supabase/docs/storage.md` | 101 | Buckets + policies (agora **3 buckets** — adicionado `site-media`) |
 | `supabase/docs/auth.md` | 91 | Providers + redirect URLs |
 | `supabase/README.md` | — | Guia da pasta (fonte da verdade = Supabase) |
 | `supabase/config.toml` | — | Config opcional do Supabase CLI (comentado) |
@@ -120,6 +121,7 @@
 | Cupom no carrinho | Aplicar/remover cupom, desconto no total | ✅ |
 | Favoritos (wishlist) | Drawer + "adicionar todos ao carrinho" | ✅ |
 | Página de produto | Galeria (PhotoSwipe), reviews, relacionados, compartilhar | ✅ |
+| **Conteúdo do Site configurável (Fase 10.1)** | Hero + Carrossel (4 slides) + Rodapé + Meta Tags editáveis no admin | ✅ |
 | **Central de Reviews (Fase 10.4)** | Grid dinâmico na home (6 reviews: `featured` + fallback recentes) | ✅ |
 | **Página pública `/avaliacoes.html`** | Listagem completa + filtros (5★, com foto, produto) + paginação | ✅ |
 | **Curadoria híbrida de reviews** | Admin marca reviews como "destacada"; fallback automático pras recentes | ✅ |
@@ -236,7 +238,7 @@
 | `coupons` | id, code (UNIQUE), description, discount_type, discount_value, min_purchase, max_discount, free_shipping, first_purchase_only, usage_limit_total, usage_limit_per_user, times_used, customer_email, starts_at, expires_at, active, created_by, email_notified_at |
 | `coupon_usages` | id, coupon_id (FK), order_id, user_id, customer_email, discount_applied, used_at |
 | `loyalty_points` | id, user_id, customer_email, order_id, coupon_id, points, type (CHECK earned/redeemed/expired/adjustment), description, expires_at, created_by, created_at, expired_at |
-| `settings` | id (single row), whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_* (sandbox, token, sender) |
+| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, **hero_tagline, hero_title, hero_subtitle, hero_cta_text, hero_cta_link, hero_video_url, carousel_title, carousel_slides (JSONB), footer_brand, footer_tagline, meta_title, meta_description, meta_og_image_url** |
 | `profiles` | id (PK, = auth.users.id), name, email, phone, created_at |
 | `favorites` | id, user_id, product_name, product_ref, product_price, created_at, UNIQUE(user_id, product_ref) |
 | `checkout_data` | user_id (PK), name, doc, phone, cep, street, number, complement, neighborhood, city, state, notes, updated_at |
@@ -299,12 +301,15 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | `feed-xml` | 253 | Feed XML Google Merchant Center |
 | `sitemap-products` | 68 | Sitemap dinâmico de produtos |
 
-### 4.8 Storage (2 buckets, 9 policies)
+### 4.8 Storage (3 buckets, 13 policies)
 
 | Bucket | Visibilidade | MIME | Policies |
 |---|---|---|---|
 | `review-images` | Público | jpeg/png/webp (15 MB) | 5 |
 | `product-images` | Público | jpeg/png/webp/mp4/mov (30 MB) | 4 |
+| `site-media` | Público | mp4/mov/webm/jpeg/png/webp (50 MB) | 4 |
+
+**Total: 3 buckets, 13 policies.**
 
 ### 4.9 Secrets (6 custom)
 
@@ -338,12 +343,13 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Triggers | 14 |
 | Índices | 44 |
 | Cron jobs | 5 |
-| Storage buckets | 2 |
+| Storage buckets | **3** |
+| Storage policies | **13** |
 | Secrets custom | 6 |
 | RPCs | 10 |
-| Linhas de código (frontend) | ~29k |
+| Linhas de código (frontend) | ~29,5k |
 | Linhas de código (backend: schema + functions) | ~4,9k |
-| **Progresso geral** | **~99,5%** |
+| **Progresso geral** | **~99,7%** |
 
 ---
 
@@ -562,6 +568,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 12 | Notificações virtuais calculadas (não todas reais) | Gravar todas no banco | Reduz writes + sempre atualizadas |
 | 13 | Frete dual-mode regionalizado (ME + fixo por região) | Só ME / só fixo global | Continuidade do serviço se o ME cair + proteção contra prejuízo em CEPs distantes |
 | 14 | Central de Reviews híbrida (featured + fallback) | Só automático / só manual | Controle quando quer + nunca fica vazio. Reaproveita infra de reviews existente. |
+| 15 | Conteúdo do Site configurável (admin) | Hardcode no HTML | Zero manutenção pra trocar Hero/Carrossel/Rodapé/SEO. Fallback pros valores originais se `settings` falhar. |
 
 ---
 
@@ -594,6 +601,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **02/out/2026** — Fase 10.1 completa: Conteúdo do Site configurável (Hero + Carrossel + Rodapé + Meta Tags via admin) + novo bucket `site-media` + fallback hardcoded + seção 20 do doc mestre.
 - **02/out/2026** — Fase 10.4 completa: Central de Reviews dinâmica (home + `/avaliacoes.html` + admin com curadoria híbrida `featured`) + reciclagem do Web3Forms em canal de feedback privado (nova tabela `feedbacks` + aba no admin) + cards clicáveis com PhotoSwipe + JSON-LD AggregateRating.
 - **02/out/2026** — Frete dual-mode regionalizado (toggle ME/fixo + 5 faixas + fallback + botão "Calcular outro CEP").
 - **02/out/2026** — Frete dual-mode completo: toggle ME/fixo no admin + 5 faixas regionais (SP/Sudeste/Sul/Centro-Norte-NE) + fallback automático + botão "Calcular outro CEP" + refatoração do helper `getRegionKeyFromCep()` pra usar 2 dígitos do CEP.
@@ -953,4 +961,84 @@ Nova tabela `feedbacks` (canal privado, separado de reviews):
 
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.4.*
+## 20. Conteúdo do Site configurável (Fase 10.1)
+
+### 20.1 Objetivo
+
+Tirar textos, mídias e meta tags do HTML. Todo o conteúdo "editorial" do site
+agora é editável pelo admin em **Configurações → Conteúdo do Site**, sem
+precisar mexer em código, commitar ou fazer deploy.
+
+### 20.2 O que virou configurável
+
+| Bloco | Campos | Tipo |
+|---|---|---|
+| **Hero** | tagline, título (H1), subtítulo, texto do CTA, link do CTA, vídeo | 5 flat + 1 vídeo (Storage) |
+| **Carrossel** | título da seção + 4 slides | 1 flat + 1 JSONB (array de `{badge, title, text, video_url}`) |
+| **Rodapé** | brand, tagline | 2 flat |
+| **Meta Tags / SEO** | title, description, og:image | 3 flat (og:image via Storage) |
+
+### 20.3 Modelo de dados
+
+Colunas novas em `settings`:
+
+**Hero:**
+- `hero_tagline` TEXT
+- `hero_title` TEXT
+- `hero_subtitle` TEXT
+- `hero_cta_text` TEXT
+- `hero_cta_link` TEXT
+- `hero_video_url` TEXT (path no bucket `site-media`)
+
+**Carrossel:**
+- `carousel_title` TEXT
+- `carousel_slides` JSONB (array de objetos: `{badge, title, text, video_url}`)
+
+**Rodapé:**
+- `footer_brand` TEXT
+- `footer_tagline` TEXT
+
+**Meta Tags:**
+- `meta_title` TEXT
+- `meta_description` TEXT
+- `meta_og_image_url` TEXT (path no bucket `site-media`)
+
+### 20.4 Novo bucket `site-media`
+
+- **Visibilidade:** público (leitura)
+- **Limite:** 50 MB por arquivo
+- **MIME types:** mp4, mov, webm, jpeg, png, webp
+- **Policies:** 4 (read público, upload/update/delete só admin)
+- **Estrutura sugerida:** `hero/`, `carousel/slide-N/`, `meta/`
+
+### 20.5 Fallback (resiliência)
+
+Se `loadSiteSettings()` falhar, o `index.html` **mantém o conteúdo hardcoded**
+original como fallback. Isso garante que o site **nunca fica vazio** por causa
+de erro de rede ou query.
+
+### 20.6 Admin — UI
+
+Nova seção **Configurações → Conteúdo do Site** com 4 subseções colapsáveis:
+- 🏠 Hero (com upload de vídeo)
+- 🎠 Carrossel (editor dinâmico de slides + upload de vídeo por slide)
+- 🦶 Rodapé
+- 🔍 Meta Tags / SEO (com upload de og:image)
+
+### 20.7 Arquivos envolvidos
+
+- `settings` (banco) — 13 colunas novas
+- `site-media` (Storage) — bucket novo + 4 policies
+- `admin.html` — UI de edição + upload + editor do carrossel
+- `index.html` — IDs nos elementos-chave (Hero, Carrossel, Rodapé)
+- `estilo/script.js` — `loadSiteSettings()` (13 chaves) + `applyHeroSettings()`, `applyCarouselSettings()`, `applyFooterSettings()`, `applyMetaSettings()`, `getSiteMediaUrl()`
+
+### 20.8 O que NÃO migra (decisão)
+
+- **JSON-LD Schema.org** — permanece hardcoded (estruturado, muda raramente)
+- **og:url / canonical** — fixos por página
+- **Vídeos de produtos** — continuam no bucket `product-images` (contexto diferente)
+
+---
+
+*Fim do documento. Gerado por varredura do repositório local em 02/10/2026 — v3.5.*
