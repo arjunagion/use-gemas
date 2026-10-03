@@ -415,6 +415,44 @@
 
             accountSettings = data || {};
             applyAccountSettings();
+            applyThemeAccentOnly();
+        }
+
+        // Aplica accent do tema ativo na área do cliente (mantém cream mode dos fundos)
+        async function applyThemeAccentOnly() {
+            try {
+                const { data: settingsRow } = await supabaseClient
+                    .from('settings')
+                    .select('active_theme_id')
+                    .eq('id', 1)
+                    .maybeSingle();
+
+                if (!settingsRow?.active_theme_id) return;
+
+                const { data: theme } = await supabaseClient
+                    .from('themes')
+                    .select('palette, typography, context')
+                    .eq('id', settingsRow.active_theme_id)
+                    .maybeSingle();
+
+                if (!theme) return;
+
+                // Aplica só o accent (não sobrescreve bg/text da cream mode)
+                const root = document.documentElement;
+                const accent = theme.palette?.accent;
+                if (accent) {
+                    root.style.setProperty('--gold', accent);
+                    root.style.setProperty('--cr-gold', accent);
+                }
+
+                // Aplica tipografia (fontes continuam compartilhadas)
+                const heading = theme.typography?.heading_font;
+                const body = theme.typography?.body_font;
+                if (heading) root.style.setProperty('--font-title', `'${heading}', serif`);
+                if (body) root.style.setProperty('--font-body', `'${body}', sans-serif`);
+            } catch (e) {
+                console.warn('[AccountTheme] Erro:', e);
+            }
         }
 
         function applyAccountSettings() {

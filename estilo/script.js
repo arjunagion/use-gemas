@@ -635,6 +635,166 @@ function updateFreeShippingBanner(subtotal) {
     hideGolden();
 }
 
+// ==========================================================================
+// TEMA DINÂMICO (Fase 10.5 — Biblioteca de Temas)
+// ==========================================================================
+
+function hexToRgb(hex) {
+    const h = hex.replace('#', '');
+    return {
+        r: parseInt(h.substr(0, 2), 16),
+        g: parseInt(h.substr(2, 2), 16),
+        b: parseInt(h.substr(4, 2), 16)
+    };
+}
+
+function rgbToHex(r, g, b) {
+    const toHex = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+    return '#' + toHex(r) + toHex(g) + toHex(b);
+}
+
+function lighten(hex, percent) {
+    // percent: 0-100. Positivo = clareia, negativo = escurece
+    const { r, g, b } = hexToRgb(hex);
+    const factor = percent / 100;
+    if (factor > 0) {
+        return rgbToHex(
+            r + (255 - r) * factor,
+            g + (255 - g) * factor,
+            b + (255 - b) * factor
+        );
+    } else {
+        const f = 1 + factor;
+        return rgbToHex(r * f, g * f, b * f);
+    }
+}
+
+const ALLOWED_HEADING_FONTS = ['Cormorant Garamond', 'Playfair Display', 'Libre Baskerville', 'DM Serif Display', 'Italiana', 'Lora'];
+const ALLOWED_BODY_FONTS = ['Montserrat', 'Inter', 'DM Sans', 'Work Sans', 'Lato', 'Jost'];
+
+let loadedFonts = new Set();
+
+async function loadActiveTheme() {
+    try {
+        // 1. Busca o active_theme_id do settings
+        const { data: settingsRow, error: settingsErr } = await supabaseClient
+            .from('settings')
+            .select('active_theme_id')
+            .eq('id', 1)
+            .maybeSingle();
+
+        if (settingsErr) throw settingsErr;
+
+        const themeId = settingsRow?.active_theme_id;
+        if (!themeId) return null;
+
+        // 2. Busca o tema
+        const { data: theme, error: themeErr } = await supabaseClient
+            .from('themes')
+            .select('id, name, palette, typography, context')
+            .eq('id', themeId)
+            .maybeSingle();
+
+        if (themeErr) throw themeErr;
+        return theme || null;
+    } catch (e) {
+        console.warn('[Theme] Erro ao carregar tema:', e);
+        return null;
+    }
+}
+
+function applyThemeToRoot(theme) {
+    if (!theme || !theme.palette) return;
+
+    const root = document.documentElement;
+    const p = theme.palette;
+    const t = theme.typography || {};
+
+    // Paleta — só sobrescreve se valor existe
+    if (p.accent) {
+        root.style.setProperty('--gold', p.accent);
+        root.style.setProperty('--gold-hover', lighten(p.accent, 15));
+        root.style.setProperty('--border', hexToRgba(p.accent, 0.15));
+        root.style.setProperty('--border-hover', hexToRgba(p.accent, 0.4));
+    }
+
+    if (p.bg) {
+        root.style.setProperty('--bg', p.bg);
+        root.style.setProperty('--bg-main', p.bg);
+        root.style.setProperty('--bg-card', lighten(p.bg, 5));
+        root.style.setProperty('--bg-panel', lighten(p.bg, 3));
+        root.style.setProperty('--bg-hover', lighten(p.bg, 8));
+    }
+
+    if (p.text) {
+        root.style.setProperty('--text', p.text);
+    }
+
+    if (p.text_muted) {
+        root.style.setProperty('--text-muted', p.text_muted);
+        root.style.setProperty('--text-dim', hexToRgba(p.text_muted, 0.6));
+    }
+
+    // Tipografia
+    if (t.heading_font && ALLOWED_HEADING_FONTS.includes(t.heading_font)) {
+        root.style.setProperty('--font-title', `'${t.heading_font}', serif`);
+        ensureGoogleFont(t.heading_font, ['400', '600', '700']);
+    }
+
+    if (t.body_font && ALLOWED_BODY_FONTS.includes(t.body_font)) {
+        root.style.setProperty('--font-body', `'${t.body_font}', sans-serif`);
+        ensureGoogleFont(t.body_font, ['300', '400', '500', '600', '700']);
+    }
+}
+
+function hexToRgba(hex, alpha) {
+    const { r, g, b } = hexToRgb(hex);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function ensureGoogleFont(fontName, weights) {
+    if (loadedFonts.has(fontName)) return;
+    loadedFonts.add(fontName);
+
+    // Se já tem Cormorant/Montserrat carregado via link estático, não precisa recarregar
+    if (fontName === 'Cormorant Garamond' || fontName === 'Montserrat') return;
+
+    const family = fontName.replace(/ /g, '+');
+    const weightStr = weights.join(';');
+    const url = `https://fonts.googleapis.com/css2?family=${family}:wght@${weightStr}&display=swap`;
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = url;
+    document.head.appendChild(link);
+}
+
+async function loadAndApplyTheme() {
+    const theme = await loadActiveTheme();
+    if (theme) {
+        applyThemeToRoot(theme);
+        window.__useGemasTheme = theme;
+        try {
+            localStorage.setItem('gemas_active_theme', JSON.stringify(theme));
+        } catch (e) { /* ignora */ }
+    } else {
+        try { localStorage.removeItem('gemas_active_theme'); } catch (e) {}
+    }
+}
+
+// Aplica tema cacheado sincronamente (evita FOUC)
+(function applyCachedThemeEarly() {
+    try {
+        const cached = localStorage.getItem('gemas_active_theme');
+        if (cached) {
+            const theme = JSON.parse(cached);
+            if (typeof applyThemeToRoot === 'function') {
+                applyThemeToRoot(theme);
+            }
+        }
+    } catch (e) { /* ignora */ }
+})();
+
 function applyHeroSettings() {
     const s = siteSettings || {};
 
@@ -5403,6 +5563,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyCarouselSettings();
     applyFooterSettings();
     applyMetaSettings();
+    loadAndApplyTheme();
     applyNavLinks();
 
     // Recalcula subtotal atual e atualiza banner de frete grátis
