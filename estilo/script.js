@@ -91,7 +91,20 @@ let siteSettings = {
     shipping_fixed_sp: 0,
     shipping_fixed_sudeste: 0,
     shipping_fixed_sul: 0,
-    shipping_fixed_centro_norte_ne: 0
+    shipping_fixed_centro_norte_ne: 0,
+    hero_tagline: null,
+    hero_title: null,
+    hero_subtitle: null,
+    hero_cta_text: null,
+    hero_cta_link: null,
+    hero_video_url: null,
+    carousel_title: null,
+    carousel_slides: [],
+    footer_brand: null,
+    footer_tagline: null,
+    meta_title: null,
+    meta_description: null,
+    meta_og_image_url: null
 };
 
 // ==========================================================================
@@ -505,11 +518,145 @@ async function loadSiteSettings() {
                 shipping_fixed_sp: Number(data.shipping_fixed_sp) || 0,
                 shipping_fixed_sudeste: Number(data.shipping_fixed_sudeste) || 0,
                 shipping_fixed_sul: Number(data.shipping_fixed_sul) || 0,
-                shipping_fixed_centro_norte_ne: Number(data.shipping_fixed_centro_norte_ne) || 0
+                shipping_fixed_centro_norte_ne: Number(data.shipping_fixed_centro_norte_ne) || 0,
+                hero_tagline: data.hero_tagline || null,
+                hero_title: data.hero_title || null,
+                hero_subtitle: data.hero_subtitle || null,
+                hero_cta_text: data.hero_cta_text || null,
+                hero_cta_link: data.hero_cta_link || null,
+                hero_video_url: data.hero_video_url || null,
+                carousel_title: data.carousel_title || null,
+                carousel_slides: Array.isArray(data.carousel_slides) ? data.carousel_slides : [],
+                footer_brand: data.footer_brand || null,
+                footer_tagline: data.footer_tagline || null,
+                meta_title: data.meta_title || null,
+                meta_description: data.meta_description || null,
+                meta_og_image_url: data.meta_og_image_url || null
             };
             whatsappNumber = siteSettings.whatsapp;
         }
     } catch (e) {
+    }
+}
+
+function getSiteMediaUrl(path) {
+    if (!path) return '';
+    if (/^https?:\/\//i.test(path)) return path;
+    // Path relativo (ex: "hero/1234-abc.mp4") → URL pública do bucket site-media
+    return `${SUPABASE_URL}/storage/v1/object/public/site-media/${path}`;
+}
+
+function applyHeroSettings() {
+    const s = siteSettings || {};
+
+    const tagEl = document.getElementById('hero-tagline');
+    if (tagEl && s.hero_tagline) tagEl.textContent = s.hero_tagline;
+
+    const titleEl = document.getElementById('hero-title');
+    if (titleEl && s.hero_title) titleEl.textContent = s.hero_title;
+
+    const subEl = document.getElementById('hero-subtitle');
+    if (subEl && s.hero_subtitle) subEl.textContent = s.hero_subtitle;
+
+    const ctaEl = document.getElementById('hero-cta');
+    if (ctaEl) {
+        if (s.hero_cta_text) ctaEl.textContent = s.hero_cta_text;
+        if (s.hero_cta_link) ctaEl.setAttribute('href', s.hero_cta_link);
+    }
+
+    if (s.hero_video_url) {
+        const videoEl = document.getElementById('hero-video');
+        if (videoEl) videoEl.src = getSiteMediaUrl(s.hero_video_url);
+    }
+}
+
+function applyCarouselSettings() {
+    const s = siteSettings || {};
+    const slides = Array.isArray(s.carousel_slides) ? s.carousel_slides : [];
+
+    // Título da seção
+    const titleEl = document.getElementById('carousel-title');
+    if (titleEl && s.carousel_title) titleEl.textContent = s.carousel_title;
+
+    // Se não tem slides configurados, esconde a seção inteira
+    if (slides.length === 0) {
+        const section = document.getElementById('experiencia');
+        if (section) section.style.display = 'none';
+        return;
+    }
+
+    // Renderiza slides
+    const track = document.getElementById('carousel-track');
+    if (track) {
+        track.innerHTML = slides.map((slide, i) => `
+            <div class="carousel-slide ${i === 0 ? 'active' : ''}">
+                <div class="slide-media">
+                    ${slide.video_url
+                        ? `<video src="${escapeHTML(getSiteMediaUrl(slide.video_url))}" muted loop playsinline preload="metadata" aria-hidden="true"></video>`
+                        : '<div class="media-placeholder-empty"></div>'}
+                </div>
+                <div class="slide-content">
+                    ${slide.badge ? `<span class="slide-badge">${escapeHTML(slide.badge)}</span>` : ''}
+                    <h3>${escapeHTML(slide.title || '')}</h3>
+                    <p>${slide.text || ''}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Renderiza dots
+    const dots = document.getElementById('carousel-dots');
+    if (dots) {
+        dots.innerHTML = slides.map((_, i) =>
+            `<span class="dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})" role="button" tabindex="0" aria-label="Ir para slide ${i + 1}"></span>`
+        ).join('');
+    }
+
+    // Reinicia o estado do carrossel
+    if (typeof resetCarouselState === 'function') {
+        resetCarouselState();
+    }
+}
+
+function applyFooterSettings() {
+    const s = siteSettings || {};
+
+    const brandEl = document.getElementById('footer-brand');
+    if (brandEl && s.footer_brand) brandEl.textContent = s.footer_brand;
+
+    const tagEl = document.getElementById('footer-tagline');
+    if (tagEl && s.footer_tagline) tagEl.textContent = s.footer_tagline;
+}
+
+function applyMetaSettings() {
+    const s = siteSettings || {};
+
+    if (s.meta_title) {
+        document.title = s.meta_title;
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', s.meta_title);
+        const twTitle = document.querySelector('meta[name="twitter:title"]');
+        if (twTitle) twTitle.setAttribute('content', s.meta_title);
+    }
+
+    if (s.meta_description) {
+        const descEl = document.querySelector('meta[name="description"]');
+        if (descEl) descEl.setAttribute('content', s.meta_description);
+
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', s.meta_description);
+
+        const twDesc = document.querySelector('meta[name="twitter:description"]');
+        if (twDesc) twDesc.setAttribute('content', s.meta_description);
+    }
+
+    if (s.meta_og_image_url) {
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        const twImage = document.querySelector('meta[name="twitter:image"]');
+        const absoluteUrl = getSiteMediaUrl(s.meta_og_image_url);
+
+        if (ogImage) ogImage.setAttribute('content', absoluteUrl);
+        if (twImage) twImage.setAttribute('content', absoluteUrl);
     }
 }
 
@@ -865,6 +1012,12 @@ function stopAutoSlide() {
 }
 
 function resetAutoSlide() { stopAutoSlide(); startAutoSlide(); }
+
+function resetCarouselState() {
+    currentSlide = 0;
+    showSlide(0);
+    resetAutoSlide();
+}
 
 // ==========================================================================
 // Carrinho — Drawer
@@ -5153,6 +5306,10 @@ async function markAllNotificationsAsRead() {
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     await loadSiteSettings();
+    applyHeroSettings();
+    applyCarouselSettings();
+    applyFooterSettings();
+    applyMetaSettings();
     renderBanner();
     updateDynamicLinks();
 
