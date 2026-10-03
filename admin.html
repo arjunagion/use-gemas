@@ -3140,6 +3140,116 @@
         .region-freight-block .form-row-2 {
             margin-top: 0.8rem;
         }
+
+        /* ==========================================================================
+           CONTEÚDO DO SITE (Fase 10.1)
+           ========================================================================== */
+        .content-section-details {
+            margin-top: 1rem;
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+        }
+
+        .content-section-details summary {
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 0.3px;
+            padding: 0.3rem 0;
+            list-style: none;
+        }
+
+        .content-section-details summary::-webkit-details-marker { display: none; }
+
+        .content-section-details summary::before {
+            content: '▸ ';
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .content-section-details[open] summary::before { transform: rotate(90deg); }
+
+        .content-section-details .form-group { margin-top: 1rem; }
+
+        .site-media-uploader {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 0.4rem;
+        }
+
+        .site-media-preview {
+            margin-bottom: 0.8rem;
+            text-align: center;
+        }
+
+        .site-media-preview img,
+        .site-media-preview video {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .site-media-preview .empty-hint {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            font-style: italic;
+            padding: 1rem;
+        }
+
+        .site-media-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Editor de slides do carrossel */
+        .carousel-slide-editor {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+
+        .carousel-slide-editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .carousel-slide-editor-header h4 {
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            color: var(--gold);
+        }
+
+        .carousel-slide-editor-remove {
+            background: transparent;
+            border: 1px solid rgba(255, 85, 85, 0.3);
+            color: var(--danger);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .carousel-slide-editor-remove:hover {
+            background: rgba(255, 85, 85, 0.1);
+            border-color: var(--danger);
+        }
     </style>
 </head>
 
@@ -3640,6 +3750,128 @@
                                 <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra
                                     promoções e avisos rápidos.</small>
                             </div>
+                        </div>
+
+                        <!-- ==================== CONTEÚDO DO SITE ==================== -->
+                        <div class="config-block">
+                            <h3 class="config-block-title">Conteúdo do Site</h3>
+                            <p class="config-hint" style="margin-bottom: 1rem;">
+                                Edite os textos, mídias e meta tags que aparecem no site. As mudanças aplicam após salvar.
+                            </p>
+
+                            <!-- Hero -->
+                            <details class="content-section-details" open>
+                                <summary>🏠 Hero (topo da home)</summary>
+
+                                <div class="form-group">
+                                    <label for="cfg-hero-tagline">Tagline (linha acima do título)</label>
+                                    <input type="text" id="cfg-hero-tagline" maxlength="80" placeholder="Microcrochê & Pedras Naturais">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cfg-hero-title">Título principal (H1)</label>
+                                    <input type="text" id="cfg-hero-title" maxlength="120" placeholder="A sua vida brilha como um cristal">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cfg-hero-subtitle">Subtítulo</label>
+                                    <textarea id="cfg-hero-subtitle" rows="3" maxlength="300" placeholder="Joias artesanais em microcristais..."></textarea>
+                                </div>
+
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label for="cfg-hero-cta-text">Texto do botão</label>
+                                        <input type="text" id="cfg-hero-cta-text" maxlength="40" placeholder="Conheça a Coleção">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cfg-hero-cta-link">Link do botão</label>
+                                        <input type="text" id="cfg-hero-cta-link" maxlength="120" placeholder="#colecao">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Vídeo do hero (opcional)</label>
+                                    <div class="site-media-uploader" data-target="cfg-hero-video-url">
+                                        <div class="site-media-preview" id="preview-hero-video"></div>
+                                        <div class="site-media-actions">
+                                            <input type="file" id="upload-hero-video" accept="video/mp4,video/quicktime,video/webm" hidden>
+                                            <button type="button" class="gallery-btn" onclick="document.getElementById('upload-hero-video').click()">
+                                                📹 Escolher vídeo
+                                            </button>
+                                            <button type="button" class="gallery-btn" onclick="clearSiteMedia('cfg-hero-video-url', 'preview-hero-video')">
+                                                ✕ Remover
+                                            </button>
+                                        </div>
+                                        <input type="hidden" id="cfg-hero-video-url">
+                                        <small class="config-hint">MP4, MOV ou WebM · máx 50MB</small>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <!-- Carrossel -->
+                            <details class="content-section-details">
+                                <summary>🎠 Carrossel (Nossa Essência & Cuidados)</summary>
+
+                                <div class="form-group">
+                                    <label for="cfg-carousel-title">Título da seção</label>
+                                    <input type="text" id="cfg-carousel-title" maxlength="80" placeholder="Nossa Essência & Cuidados">
+                                </div>
+
+                                <div id="carousel-slides-editor"></div>
+
+                                <button type="button" class="gallery-btn" id="btn-add-carousel-slide" onclick="addCarouselSlide()">
+                                    + Adicionar slide
+                                </button>
+                            </details>
+
+                            <!-- Rodapé -->
+                            <details class="content-section-details">
+                                <summary>🦶 Rodapé</summary>
+
+                                <div class="form-group">
+                                    <label for="cfg-footer-brand">Nome da marca</label>
+                                    <input type="text" id="cfg-footer-brand" maxlength="40" placeholder="USE GEMAS">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cfg-footer-tagline">Tagline</label>
+                                    <input type="text" id="cfg-footer-tagline" maxlength="80" placeholder="Arte viva em pedras e microcristais.">
+                                </div>
+                            </details>
+
+                            <!-- Meta Tags / SEO -->
+                            <details class="content-section-details">
+                                <summary>🔍 Meta Tags / SEO</summary>
+
+                                <div class="form-group">
+                                    <label for="cfg-meta-title">Title (aba do navegador + Google)</label>
+                                    <input type="text" id="cfg-meta-title" maxlength="80" placeholder="Use Gemas | Joias Artesanais e Pedras Naturais">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cfg-meta-description">Meta description (Google)</label>
+                                    <textarea id="cfg-meta-description" rows="2" maxlength="180" placeholder="Joias artesanais em microcrochê e pedras naturais..."></textarea>
+                                    <small class="config-hint">Ideal: 150-160 caracteres.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Imagem Open Graph (og:image — compartilhamento em WhatsApp/Instagram)</label>
+                                    <div class="site-media-uploader" data-target="cfg-meta-og-image-url">
+                                        <div class="site-media-preview" id="preview-og-image"></div>
+                                        <div class="site-media-actions">
+                                            <input type="file" id="upload-og-image" accept="image/jpeg,image/png,image/webp" hidden>
+                                            <button type="button" class="gallery-btn" onclick="document.getElementById('upload-og-image').click()">
+                                                🖼️ Escolher imagem
+                                            </button>
+                                            <button type="button" class="gallery-btn" onclick="clearSiteMedia('cfg-meta-og-image-url', 'preview-og-image')">
+                                                ✕ Remover
+                                            </button>
+                                        </div>
+                                        <input type="hidden" id="cfg-meta-og-image-url">
+                                        <small class="config-hint">1200×630px · JPG/PNG/WebP</small>
+                                    </div>
+                                </div>
+                            </details>
                         </div>
 
                         <div class="config-actions">
@@ -6746,7 +6978,19 @@
                 'cfg-shipping-fixed-sp': data?.shipping_fixed_sp != null ? Number(data.shipping_fixed_sp).toFixed(2).replace('.', ',') : '0,00',
                 'cfg-shipping-fixed-sudeste': data?.shipping_fixed_sudeste != null ? Number(data.shipping_fixed_sudeste).toFixed(2).replace('.', ',') : '0,00',
                 'cfg-shipping-fixed-sul': data?.shipping_fixed_sul != null ? Number(data.shipping_fixed_sul).toFixed(2).replace('.', ',') : '0,00',
-                'cfg-shipping-fixed-centro-norte-ne': data?.shipping_fixed_centro_norte_ne != null ? Number(data.shipping_fixed_centro_norte_ne).toFixed(2).replace('.', ',') : '0,00'
+                'cfg-shipping-fixed-centro-norte-ne': data?.shipping_fixed_centro_norte_ne != null ? Number(data.shipping_fixed_centro_norte_ne).toFixed(2).replace('.', ',') : '0,00',
+                'cfg-hero-tagline': data?.hero_tagline || '',
+                'cfg-hero-title': data?.hero_title || '',
+                'cfg-hero-subtitle': data?.hero_subtitle || '',
+                'cfg-hero-cta-text': data?.hero_cta_text || '',
+                'cfg-hero-cta-link': data?.hero_cta_link || '',
+                'cfg-hero-video-url': data?.hero_video_url || '',
+                'cfg-carousel-title': data?.carousel_title || '',
+                'cfg-footer-brand': data?.footer_brand || '',
+                'cfg-footer-tagline': data?.footer_tagline || '',
+                'cfg-meta-title': data?.meta_title || '',
+                'cfg-meta-description': data?.meta_description || '',
+                'cfg-meta-og-image-url': data?.meta_og_image_url || ''
             };
 
             Object.entries(fields).forEach(([id, value]) => {
@@ -6763,6 +7007,14 @@
             } else if (radioMe) {
                 radioMe.checked = true;
             }
+
+            // Preview de mídias
+            renderSiteMediaPreview('preview-hero-video', data?.hero_video_url, 'video');
+            renderSiteMediaPreview('preview-og-image', data?.meta_og_image_url, 'image');
+
+            // Slides do carrossel
+            const slides = Array.isArray(data?.carousel_slides) ? data.carousel_slides : [];
+            renderCarouselSlidesEditor(slides);
         }
 
         async function saveSettings() {
@@ -6782,6 +7034,20 @@
             const shippingFixedSudeste = normalizePrice(document.getElementById('cfg-shipping-fixed-sudeste')?.value || '0');
             const shippingFixedSul = normalizePrice(document.getElementById('cfg-shipping-fixed-sul')?.value || '0');
             const shippingFixedCentroNorteNe = normalizePrice(document.getElementById('cfg-shipping-fixed-centro-norte-ne')?.value || '0');
+
+            // Conteúdo do Site
+            const heroTagline = (document.getElementById('cfg-hero-tagline')?.value || '').trim();
+            const heroTitle = (document.getElementById('cfg-hero-title')?.value || '').trim();
+            const heroSubtitle = (document.getElementById('cfg-hero-subtitle')?.value || '').trim();
+            const heroCtaText = (document.getElementById('cfg-hero-cta-text')?.value || '').trim();
+            const heroCtaLink = (document.getElementById('cfg-hero-cta-link')?.value || '').trim();
+            const heroVideoUrl = (document.getElementById('cfg-hero-video-url')?.value || '').trim() || null;
+            const carouselTitle = (document.getElementById('cfg-carousel-title')?.value || '').trim();
+            const footerBrand = (document.getElementById('cfg-footer-brand')?.value || '').trim();
+            const footerTagline = (document.getElementById('cfg-footer-tagline')?.value || '').trim();
+            const metaTitle = (document.getElementById('cfg-meta-title')?.value || '').trim();
+            const metaDescription = (document.getElementById('cfg-meta-description')?.value || '').trim();
+            const metaOgImageUrl = (document.getElementById('cfg-meta-og-image-url')?.value || '').trim() || null;
 
             if (!whatsapp || whatsapp.length < 10) {
                 showToast('WhatsApp inválido (precisa de DDI + DDD + número).', 'error');
@@ -6826,6 +7092,19 @@
                 shipping_fixed_sudeste: isNaN(shippingFixedSudeste) ? 0 : shippingFixedSudeste,
                 shipping_fixed_sul: isNaN(shippingFixedSul) ? 0 : shippingFixedSul,
                 shipping_fixed_centro_norte_ne: isNaN(shippingFixedCentroNorteNe) ? 0 : shippingFixedCentroNorteNe,
+                hero_tagline: heroTagline || null,
+                hero_title: heroTitle || null,
+                hero_subtitle: heroSubtitle || null,
+                hero_cta_text: heroCtaText || null,
+                hero_cta_link: heroCtaLink || null,
+                hero_video_url: heroVideoUrl,
+                carousel_title: carouselTitle || null,
+                carousel_slides: carouselSlidesState,
+                footer_brand: footerBrand || null,
+                footer_tagline: footerTagline || null,
+                meta_title: metaTitle || null,
+                meta_description: metaDescription || null,
+                meta_og_image_url: metaOgImageUrl,
                 updated_at: new Date().toISOString()
             };
 
@@ -6845,6 +7124,199 @@
 
             currentSettings = { ...currentSettings, ...payload };
             showToast('Configurações salvas!');
+        }
+
+        // ==========================================================================
+        // CONTEÚDO DO SITE (Fase 10.1)
+        // ==========================================================================
+        const SITE_MEDIA_BUCKET = 'site-media';
+
+        function getSiteMediaPublicUrl(path) {
+            if (!path) return '';
+            if (/^https?:\/\//i.test(path)) return path; // já é URL completa
+            return `${SUPABASE_URL}/storage/v1/object/public/${SITE_MEDIA_BUCKET}/${path}`;
+        }
+
+        function renderSiteMediaPreview(containerId, path, type) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+
+            if (!path) {
+                el.innerHTML = '<div class="empty-hint">Nenhuma mídia cadastrada</div>';
+                return;
+            }
+
+            const url = getSiteMediaPublicUrl(path);
+            if (type === 'video') {
+                el.innerHTML = `<video src="${escapeHTML(url)}" controls muted playsinline></video>`;
+            } else {
+                el.innerHTML = `<img src="${escapeHTML(url)}" alt="Preview">`;
+            }
+        }
+
+        function clearSiteMedia(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            if (input) input.value = '';
+            renderSiteMediaPreview(previewId, null);
+        }
+
+        async function uploadSiteMedia(file, folder) {
+            const bucket = supabaseClient.storage.from(SITE_MEDIA_BUCKET);
+            const ext = (file.name.match(/\.([a-zA-Z0-9]+)$/) || [null, 'bin'])[1].toLowerCase();
+            const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+            const path = `${folder}/${name}`;
+
+            const { data, error } = await bucket.upload(path, file, {
+                cacheControl: '3600',
+                contentType: file.type,
+                upsert: false
+            });
+
+            if (error) throw error;
+            return data.path; // path relativo (ex: "hero/1234-abc.mp4")
+        }
+
+        // Upload hero video
+        document.addEventListener('DOMContentLoaded', () => {
+            const heroInput = document.getElementById('upload-hero-video');
+            if (heroInput) {
+                heroInput.addEventListener('change', async () => {
+                    const file = heroInput.files[0];
+                    if (!file) return;
+                    try {
+                        const path = await uploadSiteMedia(file, 'hero');
+                        document.getElementById('cfg-hero-video-url').value = path;
+                        renderSiteMediaPreview('preview-hero-video', path, 'video');
+                        showToast('Vídeo carregado! Salve as configurações.');
+                    } catch (e) {
+                        console.error(e);
+                        showToast('Erro ao enviar vídeo.', 'error');
+                    }
+                    heroInput.value = '';
+                });
+            }
+
+            const ogInput = document.getElementById('upload-og-image');
+            if (ogInput) {
+                ogInput.addEventListener('change', async () => {
+                    const file = ogInput.files[0];
+                    if (!file) return;
+                    try {
+                        const path = await uploadSiteMedia(file, 'meta');
+                        document.getElementById('cfg-meta-og-image-url').value = path;
+                        renderSiteMediaPreview('preview-og-image', path, 'image');
+                        showToast('Imagem carregada! Salve as configurações.');
+                    } catch (e) {
+                        console.error(e);
+                        showToast('Erro ao enviar imagem.', 'error');
+                    }
+                    ogInput.value = '';
+                });
+            }
+        });
+
+        // ==========================================================================
+        // EDITOR DO CARROSSEL
+        // ==========================================================================
+        let carouselSlidesState = []; // array de { badge, title, text, video_url }
+        let carouselUploadingIndex = null;
+
+        function renderCarouselSlidesEditor(slides) {
+            carouselSlidesState = Array.isArray(slides) ? JSON.parse(JSON.stringify(slides)) : [];
+            const container = document.getElementById('carousel-slides-editor');
+            if (!container) return;
+
+            container.innerHTML = carouselSlidesState.map((slide, i) => `
+                <div class="carousel-slide-editor" data-index="${i}">
+                    <div class="carousel-slide-editor-header">
+                        <h4>Slide ${i + 1}</h4>
+                        <button type="button" class="carousel-slide-editor-remove" onclick="removeCarouselSlide(${i})">
+                            🗑️ Remover
+                        </button>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Badge (curto)</label>
+                            <input type="text" value="${escapeHTML(slide.badge || '')}" maxlength="30"
+                                oninput="updateCarouselSlide(${i}, 'badge', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Título</label>
+                            <input type="text" value="${escapeHTML(slide.title || '')}" maxlength="80"
+                                oninput="updateCarouselSlide(${i}, 'title', this.value)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Texto (aceita &lt;strong&gt; e &lt;br&gt;)</label>
+                        <textarea rows="4" maxlength="500"
+                            oninput="updateCarouselSlide(${i}, 'text', this.value)">${escapeHTML(slide.text || '')}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Vídeo (opcional)</label>
+                        <div class="site-media-uploader">
+                            <div class="site-media-preview" id="preview-slide-${i}">
+                                ${slide.video_url
+                                    ? `<video src="${escapeHTML(getSiteMediaPublicUrl(slide.video_url))}" controls muted playsinline></video>`
+                                    : '<div class="empty-hint">Sem vídeo</div>'}
+                            </div>
+                            <div class="site-media-actions">
+                                <input type="file" id="upload-slide-${i}" accept="video/mp4,video/quicktime,video/webm" hidden
+                                    onchange="uploadCarouselSlideVideo(${i}, this)">
+                                <button type="button" class="gallery-btn" onclick="document.getElementById('upload-slide-${i}').click()">
+                                    📹 Escolher vídeo
+                                </button>
+                                <button type="button" class="gallery-btn" onclick="clearCarouselSlideVideo(${i})">
+                                    ✕ Remover
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateCarouselSlide(index, key, value) {
+            if (!carouselSlidesState[index]) return;
+            carouselSlidesState[index][key] = value;
+        }
+
+        function removeCarouselSlide(index) {
+            if (!confirm(`Remover o slide ${index + 1}?`)) return;
+            carouselSlidesState.splice(index, 1);
+            renderCarouselSlidesEditor(carouselSlidesState);
+        }
+
+        function addCarouselSlide() {
+            if (carouselSlidesState.length >= 8) {
+                showToast('Máximo de 8 slides.', 'error');
+                return;
+            }
+            carouselSlidesState.push({ badge: '', title: '', text: '', video_url: null });
+            renderCarouselSlidesEditor(carouselSlidesState);
+        }
+
+        async function uploadCarouselSlideVideo(index, input) {
+            const file = input.files[0];
+            if (!file) return;
+            try {
+                const path = await uploadSiteMedia(file, `carousel/slide-${index + 1}`);
+                carouselSlidesState[index].video_url = path;
+                renderCarouselSlidesEditor(carouselSlidesState);
+                showToast('Vídeo carregado! Salve as configurações.');
+            } catch (e) {
+                console.error(e);
+                showToast('Erro ao enviar vídeo.', 'error');
+            }
+            input.value = '';
+        }
+
+        function clearCarouselSlideVideo(index) {
+            if (!carouselSlidesState[index]) return;
+            carouselSlidesState[index].video_url = null;
+            renderCarouselSlidesEditor(carouselSlidesState);
         }
 
         // ==========================================================================
