@@ -716,6 +716,8 @@ function applyThemeToRoot(theme) {
     if (p.accent) {
         root.style.setProperty('--gold', p.accent);
         root.style.setProperty('--gold-hover', lighten(p.accent, 15));
+        root.style.setProperty('--gold-dark', lighten(p.accent, -25));
+        root.style.setProperty('--cr-gold-dark', lighten(p.accent, -25));
         const { r, g, b } = hexToRgb(p.accent);
         root.style.setProperty('--gold-rgb', `${r}, ${g}, ${b}`);
     }

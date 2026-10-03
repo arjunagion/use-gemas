@@ -10,6 +10,7 @@
     --gold: #d4af37;
     --gold-hover: #f3cf55;
     --gold-rgb: 212, 175, 55;
+    --gold-dark: #aa820a;
     --font-title: 'Cormorant Garamond', serif;
     --font-body: 'Montserrat', sans-serif;
     --drawer-width: 380px;
@@ -260,8 +261,8 @@ a {
    ========================================================================== */
 .btn-primary {
     display: inline-block;
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--bg-main);
     padding: 0.9rem 2.2rem;
     border-radius: 30px;
     font-weight: 600;
@@ -275,7 +276,7 @@ a {
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 6px 20px rgba(var(--gold-rgb), 0.3);
 }
 
 .btn-block {
@@ -523,7 +524,7 @@ a {
 .btn-add-cart {
     width: 100%;
     background: transparent;
-    border: 1px solid rgba(212, 175, 55, 0.5);
+    border: 1px solid rgba(var(--gold-rgb), 0.5);
     color: var(--text-primary);
     padding: 0.7rem;
     border-radius: 6px;
@@ -565,8 +566,8 @@ a {
 }
 
 .btn-favorite:hover {
-    background: rgba(212, 175, 55, 0.3);
-    border-color: #d4af37;
+    background: rgba(var(--gold-rgb), 0.3);
+    border-color: var(--gold);
     transform: scale(1.08);
 }
 
@@ -582,10 +583,10 @@ a {
 }
 
 .btn-favorite.active {
-    background: rgba(212, 175, 55, 0.95);
-    border-color: #d4af37;
+    background: rgba(var(--gold-rgb), 0.95);
+    border-color: var(--gold);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.4);
 }
 
 .btn-favorite.active svg {
@@ -922,8 +923,8 @@ a {
     width: 100%;
     margin-top: 0.75rem;
     background: transparent;
-    border: 1px solid #d4af37;
-    color: #d4af37;
+    border: 1px solid var(--gold);
+    color: var(--gold);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     font-family: var(--font-body);
@@ -934,7 +935,7 @@ a {
 }
 
 .btn-share:hover {
-    background: rgba(212, 175, 55, 0.12);
+    background: rgba(var(--gold-rgb), 0.12);
     color: var(--gold-hover);
     border-color: var(--gold-hover);
 }
@@ -967,8 +968,8 @@ a {
 }
 
 .btn-share-card:hover {
-    background: rgba(212, 175, 55, 0.3);
-    border-color: #d4af37;
+    background: rgba(var(--gold-rgb), 0.3);
+    border-color: var(--gold);
     transform: scale(1.08);
 }
 
@@ -1512,8 +1513,8 @@ a {
 }
 
 .btn-shipping {
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--bg-main);
     border: none;
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
@@ -1527,7 +1528,7 @@ a {
 .btn-shipping:hover {
     transform: translateY(-1px);
     filter: brightness(1.1);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.3);
 }
 
 .shipping-result-info {
@@ -2274,7 +2275,7 @@ a {
 
 .btn-ghost-help {
     background: transparent;
-    border: 1px solid rgba(212, 175, 55, 0.35);
+    border: 1px solid rgba(var(--gold-rgb), 0.35);
     color: var(--gold);
     padding: 0.75rem 1rem;
     border-radius: 30px;
@@ -2394,8 +2395,8 @@ a {
 }
 
 .btn-inline-search {
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--bg-main);
     border: none;
     padding: 0.75rem 1.2rem;
     border-radius: 8px;
@@ -2607,13 +2608,13 @@ a {
 }
 
 .cookie-btn-primary {
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--bg-main);
 }
 
 .cookie-btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.35);
+    box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.35);
 }
 
 @media (max-width: 600px) {
@@ -3566,8 +3567,8 @@ a {
 
 /* Botão aplicar */
 .btn-apply-coupon {
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--bg-main);
     border: none;
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
@@ -3583,7 +3584,7 @@ a {
 .btn-apply-coupon:hover:not(:disabled) {
     transform: translateY(-1px);
     filter: brightness(1.1);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.3);
 }
 
 .btn-apply-coupon:disabled {
@@ -4013,7 +4014,7 @@ a {
 }
 
 .btn-apply-coupon-modal {
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
     color: var(--bg-main);
     border: none;
     padding: 0.75rem 1.2rem;
@@ -4030,7 +4031,7 @@ a {
 
 .btn-apply-coupon-modal:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 6px 16px rgba(var(--gold-rgb), 0.4);
     filter: brightness(1.08);
 }
 
@@ -4190,8 +4191,8 @@ a {
 }
 
 .pwa-install-btn-install {
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--bg-main);
     border: none;
     padding: 0.55rem 1.1rem;
     border-radius: 20px;
@@ -4337,8 +4338,8 @@ a {
 }
 
 .btn-calculate-shipping {
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--bg-main);
     border: none;
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
@@ -4354,7 +4355,7 @@ a {
 .btn-calculate-shipping:hover:not(:disabled) {
     transform: translateY(-1px);
     filter: brightness(1.1);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.3);
 }
 
 .btn-calculate-shipping:disabled {
@@ -4715,14 +4716,14 @@ a {
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--bg-main);
     border: none;
 }
 
 .feedback-modal-actions .btn-primary:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.3);
 }
 
 .feedback-modal-actions .btn-primary:disabled {
