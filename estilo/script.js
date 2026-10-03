@@ -716,6 +716,8 @@ function applyThemeToRoot(theme) {
     if (p.accent) {
         root.style.setProperty('--gold', p.accent);
         root.style.setProperty('--gold-hover', lighten(p.accent, 15));
+        const { r, g, b } = hexToRgb(p.accent);
+        root.style.setProperty('--gold-rgb', `${r}, ${g}, ${b}`);
     }
 
     // ============================================================
@@ -932,8 +934,8 @@ function renderBanner() {
         left: '0',
         right: '0',
         zIndex: '999',
-        background: 'linear-gradient(135deg, #d4af37 0%, #aa820a 100%)',
-        color: '#0e0e10',
+        background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)',
+        color: 'var(--bg-main)',
         textAlign: 'center',
         padding: '0.55rem 1rem',
         fontSize: '0.78rem',
