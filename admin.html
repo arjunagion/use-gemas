@@ -7769,12 +7769,14 @@
             if (newIdx < 0 || newIdx >= bannerSlidesState.length) return;
             [bannerSlidesState[idx], bannerSlidesState[newIdx]] = [bannerSlidesState[newIdx], bannerSlidesState[idx]];
             renderBannerSlidesList();
+            persistBannerSlides();
         }
 
         function toggleBannerSlideActive(idx) {
             if (!bannerSlidesState[idx]) return;
             bannerSlidesState[idx].active = !bannerSlidesState[idx].active;
             renderBannerSlidesList();
+            persistBannerSlides();
         }
 
         function confirmDeleteBannerSlide(idx) {
@@ -7783,6 +7785,27 @@
             if (!confirm(`Excluir o slide "${slide.text || slide.type}"?`)) return;
             bannerSlidesState.splice(idx, 1);
             renderBannerSlidesList();
+            persistBannerSlides();
+        }
+
+        // Persiste banner_slides direto no banco (sem depender do "Salvar Configurações")
+        async function persistBannerSlides() {
+            try {
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update({ banner_slides: bannerSlidesState, updated_at: new Date().toISOString() })
+                    .eq('id', 1);
+                if (error) {
+                    console.warn('[BannerSlides] Erro ao persistir:', error.message);
+                    showToast('Erro ao salvar slide no banco.', 'error');
+                    return false;
+                }
+                return true;
+            } catch (e) {
+                console.warn('[BannerSlides] Exceção ao persistir:', e);
+                showToast('Erro ao salvar slide no banco.', 'error');
+                return false;
+            }
         }
 
         function generateBannerId() {
@@ -8076,7 +8099,12 @@
 
             renderBannerSlidesList();
             closeBannerSlideEditor();
-            showToast(currentEditingBannerId ? 'Slide atualizado!' : 'Slide criado!');
+
+            // Persiste direto no banco (não depende do "Salvar Configurações")
+            const persisted = await persistBannerSlides();
+            if (persisted) {
+                showToast(currentEditingBannerId ? 'Slide atualizado!' : 'Slide criado!');
+            }
         }
 
         async function loadSettings() {
