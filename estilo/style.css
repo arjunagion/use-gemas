@@ -4997,10 +4997,17 @@ html.theme-light .free-shipping-banner {
     left: 0;
     right: 0;
     z-index: 999;
+    height: auto;
+    min-height: 42px;
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
     color: var(--btn-text-on-accent);
     overflow: hidden;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+/* Quando o carrossel está visível, marca no body pro CSS reagir */
+body.has-banner-carousel .navbar {
+    transition: top 0.3s ease;
 }
 
 .banner-carousel-track {

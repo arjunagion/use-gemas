@@ -736,6 +736,9 @@ function renderBannerCarousel() {
     const dots = document.getElementById('banner-carousel-dots');
     if (!carousel || !track) return;
 
+    const navbar = document.querySelector('.navbar');
+    const main = document.querySelector('main');
+
     const slides = filterActiveBannerSlides();
 
     // Se 0 ou 1 slide → não precisa rotacionar
@@ -744,6 +747,10 @@ function renderBannerCarousel() {
     if (slides.length === 0) {
         carousel.style.display = 'none';
         stopBannerRotation();
+        // Restaura navbar ao topo original
+        if (navbar) navbar.style.top = '0px';
+        if (main) main.style.paddingTop = '';
+        document.body.classList.remove('has-banner-carousel');
         return;
     }
 
@@ -777,6 +784,24 @@ function renderBannerCarousel() {
     // Reset index
     bannerCarouselState.currentIndex = 0;
     updateBannerCarouselPosition();
+
+    // Empurra navbar pra baixo do carrossel
+    document.body.classList.add('has-banner-carousel');
+    requestAnimationFrame(() => {
+        const carouselHeight = carousel.offsetHeight || 0;
+        if (navbar && carouselHeight > 0) {
+            navbar.style.top = carouselHeight + 'px';
+        }
+        // Ajusta o padding-top do <main> se ele depende de um valor fixo
+        if (main && carouselHeight > 0) {
+            const currentPT = parseFloat(getComputedStyle(main).paddingTop) || 0;
+            const navbarHeight = navbar ? navbar.offsetHeight : 0;
+            // Se o main já tem padding pro navbar (66px), soma o carrossel
+            if (currentPT > 0) {
+                main.style.paddingTop = (currentPT + carouselHeight) + 'px';
+            }
+        }
+    });
 
     // Rotação
     if (slides.length > 1) {
@@ -875,6 +900,20 @@ function setupBannerCarouselInteractions() {
             }
         }, { passive: true });
     }
+
+    // Recalcula altura em resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            const carousel = document.getElementById('banner-carousel');
+            const navbar = document.querySelector('.navbar');
+            if (carousel && carousel.style.display !== 'none' && navbar) {
+                const h = carousel.offsetHeight || 0;
+                navbar.style.top = h + 'px';
+            }
+        }, 200);
+    });
 }
 
 // ==========================================================================
