@@ -1034,7 +1034,7 @@ function renderBanner() {
         right: '0',
         zIndex: '999',
         background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%)',
-        color: '#0e0e10',  // ← FIXO (sempre escuro — garante legibilidade sobre dourado)
+        color: 'var(--btn-text-on-accent)',
         textAlign: 'center',
         padding: '0.55rem 1rem',
         fontSize: '0.78rem',
@@ -3184,7 +3184,7 @@ function updateCartUI() {
             cartShippingElement.style.color = '#51cf66';
         } else {
             cartShippingElement.innerText = formatCurrency(effectiveShipping);
-            cartShippingElement.style.color = '#d4af37';
+            cartShippingElement.style.color = 'var(--gold)';
         }
     }
 
@@ -5671,6 +5671,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadAndApplyTheme();
     applyNavLinks();
 
+    // Cria o banner dourado (site-banner) PRIMEIRO pra que updateFreeShippingBanner
+    // consiga escondê-lo imediatamente quando o dinâmico assumir (sem flash/sobreposição)
+    renderBanner();
+
     // Recalcula subtotal atual e atualiza banner de frete grátis
     const subtotalAtual = (typeof cart !== 'undefined' && Array.isArray(cart))
         ? cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0)
@@ -5686,7 +5690,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateFreeShippingBanner(subtotal);
     }, 500);
 
-    renderBanner();
     updateDynamicLinks();
 
     initCookieConsent();
