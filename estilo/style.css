@@ -84,8 +84,33 @@ a {
     -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
     padding: 1.2rem 0;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    border-bottom: 1px solid var(--border-subtle);
     transition: padding 0.3s ease, background 0.3s ease;
+}
+
+/* Modo light: navbar clara com texto escuro */
+html.theme-light .navbar {
+    background: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+html.theme-light .navbar .logo,
+html.theme-light .navbar .nav-links a,
+html.theme-light .navbar .btn-icon,
+html.theme-light .navbar .nav-bell-icon,
+html.theme-light .navbar .nav-wishlist-icon,
+html.theme-light .navbar .nav-cart-icon {
+    color: var(--text-primary);
+}
+
+/* Modo dark: navbar escura com texto claro */
+html.theme-dark .navbar .logo,
+html.theme-dark .navbar .nav-links a,
+html.theme-dark .navbar .btn-icon,
+html.theme-dark .navbar .nav-bell-icon,
+html.theme-dark .navbar .nav-wishlist-icon,
+html.theme-dark .navbar .nav-cart-icon {
+    color: var(--text-primary);
 }
 
 .nav-container {
@@ -288,6 +313,11 @@ a {
     box-shadow: 0 6px 20px rgba(var(--gold-rgb), 0.3);
 }
 
+html.theme-light .btn-primary {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
 .btn-block {
     width: 100%;
     margin-top: 0.5rem;
@@ -350,36 +380,48 @@ a {
 }
 
 .filter-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(var(--gold-rgb), 0.3);
-    color: var(--text-muted);
-    padding: 0.6rem 1.4rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
+    padding: 0.5rem 1.2rem;
+    border-radius: 30px;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
     font-weight: 500;
-    cursor: pointer;
     letter-spacing: 1px;
     text-transform: uppercase;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    min-width: max-content;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.filter-btn:hover,
-.filter-btn:active {
-    color: #f5f5f5;
-    border-color: rgba(var(--gold-rgb), 0.6);
-    background: rgba(var(--gold-rgb), 0.1);
+.filter-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
 }
 
 .filter-btn.active {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%);
-    color: var(--bg-main);
+    background: var(--gold);
     border-color: var(--gold);
+    color: var(--btn-text-on-accent);
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.25);
+}
+
+/* Modo light: garantir contraste em filtros inativos */
+html.theme-light .filter-btn {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: var(--text-primary);
+}
+
+html.theme-light .filter-btn:hover {
+    border-color: var(--gold);
+    background: rgba(var(--gold-rgb), 0.08);
+    color: var(--gold-dark);
+}
+
+html.theme-light .filter-btn.active {
+    background: var(--gold);
+    color: #ffffff;
 }
 
 .search-box {
@@ -394,14 +436,14 @@ a {
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #888;
+    color: var(--text-muted);
     pointer-events: none;
 }
 
 .search-input {
     width: 100%;
-    background: #18181c;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: var(--input-bg);
+    border: 1px solid var(--border-strong);
     color: var(--text-primary);
     padding: 0.75rem 2.6rem 0.75rem 2.75rem;
     border-radius: 24px;
@@ -417,7 +459,17 @@ a {
 }
 
 .search-input::placeholder {
-    color: #888;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+html.theme-light .search-input {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.12);
+}
+
+html.theme-light .search-input:focus {
+    background: #ffffff;
 }
 
 .search-clear {
@@ -2209,7 +2261,7 @@ a {
 .testimonial-cta .btn-outline {
     display: inline-block;
     padding: 0.85rem 2rem;
-    border: 1px solid rgba(212, 175, 55, 0.4);
+    border: 1px solid var(--gold);
     color: var(--gold);
     border-radius: 30px;
     font-size: 0.85rem;
@@ -2221,31 +2273,45 @@ a {
 }
 
 .testimonial-cta .btn-outline:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(var(--gold-rgb), 0.1);
     border-color: var(--gold);
 }
 
 .btn-outline {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     background: transparent;
-    border: 1px solid var(--gold);
+    border: 1.5px solid var(--gold);
     color: var(--gold);
-    padding: 0.95rem 2.4rem;
+    padding: 0.85rem 2rem;
     border-radius: 30px;
     font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.3s ease;
+    text-decoration: none;
+    transition: all 0.3s;
     font-family: var(--font-body);
 }
 
 .btn-outline:hover {
     background: var(--gold);
-    color: var(--bg-main);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35);
+    color: var(--btn-text-on-accent);
+    transform: translateY(-1px);
+}
+
+/* Modo light: usar accent escuro pra garantir contraste */
+html.theme-light .btn-outline {
+    border-color: var(--gold-dark);
+    color: var(--gold-dark);
+}
+
+html.theme-light .btn-outline:hover {
+    background: var(--gold-dark);
+    color: #ffffff;
 }
 
 .btn-cancel {

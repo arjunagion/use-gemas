@@ -1033,8 +1033,8 @@ function renderBanner() {
         left: '0',
         right: '0',
         zIndex: '999',
-        background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold-hover) 100%)',
-        color: 'var(--bg-main)',
+        background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%)',
+        color: '#0e0e10',  // ← FIXO (sempre escuro — garante legibilidade sobre dourado)
         textAlign: 'center',
         padding: '0.55rem 1rem',
         fontSize: '0.78rem',
