@@ -5,20 +5,23 @@
 
 :root {
     /* === CREAM MODE (miolo) === */
-    --cr-bg-main: #f7f1e8;
-    --cr-bg-card: #fdfaf4;
-    --cr-bg-elevated: #ede4d3;
-    --cr-bg-hover: #efe6d5;
-    --cr-text-primary: #2f2620;
-    --cr-text-muted: #7a6b5a;
-    --cr-text-dim: #a89987;
-    --cr-gold: #b8935a;
-    --cr-gold-hover: #966f3d;
+    --cr-bg-main: #faf9f6;
+    --cr-bg-card: #ffffff;
+    --cr-bg-elevated: #f5f3ee;
+    --cr-bg-hover: #f0eee8;
+    --cr-text-primary: #1a1610;
+    --cr-text-muted: #6b5f4a;
+    --cr-text-dim: #9a8b77;
+    --cr-gold: #d4af37;
+    --cr-gold-hover: #f3cf55;
     --cr-gold-dark: #aa820a;
-    --cr-gold-rgb: 184, 147, 90;
+    --cr-gold-rgb: 212, 175, 55;
     --cr-gold-soft: rgba(var(--cr-gold-rgb), 0.12);
     --cr-border: rgba(var(--cr-gold-rgb), 0.25);
     --cr-border-hover: rgba(var(--cr-gold-rgb), 0.5);
+    --cr-border-subtle: rgba(0, 0, 0, 0.08);
+    --cr-border-strong: rgba(0, 0, 0, 0.15);
+    --cr-shadow-color: rgba(0, 0, 0, 0.08);
 
     /* === CORES DE STATUS === */
     --cr-success: #5a8a5a;
@@ -2384,7 +2387,7 @@ button {
 }
 
 .perfil-pontos-card {
-    background: linear-gradient(135deg, #fdfaf4 0%, #f7f1e8 100%);
+    background: linear-gradient(135deg, var(--cr-bg-card) 0%, var(--cr-bg-main) 100%);
     border: 1px solid rgba(var(--cr-gold-rgb), 0.4);
     border-radius: 16px;
     padding: 1.6rem 1.8rem;
@@ -2620,7 +2623,7 @@ button {
    MODAL DE TROCA DE PONTOS
    ========================================================================== */
 .redeem-points-content {
-    background: #fdfaf4;
+    background: var(--cr-bg-card);
     border: 1px solid rgba(var(--cr-gold-rgb), 0.3);
     border-radius: 16px;
     max-width: 520px;
@@ -2692,7 +2695,7 @@ button {
 
 .redeem-points-input {
     width: 100%;
-    background: #f7f1e8;
+    background: var(--cr-bg-main);
     border: 1px solid rgba(var(--cr-gold-rgb), 0.3);
     color: var(--cr-text-primary);
     padding: 0.9rem 1rem;
