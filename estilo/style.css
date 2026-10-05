@@ -4838,3 +4838,33 @@ html.theme-light .btn-outline:hover {
 .free-shipping-banner strong {
     font-weight: 700;
 }
+
+/* ==========================================================================
+   NAVBAR SCROLLED — Modo light/dark (Fase 10.5.2)
+   ========================================================================== */
+.navbar.scrolled {
+    padding: 0.9rem 0;
+}
+
+html.theme-light .navbar.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+html.theme-light .navbar.scrolled .logo,
+html.theme-light .navbar.scrolled .nav-links a,
+html.theme-light .navbar.scrolled .btn-icon,
+html.theme-light .navbar.scrolled .nav-bell-icon,
+html.theme-light .navbar.scrolled .nav-wishlist-icon,
+html.theme-light .navbar.scrolled .nav-cart-icon {
+    color: var(--text-primary);
+}
+
+html.theme-light .navbar.scrolled .nav-links a:hover {
+    color: var(--gold-dark);
+}
+
+html.theme-dark .navbar.scrolled {
+    background: rgba(14, 14, 16, 0.95);
+}

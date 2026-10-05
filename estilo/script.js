@@ -5800,13 +5800,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const navbar = document.querySelector('.navbar');
     if (navbar) {
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.style.background = 'rgba(14, 14, 16, 0.95)';
-                navbar.style.padding = '0.9rem 0';
-            } else {
-                navbar.style.background = 'rgba(14, 14, 16, 0.85)';
-                navbar.style.padding = '1.2rem 0';
-            }
+            // Deixa o CSS controlar o visual (modo light/dark) — só alterna a classe
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
         });
     }
 
