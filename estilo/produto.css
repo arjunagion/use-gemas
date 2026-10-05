@@ -504,15 +504,27 @@
 }
 
 .review-card {
-    background: #18181c;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 14px;
     padding: 1.5rem 1.7rem;
-    transition: border-color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .review-card:hover {
-    border-color: rgba(212, 175, 55, 0.25);
+    border-color: var(--border-strong);
+    box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+html.theme-light .review-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+html.theme-light .review-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.15);
 }
 
 .review-header {
@@ -587,7 +599,7 @@
     width: 80px;
     height: 80px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
     overflow: hidden;
     background: transparent;
     padding: 0;
@@ -608,11 +620,15 @@
 }
 
 .review-response {
-    background: rgba(212, 175, 55, 0.06);
+    background: rgba(var(--gold-rgb), 0.08);
     border-left: 3px solid var(--gold);
     border-radius: 6px;
     padding: 0.85rem 1.1rem;
     margin-top: 0.9rem;
+}
+
+html.theme-light .review-response {
+    background: rgba(var(--gold-rgb), 0.12);
 }
 
 .review-response strong {
