@@ -1393,7 +1393,7 @@ button {
     border: none;
     font-size: 2.1rem;
     line-height: 1;
-    color: #a89987;
+    color: var(--cr-text-dim);
     cursor: pointer;
     padding: 0 0.15rem;
     transition: transform 0.15s ease, color 0.15s ease;
@@ -1404,7 +1404,7 @@ button {
 }
 
 .review-star.active {
-    color: #b8935a;
+    color: var(--cr-gold);
 }
 
 .review-field {
