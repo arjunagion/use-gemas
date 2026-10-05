@@ -4997,12 +4997,16 @@ html.theme-light .free-shipping-banner {
     left: 0;
     right: 0;
     z-index: 999;
-    height: auto;
-    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0 0.5rem;
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
     color: var(--btn-text-on-accent);
+    min-height: 42px;
     overflow: hidden;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: background 0.3s ease;
 }
 
 /* Quando o carrossel está visível, marca no body pro CSS reagir */
@@ -5011,10 +5015,11 @@ body.has-banner-carousel .navbar {
 }
 
 .banner-carousel-track {
-    position: relative;
+    flex: 1;
     display: flex;
-    width: 100%;
+    height: 100%;
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
 }
 
 .banner-carousel-slide {
@@ -5024,7 +5029,7 @@ body.has-banner-carousel .navbar {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 0.8rem;
     font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -5065,23 +5070,51 @@ body.has-banner-carousel .navbar {
     color: #ffffff;
 }
 
-/* Dots */
+/* Botões de navegação (prev/next) */
+.banner-carousel-nav {
+    background: rgba(0, 0, 0, 0.15);
+    border: none;
+    color: inherit;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.banner-carousel-nav:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.banner-carousel-nav:active {
+    transform: scale(0.95);
+}
+
+/* Dots sobrepostos embaixo no centro */
 .banner-carousel-dots {
+    position: absolute;
+    bottom: 4px;
+    right: 50%;
+    transform: translateX(50%);
     display: flex;
     justify-content: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0;
-    background: inherit;
-    position: relative;
+    gap: 0.3rem;
     z-index: 2;
+    pointer-events: auto;
 }
 
 .banner-carousel-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: currentColor;
-    opacity: 0.35;
+    opacity: 0.4;
     cursor: pointer;
     transition: opacity 0.25s, transform 0.25s;
     border: none;
@@ -5090,7 +5123,7 @@ body.has-banner-carousel .navbar {
 
 .banner-carousel-dot.active {
     opacity: 1;
-    transform: scale(1.3);
+    transform: scale(1.4);
 }
 
 .banner-carousel-dot:hover {
@@ -5103,9 +5136,19 @@ html.theme-light .banner-carousel.type-info .banner-carousel-slide {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
-html.theme-light .banner-carousel-dots {
-    background: var(--navbar-bg);
-    color: var(--text-primary);
+html.theme-light .banner-carousel-nav {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+html.theme-light .banner-carousel-nav:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile: esconder botões (swipe já faz o trabalho) */
+@media (max-width: 600px) {
+    .banner-carousel-nav {
+        display: none;
+    }
 }
 
 /* Mobile: sem dots em telas muito pequenas */

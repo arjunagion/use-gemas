@@ -54,7 +54,7 @@
 
     <!-- Link para o CSS -->
     <!-- ⬇️ BUMP: 56.0 → 57.0 -->
-    <link rel="stylesheet" href="estilo/style.css?v=76.0">
+    <link rel="stylesheet" href="estilo/style.css?v=77.0">
 
     <!-- PhotoSwipe CSS (galeria ampliada com zoom) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.4/dist/photoswipe.css">
@@ -209,9 +209,22 @@
 
     <!-- Banner carrossel rotativo (Fase 10.7) -->
     <div id="banner-carousel" class="banner-carousel" style="display: none;" role="region" aria-label="Avisos e promoções">
+        <button type="button" class="banner-carousel-nav prev" id="banner-carousel-prev" onclick="prevBannerSlide()" aria-label="Slide anterior">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+
         <div class="banner-carousel-track" id="banner-carousel-track">
             <!-- Preenchido via JS -->
         </div>
+
+        <button type="button" class="banner-carousel-nav next" id="banner-carousel-next" onclick="nextBannerSlideManual()" aria-label="Próximo slide">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+
         <div class="banner-carousel-dots" id="banner-carousel-dots"></div>
     </div>
 
@@ -866,7 +879,7 @@
 
     <!-- Importação do JS -->
     <!-- ⬇️ BUMP: 71.0 → 72.0 -->
-    <script src="estilo/script.js?v=98.0"></script>
+    <script src="estilo/script.js?v=99.0"></script>
 
     <!-- Toast notifications -->
     <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>

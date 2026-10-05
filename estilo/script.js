@@ -840,6 +840,19 @@ function nextBannerSlide() {
     updateBannerCarouselPosition();
 }
 
+function nextBannerSlideManual() {
+    nextBannerSlide();
+    resetBannerRotation();
+}
+
+function prevBannerSlide() {
+    const total = bannerCarouselState.slides.length;
+    if (total <= 1) return;
+    bannerCarouselState.currentIndex = (bannerCarouselState.currentIndex - 1 + total) % total;
+    updateBannerCarouselPosition();
+    resetBannerRotation();
+}
+
 function startBannerRotation() {
     stopBannerRotation();
     const config = siteSettings?.banner_config || {};
