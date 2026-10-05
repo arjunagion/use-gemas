@@ -3115,7 +3115,7 @@ function updateCartUI() {
     let subtotalPrice = 0;
 
     if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `<p style="color: #888; text-align: center; margin-top: 2rem;">Seu carrinho está vazio.</p>`;
+        cartItemsContainer.innerHTML = `<p style="color: var(--text-muted); text-align: center; margin-top: 2rem;">Seu carrinho está vazio.</p>`;
         shippingDetails = null;
         const cepInput = document.getElementById('cep-input');
         if (cepInput) cepInput.value = '';
@@ -3134,17 +3134,17 @@ function updateCartUI() {
             subtotalPrice += itemSubtotal;
 
             cartItemsContainer.innerHTML += `
-                <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 0.8rem;">
+                <div class="cart-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid var(--border-subtle); margin-bottom: 0.8rem;">
                     <div>
-                        <h4 style="font-family: var(--font-title, serif); font-size: 1.1rem; color: #f5f5f5; margin: 0;">${item.name}</h4>
-                        <small style="color: #d4af37;">REF: ${item.ref}</small>
-                        <div style="font-size: 0.85rem; color: #aaa; margin-top: 2px;">${formatCurrency(item.price)} cada</div>
+                        <h4 style="font-family: var(--font-title, serif); font-size: 1.1rem; color: var(--text-primary); margin: 0;">${item.name}</h4>
+                        <small style="color: var(--gold);">REF: ${item.ref}</small>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">${formatCurrency(item.price)} cada</div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.8rem;">
-                        <div style="display: flex; align-items: center; background: #222226; border-radius: 4px; border: 1px solid rgba(212, 175, 55, 0.3);">
-                            <button onclick="updateQuantity(${index}, -1)" style="background: none; border: none; color: #d4af37; padding: 0.2rem 0.6rem; cursor: pointer; font-size: 1rem; font-weight: bold;">-</button>
-                            <span style="color: #f5f5f5; font-size: 0.9rem; font-weight: 600; padding: 0 0.3rem;">${item.quantity}</span>
-                            <button onclick="updateQuantity(${index}, 1)" style="background: none; border: none; color: #d4af37; padding: 0.2rem 0.6rem; cursor: pointer; font-size: 1rem; font-weight: bold;">+</button>
+                        <div style="display: flex; align-items: center; background: var(--bg-elevated); border-radius: 4px; border: 1px solid var(--border-strong);">
+                            <button onclick="updateQuantity(${index}, -1)" style="background: none; border: none; color: var(--gold); padding: 0.2rem 0.6rem; cursor: pointer; font-size: 1rem; font-weight: bold;">-</button>
+                            <span style="color: var(--text-primary); font-size: 0.9rem; font-weight: 600; padding: 0 0.3rem;">${item.quantity}</span>
+                            <button onclick="updateQuantity(${index}, 1)" style="background: none; border: none; color: var(--gold); padding: 0.2rem 0.6rem; cursor: pointer; font-size: 1rem; font-weight: bold;">+</button>
                         </div>
                         <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #ff5555; cursor: pointer; font-size: 1.1rem; line-height: 1;" title="Remover item">&times;</button>
                     </div>
