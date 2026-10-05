@@ -3535,6 +3535,133 @@
             cursor: pointer;
             font-family: inherit;
         }
+
+        /* ==========================================================================
+           BANNERS ROTATIVOS (Fase 10.7)
+           ========================================================================== */
+        .config-block-inner {
+            margin-top: 1rem;
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+        }
+
+        .banner-section-title {
+            font-family: var(--font-title);
+            font-size: 1.05rem;
+            color: var(--gold);
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .banner-slides-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .banner-slide-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .banner-slide-card:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .banner-slide-card.inactive {
+            opacity: 0.5;
+        }
+
+        .banner-slide-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .banner-slide-type {
+            font-size: 0.68rem;
+            color: var(--gold);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .banner-slide-text {
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .banner-slide-conditions {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+        }
+
+        .banner-slide-actions {
+            display: flex;
+            gap: 0.3rem;
+            flex-shrink: 0;
+        }
+
+        .banner-slide-actions button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 0.4rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .banner-slide-actions button:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--text);
+        }
+
+        .banner-slide-actions button.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .banner-slide-modal-box {
+            max-width: 640px;
+        }
+
+        .banner-slide-preview {
+            padding: 1rem;
+            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+            color: #0e0e10;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .banner-slide-preview.color-success { background: linear-gradient(135deg, #51cf66 0%, #2f9e44 100%); color: #fff; }
+        .banner-slide-preview.color-warning { background: linear-gradient(135deg, #ffc107 0%, #e67700 100%); color: #1a1a1a; }
+        .banner-slide-preview.color-danger { background: linear-gradient(135deg, #ff5555 0%, #c92a2a 100%); color: #fff; }
     </style>
 </head>
 
@@ -4273,6 +4400,66 @@
                                         <button type="button" class="gallery-btn" onclick="cancelScheduledTheme()" id="theme-cancel-schedule-btn" style="display: none;">
                                             ✕ Cancelar agendamento
                                         </button>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <!-- ==================== BANNERS ROTATIVOS ==================== -->
+                            <details class="content-section-details">
+                                <summary>🎠 Banners Rotativos (carrossel topo do site)</summary>
+
+                                <p class="config-hint" style="margin: 0.8rem 0 1rem;">
+                                    Configure múltiplas mensagens que rotacionam no topo do site. Tipos dinâmicos
+                                    (frete, parcelamento) só aparecem quando aplicáveis.
+                                </p>
+
+                                <!-- Config global -->
+                                <div class="config-block-inner">
+                                    <h4 class="banner-section-title">⚙️ Configuração do carrossel</h4>
+
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label for="cfg-banner-rotation">Duração de cada slide (segundos)</label>
+                                            <input type="number" id="cfg-banner-rotation" min="2" max="30" placeholder="5">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cfg-banner-pause-hover">Pausar ao passar o mouse</label>
+                                            <select id="cfg-banner-pause-hover">
+                                                <option value="true">Sim</option>
+                                                <option value="false">Não</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label for="cfg-banner-dots">Mostrar bolinhas indicadoras</label>
+                                            <select id="cfg-banner-dots">
+                                                <option value="true">Sim</option>
+                                                <option value="false">Não</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cfg-banner-swipe">Permitir deslizar (mobile)</label>
+                                            <select id="cfg-banner-swipe">
+                                                <option value="true">Sim</option>
+                                                <option value="false">Não</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Lista de slides -->
+                                <div class="config-block-inner">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                        <h4 class="banner-section-title" style="margin: 0;">📋 Slides</h4>
+                                        <button type="button" class="btn-new-product" onclick="openBannerSlideEditor(null)">
+                                            <span>+</span> Adicionar slide
+                                        </button>
+                                    </div>
+
+                                    <div id="banner-slides-list" class="banner-slides-list">
+                                        <!-- Preenchido via JS -->
                                     </div>
                                 </div>
                             </details>
@@ -7523,6 +7710,375 @@
         // ==========================================================================
         // CONFIGURAÇÕES
         // ==========================================================================
+        // ==========================================================================
+        // BANNERS ROTATIVOS (Fase 10.7)
+        // ==========================================================================
+        let bannerSlidesState = [];
+        let bannerConfigState = {};
+        let currentEditingBannerId = null;
+
+        const BANNER_TYPES = {
+            static: { label: '📝 Texto estático', hint: 'Só uma mensagem fixa' },
+            link: { label: '🔗 Texto clicável', hint: 'Mensagem que leva a um link' },
+            dynamic_shipping: { label: '🚚 Frete dinâmico', hint: 'Só aparece quando falta pouco pro frete grátis' },
+            shipping_achieved: { label: '✨ Frete conquistado', hint: 'Só aparece quando o cliente já atingiu o mínimo' },
+            installments: { label: '💳 Parcelamento', hint: 'Mostra "Parcele em Nx sem juros"' },
+            coupon: { label: '🎟️ Cupom', hint: 'Exibe código de cupom específico' },
+            warning: { label: '⚠️ Alerta', hint: 'Mensagem colorida (info/success/warning/danger)' },
+            flash_promo: { label: '⚡ Promoção relâmpago', hint: 'Com contador regressivo' }
+        };
+
+        function renderBannerSlidesList() {
+            const container = document.getElementById('banner-slides-list');
+            if (!container) return;
+
+            if (bannerSlidesState.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-dim); font-size: 0.85rem;">Nenhum slide configurado. Clique em "+ Adicionar slide".</p>';
+                return;
+            }
+
+            container.innerHTML = bannerSlidesState.map((slide, idx) => {
+                const typeMeta = BANNER_TYPES[slide.type] || { label: slide.type };
+                const conditions = [];
+                if (slide.conditions?.min_cart_value > 0) conditions.push(`carrinho ≥ R$ ${Number(slide.conditions.min_cart_value).toFixed(2)}`);
+                if (slide.conditions?.device && slide.conditions.device !== 'all') conditions.push(slide.conditions.device);
+                if (slide.conditions?.time_start || slide.conditions?.time_end) conditions.push(`${slide.conditions.time_start || '00:00'}–${slide.conditions.time_end || '23:59'}`);
+                if (slide.conditions?.first_visit_only) conditions.push('1ª visita');
+
+                return `
+                    <div class="banner-slide-card ${slide.active ? '' : 'inactive'}">
+                        <div class="banner-slide-info">
+                            <div class="banner-slide-type">${escapeHTML(typeMeta.label)}</div>
+                            <div class="banner-slide-text">${slide.icon || ''} ${escapeHTML(slide.text || '(dinâmico)')}</div>
+                            ${conditions.length > 0 ? `<div class="banner-slide-conditions">Condições: ${escapeHTML(conditions.join(' · '))}</div>` : ''}
+                        </div>
+                        <div class="banner-slide-actions">
+                            <button type="button" onclick="moveBannerSlide(${idx}, -1)" title="Subir" ${idx === 0 ? 'disabled' : ''}>⬆</button>
+                            <button type="button" onclick="moveBannerSlide(${idx}, 1)" title="Descer" ${idx === bannerSlidesState.length - 1 ? 'disabled' : ''}>⬇</button>
+                            <button type="button" onclick="toggleBannerSlideActive(${idx})" title="${slide.active ? 'Desativar' : 'Ativar'}">${slide.active ? '👁️' : '🚫'}</button>
+                            <button type="button" onclick="openBannerSlideEditor('${slide.id}')">✏️</button>
+                            <button type="button" class="danger" onclick="confirmDeleteBannerSlide(${idx})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function moveBannerSlide(idx, delta) {
+            const newIdx = idx + delta;
+            if (newIdx < 0 || newIdx >= bannerSlidesState.length) return;
+            [bannerSlidesState[idx], bannerSlidesState[newIdx]] = [bannerSlidesState[newIdx], bannerSlidesState[idx]];
+            renderBannerSlidesList();
+        }
+
+        function toggleBannerSlideActive(idx) {
+            if (!bannerSlidesState[idx]) return;
+            bannerSlidesState[idx].active = !bannerSlidesState[idx].active;
+            renderBannerSlidesList();
+        }
+
+        function confirmDeleteBannerSlide(idx) {
+            const slide = bannerSlidesState[idx];
+            if (!slide) return;
+            if (!confirm(`Excluir o slide "${slide.text || slide.type}"?`)) return;
+            bannerSlidesState.splice(idx, 1);
+            renderBannerSlidesList();
+        }
+
+        function generateBannerId() {
+            return 'b-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+        }
+
+        function openBannerSlideEditor(slideId) {
+            const modal = document.getElementById('banner-slide-modal');
+            const title = document.getElementById('banner-slide-title');
+            const feedback = document.getElementById('banner-slide-feedback');
+            if (!modal) return;
+
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            let slide;
+            if (slideId) {
+                slide = bannerSlidesState.find(s => s.id === slideId);
+                if (!slide) return;
+                currentEditingBannerId = slideId;
+                title.textContent = 'Editar Slide';
+            } else {
+                slide = {
+                    id: generateBannerId(),
+                    type: 'static',
+                    active: true,
+                    icon: '',
+                    text: '',
+                    link: null,
+                    color: 'info',
+                    conditions: { min_cart_value: 0, device: 'all', time_start: null, time_end: null, first_visit_only: false },
+                    extra: {}
+                };
+                currentEditingBannerId = null;
+                title.textContent = 'Novo Slide';
+            }
+
+            document.getElementById('bs-type').value = slide.type;
+            document.getElementById('bs-min-cart').value = slide.conditions?.min_cart_value || 0;
+            document.getElementById('bs-device').value = slide.conditions?.device || 'all';
+            document.getElementById('bs-time-start').value = slide.conditions?.time_start || '';
+            document.getElementById('bs-time-end').value = slide.conditions?.time_end || '';
+            document.getElementById('bs-first-visit').checked = !!slide.conditions?.first_visit_only;
+            document.getElementById('bs-active').checked = slide.active !== false;
+
+            // Guarda o slide atual em edição (pra update dos campos dinâmicos)
+            window.__currentBannerSlide = slide;
+
+            onBannerTypeChange();
+            modal.classList.add('open');
+        }
+
+        function closeBannerSlideEditor() {
+            document.getElementById('banner-slide-modal').classList.remove('open');
+            currentEditingBannerId = null;
+            window.__currentBannerSlide = null;
+        }
+
+        function onBannerTypeChange() {
+            const type = document.getElementById('bs-type').value;
+            const hint = document.getElementById('bs-type-hint');
+            const container = document.getElementById('bs-fields-dynamic');
+            const slide = window.__currentBannerSlide || {};
+
+            hint.textContent = BANNER_TYPES[type]?.hint || '';
+
+            let html = '';
+
+            if (type === 'static' || type === 'warning') {
+                html = `
+                    <div class="form-group">
+                        <label>Ícone (emoji, opcional)</label>
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '')}" oninput="updateBannerPreview()" placeholder="✨">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto <span class="required">*</span></label>
+                        <input type="text" id="bs-text" maxlength="120" value="${escapeHTML(slide.text || '')}" oninput="updateBannerPreview()" placeholder="Ex: Parcele em 10x sem juros">
+                    </div>
+                `;
+                if (type === 'warning') {
+                    html += `
+                        <div class="form-group">
+                            <label>Cor do alerta</label>
+                            <select id="bs-color" onchange="updateBannerPreview()">
+                                <option value="info" ${slide.color === 'info' ? 'selected' : ''}>Info (azul)</option>
+                                <option value="success" ${slide.color === 'success' ? 'selected' : ''}>Sucesso (verde)</option>
+                                <option value="warning" ${slide.color === 'warning' ? 'selected' : ''}>Aviso (amarelo)</option>
+                                <option value="danger" ${slide.color === 'danger' ? 'selected' : ''}>Urgente (vermelho)</option>
+                            </select>
+                        </div>
+                    `;
+                }
+            } else if (type === 'link') {
+                html = `
+                    <div class="form-group">
+                        <label>Ícone (emoji)</label>
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '')}" oninput="updateBannerPreview()" placeholder="🔗">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto <span class="required">*</span></label>
+                        <input type="text" id="bs-text" maxlength="120" value="${escapeHTML(slide.text || '')}" oninput="updateBannerPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Link (href) <span class="required">*</span></label>
+                        <input type="text" id="bs-link" maxlength="200" value="${escapeHTML(slide.link || '')}" oninput="updateBannerPreview()" placeholder="#colecao ou https://...">
+                    </div>
+                `;
+            } else if (type === 'dynamic_shipping') {
+                html = `
+                    <div class="form-group">
+                        <label>Ícone (emoji)</label>
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '🚚')}" oninput="updateBannerPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto alternativo (opcional — quando o cliente já tem frete grátis)</label>
+                        <input type="text" id="bs-text" maxlength="120" value="${escapeHTML(slide.text || '')}" oninput="updateBannerPreview()" placeholder="✨ Você já tem frete grátis!">
+                    </div>
+                    <div class="config-hint">O texto principal é calculado automaticamente: "Faltam R$ X pro frete grátis"</div>
+                `;
+            } else if (type === 'shipping_achieved') {
+                html = `
+                    <div class="form-group">
+                        <label>Ícone (emoji)</label>
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '✨')}" oninput="updateBannerPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto <span class="required">*</span></label>
+                        <input type="text" id="bs-text" maxlength="120" value="${escapeHTML(slide.text || 'Você conquistou frete grátis!')}" oninput="updateBannerPreview()">
+                    </div>
+                `;
+            } else if (type === 'installments') {
+                html = `
+                    <div class="form-group">
+                        <label>Ícone (emoji)</label>
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '💳')}" oninput="updateBannerPreview()">
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Parcelas máximas</label>
+                            <input type="number" id="bs-installments" min="2" max="24" value="${slide.extra?.installments || 10}" oninput="updateBannerPreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Valor mínimo da parcela (R$)</label>
+                            <input type="number" id="bs-min-installment" min="0" step="0.01" value="${slide.extra?.min_installment || 0}" oninput="updateBannerPreview()">
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'coupon') {
+                html = `
+                    <div class="form-group">
+                        <label>Ícone (emoji)</label>
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '🎟️')}" oninput="updateBannerPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto <span class="required">*</span></label>
+                        <input type="text" id="bs-text" maxlength="120" value="${escapeHTML(slide.text || 'Use o cupom')}" oninput="updateBannerPreview()" placeholder="Use o cupom">
+                    </div>
+                    <div class="form-group">
+                        <label>Código do cupom <span class="required">*</span></label>
+                        <input type="text" id="bs-coupon-code" maxlength="30" value="${escapeHTML(slide.extra?.code || '')}" oninput="updateBannerPreview()" placeholder="BEMVINDA10" style="text-transform: uppercase;">
+                    </div>
+                `;
+            } else if (type === 'flash_promo') {
+                html = `
+                    <div class="form-group">
+                        <label>Ícone (emoji)</label>
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '⚡')}" oninput="updateBannerPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Texto <span class="required">*</span></label>
+                        <input type="text" id="bs-text" maxlength="120" value="${escapeHTML(slide.text || 'Promoção relâmpago!')}" oninput="updateBannerPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Termina em <span class="required">*</span></label>
+                        <input type="datetime-local" id="bs-promo-end" value="${slide.extra?.ends_at ? slide.extra.ends_at.slice(0, 16) : ''}" onchange="updateBannerPreview()">
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            updateBannerPreview();
+        }
+
+        function updateBannerPreview() {
+            const type = document.getElementById('bs-type').value;
+            const slide = window.__currentBannerSlide || {};
+            const preview = document.getElementById('bs-preview');
+            const previewText = document.getElementById('bs-preview-text');
+            if (!previewText) return;
+
+            const icon = document.getElementById('bs-icon')?.value || slide.icon || '';
+            const text = document.getElementById('bs-text')?.value || slide.text || '';
+
+            preview.className = 'banner-slide-preview';
+            if (type === 'warning') {
+                const color = document.getElementById('bs-color')?.value || 'info';
+                preview.classList.add('color-' + color);
+            } else if (type === 'shipping_achieved') {
+                preview.classList.add('color-success');
+            } else if (type === 'flash_promo') {
+                preview.classList.add('color-danger');
+            }
+
+            let displayText = '';
+            if (type === 'dynamic_shipping') {
+                displayText = `${icon || '🚚'} Faltam R$ 120,00 pro frete grátis ✨`;
+            } else if (type === 'shipping_achieved') {
+                displayText = `${icon || '✨'} ${text || 'Você conquistou frete grátis!'}`;
+            } else if (type === 'installments') {
+                const n = document.getElementById('bs-installments')?.value || 10;
+                displayText = `${icon || '💳'} Parcele em até ${n}x sem juros`;
+            } else if (type === 'coupon') {
+                const code = document.getElementById('bs-coupon-code')?.value || 'CUPOM';
+                displayText = `${icon || '🎟️'} ${text || 'Use o cupom'} ${code.toUpperCase()}`;
+            } else if (type === 'flash_promo') {
+                displayText = `${icon || '⚡'} ${text || 'Promoção relâmpago!'} — termina em 2h 30min`;
+            } else {
+                displayText = `${icon} ${text}`.trim() || '—';
+            }
+
+            previewText.textContent = displayText;
+        }
+
+        async function saveBannerSlide() {
+            const feedback = document.getElementById('banner-slide-feedback');
+            const btn = document.getElementById('bs-save-btn');
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            const type = document.getElementById('bs-type').value;
+            const icon = document.getElementById('bs-icon')?.value?.trim() || '';
+            const text = document.getElementById('bs-text')?.value?.trim() || '';
+            const link = document.getElementById('bs-link')?.value?.trim() || null;
+            const color = document.getElementById('bs-color')?.value || 'info';
+
+            if ((type === 'static' || type === 'warning' || type === 'link' || type === 'coupon' || type === 'flash_promo') && !text) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Texto é obrigatório.';
+                return;
+            }
+            if (type === 'link' && !link) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Link é obrigatório pra esse tipo.';
+                return;
+            }
+            if (type === 'coupon' && !document.getElementById('bs-coupon-code')?.value?.trim()) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Código do cupom é obrigatório.';
+                return;
+            }
+            if (type === 'flash_promo' && !document.getElementById('bs-promo-end')?.value) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Data de término é obrigatória.';
+                return;
+            }
+
+            const extra = {};
+            if (type === 'installments') {
+                extra.installments = parseInt(document.getElementById('bs-installments')?.value || 10, 10);
+                extra.min_installment = parseFloat(document.getElementById('bs-min-installment')?.value || 0);
+            } else if (type === 'coupon') {
+                extra.code = (document.getElementById('bs-coupon-code')?.value || '').trim().toUpperCase();
+            } else if (type === 'flash_promo') {
+                extra.ends_at = new Date(document.getElementById('bs-promo-end').value).toISOString();
+            }
+
+            const slide = {
+                id: currentEditingBannerId || generateBannerId(),
+                type,
+                active: document.getElementById('bs-active').checked,
+                icon,
+                text,
+                link,
+                color,
+                conditions: {
+                    min_cart_value: parseFloat(document.getElementById('bs-min-cart')?.value || 0),
+                    device: document.getElementById('bs-device').value,
+                    time_start: document.getElementById('bs-time-start').value || null,
+                    time_end: document.getElementById('bs-time-end').value || null,
+                    first_visit_only: document.getElementById('bs-first-visit').checked
+                },
+                extra
+            };
+
+            if (currentEditingBannerId) {
+                const idx = bannerSlidesState.findIndex(s => s.id === currentEditingBannerId);
+                if (idx >= 0) bannerSlidesState[idx] = slide;
+            } else {
+                bannerSlidesState.push(slide);
+            }
+
+            renderBannerSlidesList();
+            closeBannerSlideEditor();
+            showToast(currentEditingBannerId ? 'Slide atualizado!' : 'Slide criado!');
+        }
+
         async function loadSettings() {
             const { data, error } = await supabaseClient
                 .from('settings')
@@ -7603,6 +8159,17 @@
 
             renderNavLinksEditor(Array.isArray(data?.nav_links) ? data.nav_links : []);
             renderLoyaltyRulesEditor(data?.loyalty_rules || {});
+
+            // Banners rotativos (Fase 10.7)
+            bannerSlidesState = Array.isArray(data?.banner_slides) ? JSON.parse(JSON.stringify(data.banner_slides)) : [];
+            bannerConfigState = data?.banner_config || { rotation_seconds: 5, pause_on_hover: true, show_dots: true, enable_swipe: true };
+
+            document.getElementById('cfg-banner-rotation').value = bannerConfigState.rotation_seconds || 5;
+            document.getElementById('cfg-banner-pause-hover').value = String(bannerConfigState.pause_on_hover !== false);
+            document.getElementById('cfg-banner-dots').value = String(bannerConfigState.show_dots !== false);
+            document.getElementById('cfg-banner-swipe').value = String(bannerConfigState.enable_swipe !== false);
+
+            renderBannerSlidesList();
         }
 
         async function saveSettings() {
@@ -7644,6 +8211,14 @@
             const freeShippingBannerEnabled = document.getElementById('cfg-free-shipping-banner-enabled')?.checked || false;
             const freeShippingBannerMessage = (document.getElementById('cfg-free-shipping-banner-message')?.value || '').trim();
             const freeShippingBannerThresholdPct = parseInt(document.getElementById('cfg-free-shipping-banner-threshold-pct')?.value || '30', 10) || 30;
+
+            // Banners rotativos (Fase 10.7)
+            const bannerConfig = {
+                rotation_seconds: parseInt(document.getElementById('cfg-banner-rotation')?.value || 5, 10) || 5,
+                pause_on_hover: document.getElementById('cfg-banner-pause-hover')?.value === 'true',
+                show_dots: document.getElementById('cfg-banner-dots')?.value === 'true',
+                enable_swipe: document.getElementById('cfg-banner-swipe')?.value === 'true'
+            };
 
             if (!whatsapp || whatsapp.length < 10) {
                 showToast('WhatsApp inválido (precisa de DDI + DDD + número).', 'error');
@@ -7714,6 +8289,8 @@
                 free_shipping_banner_message: freeShippingBannerMessage || null,
                 free_shipping_banner_threshold_pct: freeShippingBannerThresholdPct,
                 loyalty_rules: loyaltyRulesState,
+                banner_slides: bannerSlidesState,
+                banner_config: bannerConfig,
                 updated_at: new Date().toISOString()
             };
 
@@ -9374,6 +9951,87 @@
             });
         }
     </script>
+
+    <!-- Modal: Editor de Banner Slide -->
+    <div id="banner-slide-modal" class="modal-overlay">
+        <div class="modal-box banner-slide-modal-box">
+            <button class="modal-close" onclick="closeBannerSlideEditor()">&times;</button>
+            <h2 class="modal-title" id="banner-slide-title">Novo Slide</h2>
+
+            <div id="banner-slide-feedback" class="modal-feedback"></div>
+
+            <div class="form-group">
+                <label for="bs-type">Tipo de slide <span class="required">*</span></label>
+                <select id="bs-type" onchange="onBannerTypeChange()">
+                    <option value="static">📝 Texto estático</option>
+                    <option value="link">🔗 Texto clicável (link)</option>
+                    <option value="dynamic_shipping">🚚 Frete grátis dinâmico (falta X)</option>
+                    <option value="shipping_achieved">✨ Frete grátis conquistado</option>
+                    <option value="installments">💳 Parcelamento (Nx sem juros)</option>
+                    <option value="coupon">🎟️ Cupom específico</option>
+                    <option value="warning">⚠️ Alerta/Aviso colorido</option>
+                    <option value="flash_promo">⚡ Promoção relâmpago (contador)</option>
+                </select>
+                <small class="config-hint" id="bs-type-hint"></small>
+            </div>
+
+            <!-- Campos condicionais por tipo -->
+            <div id="bs-fields-dynamic">
+                <!-- Preenchido via JS conforme tipo -->
+            </div>
+
+            <!-- Preview -->
+            <h4 class="banner-section-title">Preview</h4>
+            <div class="banner-slide-preview" id="bs-preview">
+                <span id="bs-preview-text">—</span>
+            </div>
+
+            <!-- Condições -->
+            <h4 class="banner-section-title">Quando mostrar</h4>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="bs-min-cart">Carrinho mínimo (R$)</label>
+                    <input type="number" id="bs-min-cart" min="0" placeholder="0" step="0.01">
+                    <small class="config-hint">0 = sempre</small>
+                </div>
+                <div class="form-group">
+                    <label for="bs-device">Dispositivo</label>
+                    <select id="bs-device">
+                        <option value="all">Todos</option>
+                        <option value="mobile">Só mobile</option>
+                        <option value="desktop">Só desktop</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="bs-time-start">Mostrar a partir de</label>
+                    <input type="time" id="bs-time-start">
+                </div>
+                <div class="form-group">
+                    <label for="bs-time-end">Até</label>
+                    <input type="time" id="bs-time-end">
+                </div>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" id="bs-first-visit">
+                <label for="bs-first-visit">Só na primeira visita do cliente (localStorage)</label>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" id="bs-active" checked>
+                <label for="bs-active">✓ Slide ativo</label>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeBannerSlideEditor()">Cancelar</button>
+                <button type="button" class="btn-save" id="bs-save-btn" onclick="saveBannerSlide()">Salvar slide</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 
