@@ -715,29 +715,44 @@ let loadedFonts = new Set();
 
 async function loadActiveTheme() {
     try {
-        // 1. Busca o active_theme_id do settings
+        // 1. Busca settings
         const { data: settingsRow, error: settingsErr } = await supabaseClient
             .from('settings')
             .select('active_theme_id')
             .eq('id', 1)
             .maybeSingle();
 
-        if (settingsErr) throw settingsErr;
+        if (settingsErr) {
+            console.warn('[Theme] Erro ao buscar settings:', settingsErr.message);
+            return null;
+        }
 
         const themeId = settingsRow?.active_theme_id;
-        if (!themeId) return null;
+        if (!themeId) {
+            console.warn('[Theme] active_theme_id vazio no settings');
+            return null;
+        }
 
-        // 2. Busca o tema
+        // 2. Busca tema
         const { data: theme, error: themeErr } = await supabaseClient
             .from('themes')
             .select('id, name, palette, typography, context')
             .eq('id', themeId)
             .maybeSingle();
 
-        if (themeErr) throw themeErr;
-        return theme || null;
+        if (themeErr) {
+            console.warn('[Theme] Erro ao buscar tema:', themeErr.message);
+            return null;
+        }
+
+        if (!theme) {
+            console.warn('[Theme] Tema não encontrado pra id:', themeId);
+            return null;
+        }
+
+        return theme;
     } catch (e) {
-        console.warn('[Theme] Erro ao carregar tema:', e);
+        console.warn('[Theme] Exceção ao carregar:', e);
         return null;
     }
 }
@@ -876,14 +891,31 @@ function ensureGoogleFont(fontName, weights) {
 
 async function loadAndApplyTheme() {
     const theme = await loadActiveTheme();
+
     if (theme) {
+        // Sucesso: aplica tema + cacheia
         applyThemeToRoot(theme);
         window.__useGemasTheme = theme;
         try {
             localStorage.setItem('gemas_active_theme', JSON.stringify(theme));
         } catch (e) { /* ignora */ }
+        console.log('[Theme] Aplicado:', theme.name || theme.id);
     } else {
-        try { localStorage.removeItem('gemas_active_theme'); } catch (e) {}
+        // Falhou: NÃO limpa o cache (pode ser offline/RPC falha).
+        // Aplica o cached (se existir) pra manter consistência visual.
+        try {
+            const cached = localStorage.getItem('gemas_active_theme');
+            if (cached) {
+                const cachedTheme = JSON.parse(cached);
+                applyThemeToRoot(cachedTheme);
+                window.__useGemasTheme = cachedTheme;
+                console.warn('[Theme] Fallback pro cache local');
+            } else {
+                console.warn('[Theme] Nenhum tema carregado — usando defaults do CSS');
+            }
+        } catch (e) {
+            console.warn('[Theme] Erro ao aplicar cache:', e);
+        }
     }
 }
 
@@ -5664,11 +5696,14 @@ async function markAllNotificationsAsRead() {
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', async () => {
     await loadSiteSettings();
+
+    // Tema PRIMEIRO (com await, antes de tudo que dependa de --gold)
+    await loadAndApplyTheme();
+
     applyHeroSettings();
     applyCarouselSettings();
     applyFooterSettings();
     applyMetaSettings();
-    loadAndApplyTheme();
     applyNavLinks();
 
     // Cria o banner dourado (site-banner) PRIMEIRO pra que updateFreeShippingBanner
