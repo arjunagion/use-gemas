@@ -4989,6 +4989,126 @@ html.theme-light .free-shipping-banner {
 }
 
 /* ==========================================================================
+   BANNER CARROSSEL ROTATIVO (Fase 10.7)
+   ========================================================================== */
+.banner-carousel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--btn-text-on-accent);
+    overflow: hidden;
+    transition: background 0.3s ease;
+}
+
+.banner-carousel-track {
+    position: relative;
+    display: flex;
+    height: 100%;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.banner-carousel-slide {
+    flex: 0 0 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: center;
+    min-height: 42px;
+    font-family: var(--font-body);
+}
+
+.banner-carousel-slide a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.banner-carousel-slide strong {
+    font-weight: 700;
+}
+
+/* Cores por tipo */
+.banner-carousel.type-info .banner-carousel-slide {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--btn-text-on-accent);
+}
+
+.banner-carousel.type-success .banner-carousel-slide {
+    background: linear-gradient(135deg, #51cf66 0%, #2f9e44 100%);
+    color: #ffffff;
+}
+
+.banner-carousel.type-warning .banner-carousel-slide {
+    background: linear-gradient(135deg, #ffc107 0%, #e67700 100%);
+    color: #1a1a1a;
+}
+
+.banner-carousel.type-danger .banner-carousel-slide {
+    background: linear-gradient(135deg, #ff5555 0%, #c92a2a 100%);
+    color: #ffffff;
+}
+
+/* Dots */
+.banner-carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0;
+    background: inherit;
+}
+
+.banner-carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.35;
+    cursor: pointer;
+    transition: opacity 0.25s, transform 0.25s;
+    border: none;
+    padding: 0;
+}
+
+.banner-carousel-dot.active {
+    opacity: 1;
+    transform: scale(1.3);
+}
+
+.banner-carousel-dot:hover {
+    opacity: 0.7;
+}
+
+/* Modo light */
+html.theme-light .banner-carousel.type-info .banner-carousel-slide {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+html.theme-light .banner-carousel-dots {
+    background: var(--navbar-bg);
+    color: var(--text-primary);
+}
+
+/* Mobile: sem dots em telas muito pequenas */
+@media (max-width: 400px) {
+    .banner-carousel-dots {
+        display: none;
+    }
+    .banner-carousel-slide {
+        font-size: 0.78rem;
+        padding: 0.55rem 0.8rem;
+    }
+}
+
+/* ==========================================================================
    NAVBAR SCROLLED — Modo light/dark (Fase 10.5.2)
    ========================================================================== */
 .navbar.scrolled {

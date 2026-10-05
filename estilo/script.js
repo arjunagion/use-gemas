@@ -110,7 +110,10 @@ let siteSettings = {
     low_stock_threshold: 2,
     free_shipping_banner_enabled: false,
     free_shipping_banner_message: 'Faltam {falta} pro frete grátis ✨',
-    free_shipping_banner_threshold_pct: 30
+    free_shipping_banner_threshold_pct: 30,
+    // Fase 10.7 — Banners rotativos
+    banner_slides: [],
+    banner_config: { rotation_seconds: 5, pause_on_hover: true, show_dots: true, enable_swipe: true }
 };
 
 // ==========================================================================
@@ -543,7 +546,10 @@ async function loadSiteSettings() {
                 low_stock_threshold: data.low_stock_threshold != null ? Number(data.low_stock_threshold) : 2,
                 free_shipping_banner_enabled: !!data.free_shipping_banner_enabled,
                 free_shipping_banner_message: data.free_shipping_banner_message || 'Faltam {falta} pro frete grátis ✨',
-                free_shipping_banner_threshold_pct: data.free_shipping_banner_threshold_pct != null ? Number(data.free_shipping_banner_threshold_pct) : 30
+                free_shipping_banner_threshold_pct: data.free_shipping_banner_threshold_pct != null ? Number(data.free_shipping_banner_threshold_pct) : 30,
+                // Fase 10.7 — Banners rotativos
+                banner_slides: Array.isArray(data.banner_slides) ? data.banner_slides : [],
+                banner_config: data.banner_config || { rotation_seconds: 5, pause_on_hover: true, show_dots: true, enable_swipe: true }
             };
             whatsappNumber = siteSettings.whatsapp;
         }
@@ -574,65 +580,301 @@ function applyNavLinks() {
 }
 
 // Banner condicional de frete grátis (só se ativo + dentro do threshold)
-function updateFreeShippingBanner(subtotal) {
-    const banner = document.getElementById('free-shipping-banner');
-    const goldenBanner = document.getElementById('site-banner');
-    if (!banner) return;
+// ==========================================================================
+// BANNER CARROSSEL ROTATIVO (Fase 10.7)
+// ==========================================================================
+let bannerCarouselState = {
+    slides: [],
+    currentIndex: 0,
+    interval: null,
+    paused: false
+};
 
-    // Helper: mostra o dourado + reajusta a navbar
-    const showGolden = () => {
-        if (!goldenBanner) return;
-        goldenBanner.style.display = 'block';
-        // Recalcula altura do dourado e empurra navbar
-        requestAnimationFrame(() => {
-            const h = goldenBanner.offsetHeight || 0;
-            const navbar = document.querySelector('.navbar');
-            if (navbar && h > 0) navbar.style.top = h + 'px';
-        });
-    };
+/**
+ * Filtra slides que devem aparecer agora (aplica condições).
+ */
+function filterActiveBannerSlides() {
+    const slides = siteSettings?.banner_slides || [];
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const isMobile = window.innerWidth < 768;
 
-    // Helper: esconde o dourado + empurra navbar pro topo (o dinâmico assume)
-    const hideGolden = () => {
-        if (!goldenBanner) return;
-        goldenBanner.style.display = 'none';
-        const navbar = document.querySelector('.navbar');
-        const dynamicH = banner.offsetHeight || 0;
-        if (navbar) navbar.style.top = dynamicH + 'px';
-    };
+    // Primeira visita
+    let isFirstVisit = false;
+    try {
+        isFirstVisit = !localStorage.getItem('gemas_visited');
+    } catch (e) {}
 
-    const enabled = siteSettings?.free_shipping_banner_enabled;
-    const min = Number(siteSettings?.free_shipping_min || 0);
-    const thresholdPct = Number(siteSettings?.free_shipping_banner_threshold_pct || 30);
+    // Subtotal do carrinho
+    const subtotal = Array.isArray(cart)
+        ? cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0)
+        : 0;
 
-    if (!enabled || min <= 0 || subtotal <= 0) {
-        banner.style.display = 'none';
-        showGolden();
+    const freeMin = Number(siteSettings?.free_shipping_min || 0);
+
+    return slides.filter(slide => {
+        if (!slide.active) return false;
+        const c = slide.conditions || {};
+
+        // Device
+        if (c.device === 'mobile' && !isMobile) return false;
+        if (c.device === 'desktop' && isMobile) return false;
+
+        // Horário
+        if (c.time_start || c.time_end) {
+            const start = c.time_start ? parseInt(c.time_start.split(':')[0]) * 60 + parseInt(c.time_start.split(':')[1]) : 0;
+            const end = c.time_end ? parseInt(c.time_end.split(':')[0]) * 60 + parseInt(c.time_end.split(':')[1]) : 24 * 60 - 1;
+            if (currentMinutes < start || currentMinutes > end) return false;
+        }
+
+        // Primeira visita
+        if (c.first_visit_only && !isFirstVisit) return false;
+
+        // Carrinho mínimo
+        const minCart = Number(c.min_cart_value || 0);
+        if (minCart > 0 && subtotal < minCart) return false;
+
+        // Condições específicas por tipo
+        if (slide.type === 'dynamic_shipping') {
+            // Só aparece se tem carrinho + falta ≤ threshold
+            if (subtotal <= 0 || freeMin <= 0) return false;
+            if (subtotal >= freeMin) return false; // já atingiu → esse slide sai
+            const falta = freeMin - subtotal;
+            const thresholdPct = Number(siteSettings?.free_shipping_banner_threshold_pct || 30);
+            const thresholdValue = freeMin * (thresholdPct / 100);
+            if (falta > thresholdValue) return false;
+        }
+
+        if (slide.type === 'shipping_achieved') {
+            // Só aparece quando já atingiu o mínimo
+            if (freeMin <= 0 || subtotal < freeMin) return false;
+        }
+
+        if (slide.type === 'installments') {
+            // Se tiver mínimo de cart, checar
+            if (slide.extra?.min_cart && subtotal < Number(slide.extra.min_cart)) return false;
+        }
+
+        if (slide.type === 'flash_promo') {
+            // Se tiver ends_at, só aparece antes do fim
+            if (slide.extra?.ends_at) {
+                const end = new Date(slide.extra.ends_at);
+                if (now >= end) return false;
+            }
+        }
+
+        return true;
+    });
+}
+
+/**
+ * Renderiza o texto dinâmico de cada slide.
+ */
+function renderBannerSlideText(slide) {
+    const icon = slide.icon || '';
+    const text = slide.text || '';
+
+    if (slide.type === 'dynamic_shipping') {
+        const subtotal = cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0);
+        const freeMin = Number(siteSettings?.free_shipping_min || 0);
+        const falta = Math.max(0, freeMin - subtotal);
+        return `${icon} Faltam <strong>${formatCurrency(falta)}</strong> pro frete grátis ✨`;
+    }
+
+    if (slide.type === 'shipping_achieved') {
+        return `${icon} ${text || 'Você conquistou frete grátis!'}`;
+    }
+
+    if (slide.type === 'installments') {
+        const n = slide.extra?.installments || 10;
+        return `${icon} Parcele em até <strong>${n}x</strong> sem juros`;
+    }
+
+    if (slide.type === 'coupon') {
+        const code = slide.extra?.code || '';
+        return `${icon} ${text || 'Use o cupom'} <strong>${escapeHTML(code)}</strong>`;
+    }
+
+    if (slide.type === 'flash_promo') {
+        const ends = slide.extra?.ends_at ? new Date(slide.extra.ends_at) : null;
+        let counter = '';
+        if (ends) {
+            const diffMs = ends - new Date();
+            if (diffMs > 0) {
+                const h = Math.floor(diffMs / 3600000);
+                const m = Math.floor((diffMs % 3600000) / 60000);
+                counter = ` <strong>${h}h ${m}min</strong>`;
+            }
+        }
+        return `${icon} ${text}${counter}`;
+    }
+
+    // static, link, warning
+    return `${icon} ${escapeHTML(text)}`.trim();
+}
+
+/**
+ * Determina a classe de cor do carrossel baseado no slide atual.
+ */
+function getBannerCarouselColorClass(slide) {
+    if (!slide) return 'type-info';
+    if (slide.type === 'shipping_achieved') return 'type-success';
+    if (slide.type === 'flash_promo') return 'type-danger';
+    if (slide.type === 'warning') {
+        const color = slide.color || 'info';
+        return 'type-' + color;
+    }
+    return 'type-info';
+}
+
+/**
+ * Renderiza o carrossel completo.
+ */
+function renderBannerCarousel() {
+    const carousel = document.getElementById('banner-carousel');
+    const track = document.getElementById('banner-carousel-track');
+    const dots = document.getElementById('banner-carousel-dots');
+    if (!carousel || !track) return;
+
+    const slides = filterActiveBannerSlides();
+
+    // Se 0 ou 1 slide → não precisa rotacionar
+    bannerCarouselState.slides = slides;
+
+    if (slides.length === 0) {
+        carousel.style.display = 'none';
+        stopBannerRotation();
         return;
     }
 
-    // Se já passou do mínimo → esconde (frete grátis já tá ativo, banner é redundante)
-    if (subtotal >= min) {
-        banner.style.display = 'none';
-        showGolden();
-        return;
+    carousel.style.display = 'block';
+
+    // Renderiza slides
+    track.innerHTML = slides.map((slide, idx) => {
+        const inner = renderBannerSlideText(slide);
+        const isLink = slide.type === 'link' && slide.link;
+        const content = isLink
+            ? `<a href="${escapeHTML(slide.link)}">${inner}</a>`
+            : inner;
+        return `<div class="banner-carousel-slide" data-index="${idx}">${content}</div>`;
+    }).join('');
+
+    // Cor do container (baseada no primeiro slide)
+    carousel.className = 'banner-carousel ' + getBannerCarouselColorClass(slides[0]);
+
+    // Dots
+    const config = siteSettings?.banner_config || {};
+    if (config.show_dots !== false && slides.length > 1 && dots) {
+        dots.innerHTML = slides.map((_, idx) =>
+            `<button type="button" class="banner-carousel-dot ${idx === 0 ? 'active' : ''}" onclick="goToBannerSlide(${idx})" aria-label="Slide ${idx + 1}"></button>`
+        ).join('');
+        dots.style.display = 'flex';
+    } else if (dots) {
+        dots.innerHTML = '';
+        dots.style.display = 'none';
     }
 
-    const falta = min - subtotal;
-    const thresholdValue = min * (thresholdPct / 100);
+    // Reset index
+    bannerCarouselState.currentIndex = 0;
+    updateBannerCarouselPosition();
 
-    // Se ainda falta MUITO (> threshold), esconde
-    if (falta > thresholdValue) {
-        banner.style.display = 'none';
-        showGolden();
-        return;
+    // Rotação
+    if (slides.length > 1) {
+        startBannerRotation();
+    }
+}
+
+function updateBannerCarouselPosition() {
+    const track = document.getElementById('banner-carousel-track');
+    const carousel = document.getElementById('banner-carousel');
+    const dots = document.querySelectorAll('.banner-carousel-dot');
+    if (!track) return;
+
+    const idx = bannerCarouselState.currentIndex;
+    track.style.transform = `translateX(-${idx * 100}%)`;
+
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+
+    // Atualiza cor do carrossel pra bater com o slide atual
+    const currentSlide = bannerCarouselState.slides[idx];
+    if (carousel && currentSlide) {
+        carousel.className = 'banner-carousel ' + getBannerCarouselColorClass(currentSlide);
+    }
+}
+
+function goToBannerSlide(idx) {
+    bannerCarouselState.currentIndex = idx;
+    updateBannerCarouselPosition();
+    resetBannerRotation();
+}
+
+function nextBannerSlide() {
+    const total = bannerCarouselState.slides.length;
+    if (total <= 1) return;
+    bannerCarouselState.currentIndex = (bannerCarouselState.currentIndex + 1) % total;
+    updateBannerCarouselPosition();
+}
+
+function startBannerRotation() {
+    stopBannerRotation();
+    const config = siteSettings?.banner_config || {};
+    const seconds = Number(config.rotation_seconds || 5);
+
+    bannerCarouselState.interval = setInterval(() => {
+        if (!bannerCarouselState.paused) nextBannerSlide();
+    }, seconds * 1000);
+}
+
+function stopBannerRotation() {
+    if (bannerCarouselState.interval) {
+        clearInterval(bannerCarouselState.interval);
+        bannerCarouselState.interval = null;
+    }
+}
+
+function resetBannerRotation() {
+    stopBannerRotation();
+    if (bannerCarouselState.slides.length > 1) startBannerRotation();
+}
+
+/**
+ * Bind de hover (pausa) e swipe (mobile).
+ */
+function setupBannerCarouselInteractions() {
+    const carousel = document.getElementById('banner-carousel');
+    if (!carousel) return;
+
+    const config = siteSettings?.banner_config || {};
+
+    // Pausa no hover
+    if (config.pause_on_hover !== false) {
+        carousel.addEventListener('mouseenter', () => { bannerCarouselState.paused = true; });
+        carousel.addEventListener('mouseleave', () => { bannerCarouselState.paused = false; });
     }
 
-    const message = (siteSettings?.free_shipping_banner_message || 'Faltam {falta} pro frete grátis ✨')
-        .replace('{falta}', formatCurrency(falta));
+    // Swipe (touch)
+    if (config.enable_swipe !== false) {
+        let startX = 0;
+        let startY = 0;
+        carousel.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: true });
 
-    banner.textContent = message;
-    banner.style.display = 'block';
-    hideGolden();
+        carousel.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - startX;
+            const dy = e.changedTouches[0].clientY - startY;
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+                if (dx < 0) nextBannerSlide();
+                else {
+                    const total = bannerCarouselState.slides.length;
+                    bannerCarouselState.currentIndex = (bannerCarouselState.currentIndex - 1 + total) % total;
+                    updateBannerCarouselPosition();
+                }
+                resetBannerRotation();
+            }
+        }, { passive: true });
+    }
 }
 
 // ==========================================================================
@@ -1044,47 +1286,6 @@ function applyMetaSettings() {
         if (ogImage) ogImage.setAttribute('content', absoluteUrl);
         if (twImage) twImage.setAttribute('content', absoluteUrl);
     }
-}
-
-function renderBanner() {
-    const existing = document.getElementById('site-banner');
-    if (existing) existing.remove();
-
-    const navbar = document.querySelector('.navbar');
-    if (navbar) navbar.style.top = '';
-
-    if (!siteSettings.banner_message) return;
-
-    const banner = document.createElement('div');
-    banner.id = 'site-banner';
-    banner.textContent = siteSettings.banner_message;
-
-    Object.assign(banner.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        right: '0',
-        zIndex: '999',
-        background: 'linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%)',
-        color: 'var(--btn-text-on-accent)',
-        textAlign: 'center',
-        padding: '0.55rem 1rem',
-        fontSize: '0.78rem',
-        fontWeight: '600',
-        letterSpacing: '1.2px',
-        textTransform: 'uppercase',
-        fontFamily: "'Montserrat', sans-serif",
-        boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
-    });
-
-    document.body.insertBefore(banner, document.body.firstChild);
-
-    requestAnimationFrame(() => {
-        const bannerHeight = banner.offsetHeight;
-        if (navbar && bannerHeight > 0) {
-            navbar.style.top = bannerHeight + 'px';
-        }
-    });
 }
 
 function updateDynamicLinks() {
@@ -3246,9 +3447,8 @@ function updateCartUI() {
     // Atualiza o botão "Ver meus cupons"
     updateCouponsSeeAllBtn();
 
-    // Atualiza banner de frete grátis (Fase 10.3)
-    const subtotal = cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0);
-    updateFreeShippingBanner(subtotal);
+    // Atualiza banner carrossel (Fase 10.7)
+    renderBannerCarousel();
 }
 
 // ==========================================================================
@@ -5706,24 +5906,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     applyMetaSettings();
     applyNavLinks();
 
-    // Cria o banner dourado (site-banner) PRIMEIRO pra que updateFreeShippingBanner
-    // consiga escondê-lo imediatamente quando o dinâmico assumir (sem flash/sobreposição)
-    renderBanner();
+    // Banner carrossel rotativo (Fase 10.7)
+    renderBannerCarousel();
+    setupBannerCarouselInteractions();
 
-    // Recalcula subtotal atual e atualiza banner de frete grátis
-    const subtotalAtual = (typeof cart !== 'undefined' && Array.isArray(cart))
-        ? cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0)
-        : 0;
-    updateFreeShippingBanner(subtotalAtual);
+    // Marca primeira visita (usado por condições de banner)
+    try {
+        if (!localStorage.getItem('gemas_visited')) {
+            localStorage.setItem('gemas_visited', new Date().toISOString());
+        }
+    } catch (e) {}
 
-    // Fase 10.3 — garante que o banner apareça mesmo se o carrinho foi restaurado
-    // do localStorage antes do loadSiteSettings resolver
-    setTimeout(() => {
-        const subtotal = (typeof cart !== 'undefined' && Array.isArray(cart))
-            ? cart.reduce((sum, i) => sum + (Number(i.price) * Number(i.quantity)), 0)
-            : 0;
-        updateFreeShippingBanner(subtotal);
-    }, 500);
+    // Atualiza contador de flash promos a cada 60s
+    setInterval(() => {
+        const hasFlash = (siteSettings?.banner_slides || []).some(s => s.type === 'flash_promo' && s.active);
+        if (hasFlash) renderBannerCarousel();
+    }, 60000);
 
     updateDynamicLinks();
 
