@@ -5018,6 +5018,75 @@ html.theme-light .notifications-drawer {
     border-left-color: rgba(0, 0, 0, 0.08);
 }
 
+/* ==========================================================================
+   BOTÃO "LOJA" (produto.html — Fase 10.6.1)
+   ========================================================================== */
+.btn-shop-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.btn-shop-back:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(var(--gold-rgb), 0.06);
+}
+
+.btn-shop-back svg {
+    flex-shrink: 0;
+}
+
+/* Avatar — discreto (menor que os outros ícones) */
+.btn-avatar {
+    opacity: 0.75;
+    transition: opacity 0.25s, color 0.25s;
+}
+
+.btn-avatar:hover {
+    opacity: 1;
+    color: var(--gold);
+}
+
+/* Modo light */
+html.theme-light .btn-shop-back {
+    border-color: rgba(0, 0, 0, 0.15);
+    color: var(--text-primary);
+}
+
+html.theme-light .btn-shop-back:hover {
+    border-color: var(--gold-dark);
+    color: var(--gold-dark);
+    background: rgba(var(--gold-rgb), 0.08);
+}
+
+/* Mobile: esconder o texto "Loja", deixar só o ícone (economiza espaço) */
+@media (max-width: 600px) {
+    .btn-shop-back span {
+        display: none;
+    }
+    .btn-shop-back {
+        padding: 0.5rem;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        justify-content: center;
+    }
+}
+
 html.theme-light .cart-header,
 html.theme-light .wishlist-header,
 html.theme-light .notifications-header,
