@@ -19,7 +19,7 @@
 .produto-loading .spinner {
     width: 50px;
     height: 50px;
-    border: 3px solid rgba(212, 175, 55, 0.2);
+    border: 3px solid rgba(var(--gold-rgb), 0.2);
     border-top-color: var(--gold);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
@@ -126,7 +126,7 @@
     overflow-y: auto;
     padding-right: 4px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+    scrollbar-color: rgba(var(--gold-rgb), 0.3) transparent;
 }
 
 .produto-thumbs::-webkit-scrollbar {
@@ -134,7 +134,7 @@
 }
 
 .produto-thumbs::-webkit-scrollbar-thumb {
-    background: rgba(212, 175, 55, 0.3);
+    background: rgba(var(--gold-rgb), 0.3);
     border-radius: 2px;
 }
 
@@ -145,20 +145,20 @@
     border: 2px solid transparent;
     overflow: hidden;
     cursor: pointer;
-    background: #18181c;
+    background: var(--bg-elevated);
     padding: 0;
     transition: all 0.25s ease;
     flex-shrink: 0;
 }
 
 .produto-thumb:hover {
-    border-color: rgba(212, 175, 55, 0.5);
+    border-color: var(--border-strong);
     transform: translateY(-1px);
 }
 
 .produto-thumb.active {
     border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+    box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.15);
 }
 
 .produto-thumb img,
@@ -174,8 +174,8 @@
     aspect-ratio: 4 / 5;
     border-radius: 12px;
     overflow: hidden;
-    background: #18181c;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -213,7 +213,8 @@
     text-transform: uppercase;
     font-weight: 600;
     padding: 0.3rem 0.8rem;
-    border: 1px solid rgba(212, 175, 55, 0.3);
+    background: rgba(var(--gold-rgb), 0.12);
+    border: 1px solid rgba(var(--gold-rgb), 0.3);
     border-radius: 12px;
     align-self: flex-start;
 }
@@ -305,9 +306,9 @@
 }
 
 .stock-badge-zero {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--card-overlay);
     color: var(--text-dim, #888);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-strong);
 }
 
 /* Actions */
@@ -329,7 +330,7 @@
     cursor: not-allowed;
     background: transparent;
     color: var(--text-dim, #888);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--border-strong);
     transform: none;
     box-shadow: none;
 }
@@ -339,7 +340,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 1rem 1.4rem;
-    border: 1px solid rgba(212, 175, 55, 0.4);
+    border: 1px solid rgba(var(--gold-rgb), 0.4);
     border-radius: 30px;
     background: transparent;
     color: var(--gold);
@@ -354,7 +355,7 @@
 }
 
 .produto-share:hover {
-    background: rgba(212, 175, 55, 0.1);
+    background: rgba(var(--gold-rgb), 0.1);
     border-color: var(--gold);
 }
 
@@ -364,32 +365,43 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
-    border: none;
-    padding: 0.9rem 1.6rem;
+    width: 100%;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    padding: 0.75rem 1.5rem;
     border-radius: 30px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    letter-spacing: 1.2px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.25s ease;
-    font-family: var(--font-body);
-    margin-top: 0.4rem;
+    transition: all 0.3s;
+    margin-top: 0.8rem;
 }
 
 .btn-avaliar-produto:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.35);
-    filter: brightness(1.08);
+    background: var(--gold);
+    color: var(--btn-text-on-accent);
+}
+
+/* Modo light */
+html.theme-light .btn-avaliar-produto {
+    border-color: var(--gold-dark);
+    color: var(--gold-dark);
+}
+
+html.theme-light .btn-avaliar-produto:hover {
+    background: var(--gold-dark);
+    color: #ffffff;
 }
 
 /* Sections de info */
 .produto-section {
     padding-top: 1.2rem;
     margin-top: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .produto-section h3 {
@@ -413,18 +425,24 @@
    ========================================================================== */
 .produto-reviews-section {
     padding: 4rem 0 3rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .reviews-summary-box {
     display: grid;
     grid-template-columns: 200px 1fr;
     gap: 3rem;
-    background: #18181c;
-    border: 1px solid rgba(212, 175, 55, 0.15);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     padding: 2rem;
     margin-bottom: 2.5rem;
+}
+
+/* Modo light */
+html.theme-light .reviews-summary-box {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
 }
 
 .reviews-summary-score {
@@ -440,7 +458,7 @@
     font-family: var(--font-title);
     font-size: 3.5rem;
     font-weight: 700;
-    color: var(--gold);
+    color: var(--text-primary);
     line-height: 1;
 }
 
@@ -478,14 +496,18 @@
 
 .reviews-bar-track {
     height: 8px;
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--card-overlay);
     border-radius: 4px;
     overflow: hidden;
 }
 
+html.theme-light .reviews-bar-track {
+    background: rgba(0, 0, 0, 0.06);
+}
+
 .reviews-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, #d4af37 0%, #f3cf55 100%);
+    background: var(--gold);
     border-radius: 4px;
     transition: width 0.6s ease;
 }
@@ -651,8 +673,8 @@ html.theme-light .review-response {
 .reviews-empty {
     text-align: center;
     padding: 3rem 1.5rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px dashed rgba(212, 175, 55, 0.2);
+    background: var(--card-overlay);
+    border: 1px dashed rgba(var(--gold-rgb), 0.2);
     border-radius: 14px;
 }
 
@@ -672,7 +694,7 @@ html.theme-light .review-response {
    ========================================================================== */
 .produto-related-section {
     padding: 4rem 0 3rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .produto-related-grid {
@@ -683,8 +705,8 @@ html.theme-light .review-response {
 }
 
 .related-card {
-    background: #18181c;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 14px;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -694,15 +716,20 @@ html.theme-light .review-response {
 
 .related-card:hover {
     transform: translateY(-4px);
-    border-color: rgba(212, 175, 55, 0.4);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    border-color: var(--border-strong);
+    box-shadow: 0 12px 28px var(--shadow-color);
+}
+
+html.theme-light .related-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.08);
 }
 
 .related-media {
     width: 100%;
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    background: #0e0e10;
+    background: var(--bg-main);
 }
 
 .related-media img,
@@ -740,7 +767,7 @@ html.theme-light .review-response {
 
 .related-gem {
     font-size: 0.72rem;
-    color: var(--gold);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin: 0 0 0.6rem 0;
@@ -882,4 +909,32 @@ html.theme-light .review-response {
     .reviews-avg {
         font-size: 2.8rem;
     }
+}
+
+/* ==========================================================================
+   PRODUTO — MODO LIGHT (Fase 10.5.2)
+   ========================================================================== */
+
+html.theme-light .produto-breadcrumb,
+html.theme-light .produto-breadcrumb a {
+    color: var(--text-muted);
+}
+
+html.theme-light .produto-thumb {
+    background: #f5f5f5;
+}
+
+html.theme-light .produto-main-media {
+    background: #f5f5f5;
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+html.theme-light .produto-ref {
+    background: rgba(var(--gold-rgb), 0.15);
+}
+
+html.theme-light .reviews-summary-box,
+html.theme-light .produto-reviews-list .review-card,
+html.theme-light .related-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
