@@ -1,7 +1,7 @@
-# PROJETO-MESTRE — Use Gemas (v3.7)
+# PROJETO-MESTRE — Use Gemas (v3.8)
 
-> **Documento de referência oficial — v3.7** — estado do código em **03/10/2026**.
-> **Novo em v3.7:** Fase 10.3 — Refinos. Menu, threshold de estoque baixo, banner de frete grátis condicional e regras de fidelidade (SQL) configuráveis via admin. Consolidação de banners (dourado ↔ dinâmico). Fix de Service Worker (network-first pra JS/CSS + bump CACHE_VERSION).
+> **Documento de referência oficial — v3.8** — estado do código em **05/10/2026**.
+> **Novo em v3.8:** Fase 10.5 + 10.6 completas — Biblioteca de Temas com white mode real + cream mode dinâmico. Presets do sistema (11), temas custom (até 20), agendamento de troca, auto-dessaturar cores saturadas, detecção de luminância, variáveis semânticas em todo o CSS. Área do cliente ganha "cream mode dinâmico": tint sutil derivado do accent do tema (com fallback clássico em temas light).
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -121,6 +121,8 @@
 | Cupom no carrinho | Aplicar/remover cupom, desconto no total | ✅ |
 | Favoritos (wishlist) | Drawer + "adicionar todos ao carrinho" | ✅ |
 | Página de produto | Galeria (PhotoSwipe), reviews, relacionados, compartilhar | ✅ |
+| **Biblioteca de Temas (Fase 10.5)** | 11 presets + custom (20) + agendamento + white mode + auto-dessaturar + variáveis semânticas | ✅ |
+| **Cream Mode Dinâmico (Fase 10.6)** | Área do cliente com tint sutil do accent + fallback clássico em temas light | ✅ |
 | **Refinos configuráveis (Fase 10.3)** | Menu + Estoque baixo + Banner frete grátis + Regras de fidelidade editáveis | ✅ |
 | **Conteúdo do Site configurável (Fase 10.1)** | Hero + Carrossel (4 slides) + Rodapé + Meta Tags editáveis no admin | ✅ |
 | **Central de Reviews (Fase 10.4)** | Grid dinâmico na home (6 reviews: `featured` + fallback recentes) | ✅ |
@@ -228,7 +230,7 @@
 
 > ✅ O schema agora está **versionado** em `supabase/migrations/001_schema.sql` (2.113 linhas). Fonte da verdade segue sendo o Supabase.
 
-### 4.1 Tabelas (14 — com RLS habilitado em todas)
+### 4.1 Tabelas (15 — com RLS habilitado em todas)
 
 | Tabela | Colunas principais |
 |---|---|
@@ -240,14 +242,15 @@
 | `coupons` | id, code (UNIQUE), description, discount_type, discount_value, min_purchase, max_discount, free_shipping, first_purchase_only, usage_limit_total, usage_limit_per_user, times_used, customer_email, starts_at, expires_at, active, created_by, email_notified_at |
 | `coupon_usages` | id, coupon_id (FK), order_id, user_id, customer_email, discount_applied, used_at |
 | `loyalty_points` | id, user_id, customer_email, order_id, coupon_id, points, type (CHECK earned/redeemed/expired/adjustment), description, expires_at, created_by, created_at, expired_at |
-| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, hero_*, carousel_*, footer_*, meta_*, **account_hero_badge, account_hero_subtitle, account_tabs (JSONB), account_status_labels (JSONB), account_timeline_labels (JSONB), account_empty_states (JSONB), account_loyalty_labels (JSONB)**, **nav_links (JSONB), low_stock_threshold, free_shipping_banner_enabled, free_shipping_banner_message, free_shipping_banner_threshold_pct, loyalty_rules (JSONB)** |
+| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, hero_*, carousel_*, footer_*, meta_*, **account_hero_badge, account_hero_subtitle, account_tabs (JSONB), account_status_labels (JSONB), account_timeline_labels (JSONB), account_empty_states (JSONB), account_loyalty_labels (JSONB)**, **nav_links (JSONB), low_stock_threshold, free_shipping_banner_enabled, free_shipping_banner_message, free_shipping_banner_threshold_pct, loyalty_rules (JSONB), active_theme_id, scheduled_theme_id, scheduled_theme_starts_at, theme_derived (JSONB)** |
 | `profiles` | id (PK, = auth.users.id), name, email, phone, created_at |
 | `favorites` | id, user_id, product_name, product_ref, product_price, created_at, UNIQUE(user_id, product_ref) |
 | `checkout_data` | user_id (PK), name, doc, phone, cep, street, number, complement, neighborhood, city, state, notes, updated_at |
 | `shipping_quotes_cache` | id, cep_origem, cep_destino, peso_kg, valor_declarado, quotes (JSONB), expires_at (24h), created_at |
 | `feedbacks` | id, user_id, customer_name, customer_email, rating, category, message, status (new/read/archived), created_at |
+| `themes` | id, name, description, source ('system'/'custom'), palette (JSONB), typography (JSONB), context ('site'/'account'/'both'), is_favorite, created_by, created_at, updated_at |
 
-### 4.2 Policies (42)
+### 4.2 Policies (44)
 
 Distribuídas entre as 13 tabelas (destaques):
 - **orders**: "Anyone can create orders", "Guests can view guest orders", "Users can view own orders", "Admins can view/update/delete all orders"
@@ -269,21 +272,22 @@ Distribuídas entre as 13 tabelas (destaques):
 **14 trigger functions**:
 `update_coupons_updated_at`, `update_products_updated_at`, `update_reviews_updated_at`, `normalize_coupon_code`, `generate_guest_token`, `set_guest_token`, `set_shipped_at`, `handle_new_user`, `notify_order_status_change`, `notify_review_status_change`, `credit_loyalty_points_on_paid`, `notify_points_earned`, `cleanup_old_notifications`, `expire_loyalty_points`
 
-### 4.4 Triggers (14 — 13 no public + 1 no schema `auth`)
+### 4.4 Triggers (15 — 14 no public + 1 no schema `auth`)
 
 `trigger_normalize_coupon_code`, `trigger_coupons_updated_at`, `trigger_notify_points_earned`, `trigger_set_guest_token`, `trigger_set_shipped_at`, `trigger_credit_loyalty_points`, `trigger_notify_order_status_change`, `"notify-order-status"`, `trigger_products_updated_at`, `trigger_reviews_updated_at`, `trigger_notify_review_status_change` + `on_auth_user_created` (comentado, roda em `auth.users` via `handle_new_user`).
 
-### 4.5 Índices (44)
+### 4.5 Índices (46)
 
 Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notifications` (3), `orders` (7), `reviews` (5), `shipping_quotes_cache` (2) — mais PKs/UNIQUEs do CREATE TABLE.
 
 - `idx_reviews_featured` (parcial, WHERE featured = true AND status = 'approved')
 - `idx_feedbacks_status_created`
 
-### 4.6 Cron jobs (5 — pg_cron + pg_net)
+### 4.6 Cron jobs (6 — pg_cron + pg_net)
 
 | Job | Horário (UTC) | Ação |
 |---|---|---|
+| `apply-scheduled-theme` | 04h | Aplica tema agendado (se `scheduled_theme_starts_at <= now()`) |
 | `request-review` | 06h | GET `request-review` |
 | `remind-review` | 07h | GET `remind-review` |
 | `cleanup-notifications` | 05h | `cleanup_old_notifications()` |
@@ -341,17 +345,18 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Arquivos CSS | 6 |
 | Arquivos JS | 3 |
 | Edge Functions | 10 |
-| Tabelas | 14 |
-| Policies | 42 |
+| Tabelas | 15 |
+| Policies | 44 |
 | Funções SQL | 24 |
-| Triggers | 14 |
-| Índices | 44 |
-| Cron jobs | 5 |
+| Triggers | 15 |
+| Índices | 46 |
+| Cron jobs | 6 |
 | Storage buckets | 3 |
 | Storage policies | 13 |
 | Secrets custom | 6 |
 | RPCs | 10 |
-| Linhas de código (frontend) | ~30k |
+| Presets de tema (system) | 11 (8 dark + 3 light) |
+| Linhas de código (frontend) | ~30,5k |
 | Linhas de código (backend: schema + functions) | ~5k |
 | **Progresso geral** | **~99,9%** |
 
@@ -576,6 +581,9 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 16 | Labels do cliente em `settings` (fonte única) | Hardcode em cada arquivo | Cliente e admin leem os mesmos labels — zero risco de inconsistência. Fallback hardcoded se `settings` falhar. |
 | 17 | Regras de fidelidade em `settings` (não no SQL) | Hardcode em função SQL | Permite ajustar promoções (ex: dobrar pontos) sem deploy |
 | 18 | Consolidação de banners (dinâmico substitui dourado) | Mostrar os 2 ao mesmo tempo | Evita sobreposição visual + mensagem mais relevante tem prioridade |
+| 19 | Biblioteca de Temas (Fase 10.5) | Hardcode só no CSS | Permite multi-nicho futuro (site modelo reutilizável) |
+| 20 | Auto-dessaturar cores saturadas (>40%) | Aceitar qualquer cor | Evita UX agressiva com cores saturadas; preserva accent vivo |
+| 21 | Cream Mode Dinâmico na conta (Fase 10.6) | Conta independente ou dark | Identidade visual contínua, mas conta sempre legível (light/pastel) |
 
 ---
 
@@ -608,6 +616,9 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **05/out/2026** — Fase 10.6 completa: Cream Mode Dinâmico (conta com tint sutil do accent + fallback clássico em temas light).
+- **04/out/2026** — Fase 10.5.2 completa: White Mode real (refactor global de CSS + variáveis semânticas + auto-dessaturar + detecção de luminância).
+- **04/out/2026** — Fases 10.5 + 10.5.1: Biblioteca de Temas (11 presets + custom + agendamento + favoritos) + validação de contraste/saturação.
 - **03/out/2026** — Fase 10.3 completa: Menu + Estoque baixo + Banner frete grátis + Regras de fidelidade configuráveis + Consolidação de banners + Fix Service Worker (network-first) + seção 22 do doc mestre.
 - **02/out/2026** — Fase 10.2 completa: Área do Cliente configurável (Hero + Tabs + Status + Timeline + Mensagens vazias + Labels de fidelidade via admin) + `settings` como fonte única da verdade dos labels + seção 20 do doc mestre.
 - **02/out/2026** — Fase 10.1 completa: Conteúdo do Site configurável (Hero + Carrossel + Rodapé + Meta Tags via admin) + novo bucket `site-media` + fallback hardcoded + seção 20 do doc mestre.
@@ -1177,4 +1188,133 @@ de conteúdo antigo sendo servido após deploy.
 
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 03/10/2026 — v3.7.*
+## 23. Biblioteca de Temas + White Mode (Fases 10.5, 10.5.1, 10.5.2)
+
+### 23.1 Objetivo
+
+Tornar identidade visual 100% configurável via admin: cores + tipografia + temas
+salvos + agendamento + suporte real a white mode. Requisito estratégico: o
+projeto é **site modelo reutilizável** pra criar sites pra família/nichos
+diferentes.
+
+### 23.2 Modelo de dados
+
+Nova tabela `themes`:
+
+| Coluna | Tipo | Valores |
+|---|---|---|
+| `id` | UUID | PK |
+| `name` | TEXT | Nome do tema |
+| `description` | TEXT | Descrição opcional |
+| `source` | TEXT | 'system' / 'custom' |
+| `palette` | JSONB | `{accent, bg, text, text_muted}` |
+| `typography` | JSONB | `{heading_font, body_font}` |
+| `context` | TEXT | 'site' / 'account' / 'both' |
+| `is_favorite` | BOOLEAN | Destaque na biblioteca |
+
+Colunas novas em `settings`:
+- `active_theme_id`, `scheduled_theme_id`, `scheduled_theme_starts_at`, `theme_derived`
+
+### 23.3 11 presets do sistema
+
+**Dark (8):** Clássico Dourado, Prata Lunar, Rosa Quartzo, Verde Esmeralda, Azul
+Safira, Vermelho Rubi, Roxo Ametista, Marfim Claro (dark quente)
+
+**Light (3):** Marfim Claro, Névoa Suave, Areia Crua
+
+### 23.4 Auto-dessaturar cores saturadas (Fase 10.5.1)
+
+Se `bg` do tema tem saturação > 40%, o sistema **dessatura 60% automaticamente**
+antes de aplicar. Preserva a cor de `accent` (que fica viva) e evita fadiga
+visual com fundos saturados.
+
+### 23.5 Detecção de luminância (light/dark)
+
+`applyThemeToRoot()` detecta se `bg` é claro (luminância > 0.5) ou escuro e:
+- Adiciona classe `theme-light` ou `theme-dark` no `<html>`
+- Aplica variáveis semânticas adaptativas
+
+### 23.6 Variáveis semânticas
+
+Novas variáveis globais (dark default + light derivado):
+
+| Variável | Uso |
+|---|---|
+| `--navbar-bg` | Navbar com transparência |
+| `--modal-overlay-bg` | Overlay de modais |
+| `--border-subtle` / `--border-strong` | Bordas |
+| `--shadow-color` | Sombras |
+| `--card-overlay` | Tint de cards translúcidos |
+| `--input-bg` | Fundo de inputs |
+| `--btn-text-on-accent` | Texto sobre accent |
+| `--gold-rgb` | Para `rgba(var(--gold-rgb), X)` |
+
+### 23.7 Agendamento de troca
+
+Cron `apply-scheduled-theme` (04h UTC): se `scheduled_theme_starts_at <= now()`,
+aplica `scheduled_theme_id` como `active_theme_id` e limpa.
+
+### 23.8 Refactor global de CSS (Fase 10.5.2)
+
+Migração sistemática de hardcoded pra variáveis semânticas em:
+- `.navbar` (+ `.scrolled`)
+- Drawers: `.cart-drawer`, `.wishlist-drawer`, `.notifications-drawer`
+- Cards: `.product-card`, `.testimonial-card`, `.review-card`, `.top-product-row`
+- Modais: `.modal-overlay`, `.modal-content`, `.modal-box`
+- Modais específicos: checkout, auth, cupons, feedback
+- `estilo/produto.css` — paleta própria migrada
+- `estilo/perfil.css` — accent compartilhado + cream mode preservado
+
+### 23.9 Arquivos envolvidos
+
+- `themes` (banco) — tabela nova + 11 presets seed
+- `settings` (banco) — 4 colunas novas
+- Cron `apply-scheduled-theme`
+- `admin.html` — UI da Biblioteca + Editor + Agendamento + validação
+- `estilo/script.js` — `loadActiveTheme()`, `applyThemeToRoot()`, auto-dessaturar
+- `estilo/style.css` — variáveis semânticas + refactor de componentes
+- `estilo/produto.css` — paleta própria migrada
+- `estilo/perfil.css` — refactor de hardcoded pra `--cr-*`
+- `minha-conta.html` — `applyThemeAccentOnly()` + cream dinâmico
+- `index.html` / `produto.html` — bumps
+
+---
+
+## 24. Cream Mode Dinâmico (Fase 10.6)
+
+### 24.1 Objetivo
+
+Área do cliente mantém sempre light/pastel, mas com **tint sutil** do accent do
+tema ativo. Isso cria identidade visual contínua sem quebrar legibilidade
+(contraste AAA garantido).
+
+### 24.2 Regras
+
+**Se tema ativo é dark:**
+- Fundo principal: `tintWithWhite(accent, 5%)` — quase branco com toque do accent
+- Cards: `tintWithWhite(accent, 2%)`
+- Texto principal: `darken(accent, 55%)` — escuro, contraste AAA
+- Texto muted: `darken(accent, 35%)`
+- Bordas: `rgba(accent, 0.12)` / `rgba(accent, 0.25)`
+
+**Se tema ativo é light:**
+- Fallback pro cream clássico (marfim + dourado originais)
+- Evita dupla camada clara
+
+### 24.3 Exemplos visuais
+
+| Tema | Fundo da conta | Accent | Texto |
+|---|---|---|---|
+| Clássico Dourado | `#faf9f4` | `#d4af37` | `#4a3d15` |
+| Verde Esmeralda | `#f2f7f4` | `#4a9d7e` | `#12382b` |
+| Rosa Quartzo | `#fdf5f6` | `#e8b4b8` | `#5a3538` |
+| Marfim Claro (light) | `#faf9f6` (clássico) | `#8b6a15` | `#1a1610` |
+
+### 24.4 Arquivos envolvidos
+
+- `minha-conta.html` — `applyThemeAccentOnly()` reforçada com helpers HSL
+- `estilo/perfil.css` — variáveis `--cr-*` usadas em todos os componentes
+
+---
+
+*Fim do documento. Gerado por varredura do repositório local em 05/10/2026 — v3.8.*
