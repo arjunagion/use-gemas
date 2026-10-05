@@ -4961,8 +4961,8 @@ html.theme-light .feedback-form textarea {
    Banner de frete grátis (Fase 10.3)
    ========================================================================== */
 .free-shipping-banner {
-    background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-    color: #0e0e10;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--btn-text-on-accent);
     text-align: center;
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
@@ -4974,10 +4974,18 @@ html.theme-light .feedback-form textarea {
     right: 0;
     z-index: 999;
     width: 100%;
+    font-family: var(--font-body);
+    box-shadow: 0 2px 10px var(--shadow-color);
 }
 
 .free-shipping-banner strong {
     font-weight: 700;
+}
+
+/* Modo light */
+html.theme-light .free-shipping-banner {
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 /* ==========================================================================
