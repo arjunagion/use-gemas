@@ -616,7 +616,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
-- **05/out/2026** — Fase 10.6 completa: Cream Mode Dinâmico (conta com tint sutil do accent + fallback clássico em temas light).
+- **05/out/2026** — Fase 10.6 completa: Cream Mode Dinâmico (conta com tint sutil do accent + fallback clássico em temas light) + botão "Loja" no produto.html + fix do banner de frete grátis seguir tema.
 - **04/out/2026** — Fase 10.5.2 completa: White Mode real (refactor global de CSS + variáveis semânticas + auto-dessaturar + detecção de luminância).
 - **04/out/2026** — Fases 10.5 + 10.5.1: Biblioteca de Temas (11 presets + custom + agendamento + favoritos) + validação de contraste/saturação.
 - **03/out/2026** — Fase 10.3 completa: Menu + Estoque baixo + Banner frete grátis + Regras de fidelidade configuráveis + Consolidação de banners + Fix Service Worker (network-first) + seção 22 do doc mestre.
