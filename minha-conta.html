@@ -19,7 +19,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link rel="stylesheet" href="estilo/perfil.css?v=4.0">
+    <link rel="stylesheet" href="estilo/perfil.css?v=4.1">
 </head>
 
 <body>
@@ -396,6 +396,54 @@
         }
 
         // ==========================================================================
+        // Helpers de cor/fonte (accent compartilhado — Fase 10.5.2)
+        // ==========================================================================
+        function hexToRgb(hex) {
+            const h = hex.replace('#', '');
+            return {
+                r: parseInt(h.substr(0, 2), 16),
+                g: parseInt(h.substr(2, 2), 16),
+                b: parseInt(h.substr(4, 2), 16)
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            const toHex = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+            return '#' + toHex(r) + toHex(g) + toHex(b);
+        }
+
+        function lighten(hex, percent) {
+            // percent: positivo = clareia, negativo = escurece
+            const { r, g, b } = hexToRgb(hex);
+            const factor = percent / 100;
+            if (factor > 0) {
+                return rgbToHex(
+                    r + (255 - r) * factor,
+                    g + (255 - g) * factor,
+                    b + (255 - b) * factor
+                );
+            } else {
+                const f = 1 + factor;
+                return rgbToHex(r * f, g * f, b * f);
+            }
+        }
+
+        const loadedFonts = new Set();
+
+        function ensureGoogleFont(fontName, weights) {
+            if (loadedFonts.has(fontName)) return;
+            loadedFonts.add(fontName);
+            // Já carregadas via link estático no head
+            if (fontName === 'Cormorant Garamond' || fontName === 'Montserrat') return;
+            const family = fontName.replace(/ /g, '+');
+            const weightStr = weights.join(';');
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = `https://fonts.googleapis.com/css2?family=${family}:wght@${weightStr}&display=swap`;
+            document.head.appendChild(link);
+        }
+
+        // ==========================================================================
         // Configurações da Área do Cliente (Fase 10.2)
         // ==========================================================================
         let accountSettings = null;
@@ -441,15 +489,37 @@
                 const root = document.documentElement;
                 const accent = theme.palette?.accent;
                 if (accent) {
+                    // Accent compartilhado (site + cream)
                     root.style.setProperty('--gold', accent);
                     root.style.setProperty('--cr-gold', accent);
+
+                    // Derivadas do site (dark)
+                    root.style.setProperty('--gold-hover', lighten(accent, 15));
+                    root.style.setProperty('--gold-dark', lighten(accent, -25));
+
+                    // Derivadas do cream (fundo claro: hover escurece pra manter contraste)
+                    root.style.setProperty('--cr-gold-hover', lighten(accent, -12));
+                    root.style.setProperty('--cr-gold-dark', lighten(accent, -25));
+
+                    // RGB para rgba() (softs, bordas e sombras)
+                    const { r, g, b } = hexToRgb(accent);
+                    root.style.setProperty('--gold-rgb', `${r}, ${g}, ${b}`);
+                    root.style.setProperty('--cr-gold-rgb', `${r}, ${g}, ${b}`);
                 }
 
                 // Aplica tipografia (fontes continuam compartilhadas)
                 const heading = theme.typography?.heading_font;
                 const body = theme.typography?.body_font;
-                if (heading) root.style.setProperty('--font-title', `'${heading}', serif`);
-                if (body) root.style.setProperty('--font-body', `'${body}', sans-serif`);
+                if (heading) {
+                    root.style.setProperty('--font-title', `'${heading}', serif`);
+                    root.style.setProperty('--cr-font-title', `'${heading}', serif`);
+                    ensureGoogleFont(heading, ['400', '600', '700']);
+                }
+                if (body) {
+                    root.style.setProperty('--font-body', `'${body}', sans-serif`);
+                    root.style.setProperty('--cr-font-body', `'${body}', sans-serif`);
+                    ensureGoogleFont(body, ['300', '400', '500', '600', '700']);
+                }
             } catch (e) {
                 console.warn('[AccountTheme] Erro:', e);
             }

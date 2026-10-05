@@ -15,9 +15,10 @@
     --cr-gold: #b8935a;
     --cr-gold-hover: #966f3d;
     --cr-gold-dark: #aa820a;
-    --cr-gold-soft: rgba(184, 147, 90, 0.12);
-    --cr-border: rgba(184, 147, 90, 0.25);
-    --cr-border-hover: rgba(184, 147, 90, 0.5);
+    --cr-gold-rgb: 184, 147, 90;
+    --cr-gold-soft: rgba(var(--cr-gold-rgb), 0.12);
+    --cr-border: rgba(var(--cr-gold-rgb), 0.25);
+    --cr-border-hover: rgba(var(--cr-gold-rgb), 0.5);
 
     /* === CORES DE STATUS === */
     --cr-success: #5a8a5a;
@@ -192,7 +193,7 @@ button {
 .perfil-btn-user:hover {
     background: var(--cr-bg-card);
     border-color: var(--cr-gold);
-    box-shadow: 0 4px 12px rgba(184, 147, 90, 0.25);
+    box-shadow: 0 4px 12px rgba(var(--cr-gold-rgb), 0.25);
 }
 
 .perfil-btn-user-avatar {
@@ -400,7 +401,7 @@ button {
 .perfil-loading .spinner {
     width: 42px;
     height: 42px;
-    border: 3px solid rgba(184, 147, 90, 0.2);
+    border: 3px solid rgba(var(--cr-gold-rgb), 0.2);
     border-top-color: var(--cr-gold);
     border-radius: 50%;
     animation: spin 0.9s linear infinite;
@@ -723,8 +724,8 @@ button {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
-    color: #fdfaf4;
+    background: var(--cr-gold);
+    color: #ffffff;
     padding: 0.8rem 1.8rem;
     border-radius: 25px;
     font-size: 0.82rem;
@@ -738,8 +739,9 @@ button {
 }
 
 .btn-cream:hover {
+    background: var(--cr-gold-dark);
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(184, 147, 90, 0.4);
+    box-shadow: 0 6px 18px rgba(var(--cr-gold-rgb), 0.4);
 }
 
 .btn-cream:disabled {
@@ -956,10 +958,10 @@ button {
 
 @keyframes timelinePulse {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(184, 147, 90, 0.45);
+        box-shadow: 0 0 0 0 rgba(var(--cr-gold-rgb), 0.45);
     }
     50% {
-        box-shadow: 0 0 0 8px rgba(184, 147, 90, 0);
+        box-shadow: 0 0 0 8px rgba(var(--cr-gold-rgb), 0);
     }
 }
 
@@ -1319,7 +1321,7 @@ button {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
+    background: linear-gradient(135deg, var(--cr-gold) 0%, var(--cr-gold-dark) 100%);
     color: #fdfaf4;
     padding: 0.7rem 1.4rem;
     border-radius: 30px;
@@ -1332,12 +1334,12 @@ button {
     cursor: pointer;
     transition: all 0.25s ease;
     white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(184, 147, 90, 0.2);
+    box-shadow: 0 2px 8px rgba(var(--cr-gold-rgb), 0.2);
 }
 
 .btn-avaliar:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(184, 147, 90, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--cr-gold-rgb), 0.3);
 }
 
 .badge-avaliado {
@@ -1619,11 +1621,11 @@ button {
 /* Card destacado em "Meus Pedidos" */
 .avaliacoes-pendentes-card {
     background: linear-gradient(135deg, #fdf3d9 0%, #f7e6bd 100%);
-    border: 1px solid rgba(184, 147, 90, 0.4);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.4);
     border-radius: 14px;
     padding: 1.2rem 1.4rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 4px 14px rgba(184, 147, 90, 0.12);
+    box-shadow: 0 4px 14px rgba(var(--cr-gold-rgb), 0.12);
     animation: fadeIn 0.4s ease;
 }
 
@@ -1665,7 +1667,7 @@ button {
 }
 
 .avaliacoes-card-btn {
-    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
+    background: linear-gradient(135deg, var(--cr-gold) 0%, var(--cr-gold-dark) 100%);
     color: #fdfaf4;
     padding: 0.7rem 1.3rem;
     border-radius: 30px;
@@ -1683,7 +1685,7 @@ button {
 
 .avaliacoes-card-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(184, 147, 90, 0.35);
+    box-shadow: 0 6px 16px rgba(var(--cr-gold-rgb), 0.35);
 }
 
 /* Badge no navbar */
@@ -2026,11 +2028,11 @@ button {
 .notif-carousel {
     position: relative;
     background: linear-gradient(135deg, #fdf3d9 0%, #f7e6bd 100%);
-    border: 1px solid rgba(184, 147, 90, 0.4);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.4);
     border-radius: 14px;
     padding: 1.2rem 3.5rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 4px 14px rgba(184, 147, 90, 0.12);
+    box-shadow: 0 4px 14px rgba(var(--cr-gold-rgb), 0.12);
     overflow: hidden;
     animation: fadeIn 0.4s ease;
 }
@@ -2083,7 +2085,7 @@ button {
 }
 
 .notif-carousel-cta {
-    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
+    background: linear-gradient(135deg, var(--cr-gold) 0%, var(--cr-gold-dark) 100%);
     color: #fdfaf4;
     padding: 0.7rem 1.3rem;
     border-radius: 30px;
@@ -2101,7 +2103,7 @@ button {
 
 .notif-carousel-cta:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(184, 147, 90, 0.35);
+    box-shadow: 0 6px 16px rgba(var(--cr-gold-rgb), 0.35);
 }
 
 /* Setas */
@@ -2112,8 +2114,8 @@ button {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: rgba(184, 147, 90, 0.15);
-    border: 1px solid rgba(184, 147, 90, 0.3);
+    background: rgba(var(--cr-gold-rgb), 0.15);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.3);
     color: var(--cr-gold-hover);
     cursor: pointer;
     display: flex;
@@ -2148,7 +2150,7 @@ button {
 .notif-carousel-dot {
     width: 7px;
     height: 7px;
-    background: rgba(184, 147, 90, 0.3);
+    background: rgba(var(--cr-gold-rgb), 0.3);
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -2228,7 +2230,7 @@ button {
 .cupom-card:hover {
     border-color: var(--cr-border-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(184, 147, 90, 0.12);
+    box-shadow: 0 6px 18px rgba(var(--cr-gold-rgb), 0.12);
 }
 
 .cupom-card.urgent {
@@ -2383,10 +2385,10 @@ button {
 
 .perfil-pontos-card {
     background: linear-gradient(135deg, #fdfaf4 0%, #f7f1e8 100%);
-    border: 1px solid rgba(184, 147, 90, 0.4);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.4);
     border-radius: 16px;
     padding: 1.6rem 1.8rem;
-    box-shadow: 0 6px 22px rgba(184, 147, 90, 0.12);
+    box-shadow: 0 6px 22px rgba(var(--cr-gold-rgb), 0.12);
     position: relative;
     overflow: hidden;
     animation: fadeIn 0.4s ease;
@@ -2399,7 +2401,7 @@ button {
     right: -40px;
     width: 160px;
     height: 160px;
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(var(--cr-gold-rgb), 0.15) 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -2414,7 +2416,7 @@ button {
     font-size: 3rem;
     line-height: 1;
     flex-shrink: 0;
-    filter: drop-shadow(0 2px 6px rgba(184, 147, 90, 0.3));
+    filter: drop-shadow(0 2px 6px rgba(var(--cr-gold-rgb), 0.3));
 }
 
 .perfil-pontos-info {
@@ -2469,7 +2471,7 @@ button {
 }
 
 .perfil-pontos-btn-trocar {
-    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
+    background: linear-gradient(135deg, var(--cr-gold) 0%, var(--cr-gold-dark) 100%);
     color: #fdfaf4;
     border: none;
     padding: 0.85rem 1.6rem;
@@ -2487,14 +2489,14 @@ button {
 
 .perfil-pontos-btn-trocar:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(184, 147, 90, 0.35);
+    box-shadow: 0 8px 22px rgba(var(--cr-gold-rgb), 0.35);
     filter: brightness(1.08);
 }
 
 .perfil-pontos-btn-trocar:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background: rgba(184, 147, 90, 0.3);
+    background: rgba(var(--cr-gold-rgb), 0.3);
     color: var(--cr-text-dim);
 }
 
@@ -2509,7 +2511,7 @@ button {
 .spinner-mini {
     width: 28px;
     height: 28px;
-    border: 2px solid rgba(184, 147, 90, 0.2);
+    border: 2px solid rgba(var(--cr-gold-rgb), 0.2);
     border-top-color: var(--cr-gold-hover);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
@@ -2596,7 +2598,7 @@ button {
     width: 100%;
     margin-top: 1rem;
     background: transparent;
-    border: 1px dashed rgba(184, 147, 90, 0.4);
+    border: 1px dashed rgba(var(--cr-gold-rgb), 0.4);
     color: var(--cr-gold-hover);
     padding: 0.75rem 1rem;
     border-radius: 10px;
@@ -2610,7 +2612,7 @@ button {
 
 .perfil-pontos-ver-mais:hover {
     border-color: var(--cr-gold-hover);
-    background: rgba(184, 147, 90, 0.08);
+    background: rgba(var(--cr-gold-rgb), 0.08);
     border-style: solid;
 }
 
@@ -2619,7 +2621,7 @@ button {
    ========================================================================== */
 .redeem-points-content {
     background: #fdfaf4;
-    border: 1px solid rgba(184, 147, 90, 0.3);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.3);
     border-radius: 16px;
     max-width: 520px;
     width: 100%;
@@ -2658,8 +2660,8 @@ button {
 }
 
 .redeem-points-balance {
-    background: rgba(184, 147, 90, 0.1);
-    border: 1px solid rgba(184, 147, 90, 0.25);
+    background: rgba(var(--cr-gold-rgb), 0.1);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.25);
     border-radius: 10px;
     padding: 0.75rem 1rem;
     font-size: 0.88rem;
@@ -2691,7 +2693,7 @@ button {
 .redeem-points-input {
     width: 100%;
     background: #f7f1e8;
-    border: 1px solid rgba(184, 147, 90, 0.3);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.3);
     color: var(--cr-text-primary);
     padding: 0.9rem 1rem;
     border-radius: 10px;
@@ -2706,7 +2708,7 @@ button {
 
 .redeem-points-input:focus {
     border-color: var(--cr-gold-hover);
-    box-shadow: 0 0 0 3px rgba(184, 147, 90, 0.15);
+    box-shadow: 0 0 0 3px rgba(var(--cr-gold-rgb), 0.15);
 }
 
 .redeem-points-quick-btns {
@@ -2720,7 +2722,7 @@ button {
     flex: 1;
     min-width: 80px;
     background: transparent;
-    border: 1px solid rgba(184, 147, 90, 0.3);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.3);
     color: var(--cr-gold-hover);
     padding: 0.5rem 0.7rem;
     border-radius: 20px;
@@ -2733,7 +2735,7 @@ button {
 }
 
 .redeem-points-quick-btns button:hover {
-    background: rgba(184, 147, 90, 0.12);
+    background: rgba(var(--cr-gold-rgb), 0.12);
     border-color: var(--cr-gold-hover);
 }
 
@@ -2785,12 +2787,12 @@ button {
     gap: 0.7rem;
     justify-content: flex-end;
     padding-top: 0.8rem;
-    border-top: 1px solid rgba(184, 147, 90, 0.15);
+    border-top: 1px solid rgba(var(--cr-gold-rgb), 0.15);
 }
 
 .redeem-points-actions .btn-review-cancel {
     background: transparent;
-    border: 1px solid rgba(184, 147, 90, 0.3);
+    border: 1px solid rgba(var(--cr-gold-rgb), 0.3);
     color: var(--cr-text-muted);
     padding: 0.75rem 1.4rem;
     border-radius: 30px;
@@ -2809,7 +2811,7 @@ button {
 }
 
 .redeem-points-actions .btn-cream {
-    background: linear-gradient(135deg, #c9a46a 0%, #a07b42 100%);
+    background: linear-gradient(135deg, var(--cr-gold) 0%, var(--cr-gold-dark) 100%);
     color: #fdfaf4;
     border: none;
     padding: 0.75rem 1.6rem;
@@ -2825,7 +2827,7 @@ button {
 
 .redeem-points-actions .btn-cream:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(184, 147, 90, 0.35);
+    box-shadow: 0 6px 18px rgba(var(--cr-gold-rgb), 0.35);
     filter: brightness(1.08);
 }
 
