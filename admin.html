@@ -3915,7 +3915,7 @@
                     </div>
 
                     <div class="placeholder-box">
-                        <h2>Bem-vindo ao painel 👋</h2>
+                        <h2>Bem-vindo ao painel</h2>
                         <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>,
                             <strong>Clientes</strong>, <strong>Financeiro</strong> e <strong>Configurações</strong>.
                         </p>
@@ -3989,7 +3989,7 @@
                                 <button class="filter-tab"
                                     onclick="setReviewFilter('rejected', this)">Rejeitadas</button>
                                 <button class="filter-tab" onclick="setReviewFilter('all', this)">Todas</button>
-                                <button class="filter-tab" onclick="setReviewFilter('featured', this)">⭐ Destacadas</button>
+                                <button class="filter-tab" onclick="setReviewFilter('featured', this)">Destacadas</button>
                             </div>
                             <input type="text" class="search-input" id="review-search"
                                 placeholder="Buscar por produto, cliente..." oninput="renderReviews()">
@@ -4301,7 +4301,7 @@
 
                             <div class="form-group">
                                 <label for="cfg-banner-message">Mensagem (deixe vazio pra esconder)</label>
-                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300 ✨"
+                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300"
                                     maxlength="120">
                                 <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra
                                     promoções e avisos rápidos.</small>
@@ -4491,7 +4491,7 @@
                                 <div class="form-group">
                                     <label for="cfg-low-stock-threshold">Mostrar "últimas X unidades" a partir de</label>
                                     <input type="number" id="cfg-low-stock-threshold" min="0" max="50" placeholder="2">
-                                    <small class="config-hint">Usado em <code>admin.html</code> (badge amarelo) e <code>produto.html</code> ("⚡ Últimas X unidades").</small>
+                                    <small class="config-hint">Usado em <code>admin.html</code> (badge amarelo) e <code>produto.html</code> ("Últimas X unidades").</small>
                                 </div>
 
                                 <!-- Banner de frete grátis -->
@@ -4504,7 +4504,7 @@
 
                                 <div class="form-group">
                                     <label for="cfg-free-shipping-banner-message">Mensagem do banner</label>
-                                    <input type="text" id="cfg-free-shipping-banner-message" maxlength="120" placeholder="Faltam {falta} pro frete grátis ✨">
+                                    <input type="text" id="cfg-free-shipping-banner-message" maxlength="120" placeholder="Faltam {falta} pro frete grátis">
                                     <small class="config-hint">Use <code>{falta}</code> pra inserir o valor que falta (ex: R$ 87,00).</small>
                                 </div>
 
@@ -4846,12 +4846,12 @@
 
                 <div class="form-check">
                     <input type="checkbox" id="coupon-free-shipping">
-                    <label for="coupon-free-shipping">🎁 Cupom de frete grátis</label>
+                    <label for="coupon-free-shipping">Cupom de frete grátis</label>
                 </div>
 
                 <div class="form-check">
                     <input type="checkbox" id="coupon-first-purchase">
-                    <label for="coupon-first-purchase">🌟 Válido apenas na primeira compra do cliente</label>
+                    <label for="coupon-first-purchase">Válido apenas na primeira compra do cliente</label>
                 </div>
 
                 <div class="form-row-2">
@@ -6106,7 +6106,7 @@
 
                     ${review.admin_response ? `
                         <div class="review-admin-response">
-                            <strong>💛 Sua resposta:</strong><br>
+                            <strong>Sua resposta:</strong><br>
                             ${escapeHTML(review.admin_response)}
                         </div>
                     ` : ''}
@@ -6603,9 +6603,9 @@
             }
 
             const badges = [];
-            if (coupon.free_shipping) badges.push('🚚 Frete grátis');
-            if (coupon.first_purchase_only) badges.push('🌟 1ª compra');
-            if (coupon.customer_email) badges.push('👤 Individual');
+            if (coupon.free_shipping) badges.push('Frete grátis');
+            if (coupon.first_purchase_only) badges.push('1ª compra');
+            if (coupon.customer_email) badges.push('Individual');
 
             let usageLabel = `${coupon.times_used} usos`;
             if (coupon.usage_limit_total) {
@@ -8114,7 +8114,7 @@
                 html = `
                     <div class="form-group">
                         <label>Ícone (emoji, opcional)</label>
-                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '')}" oninput="updateBannerPreview()" placeholder="✨">
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '')}" oninput="updateBannerPreview()" placeholder="">
                     </div>
                     <div class="form-group">
                         <label>Texto <span class="required">*</span></label>
@@ -8146,7 +8146,7 @@
                 html = `
                     <div class="form-group">
                         <label>Ícone (emoji)</label>
-                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '')}" oninput="updateBannerPreview()" placeholder="🔗">
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '')}" oninput="updateBannerPreview()" placeholder="">
                     </div>
                     <div class="form-group">
                         <label>Texto <span class="required">*</span></label>
@@ -8165,7 +8165,7 @@
                     </div>
                     <div class="form-group">
                         <label>Texto alternativo (opcional — quando o cliente já tem frete grátis)</label>
-                        <input type="text" id="bs-text" maxlength="120" value="${escapeHTML(slide.text || '')}" oninput="updateBannerPreview()" placeholder="✨ Você já tem frete grátis!">
+                        <input type="text" id="bs-text" maxlength="120" value="${escapeHTML(slide.text || '')}" oninput="updateBannerPreview()" placeholder="Você já tem frete grátis!">
                     </div>
                     <div class="config-hint">O texto principal é calculado automaticamente: "Faltam R$ X pro frete grátis"</div>
                 `;
@@ -8173,7 +8173,7 @@
                 html = `
                     <div class="form-group">
                         <label>Ícone (emoji)</label>
-                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '✨')}" oninput="updateBannerPreview()">
+                        <input type="text" id="bs-icon" maxlength="4" value="${escapeHTML(slide.icon || '')}" oninput="updateBannerPreview()">
                     </div>
                     <div class="form-group">
                         <label>Texto <span class="required">*</span></label>
@@ -8255,9 +8255,9 @@
 
             let displayText = '';
             if (type === 'dynamic_shipping') {
-                displayText = `${icon || '🚚'} Faltam R$ 120,00 pro frete grátis ✨`;
+                displayText = `${icon || '🚚'} Faltam R$ 120,00 pro frete grátis`;
             } else if (type === 'shipping_achieved') {
-                displayText = `${icon || '✨'} ${text || 'Você conquistou frete grátis!'}`;
+                displayText = `${icon || ''} ${text || 'Você conquistou frete grátis!'}`;
             } else if (type === 'installments') {
                 const n = document.getElementById('bs-installments')?.value || 10;
                 displayText = `${icon || '💳'} Parcele em até ${n}x sem juros`;
@@ -8401,7 +8401,7 @@
                 'cfg-account-hero-badge': data?.account_hero_badge || '',
                 'cfg-account-hero-subtitle': data?.account_hero_subtitle || '',
                 'cfg-low-stock-threshold': data?.low_stock_threshold != null ? String(data.low_stock_threshold) : '2',
-                'cfg-free-shipping-banner-message': data?.free_shipping_banner_message || 'Faltam {falta} pro frete grátis ✨',
+                'cfg-free-shipping-banner-message': data?.free_shipping_banner_message || 'Faltam {falta} pro frete grátis',
                 'cfg-free-shipping-banner-threshold-pct': data?.free_shipping_banner_threshold_pct != null ? String(data.free_shipping_banner_threshold_pct) : '30'
             };
 
@@ -8969,13 +8969,13 @@
 
             let html = '';
             if (favorites.length > 0) {
-                html += `<div><h3 class="themes-group-title">⭐ Favoritos</h3><div class="themes-grid">${favorites.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
+                html += `<div><h3 class="themes-group-title">Favoritos</h3><div class="themes-grid">${favorites.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
             }
             if (system.length > 0) {
-                html += `<div><h3 class="themes-group-title">📚 Sistema</h3><div class="themes-grid">${system.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
+                html += `<div><h3 class="themes-group-title">Sistema</h3><div class="themes-grid">${system.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
             }
             if (custom.length > 0) {
-                html += `<div><h3 class="themes-group-title">✨ Meus temas</h3><div class="themes-grid">${custom.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
+                html += `<div><h3 class="themes-group-title">Meus temas</h3><div class="themes-grid">${custom.map(t => renderThemeCard(t, activeId)).join('')}</div></div>`;
             }
 
             container.innerHTML = html;
