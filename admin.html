@@ -4623,120 +4623,6 @@
                                 Edite os textos, mídias e meta tags que aparecem no site. As mudanças aplicam após salvar.
                             </p>
 
-                            <!-- Hero -->
-                            <details class="content-section-details" open>
-                                <summary>Hero (topo da home)</summary>
-
-                                <div class="form-group">
-                                    <label for="cfg-hero-tagline">Tagline (linha acima do título)</label>
-                                    <input type="text" id="cfg-hero-tagline" maxlength="80" placeholder="Microcrochê & Pedras Naturais">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="cfg-hero-title">Título principal (H1)</label>
-                                    <input type="text" id="cfg-hero-title" maxlength="120" placeholder="A sua vida brilha como um cristal">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="cfg-hero-subtitle">Subtítulo</label>
-                                    <textarea id="cfg-hero-subtitle" rows="3" maxlength="300" placeholder="Joias artesanais em microcristais..."></textarea>
-                                </div>
-
-                                <div class="form-row-2">
-                                    <div class="form-group">
-                                        <label for="cfg-hero-cta-text">Texto do botão</label>
-                                        <input type="text" id="cfg-hero-cta-text" maxlength="40" placeholder="Conheça a Coleção">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="cfg-hero-cta-link">Link do botão</label>
-                                        <input type="text" id="cfg-hero-cta-link" maxlength="120" placeholder="#colecao">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Vídeo do hero (opcional)</label>
-                                    <div class="site-media-uploader" data-target="cfg-hero-video-url">
-                                        <div class="site-media-preview" id="preview-hero-video"></div>
-                                        <div class="site-media-actions">
-                                            <input type="file" id="upload-hero-video" accept="video/mp4,video/quicktime,video/webm" hidden>
-                                            <button type="button" class="gallery-btn" onclick="document.getElementById('upload-hero-video').click()">
-                                                📹 Escolher vídeo
-                                            </button>
-                                            <button type="button" class="gallery-btn" onclick="clearSiteMedia('cfg-hero-video-url', 'preview-hero-video')">
-                                                ✕ Remover
-                                            </button>
-                                        </div>
-                                        <input type="hidden" id="cfg-hero-video-url">
-                                        <small class="config-hint">MP4, MOV ou WebM · máx 50MB</small>
-                                    </div>
-                                </div>
-                            </details>
-
-                            <!-- Carrossel -->
-                            <details class="content-section-details">
-                                <summary>Carrossel (Nossa Essência & Cuidados)</summary>
-
-                                <div class="form-group">
-                                    <label for="cfg-carousel-title">Título da seção</label>
-                                    <input type="text" id="cfg-carousel-title" maxlength="80" placeholder="Nossa Essência & Cuidados">
-                                </div>
-
-                                <div id="carousel-slides-editor"></div>
-
-                                <button type="button" class="gallery-btn" id="btn-add-carousel-slide" onclick="addCarouselSlide()">
-                                    + Adicionar slide
-                                </button>
-                            </details>
-
-                            <!-- Rodapé -->
-                            <details class="content-section-details">
-                                <summary>Rodapé</summary>
-
-                                <div class="form-group">
-                                    <label for="cfg-footer-brand">Nome da marca</label>
-                                    <input type="text" id="cfg-footer-brand" maxlength="40" placeholder="USE GEMAS">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="cfg-footer-tagline">Tagline</label>
-                                    <input type="text" id="cfg-footer-tagline" maxlength="80" placeholder="Arte viva em pedras e microcristais.">
-                                </div>
-                            </details>
-
-                            <!-- Meta Tags / SEO -->
-                            <details class="content-section-details">
-                                <summary>Meta Tags / SEO</summary>
-
-                                <div class="form-group">
-                                    <label for="cfg-meta-title">Title (aba do navegador + Google)</label>
-                                    <input type="text" id="cfg-meta-title" maxlength="80" placeholder="Use Gemas | Joias Artesanais e Pedras Naturais">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="cfg-meta-description">Meta description (Google)</label>
-                                    <textarea id="cfg-meta-description" rows="2" maxlength="180" placeholder="Joias artesanais em microcrochê e pedras naturais..."></textarea>
-                                    <small class="config-hint">Ideal: 150-160 caracteres.</small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Imagem Open Graph (og:image — compartilhamento em WhatsApp/Instagram)</label>
-                                    <div class="site-media-uploader" data-target="cfg-meta-og-image-url">
-                                        <div class="site-media-preview" id="preview-og-image"></div>
-                                        <div class="site-media-actions">
-                                            <input type="file" id="upload-og-image" accept="image/jpeg,image/png,image/webp" hidden>
-                                            <button type="button" class="gallery-btn" onclick="document.getElementById('upload-og-image').click()">
-                                                🖼️ Escolher imagem
-                                            </button>
-                                            <button type="button" class="gallery-btn" onclick="clearSiteMedia('cfg-meta-og-image-url', 'preview-og-image')">
-                                                ✕ Remover
-                                            </button>
-                                        </div>
-                                        <input type="hidden" id="cfg-meta-og-image-url">
-                                        <small class="config-hint">1200×630px · JPG/PNG/WebP</small>
-                                    </div>
-                                </div>
-                            </details>
-
                             <!-- ==================== ÁREA DO CLIENTE ==================== -->
                             <details class="content-section-details">
                                 <summary>Área do Cliente (minha-conta.html)</summary>
@@ -8600,10 +8486,186 @@
             if (modal) modal.classList.remove('open');
         }
 
-        function openHeroModal() { console.log('[P3] Abrir modal Hero'); }
-        function openCarrosselModal() { console.log('[P3] Abrir modal Carrossel'); }
-        function openRodapeModal() { console.log('[P3] Abrir modal Rodapé'); }
-        function openMetaModal() { console.log('[P3] Abrir modal Meta Tags'); }
+        function openHeroModal() {
+            const modal = document.getElementById('hero-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeHeroModal() {
+            const modal = document.getElementById('hero-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        function openCarrosselModal() {
+            const modal = document.getElementById('carrossel-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeCarrosselModal() {
+            const modal = document.getElementById('carrossel-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        function openRodapeModal() {
+            const modal = document.getElementById('rodape-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeRodapeModal() {
+            const modal = document.getElementById('rodape-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        function openMetaModal() {
+            const modal = document.getElementById('meta-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeMetaModal() {
+            const modal = document.getElementById('meta-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        async function saveHeroSettings() {
+            const btn = document.getElementById('btn-save-hero');
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const payload = {
+                    hero_tagline: (document.getElementById('cfg-hero-tagline')?.value || '').trim() || null,
+                    hero_title: (document.getElementById('cfg-hero-title')?.value || '').trim() || null,
+                    hero_subtitle: (document.getElementById('cfg-hero-subtitle')?.value || '').trim() || null,
+                    hero_cta_text: (document.getElementById('cfg-hero-cta-text')?.value || '').trim() || null,
+                    hero_cta_link: (document.getElementById('cfg-hero-cta-link')?.value || '').trim() || null,
+                    hero_video_url: (document.getElementById('cfg-hero-video-url')?.value || '').trim() || null,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update(payload)
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveHeroSettings] Erro:', error);
+                    showToast('Erro ao salvar hero.', 'error');
+                    return;
+                }
+
+                if (currentSettings) Object.assign(currentSettings, payload);
+                showToast('Hero salvo!');
+                closeHeroModal();
+            } catch (e) {
+                console.error('[saveHeroSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
+
+        async function saveCarrosselSettings() {
+            const btn = document.getElementById('btn-save-carrossel');
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const payload = {
+                    carousel_title: (document.getElementById('cfg-carousel-title')?.value || '').trim() || null,
+                    carousel_slides: carouselSlidesState,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update(payload)
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveCarrosselSettings] Erro:', error);
+                    showToast('Erro ao salvar carrossel.', 'error');
+                    return;
+                }
+
+                if (currentSettings) Object.assign(currentSettings, payload);
+                showToast('Carrossel salvo!');
+                closeCarrosselModal();
+            } catch (e) {
+                console.error('[saveCarrosselSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
+
+        async function saveRodapeSettings() {
+            const btn = document.getElementById('btn-save-rodape');
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const payload = {
+                    footer_brand: (document.getElementById('cfg-footer-brand')?.value || '').trim() || null,
+                    footer_tagline: (document.getElementById('cfg-footer-tagline')?.value || '').trim() || null,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update(payload)
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveRodapeSettings] Erro:', error);
+                    showToast('Erro ao salvar rodapé.', 'error');
+                    return;
+                }
+
+                if (currentSettings) Object.assign(currentSettings, payload);
+                showToast('Rodapé salvo!');
+                closeRodapeModal();
+            } catch (e) {
+                console.error('[saveRodapeSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
+
+        async function saveMetaSettings() {
+            const btn = document.getElementById('btn-save-meta');
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const payload = {
+                    meta_title: (document.getElementById('cfg-meta-title')?.value || '').trim() || null,
+                    meta_description: (document.getElementById('cfg-meta-description')?.value || '').trim() || null,
+                    meta_og_image_url: (document.getElementById('cfg-meta-og-image-url')?.value || '').trim() || null,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update(payload)
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveMetaSettings] Erro:', error);
+                    showToast('Erro ao salvar meta tags.', 'error');
+                    return;
+                }
+
+                if (currentSettings) Object.assign(currentSettings, payload);
+                showToast('Meta tags salvas!');
+                closeMetaModal();
+            } catch (e) {
+                console.error('[saveMetaSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
         function openAreaClienteModal() { console.log('[P3] Abrir modal Área do Cliente'); }
         function openRefinosModal() { console.log('[P3] Abrir modal Refinos'); }
 
@@ -10934,6 +10996,152 @@
                 <button type="button" class="btn-save" id="btn-save-banners" onclick="saveBannerSlidesOnly()">
                     Salvar banners
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: HERO ==================== -->
+    <div id="hero-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeHeroModal()">&times;</button>
+            <h2 class="modal-title">Hero (topo da home)</h2>
+
+            <div class="form-group">
+                <label for="cfg-hero-tagline">Tagline (linha acima do título)</label>
+                <input type="text" id="cfg-hero-tagline" maxlength="80" placeholder="Microcrochê & Pedras Naturais">
+            </div>
+
+            <div class="form-group">
+                <label for="cfg-hero-title">Título principal (H1)</label>
+                <input type="text" id="cfg-hero-title" maxlength="120" placeholder="A sua vida brilha como um cristal">
+            </div>
+
+            <div class="form-group">
+                <label for="cfg-hero-subtitle">Subtítulo</label>
+                <textarea id="cfg-hero-subtitle" rows="3" maxlength="300" placeholder="Joias artesanais em microcristais..."></textarea>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="cfg-hero-cta-text">Texto do botão</label>
+                    <input type="text" id="cfg-hero-cta-text" maxlength="40" placeholder="Conheça a Coleção">
+                </div>
+                <div class="form-group">
+                    <label for="cfg-hero-cta-link">Link do botão</label>
+                    <input type="text" id="cfg-hero-cta-link" maxlength="120" placeholder="#colecao">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Vídeo do hero (opcional)</label>
+                <div class="site-media-uploader" data-target="cfg-hero-video-url">
+                    <div class="site-media-preview" id="preview-hero-video"></div>
+                    <div class="site-media-actions">
+                        <input type="file" id="upload-hero-video" accept="video/mp4,video/quicktime,video/webm" hidden>
+                        <button type="button" class="gallery-btn" onclick="document.getElementById('upload-hero-video').click()">
+                            Escolher vídeo
+                        </button>
+                        <button type="button" class="gallery-btn" onclick="clearSiteMedia('cfg-hero-video-url', 'preview-hero-video')">
+                            Remover
+                        </button>
+                    </div>
+                    <input type="hidden" id="cfg-hero-video-url">
+                    <small class="config-hint">MP4, MOV ou WebM · máx 50MB</small>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeHeroModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-hero" onclick="saveHeroSettings()">Salvar hero</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: CARROSSEL ==================== -->
+    <div id="carrossel-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeCarrosselModal()">&times;</button>
+            <h2 class="modal-title">Carrossel</h2>
+
+            <div class="form-group">
+                <label for="cfg-carousel-title">Título da seção</label>
+                <input type="text" id="cfg-carousel-title" maxlength="80" placeholder="Nossa Essência & Cuidados">
+            </div>
+
+            <div id="carousel-slides-editor"></div>
+
+            <button type="button" class="gallery-btn" id="btn-add-carousel-slide" onclick="addCarouselSlide()" style="margin-top: 0.8rem;">
+                + Adicionar slide
+            </button>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeCarrosselModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-carrossel" onclick="saveCarrosselSettings()">Salvar carrossel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: RODAPÉ ==================== -->
+    <div id="rodape-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeRodapeModal()">&times;</button>
+            <h2 class="modal-title">Rodapé</h2>
+
+            <div class="form-group">
+                <label for="cfg-footer-brand">Nome da marca</label>
+                <input type="text" id="cfg-footer-brand" maxlength="40" placeholder="USE GEMAS">
+            </div>
+
+            <div class="form-group">
+                <label for="cfg-footer-tagline">Tagline</label>
+                <input type="text" id="cfg-footer-tagline" maxlength="80" placeholder="Arte viva em pedras e microcristais.">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeRodapeModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-rodape" onclick="saveRodapeSettings()">Salvar rodapé</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: META TAGS / SEO ==================== -->
+    <div id="meta-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeMetaModal()">&times;</button>
+            <h2 class="modal-title">Meta Tags / SEO</h2>
+
+            <div class="form-group">
+                <label for="cfg-meta-title">Title (aba do navegador + Google)</label>
+                <input type="text" id="cfg-meta-title" maxlength="80" placeholder="Use Gemas | Joias Artesanais e Pedras Naturais">
+            </div>
+
+            <div class="form-group">
+                <label for="cfg-meta-description">Meta description (Google)</label>
+                <textarea id="cfg-meta-description" rows="2" maxlength="180" placeholder="Joias artesanais em microcrochê e pedras naturais..."></textarea>
+                <small class="config-hint">Ideal: 150-160 caracteres.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Imagem Open Graph (og:image — compartilhamento em WhatsApp/Instagram)</label>
+                <div class="site-media-uploader" data-target="cfg-meta-og-image-url">
+                    <div class="site-media-preview" id="preview-og-image"></div>
+                    <div class="site-media-actions">
+                        <input type="file" id="upload-og-image" accept="image/jpeg,image/png,image/webp" hidden>
+                        <button type="button" class="gallery-btn" onclick="document.getElementById('upload-og-image').click()">
+                            Escolher imagem
+                        </button>
+                        <button type="button" class="gallery-btn" onclick="clearSiteMedia('cfg-meta-og-image-url', 'preview-og-image')">
+                            Remover
+                        </button>
+                    </div>
+                    <input type="hidden" id="cfg-meta-og-image-url">
+                    <small class="config-hint">1200×630px · JPG/PNG/WebP</small>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeMetaModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-meta" onclick="saveMetaSettings()">Salvar meta tags</button>
             </div>
         </div>
     </div>
