@@ -46,6 +46,8 @@
             --overlay-bg: rgba(0, 0, 0, 0.88);
             --divider-subtle: rgba(255, 255, 255, 0.05);
             --divider-strong: rgba(255, 255, 255, 0.12);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.15);
             --gold-rgb: 212, 175, 55;
             --font-title: 'Inter', system-ui, -apple-system, sans-serif;
             --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -79,6 +81,8 @@
             --overlay-bg: rgba(0, 0, 0, 0.4);
             --divider-subtle: rgba(0, 0, 0, 0.06);
             --divider-strong: rgba(0, 0, 0, 0.12);
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --border-strong: rgba(0, 0, 0, 0.12);
             --gold-rgb: 139, 106, 21;
         }
 
@@ -106,6 +110,14 @@
 
         html.admin-light .content-card {
             background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        html.admin-light .gallery-dropzone {
+            background: #faf9f6;
+        }
+
+        html.admin-light .gallery-item {
             border-color: rgba(0, 0, 0, 0.08);
         }
 
@@ -151,7 +163,7 @@
         .spinner {
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(212, 175, 55, 0.2);
+            border: 3px solid rgba(var(--gold-rgb), 0.2);
             border-top-color: var(--gold);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -214,7 +226,7 @@
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 6px 20px rgba(var(--gold-rgb), 0.3);
         }
 
         .btn-ghost {
@@ -226,7 +238,7 @@
             font-size: 0.85rem;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--border-subtle);
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 0.8rem;
@@ -234,7 +246,7 @@
         }
 
         .btn-ghost:hover {
-            border-color: rgba(255, 255, 255, 0.4);
+            border-color: var(--border-strong);
             color: var(--text);
         }
 
@@ -453,7 +465,7 @@
         .admin-theme-toggle:hover {
             border-color: var(--gold);
             color: var(--gold);
-            background: rgba(212, 175, 55, 0.08);
+            background: rgba(var(--gold-rgb), 0.08);
         }
 
         .admin-theme-toggle svg {
@@ -621,7 +633,7 @@
         }
 
         .filter-tab.active {
-            background: rgba(212, 175, 55, 0.15);
+            background: rgba(var(--gold-rgb), 0.15);
             color: var(--gold);
         }
 
@@ -649,7 +661,7 @@
 
         .btn-new-product:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.3);
         }
 
         .btn-export {
@@ -673,7 +685,7 @@
 
         .btn-export:hover {
             border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.08);
+            background: rgba(var(--gold-rgb), 0.08);
         }
 
         .btn-export:disabled {
@@ -791,13 +803,13 @@
             gap: 0.5rem;
             margin-top: 0.4rem;
             padding-top: 0.8rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--divider-subtle);
         }
 
         .action-btn {
             flex: 1;
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             padding: 0.5rem;
             border-radius: 6px;
@@ -814,15 +826,15 @@
         }
 
         .action-btn:hover {
-            border-color: rgba(255, 255, 255, 0.3);
+            border-color: var(--border-strong);
             color: var(--text);
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--divider-subtle);
         }
 
         .action-btn.edit:hover {
             border-color: var(--gold);
             color: var(--gold);
-            background: rgba(212, 175, 55, 0.08);
+            background: rgba(var(--gold-rgb), 0.08);
         }
 
         .action-btn.warn:hover {
@@ -903,7 +915,7 @@
         }
 
         .order-status.enviado {
-            background: rgba(212, 175, 55, 0.15);
+            background: rgba(var(--gold-rgb), 0.15);
             color: var(--gold);
         }
 
@@ -954,7 +966,7 @@
             margin-bottom: 0.7rem;
             font-weight: 700;
             padding-bottom: 0.4rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--divider-subtle);
         }
 
         .order-detail-row {
@@ -977,8 +989,8 @@
         }
 
         .order-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--divider-subtle);
+            border: 1px solid var(--divider-subtle);
             border-radius: 8px;
             padding: 0.7rem 0.9rem;
             margin-bottom: 0.5rem;
@@ -1021,8 +1033,8 @@
         }
 
         .order-totals {
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px solid rgba(212, 175, 55, 0.15);
+            background: rgba(var(--gold-rgb), 0.05);
+            border: 1px solid rgba(var(--gold-rgb), 0.15);
             border-radius: 8px;
             padding: 0.9rem 1rem;
         }
@@ -1042,7 +1054,7 @@
             font-weight: 700;
             padding-top: 0.5rem;
             margin-top: 0.4rem;
-            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            border-top: 1px solid rgba(var(--gold-rgb), 0.2);
         }
 
         .status-actions {
@@ -1064,15 +1076,15 @@
             text-transform: uppercase;
             cursor: pointer;
             transition: all 0.25s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-subtle);
             background: transparent;
             color: var(--text-muted);
         }
 
         .status-actions button:hover {
-            border-color: rgba(255, 255, 255, 0.3);
+            border-color: var(--border-strong);
             color: var(--text);
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--divider-subtle);
         }
 
         .status-actions button.active {
@@ -1133,7 +1145,7 @@
             gap: 1.5rem;
             padding-top: 0.8rem;
             margin-top: 0.4rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--divider-subtle);
             flex-wrap: wrap;
         }
 
@@ -1215,7 +1227,7 @@
 
         .config-actions .btn-save:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.3);
         }
 
         .config-actions .btn-save:disabled {
@@ -1267,7 +1279,7 @@
         }
 
         .preset-btn.active {
-            background: rgba(212, 175, 55, 0.15);
+            background: rgba(var(--gold-rgb), 0.15);
             border-color: var(--gold);
             color: var(--gold);
         }
@@ -1318,7 +1330,7 @@
         .finance-chart-header {
             margin-bottom: 1rem;
             padding-bottom: 0.8rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--divider-subtle);
         }
 
         .finance-chart-header h3 {
@@ -1350,8 +1362,8 @@
             align-items: center;
             gap: 0.9rem;
             padding: 0.7rem 0.9rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--divider-subtle);
+            border: 1px solid var(--divider-subtle);
             border-radius: 8px;
             transition: all 0.2s;
         }
@@ -1447,7 +1459,7 @@
             top: 1rem;
             right: 1.2rem;
             background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--border-subtle);
             color: var(--text);
             width: 36px;
             height: 36px;
@@ -1557,7 +1569,7 @@
             justify-content: flex-end;
             margin-top: 1.5rem;
             padding-top: 1.2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--divider-subtle);
             flex-wrap: wrap;
         }
 
@@ -1576,12 +1588,12 @@
 
         .btn-cancel {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            border: 1px solid var(--border-subtle) !important;
             color: var(--text-muted);
         }
 
         .btn-cancel:hover {
-            border-color: rgba(255, 255, 255, 0.4) !important;
+            border-color: var(--border-strong) !important;
             color: var(--text);
         }
 
@@ -1592,7 +1604,7 @@
 
         .btn-save:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.3);
         }
 
         .btn-save:disabled {
@@ -1613,7 +1625,7 @@
         }
 
         .gallery-dropzone {
-            border: 2px dashed rgba(212, 175, 55, 0.25);
+            border: 2px dashed rgba(var(--gold-rgb), 0.25);
             border-radius: 12px;
             background: var(--bg-card);
             padding: 1.4rem 1rem;
@@ -1626,7 +1638,7 @@
         .gallery-dropzone:hover,
         .gallery-dropzone.dragover {
             border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.06);
+            background: rgba(var(--gold-rgb), 0.06);
             color: var(--text);
         }
 
@@ -1648,8 +1660,8 @@
         }
 
         .gallery-btn {
-            background: rgba(212, 175, 55, 0.12);
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            background: rgba(var(--gold-rgb), 0.12);
+            border: 1px solid rgba(var(--gold-rgb), 0.4);
             color: var(--gold);
             padding: 0.5rem 1rem;
             border-radius: 8px;
@@ -1661,7 +1673,7 @@
         }
 
         .gallery-btn:hover {
-            background: rgba(212, 175, 55, 0.22);
+            background: rgba(var(--gold-rgb), 0.22);
             border-color: var(--gold);
             color: var(--gold-hover);
         }
@@ -1695,7 +1707,7 @@
             border-radius: 10px;
             overflow: hidden;
             background: var(--bg-panel);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--divider-subtle);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: grab;
@@ -2170,7 +2182,7 @@
             gap: 0.5rem;
             flex-wrap: wrap;
             padding-top: 0.8rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--divider-subtle);
         }
 
         .review-admin-actions .action-btn {
@@ -2178,7 +2190,7 @@
         }
 
         .review-response-preview {
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--divider-subtle);
             border-left: 3px solid var(--gold);
             padding: 0.8rem 1rem;
             border-radius: 6px;
@@ -2265,7 +2277,7 @@
         }
 
         .coupon-status-badge.inactive {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--divider-subtle);
             color: var(--text-dim);
         }
 
@@ -2299,8 +2311,8 @@
 
         .coupon-admin-badge {
             font-size: 0.68rem;
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid rgba(212, 175, 55, 0.25);
+            background: rgba(var(--gold-rgb), 0.1);
+            border: 1px solid rgba(var(--gold-rgb), 0.25);
             color: var(--gold);
             padding: 0.2rem 0.55rem;
             border-radius: 20px;
@@ -2318,7 +2330,7 @@
             color: var(--text-dim);
             padding-top: 0.6rem;
             margin-top: auto;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--divider-subtle);
             flex-wrap: wrap;
         }
 
@@ -2334,7 +2346,7 @@
             gap: 0.4rem;
             padding-top: 0.7rem;
             margin-top: 0.4rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--divider-subtle);
             flex-wrap: wrap;
         }
 
@@ -2394,8 +2406,8 @@
            MODAL DE HISTÓRICO DE USOS
            ========================================================================== */
         .coupon-usages-summary {
-            background: rgba(212, 175, 55, 0.08);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            background: rgba(var(--gold-rgb), 0.08);
+            border: 1px solid rgba(var(--gold-rgb), 0.2);
             border-radius: 10px;
             padding: 0.9rem 1.1rem;
             margin-bottom: 1.2rem;
@@ -2427,16 +2439,16 @@
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--divider-subtle);
+            border: 1px solid var(--divider-subtle);
             border-radius: 8px;
             padding: 0.7rem 0.9rem;
             transition: all 0.2s ease;
         }
 
         .coupon-usage-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(212, 175, 55, 0.2);
+            background: var(--divider-subtle);
+            border-color: rgba(var(--gold-rgb), 0.2);
         }
 
         .coupon-usage-email {
@@ -2554,12 +2566,12 @@
             right: -20px;
             width: 80px;
             height: 80px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(var(--gold-rgb), 0.1) 0%, transparent 70%);
             pointer-events: none;
         }
 
         .points-summary-card:hover {
-            border-color: rgba(212, 175, 55, 0.3);
+            border-color: rgba(var(--gold-rgb), 0.3);
             transform: translateY(-2px);
         }
 
@@ -2594,7 +2606,7 @@
         }
 
         .points-table thead {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--divider-subtle);
         }
 
         .points-table th {
@@ -2613,7 +2625,7 @@
             padding: 1rem 1.2rem;
             font-size: 0.88rem;
             color: var(--text);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid var(--divider-subtle);
             vertical-align: middle;
         }
 
@@ -2622,7 +2634,7 @@
         }
 
         .points-table tbody tr:hover {
-            background: rgba(212, 175, 55, 0.04);
+            background: rgba(var(--gold-rgb), 0.04);
         }
 
         .points-table tbody tr:last-child td {
@@ -2693,7 +2705,7 @@
 
         .extrato-filter-btn {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             padding: 0.5rem 0.9rem;
             border-radius: 20px;
@@ -2706,12 +2718,12 @@
         }
 
         .extrato-filter-btn:hover {
-            border-color: rgba(212, 175, 55, 0.5);
+            border-color: rgba(var(--gold-rgb), 0.5);
             color: var(--gold);
         }
 
         .extrato-filter-btn.active {
-            background: rgba(212, 175, 55, 0.15);
+            background: rgba(var(--gold-rgb), 0.15);
             border-color: var(--gold);
             color: var(--gold);
         }
@@ -2729,16 +2741,16 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--divider-subtle);
+            border: 1px solid var(--divider-subtle);
             border-radius: 10px;
             padding: 0.8rem 1rem;
             transition: all 0.2s ease;
         }
 
         .extrato-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(212, 175, 55, 0.2);
+            background: var(--divider-subtle);
+            border-color: rgba(var(--gold-rgb), 0.2);
         }
 
         .extrato-item-icon {
@@ -2794,8 +2806,8 @@
 
         /* Modal de ajuste */
         .adjust-info {
-            background: rgba(212, 175, 55, 0.08);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            background: rgba(var(--gold-rgb), 0.08);
+            border: 1px solid rgba(var(--gold-rgb), 0.2);
             border-radius: 10px;
             padding: 0.9rem 1.1rem;
             margin-bottom: 1.2rem;
@@ -2811,7 +2823,7 @@
         .adjust-input {
             width: 100%;
             background: #18181c;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid var(--border-subtle);
             color: #fff;
             padding: 0.9rem 1rem;
             border-radius: 10px;
@@ -2826,7 +2838,7 @@
 
         .adjust-input:focus {
             border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.15);
         }
 
         .adjust-quick-btns {
@@ -2840,7 +2852,7 @@
             flex: 1;
             min-width: 70px;
             background: transparent;
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            border: 1px solid rgba(var(--gold-rgb), 0.3);
             color: var(--gold);
             padding: 0.5rem 0.7rem;
             border-radius: 20px;
@@ -2852,7 +2864,7 @@
         }
 
         .adjust-quick-btns button:hover {
-            background: rgba(212, 175, 55, 0.12);
+            background: rgba(var(--gold-rgb), 0.12);
             border-color: var(--gold);
         }
 
@@ -2928,7 +2940,7 @@
             margin-top: 1.5rem;
             margin-bottom: 1.5rem;
             padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-top: 1px solid var(--divider-subtle);
         }
 
         .pedido-etiqueta-section .pedido-section-title {
@@ -2953,8 +2965,8 @@
         }
 
         .pedido-etiqueta-status.pending {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.08);
+            background: var(--divider-subtle);
+            border-color: var(--divider-subtle);
         }
 
         .pedido-etiqueta-status.ready {
@@ -3012,8 +3024,8 @@
 
         /* ---------- Rastreio ---------- */
         .pedido-etiqueta-tracking {
-            background: rgba(212, 175, 55, 0.06);
-            border: 1px solid rgba(212, 175, 55, 0.25);
+            background: rgba(var(--gold-rgb), 0.06);
+            border: 1px solid rgba(var(--gold-rgb), 0.25);
             border-radius: 10px;
             padding: 0.8rem 1rem;
             margin-bottom: 0.8rem;
@@ -3047,7 +3059,7 @@
 
         .btn-copy-tracking {
             background: transparent;
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            border: 1px solid rgba(var(--gold-rgb), 0.4);
             color: var(--gold, #d4af37);
             padding: 0.35rem 0.8rem;
             border-radius: 20px;
@@ -3062,7 +3074,7 @@
         }
 
         .btn-copy-tracking:hover {
-            background: rgba(212, 175, 55, 0.12);
+            background: rgba(var(--gold-rgb), 0.12);
             border-color: var(--gold, #d4af37);
         }
 
@@ -3118,7 +3130,7 @@
         .btn-gerar-etiqueta:hover:not(:disabled) {
             transform: translateY(-1px);
             filter: brightness(1.1);
-            box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);
+            box-shadow: 0 4px 14px rgba(var(--gold-rgb), 0.35);
         }
 
         .btn-gerar-etiqueta:disabled {
@@ -3132,11 +3144,11 @@
         .btn-buscar-pdf {
             background: transparent;
             color: var(--gold, #d4af37);
-            border: 1px solid rgba(212, 175, 55, 0.5);
+            border: 1px solid rgba(var(--gold-rgb), 0.5);
         }
 
         .btn-buscar-pdf:hover:not(:disabled) {
-            background: rgba(212, 175, 55, 0.1);
+            background: rgba(var(--gold-rgb), 0.1);
             border-color: var(--gold, #d4af37);
         }
 
@@ -3207,15 +3219,15 @@
             gap: 0.7rem;
             padding: 0.8rem 1rem;
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-subtle);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.25s ease;
         }
 
         .shipping-mode-option:hover {
-            border-color: rgba(212, 175, 55, 0.4);
-            background: rgba(212, 175, 55, 0.04);
+            border-color: rgba(var(--gold-rgb), 0.4);
+            background: rgba(var(--gold-rgb), 0.04);
         }
 
         .shipping-mode-option input[type="radio"] {
@@ -3251,8 +3263,8 @@
         .region-freight-block {
             margin-top: 1rem;
             padding: 0.9rem 1rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--divider-subtle);
+            border: 1px solid var(--divider-subtle);
             border-radius: 10px;
         }
 
@@ -3290,8 +3302,8 @@
         .content-section-details {
             margin-top: 1rem;
             padding: 1rem 1.2rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--divider-subtle);
+            border: 1px solid var(--divider-subtle);
             border-radius: 10px;
         }
 
@@ -3319,7 +3331,7 @@
 
         .site-media-uploader {
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--divider-subtle);
             border-radius: 10px;
             padding: 1rem;
             margin-top: 0.4rem;
@@ -3335,7 +3347,7 @@
             max-width: 100%;
             max-height: 200px;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-subtle);
         }
 
         .site-media-preview .empty-hint {
@@ -3355,7 +3367,7 @@
         /* Editor de slides do carrossel */
         .carousel-slide-editor {
             background: var(--bg-panel);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--divider-subtle);
             border-radius: 10px;
             padding: 1rem 1.2rem;
             margin-bottom: 0.8rem;
@@ -3368,7 +3380,7 @@
             align-items: center;
             margin-bottom: 0.8rem;
             padding-bottom: 0.6rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid var(--divider-subtle);
         }
 
         .carousel-slide-editor-header h4 {
@@ -3405,7 +3417,7 @@
             gap: 1rem;
             padding: 0.8rem 1rem;
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--divider-subtle);
             border-radius: 10px;
             flex-wrap: wrap;
         }
@@ -3450,7 +3462,7 @@
             font-weight: 700;
             margin-bottom: 0.6rem;
             padding-bottom: 0.4rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid var(--divider-subtle);
         }
 
         .themes-grid {
@@ -3461,7 +3473,7 @@
 
         .theme-card {
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--divider-subtle);
             border-radius: 12px;
             padding: 1rem;
             cursor: pointer;
@@ -3473,13 +3485,13 @@
         }
 
         .theme-card:hover {
-            border-color: rgba(212, 175, 55, 0.5);
+            border-color: rgba(var(--gold-rgb), 0.5);
             transform: translateY(-2px);
         }
 
         .theme-card.active {
             border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.15);
         }
 
         .theme-card-preview {
@@ -3511,13 +3523,13 @@
             display: flex;
             gap: 0.4rem;
             padding-top: 0.6rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--divider-subtle);
         }
 
         .theme-card-actions button {
             flex: 1;
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-subtle);
             color: var(--text-muted);
             padding: 0.4rem;
             border-radius: 6px;
@@ -3528,7 +3540,7 @@
         }
 
         .theme-card-actions button:hover {
-            border-color: rgba(255, 255, 255, 0.3);
+            border-color: var(--border-strong);
             color: var(--text);
         }
 
@@ -3539,7 +3551,7 @@
 
         .theme-card-actions button.favorite {
             color: var(--gold);
-            border-color: rgba(212, 175, 55, 0.3);
+            border-color: rgba(var(--gold-rgb), 0.3);
         }
 
         .theme-editor-modal-box {
@@ -3552,7 +3564,7 @@
             color: var(--gold);
             margin: 1.5rem 0 0.8rem;
             padding-bottom: 0.4rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid var(--divider-subtle);
         }
 
         .theme-color-grid {
@@ -3563,7 +3575,7 @@
 
         .theme-color-field {
             background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--divider-subtle);
             border-radius: 10px;
             padding: 0.8rem;
             display: flex;
@@ -3685,8 +3697,8 @@
         .config-block-inner {
             margin-top: 1rem;
             padding: 1rem 1.2rem;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: var(--divider-subtle);
+            border: 1px solid var(--divider-subtle);
             border-radius: 10px;
         }
 
@@ -3696,7 +3708,7 @@
             color: var(--gold);
             margin-bottom: 0.8rem;
             padding-bottom: 0.4rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid var(--divider-subtle);
         }
 
         .banner-slides-list {
@@ -3718,7 +3730,7 @@
         }
 
         .banner-slide-card:hover {
-            border-color: rgba(212, 175, 55, 0.4);
+            border-color: rgba(var(--gold-rgb), 0.4);
         }
 
         .banner-slide-card.inactive {
@@ -3776,7 +3788,7 @@
         }
 
         .banner-slide-actions button:hover {
-            border-color: rgba(255, 255, 255, 0.3);
+            border-color: var(--border-strong);
             color: var(--text);
         }
 
@@ -3817,7 +3829,7 @@
             width: 38px;
             height: 38px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.15);
+            border: 2px solid var(--border-subtle);
             background: transparent;
             cursor: pointer;
             padding: 3px;
@@ -3829,13 +3841,13 @@
         }
 
         .bs-color-dot:hover {
-            border-color: rgba(255, 255, 255, 0.4);
+            border-color: var(--border-strong);
             transform: scale(1.08);
         }
 
         .bs-color-dot.active {
             border-color: #ffffff;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+            box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.25);
             transform: scale(1.05);
         }
 
@@ -3886,7 +3898,7 @@
 
         .btn-save-block:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.3);
         }
 
         .btn-save-block:disabled {
@@ -3907,7 +3919,7 @@
 
         .btn-edit-block {
             background: transparent;
-            border: 1px solid rgba(212, 175, 55, 0.4);
+            border: 1px solid rgba(var(--gold-rgb), 0.4);
             color: var(--gold);
             padding: 0.5rem 1.2rem;
             border-radius: 20px;
@@ -3923,7 +3935,7 @@
 
         .btn-edit-block:hover {
             border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.08);
+            background: rgba(var(--gold-rgb), 0.08);
         }
 
         .config-block-summary {
@@ -3962,8 +3974,8 @@
         }
 
         .content-card:hover {
-            border-color: rgba(212, 175, 55, 0.5);
-            background: rgba(212, 175, 55, 0.04);
+            border-color: rgba(var(--gold-rgb), 0.5);
+            background: rgba(var(--gold-rgb), 0.04);
             transform: translateY(-2px);
         }
 
