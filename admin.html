@@ -4426,14 +4426,27 @@
                         </div>
 
                         <!-- ==================== FRETE (CARD → MODAL) ==================== -->
-                        <div class="config-block">
-                            <div class="config-block-header">
-                                <h3 class="config-block-title" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">Frete</h3>
-                                <button type="button" class="btn-edit-block" onclick="openFreteModal()">
-                                    Configurar
-                                </button>
+                        <div class="config-block" style="padding: 0; border: none; background: transparent;">
+                            <div class="content-card" onclick="openFreteModal()" role="button" tabindex="0"
+                                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openFreteModal();}">
+                                <div class="content-card-icon" aria-hidden="true">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="1" y="3" width="15" height="13"></rect>
+                                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                    </svg>
+                                </div>
+                                <div class="content-card-body">
+                                    <h4 class="content-card-title">Frete</h4>
+                                    <p class="content-card-desc" id="frete-summary">Carregando...</p>
+                                </div>
+                                <span class="content-card-arrow" aria-hidden="true">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </span>
                             </div>
-                            <p class="config-block-summary" id="frete-summary">Carregando...</p>
                         </div>
 
                         <!-- ==================== CONTEÚDO DO SITE (GRADE) ==================== -->
