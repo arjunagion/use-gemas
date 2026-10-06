@@ -3671,6 +3671,9 @@
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .banner-slide-actions button:hover {
@@ -3689,8 +3692,8 @@
 
         .banner-slide-preview {
             padding: 1rem;
-            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
-            color: #0e0e10;
+            background: linear-gradient(135deg, var(--gold, #d4af37) 0%, var(--gold-dark, #aa820a) 100%);
+            color: var(--btn-text-on-accent, #0e0e10);
             text-align: center;
             font-size: 0.9rem;
             font-weight: 600;
@@ -3702,6 +3705,52 @@
             align-items: center;
             justify-content: center;
         }
+
+        /* Seletor de cor (bolinhas) */
+        .bs-color-picker {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            margin-top: 0.3rem;
+        }
+
+        .bs-color-dot {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            background: transparent;
+            cursor: pointer;
+            padding: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .bs-color-dot:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.08);
+        }
+
+        .bs-color-dot.active {
+            border-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+            transform: scale(1.05);
+        }
+
+        .bs-color-dot-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: block;
+        }
+
+        .bs-color-info .bs-color-dot-inner { background: var(--gold, #d4af37); }
+        .bs-color-success .bs-color-dot-inner { background: #51cf66; }
+        .bs-color-warning .bs-color-dot-inner { background: #ffc107; }
+        .bs-color-danger .bs-color-dot-inner { background: #ff5555; }
 
         .banner-slide-preview.color-success { background: linear-gradient(135deg, #51cf66 0%, #2f9e44 100%); color: #fff; }
         .banner-slide-preview.color-warning { background: linear-gradient(135deg, #ffc107 0%, #e67700 100%); color: #1a1a1a; }
@@ -4555,6 +4604,18 @@
 
                                     <div id="banner-slides-list" class="banner-slides-list">
                                         <!-- Preenchido via JS -->
+                                    </div>
+
+                                    <!-- Botão de salvar banners (destaque) -->
+                                    <div style="display: flex; justify-content: flex-end; margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06);">
+                                        <button type="button" class="btn-new-product" onclick="saveBannerSlidesOnly()" id="btn-save-banners" style="padding: 0.85rem 2rem; min-width: 220px; justify-content: center;">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 0.4rem;">
+                                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                                <polyline points="7 3 7 8 15 8"></polyline>
+                                            </svg>
+                                            Salvar banners
+                                        </button>
                                     </div>
                                 </div>
                             </details>
@@ -7858,11 +7919,34 @@
                             ${conditions.length > 0 ? `<div class="banner-slide-conditions">Condições: ${escapeHTML(conditions.join(' · '))}</div>` : ''}
                         </div>
                         <div class="banner-slide-actions">
-                            <button type="button" onclick="moveBannerSlide(${idx}, -1)" title="Subir" ${idx === 0 ? 'disabled' : ''}>⬆</button>
-                            <button type="button" onclick="moveBannerSlide(${idx}, 1)" title="Descer" ${idx === bannerSlidesState.length - 1 ? 'disabled' : ''}>⬇</button>
-                            <button type="button" onclick="toggleBannerSlideActive(${idx})" title="${slide.active ? 'Desativar' : 'Ativar'}">${slide.active ? '👁️' : '🚫'}</button>
-                            <button type="button" onclick="openBannerSlideEditor('${slide.id}')">✏️</button>
-                            <button type="button" class="danger" onclick="confirmDeleteBannerSlide(${idx})">🗑️</button>
+                            <button type="button" onclick="moveBannerSlide(${idx}, -1)" title="Subir" aria-label="Mover pra cima" ${idx === 0 ? 'disabled' : ''}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </button>
+                            <button type="button" onclick="moveBannerSlide(${idx}, 1)" title="Descer" aria-label="Mover pra baixo" ${idx === bannerSlidesState.length - 1 ? 'disabled' : ''}>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </button>
+                            <button type="button" onclick="toggleBannerSlideActive(${idx})" title="${slide.active ? 'Desativar' : 'Ativar'}" aria-label="${slide.active ? 'Desativar slide' : 'Ativar slide'}">
+                                ${slide.active
+                                    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>'
+                                    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>'
+                                }
+                            </button>
+                            <button type="button" onclick="openBannerSlideEditor('${slide.id}')" title="Editar" aria-label="Editar slide">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="danger" onclick="confirmDeleteBannerSlide(${idx})" title="Remover" aria-label="Remover slide">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -7874,14 +7958,12 @@
             if (newIdx < 0 || newIdx >= bannerSlidesState.length) return;
             [bannerSlidesState[idx], bannerSlidesState[newIdx]] = [bannerSlidesState[newIdx], bannerSlidesState[idx]];
             renderBannerSlidesList();
-            persistBannerSlides();
         }
 
         function toggleBannerSlideActive(idx) {
             if (!bannerSlidesState[idx]) return;
             bannerSlidesState[idx].active = !bannerSlidesState[idx].active;
             renderBannerSlidesList();
-            persistBannerSlides();
         }
 
         function confirmDeleteBannerSlide(idx) {
@@ -7890,7 +7972,6 @@
             if (!confirm(`Excluir o slide "${slide.text || slide.type}"?`)) return;
             bannerSlidesState.splice(idx, 1);
             renderBannerSlidesList();
-            persistBannerSlides();
         }
 
         // Persiste banner_slides direto no banco (sem depender do "Salvar Configurações")
@@ -7910,6 +7991,56 @@
                 console.warn('[BannerSlides] Exceção ao persistir:', e);
                 showToast('Erro ao salvar slide no banco.', 'error');
                 return false;
+            }
+        }
+
+        // Salva APENAS banner_slides + banner_config + inputs de config
+        // (não depende do "Salvar Configurações" geral)
+        async function saveBannerSlidesOnly() {
+            const btn = document.getElementById('btn-save-banners');
+            if (!btn) return;
+
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Salvando...';
+
+            try {
+                // Captura config global dos banners (inputs do topo da subseção)
+                bannerConfigState = {
+                    rotation_seconds: parseInt(document.getElementById('cfg-banner-rotation')?.value) || 5,
+                    pause_on_hover: document.getElementById('cfg-banner-pause-hover')?.value === 'true',
+                    show_dots: document.getElementById('cfg-banner-dots')?.value === 'true',
+                    enable_swipe: document.getElementById('cfg-banner-swipe')?.value === 'true'
+                };
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update({
+                        banner_slides: bannerSlidesState,
+                        banner_config: bannerConfigState,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveBannerSlidesOnly] Erro:', error);
+                    showToast('Erro ao salvar banners.', 'error');
+                    return;
+                }
+
+                // Atualiza currentSettings local (fonte da verdade da tela)
+                if (currentSettings) {
+                    currentSettings.banner_slides = JSON.parse(JSON.stringify(bannerSlidesState));
+                    currentSettings.banner_config = { ...bannerConfigState };
+                }
+
+                showToast('Banners salvos!');
+            } catch (e) {
+                console.error('[saveBannerSlidesOnly] Exceção:', e);
+                showToast('Erro inesperado ao salvar banners.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
 
@@ -7994,12 +8125,20 @@
                     html += `
                         <div class="form-group">
                             <label>Cor do alerta</label>
-                            <select id="bs-color" onchange="updateBannerPreview()">
-                                <option value="info" ${slide.color === 'info' ? 'selected' : ''}>Info (azul)</option>
-                                <option value="success" ${slide.color === 'success' ? 'selected' : ''}>Sucesso (verde)</option>
-                                <option value="warning" ${slide.color === 'warning' ? 'selected' : ''}>Aviso (amarelo)</option>
-                                <option value="danger" ${slide.color === 'danger' ? 'selected' : ''}>Urgente (vermelho)</option>
-                            </select>
+                            <div class="bs-color-picker" role="radiogroup" aria-label="Cor do alerta">
+                                <button type="button" class="bs-color-dot bs-color-info ${slide.color === 'info' ? 'active' : ''}" data-color="info" onclick="setBannerColor('info')" aria-label="Info (dourado)" title="Info (dourado)">
+                                    <span class="bs-color-dot-inner"></span>
+                                </button>
+                                <button type="button" class="bs-color-dot bs-color-success ${slide.color === 'success' ? 'active' : ''}" data-color="success" onclick="setBannerColor('success')" aria-label="Sucesso (verde)" title="Sucesso (verde)">
+                                    <span class="bs-color-dot-inner"></span>
+                                </button>
+                                <button type="button" class="bs-color-dot bs-color-warning ${slide.color === 'warning' ? 'active' : ''}" data-color="warning" onclick="setBannerColor('warning')" aria-label="Aviso (amarelo)" title="Aviso (amarelo)">
+                                    <span class="bs-color-dot-inner"></span>
+                                </button>
+                                <button type="button" class="bs-color-dot bs-color-danger ${slide.color === 'danger' ? 'active' : ''}" data-color="danger" onclick="setBannerColor('danger')" aria-label="Urgente (vermelho)" title="Urgente (vermelho)">
+                                    <span class="bs-color-dot-inner"></span>
+                                </button>
+                            </div>
                         </div>
                     `;
                 }
@@ -8106,7 +8245,7 @@
 
             preview.className = 'banner-slide-preview';
             if (type === 'warning') {
-                const color = document.getElementById('bs-color')?.value || 'info';
+                const color = window.__currentBannerSlide?.color || 'info';
                 preview.classList.add('color-' + color);
             } else if (type === 'shipping_achieved') {
                 preview.classList.add('color-success');
@@ -8134,6 +8273,18 @@
             previewText.textContent = displayText;
         }
 
+        function setBannerColor(color) {
+            const slide = window.__currentBannerSlide || {};
+            slide.color = color;
+
+            // Atualiza botões ativos
+            document.querySelectorAll('#bs-fields-dynamic .bs-color-dot').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === color);
+            });
+
+            updateBannerPreview();
+        }
+
         async function saveBannerSlide() {
             const feedback = document.getElementById('banner-slide-feedback');
             const btn = document.getElementById('bs-save-btn');
@@ -8144,7 +8295,7 @@
             const icon = document.getElementById('bs-icon')?.value?.trim() || '';
             const text = document.getElementById('bs-text')?.value?.trim() || '';
             const link = document.getElementById('bs-link')?.value?.trim() || null;
-            const color = document.getElementById('bs-color')?.value || 'info';
+            const color = window.__currentBannerSlide?.color || 'info';
 
             if ((type === 'static' || type === 'warning' || type === 'link' || type === 'coupon' || type === 'flash_promo') && !text) {
                 feedback.className = 'modal-feedback error';
@@ -8202,14 +8353,12 @@
                 bannerSlidesState.push(slide);
             }
 
+            const wasEditing = !!currentEditingBannerId;
+
             renderBannerSlidesList();
             closeBannerSlideEditor();
 
-            // Persiste direto no banco (não depende do "Salvar Configurações")
-            const persisted = await persistBannerSlides();
-            if (persisted) {
-                showToast(currentEditingBannerId ? 'Slide atualizado!' : 'Slide criado!');
-            }
+            showToast(wasEditing ? 'Slide atualizado! Clique em "Salvar banners" pra confirmar.' : 'Slide criado! Clique em "Salvar banners" pra confirmar.');
         }
 
         async function loadSettings() {
