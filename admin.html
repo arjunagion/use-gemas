@@ -3755,6 +3755,187 @@
         .banner-slide-preview.color-success { background: linear-gradient(135deg, #51cf66 0%, #2f9e44 100%); color: #fff; }
         .banner-slide-preview.color-warning { background: linear-gradient(135deg, #ffc107 0%, #e67700 100%); color: #1a1a1a; }
         .banner-slide-preview.color-danger { background: linear-gradient(135deg, #ff5555 0%, #c92a2a 100%); color: #fff; }
+
+        /* ==========================================================================
+           CONFIGURAÇÕES — BLOCOS COM SALVAR LOCAL + CARDS (P1)
+           ========================================================================== */
+        .config-block-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-save-block {
+            background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+            color: #0e0e10;
+            border: none;
+            padding: 0.7rem 1.6rem;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-save-block:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-save-block:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Card de bloco com "Configurar" */
+        .config-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-edit-block {
+            background: transparent;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            color: var(--gold);
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-family: var(--font-body);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .btn-edit-block:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .config-block-summary {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .config-block-summary strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Grade de cards de Conteúdo */
+        .content-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.9rem;
+        }
+
+        .content-card {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
+            width: 100%;
+        }
+
+        .content-card:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            background: rgba(212, 175, 55, 0.04);
+            transform: translateY(-2px);
+        }
+
+        .content-card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--gold);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .content-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .content-card-title {
+            font-family: var(--font-body);
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 2px 0;
+            line-height: 1.3;
+        }
+
+        .content-card-desc {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .content-card-arrow {
+            color: var(--text-dim);
+            flex-shrink: 0;
+            transition: transform 0.25s ease, color 0.25s ease;
+        }
+
+        .content-card:hover .content-card-arrow {
+            color: var(--gold);
+            transform: translateX(3px);
+        }
+
+        /* Responsivo */
+        @media (max-width: 900px) {
+            .content-cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .content-cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .config-block-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-edit-block {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 
@@ -4224,8 +4405,44 @@
                                 <input type="text" id="cfg-instagram" placeholder="use.gemas" maxlength="60">
                                 <small class="config-hint">Só o nome do perfil, sem @ e sem link.</small>
                             </div>
+
+                            <div class="config-block-actions">
+                                <button type="button" class="btn-save-block" onclick="saveContatoSettings()">
+                                    Salvar contato
+                                </button>
+                            </div>
                         </div>
 
+                        <!-- ==================== AVISO NO TOPO ==================== -->
+                        <div class="config-block">
+                            <h3 class="config-block-title">Aviso no topo do site</h3>
+
+                            <div class="form-group">
+                                <label for="cfg-banner-message">Mensagem (deixe vazio pra esconder)</label>
+                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300" maxlength="120">
+                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra promoções e avisos rápidos.</small>
+                            </div>
+
+                            <div class="config-block-actions">
+                                <button type="button" class="btn-save-block" onclick="saveAvisoSettings()">
+                                    Salvar aviso
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ==================== FRETE (CARD → MODAL) ==================== -->
+                        <div class="config-block">
+                            <div class="config-block-header">
+                                <h3 class="config-block-title" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">Frete</h3>
+                                <button type="button" class="btn-edit-block" onclick="openFreteModal()">
+                                    Configurar
+                                </button>
+                            </div>
+                            <p class="config-block-summary" id="frete-summary">Carregando...</p>
+                        </div>
+
+                        <!-- Inputs de Frete (movidos pro modal em P2) -->
+                        <div id="frete-modal-placeholder" style="display: none;">
                         <div class="config-block">
                             <h3 class="config-block-title">Frete</h3>
 
@@ -4295,20 +4512,184 @@
                                 regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o
                                 valor.</small>
                         </div>
+                        </div>
 
+                        <!-- ==================== CONTEÚDO DO SITE (GRADE) ==================== -->
                         <div class="config-block">
-                            <h3 class="config-block-title">Aviso no topo do site</h3>
+                            <h3 class="config-block-title">Conteúdo do Site</h3>
+                            <p class="config-hint" style="margin-bottom: 1.5rem;">
+                                Edite cada seção do site em seu próprio editor. As mudanças aplicam após salvar.
+                            </p>
 
-                            <div class="form-group">
-                                <label for="cfg-banner-message">Mensagem (deixe vazio pra esconder)</label>
-                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300"
-                                    maxlength="120">
-                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra
-                                    promoções e avisos rápidos.</small>
+                            <div class="content-cards-grid">
+
+                                <div class="content-card" onclick="openHeroModal()" role="button" tabindex="0"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openHeroModal();}">
+                                    <div class="content-card-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="content-card-body">
+                                        <h4 class="content-card-title">Hero</h4>
+                                        <p class="content-card-desc">Tagline, título, subtítulo, CTA e vídeo</p>
+                                    </div>
+                                    <span class="content-card-arrow" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                <div class="content-card" onclick="openCarrosselModal()" role="button" tabindex="0"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCarrosselModal();}">
+                                    <div class="content-card-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="content-card-body">
+                                        <h4 class="content-card-title">Carrossel</h4>
+                                        <p class="content-card-desc">Seção "Nossa Essência & Cuidados"</p>
+                                    </div>
+                                    <span class="content-card-arrow" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                <div class="content-card" onclick="openRodapeModal()" role="button" tabindex="0"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openRodapeModal();}">
+                                    <div class="content-card-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                            <line x1="2" y1="14" x2="22" y2="14"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="content-card-body">
+                                        <h4 class="content-card-title">Rodapé</h4>
+                                        <p class="content-card-desc">Marca e tagline</p>
+                                    </div>
+                                    <span class="content-card-arrow" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                <div class="content-card" onclick="openMetaModal()" role="button" tabindex="0"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMetaModal();}">
+                                    <div class="content-card-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="11" cy="11" r="8"></circle>
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="content-card-body">
+                                        <h4 class="content-card-title">Meta Tags / SEO</h4>
+                                        <p class="content-card-desc">Title, description e og:image</p>
+                                    </div>
+                                    <span class="content-card-arrow" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                <div class="content-card" onclick="openAreaClienteModal()" role="button" tabindex="0"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAreaClienteModal();}">
+                                    <div class="content-card-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="12" cy="7" r="4"></circle>
+                                        </svg>
+                                    </div>
+                                    <div class="content-card-body">
+                                        <h4 class="content-card-title">Área do Cliente</h4>
+                                        <p class="content-card-desc">Hero, tabs, status, timeline, vazios, pontos</p>
+                                    </div>
+                                    <span class="content-card-arrow" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                <div class="content-card" onclick="openRefinosModal()" role="button" tabindex="0"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openRefinosModal();}">
+                                    <div class="content-card-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="4" y1="21" x2="4" y2="14"></line>
+                                            <line x1="4" y1="10" x2="4" y2="3"></line>
+                                            <line x1="12" y1="21" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12" y2="3"></line>
+                                            <line x1="20" y1="21" x2="20" y2="16"></line>
+                                            <line x1="20" y1="12" x2="20" y2="3"></line>
+                                            <line x1="1" y1="14" x2="7" y2="14"></line>
+                                            <line x1="9" y1="8" x2="15" y2="8"></line>
+                                            <line x1="17" y1="16" x2="23" y2="16"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="content-card-body">
+                                        <h4 class="content-card-title">Refinos</h4>
+                                        <p class="content-card-desc">Menu, estoque baixo, banner frete, fidelidade</p>
+                                    </div>
+                                    <span class="content-card-arrow" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                <div class="content-card" onclick="openIdentidadeVisualModal()" role="button" tabindex="0"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openIdentidadeVisualModal();}">
+                                    <div class="content-card-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="13.5" cy="6.5" r=".5"></circle>
+                                            <circle cx="17.5" cy="10.5" r=".5"></circle>
+                                            <circle cx="8.5" cy="7.5" r=".5"></circle>
+                                            <circle cx="6.5" cy="12.5" r=".5"></circle>
+                                            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="content-card-body">
+                                        <h4 class="content-card-title">Identidade Visual</h4>
+                                        <p class="content-card-desc">Biblioteca de temas + agendamento</p>
+                                    </div>
+                                    <span class="content-card-arrow" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                <div class="content-card" onclick="openBannersRotativosModal()" role="button" tabindex="0"
+                                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBannersRotativosModal();}">
+                                    <div class="content-card-icon" aria-hidden="true">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="2" y="4" width="20" height="6" rx="1"></rect>
+                                            <rect x="2" y="14" width="20" height="6" rx="1"></rect>
+                                        </svg>
+                                    </div>
+                                    <div class="content-card-body">
+                                        <h4 class="content-card-title">Banners Rotativos</h4>
+                                        <p class="content-card-desc">Carrossel no topo do site</p>
+                                    </div>
+                                    <span class="content-card-arrow" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="9 18 15 12 9 6"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+
                             </div>
                         </div>
 
-                        <!-- ==================== CONTEÚDO DO SITE ==================== -->
+                        <!-- Editor legado (movido pros modais em P3) -->
+                        <div id="conteudo-site-placeholder" style="display: none;">
                         <div class="config-block">
                             <h3 class="config-block-title">Conteúdo do Site</h3>
                             <p class="config-hint" style="margin-bottom: 1rem;">
@@ -4621,9 +5002,6 @@
                             </details>
                         </div>
 
-                        <div class="config-actions">
-                            <button class="btn-save" id="config-save-btn" onclick="saveSettings()">Salvar
-                                Configurações</button>
                         </div>
                     </div>
                 </section>
@@ -8361,6 +8739,89 @@
             showToast(wasEditing ? 'Slide atualizado! Clique em "Salvar banners" pra confirmar.' : 'Slide criado! Clique em "Salvar banners" pra confirmar.');
         }
 
+        // ==========================================================================
+        // MODAIS DE CONFIGURAÇÕES (a serem implementados em P2/P3)
+        // ==========================================================================
+        function openFreteModal() { console.log('[P2] Abrir modal Frete'); }
+        function openHeroModal() { console.log('[P3] Abrir modal Hero'); }
+        function openCarrosselModal() { console.log('[P3] Abrir modal Carrossel'); }
+        function openRodapeModal() { console.log('[P3] Abrir modal Rodapé'); }
+        function openMetaModal() { console.log('[P3] Abrir modal Meta Tags'); }
+        function openAreaClienteModal() { console.log('[P3] Abrir modal Área do Cliente'); }
+        function openRefinosModal() { console.log('[P3] Abrir modal Refinos'); }
+        function openIdentidadeVisualModal() { console.log('[P3] Abrir modal Identidade Visual'); }
+        function openBannersRotativosModal() { console.log('[P3] Abrir modal Banners Rotativos'); }
+
+        // ==========================================================================
+        // SAVE LOCAL (fragmentado por bloco) — P1 traz Contato + Aviso
+        // ==========================================================================
+        async function saveContatoSettings() {
+            const btn = event?.target;
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const whatsapp = (document.getElementById('cfg-whatsapp')?.value || '').replace(/\D/g, '');
+                const instagram = (document.getElementById('cfg-instagram')?.value || '').trim().replace(/^@/, '');
+
+                if (!whatsapp || whatsapp.length < 10) {
+                    showToast('WhatsApp inválido (precisa de DDI + DDD + número).', 'error');
+                    return;
+                }
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update({ whatsapp, instagram, updated_at: new Date().toISOString() })
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveContatoSettings] Erro:', error);
+                    showToast('Erro ao salvar contato.', 'error');
+                    return;
+                }
+
+                if (currentSettings) {
+                    currentSettings.whatsapp = whatsapp;
+                    currentSettings.instagram = instagram;
+                }
+                showToast('Contato salvo!');
+            } catch (e) {
+                console.error('[saveContatoSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
+
+        async function saveAvisoSettings() {
+            const btn = event?.target;
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const banner_message = (document.getElementById('cfg-banner-message')?.value || '').trim() || null;
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update({ banner_message, updated_at: new Date().toISOString() })
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveAvisoSettings] Erro:', error);
+                    showToast('Erro ao salvar aviso.', 'error');
+                    return;
+                }
+
+                if (currentSettings) currentSettings.banner_message = banner_message;
+                showToast('Aviso salvo!');
+            } catch (e) {
+                console.error('[saveAvisoSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
+
         async function loadSettings() {
             const { data, error } = await supabaseClient
                 .from('settings')
@@ -8452,6 +8913,19 @@
             document.getElementById('cfg-banner-swipe').value = String(bannerConfigState.enable_swipe !== false);
 
             renderBannerSlidesList();
+
+            // Preenche resumo do card de Frete
+            const freteSummaryEl = document.getElementById('frete-summary');
+            if (freteSummaryEl) {
+                const mode = data?.shipping_mode === 'fixed' ? 'Frete fixo' : 'Melhor Envio';
+                const fixedVal = Number(data?.shipping_fixed || 0).toFixed(2).replace('.', ',');
+                const freeMin = Number(data?.free_shipping_min || 0).toFixed(2).replace('.', ',');
+                freteSummaryEl.innerHTML = `
+                    Modo: <strong>${mode}</strong> ·
+                    Frete fixo: <strong>R$ ${fixedVal}</strong> ·
+                    Frete grátis acima de: <strong>R$ ${freeMin}</strong>
+                `;
+            }
         }
 
         async function saveSettings() {
