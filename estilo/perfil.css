@@ -2261,6 +2261,16 @@ button {
 
 .cupom-card-icon {
     font-size: 1.3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cr-gold);
+    flex-shrink: 0;
+}
+
+.cupom-card-icon svg {
+    display: block;
+    stroke: currentColor;
 }
 
 .cupom-card-code {
@@ -2298,6 +2308,15 @@ button {
 .cupom-card-expiry {
     font-size: 0.8rem;
     color: var(--cr-text-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.cupom-card-expiry svg {
+    display: block;
+    stroke: currentColor;
+    flex-shrink: 0;
 }
 
 .cupom-card-expiry.urgent {
