@@ -40,7 +40,7 @@ serve(async (req: Request) => {
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-        // ⚠️ DECLARA O BODY AQUI — ESSENCIAL
+        // DECLARA O BODY AQUI — ESSENCIAL
         const body = await req.json();
         console.log("Webhook recebido:", JSON.stringify(body, null, 2));
 
@@ -106,8 +106,8 @@ serve(async (req: Request) => {
         if (event === "order.delivered" || data.status === "delivered") {
             updatePayload.status = "entregue";
             shouldNotify = true;
-            notificationTitle = "Sua peça foi entregue! ✨";
-            notificationMessage = `Pedido chegou! Esperamos que ame. Não esqueça de avaliar 💛`;
+            notificationTitle = "Sua peça foi entregue!";
+            notificationMessage = `Pedido chegou! Esperamos que ame. Não esqueça de avaliar.`;
         }
 
         if (event === "order.cancelled" || event === "order.canceled") {
