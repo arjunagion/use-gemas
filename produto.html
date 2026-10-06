@@ -814,14 +814,23 @@
             const stockNum = Number(p.stock) || 0;
 
             if (stockNum <= 0) {
-                stockEl.innerHTML = '<span class="stock-badge-zero">✦ Em produção</span>';
+                stockEl.innerHTML = `<span class="stock-badge-zero">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+            Em produção
+        </span>`;
                 document.getElementById('produto-add-cart').disabled = true;
                 document.getElementById('produto-add-cart').innerText = 'Em produção';
                 document.getElementById('produto-add-cart').classList.add('disabled');
             } else if (stockNum <= (siteSettings?.low_stock_threshold || 2)) {
-                stockEl.innerHTML = `<span class="stock-badge-low">⚡ Últimas ${stockNum} unidades</span>`;
+                stockEl.innerHTML = `<span class="stock-badge-low">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Últimas ${stockNum} unidades
+        </span>`;
             } else {
-                stockEl.innerHTML = '<span class="stock-badge-ok">✓ Disponível</span>';
+                stockEl.innerHTML = `<span class="stock-badge-ok">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Disponível
+        </span>`;
             }
 
             if (stats && stats.total_reviews > 0) {
@@ -976,7 +985,7 @@
                                 <div class="review-stars">${renderStars(r.rating)}</div>
                                 <div class="review-author">
                                     <strong>${escapeHTML(displayName)}</strong>
-                                    ${r.verified_purchase ? '<span class="verified-badge">✅ Compra verificada</span>' : ''}
+                                    ${r.verified_purchase ? '<span class="verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Compra verificada</span>' : ''}
                                 </div>
                             </div>
                             <time class="review-date">${formatDateShort(r.created_at)}</time>

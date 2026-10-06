@@ -41,9 +41,17 @@
 }
 
 .produto-error .icon {
-    font-size: 4rem;
-    opacity: 0.5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.produto-error .icon svg {
     display: block;
+    stroke: currentColor;
+    opacity: 0.6;
 }
 
 .produto-error h1 {
@@ -286,7 +294,9 @@
 .stock-badge-ok,
 .stock-badge-low,
 .stock-badge-zero {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.8px;
@@ -309,6 +319,13 @@
     background: var(--card-overlay);
     color: var(--text-dim, #888);
     border: 1px solid var(--border-strong);
+}
+
+.stock-badge-ok svg,
+.stock-badge-low svg,
+.stock-badge-zero svg {
+    flex-shrink: 0;
+    stroke: currentColor;
 }
 
 /* Actions */
@@ -578,6 +595,9 @@ html.theme-light .review-card:hover {
 }
 
 .verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
     font-size: 0.65rem;
     color: var(--success, #51cf66);
     background: rgba(81, 207, 102, 0.12);
@@ -586,6 +606,11 @@ html.theme-light .review-card:hover {
     letter-spacing: 0.3px;
     font-weight: 600;
     white-space: nowrap;
+}
+
+.verified-badge svg {
+    flex-shrink: 0;
+    stroke: currentColor;
 }
 
 .review-date {

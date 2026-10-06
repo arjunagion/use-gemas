@@ -690,6 +690,9 @@ html.theme-light .product-card:hover {
     position: absolute;
     top: 12px;
     left: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     background: rgba(255, 193, 7, 0.95);
     color: #0e0e10;
     font-size: 0.7rem;
@@ -701,6 +704,11 @@ html.theme-light .product-card:hover {
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     text-transform: uppercase;
+}
+
+.low-stock-badge svg {
+    flex-shrink: 0;
+    stroke: currentColor;
 }
 
 /* ==========================================================================
@@ -2321,6 +2329,22 @@ html.theme-light .testimonial-card:hover {
     font-weight: 600;
     letter-spacing: 0.5px;
     width: fit-content;
+}
+
+.testimonial-verified svg {
+    flex-shrink: 0;
+    stroke: currentColor;
+}
+
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.verified-badge svg {
+    flex-shrink: 0;
+    stroke: currentColor;
 }
 
 .testimonials-loading {

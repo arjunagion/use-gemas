@@ -1502,9 +1502,15 @@ function renderProductsGrid() {
 
         let stockBadge = '';
         if (isOutOfStock) {
-            stockBadge = `<span class="low-stock-badge" style="background:rgba(14,14,16,0.92);color:#d4af37;border:1px solid rgba(212,175,55,0.55);">✦ Estoque em breve</span>`;
+            stockBadge = `<span class="low-stock-badge" style="background:rgba(14,14,16,0.92);color:#d4af37;border:1px solid rgba(212,175,55,0.55);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+            Estoque em breve
+        </span>`;
         } else if (isLowStock) {
-            stockBadge = `<span class="low-stock-badge">⚡ Últimas unidades</span>`;
+            stockBadge = `<span class="low-stock-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Últimas unidades
+        </span>`;
         }
 
         const ratingSummary = productReviewsSummary.get(p.ref);
@@ -4779,7 +4785,7 @@ function renderHomeReviewCard(review, productMap) {
     const comment = (review.comment || '').slice(0, 180) + ((review.comment || '').length > 180 ? '...' : '');
 
     const verifiedHTML = review.verified_purchase
-        ? '<span class="testimonial-verified">✅ Compra verificada</span>'
+        ? '<span class="testimonial-verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Compra verificada</span>'
         : '';
 
     return `
