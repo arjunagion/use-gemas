@@ -1,7 +1,8 @@
-# PROJETO-MESTRE — Use Gemas (v3.9)
+# PROJETO-MESTRE — Use Gemas (v3.10)
 
-> **Documento de referência oficial — v3.9** — estado do código em **06/10/2026**.
-> **Novo em v3.9:** Fase 10.8 — Redesign do painel admin. Fonte Inter (substituindo Cormorant/Montserrat) + substituição de ~50 emojis por SVG icons (Lucide) + badges com dot colorido + toasts com SVG + reset do CACHE_NAME do SW admin (v5 → v6).
+> **Documento de referência oficial — v3.10** — estado do código em **06/10/2026**.
+> **Novo em v3.10:** Refinamento da Fase 10.7 (Banner Carrossel Avançado) + Limpeza geral de emojis em 4 fases (E1-E4) + Refactor completo da aba Configurações (modais por seção) + Light mode do painel admin (toggle manual).
+> **Herança de v3.9:** Fase 10.8 (Redesign do painel admin com Inter + Lucide SVG).
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -67,8 +68,10 @@
 | Arquivo | Linhas | Tamanho | Propósito |
 |---|---|---|---|
 | `estilo/script.js` | 5.128 | 181,9 KB | Lógica principal da loja |
-| `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v1`) |
-| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v4`) |
+| `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v2`) |
+| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v11`) |
+
+> **Nota:** o `sw-admin.js` evoluiu v4 → v11 ao longo dos refinamentos. Cada bump foi para forçar cache fresh durante os testes.
 
 ### 1.4 Backend — `supabase/` (novo, versionado)
 
@@ -163,6 +166,9 @@
 | **Feedbacks (canal privado, novo)** | ✅ |
 | Financeiro (Chart.js) | ✅ |
 | **Redesign (Fase 10.8)** | Fonte Inter + SVG Lucide + zero emojis | ✅ |
+| **Light mode (Fases L1-L3)** | Toggle manual no header (sol/lua) + paleta clara + charts adaptados | ✅ |
+| **Aba Configurações refatorada (P1-P3)** | 9 cards clicáveis → modais independentes com save local | ✅ |
+| **Banner Carrossel refinado (Fase 10.7)** | Botão "Salvar banners" próprio + seletor de cor (bolinha) + preview segue `--accent` | ✅ |
 | Configurações (frete, contato, banner, tema, conteúdo do site, área do cliente, refinos, banners rotativos) | ✅ |
 
 ### 📦 Estoque / Pedidos
@@ -243,13 +249,15 @@
 | `coupons` | id, code (UNIQUE), description, discount_type, discount_value, min_purchase, max_discount, free_shipping, first_purchase_only, usage_limit_total, usage_limit_per_user, times_used, customer_email, starts_at, expires_at, active, created_by, email_notified_at |
 | `coupon_usages` | id, coupon_id (FK), order_id, user_id, customer_email, discount_applied, used_at |
 | `loyalty_points` | id, user_id, customer_email, order_id, coupon_id, points, type (CHECK earned/redeemed/expired/adjustment), description, expires_at, created_by, created_at, expired_at |
-| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, banner_message, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, hero_*, carousel_*, footer_*, meta_*, **account_hero_badge, account_hero_subtitle, account_tabs (JSONB), account_status_labels (JSONB), account_timeline_labels (JSONB), account_empty_states (JSONB), account_loyalty_labels (JSONB)**, **nav_links (JSONB), low_stock_threshold, free_shipping_banner_enabled, free_shipping_banner_message, free_shipping_banner_threshold_pct, loyalty_rules (JSONB), active_theme_id, scheduled_theme_id, scheduled_theme_starts_at, theme_derived (JSONB)** |
+| `settings` | id, whatsapp, instagram, shipping_fixed, free_shipping_min, shipping_origin_cep, shipping_default_*, shipping_enabled_carriers (JSONB), melhorenvio_*, hero_*, carousel_*, footer_*, meta_*, **account_hero_badge, account_hero_subtitle, account_tabs (JSONB), account_status_labels (JSONB), account_timeline_labels (JSONB), account_empty_states (JSONB), account_loyalty_labels (JSONB)**, **nav_links (JSONB), low_stock_threshold, free_shipping_banner_enabled, free_shipping_banner_message, free_shipping_banner_threshold_pct, loyalty_rules (JSONB), active_theme_id, scheduled_theme_id, scheduled_theme_starts_at, theme_derived (JSONB)** |
 | `profiles` | id (PK, = auth.users.id), name, email, phone, created_at |
 | `favorites` | id, user_id, product_name, product_ref, product_price, created_at, UNIQUE(user_id, product_ref) |
 | `checkout_data` | user_id (PK), name, doc, phone, cep, street, number, complement, neighborhood, city, state, notes, updated_at |
 | `shipping_quotes_cache` | id, cep_origem, cep_destino, peso_kg, valor_declarado, quotes (JSONB), expires_at (24h), created_at |
 | `feedbacks` | id, user_id, customer_name, customer_email, rating, category, message, status (new/read/archived), created_at |
 | `themes` | id, name, description, source ('system'/'custom'), palette (JSONB), typography (JSONB), context ('site'/'account'/'both'), is_favorite, created_by, created_at, updated_at |
+
+> **Nota v3.10:** a coluna `banner_message` foi **removida** (drop column) — substituída pelos `banner_slides` da Fase 10.7. O "Aviso no topo do site" do admin era dead code desde a migração para o carrossel.
 
 ### 4.2 Policies (44)
 
@@ -293,7 +301,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | `remind-review` | 07h | GET `remind-review` |
 | `cleanup-notifications` | 05h | `cleanup_old_notifications()` |
 | `notify-expiring-coupons` | 08h | GET `notify-expiring-coupons` |
-| `expire-loyalty-points` | 06h | `expire_loyalty_points()` |
+| `expire-loyalty-points` | 06h30 | `expire_loyalty_points()` (movido em v3.10) |
 
 ### 4.7 Edge Functions (10 — código real em `supabase/functions/`)
 
@@ -351,13 +359,15 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Funções SQL | 24 |
 | Triggers | 15 |
 | Índices | 46 |
-| Cron jobs | 6 |
+| Cron jobs | 6 (com horários ajustados em v3.10) |
 | Storage buckets | 3 |
 | Storage policies | 13 |
 | Secrets custom | 6 |
 | RPCs | 10 |
 | Presets de tema (system) | 11 (8 dark + 3 light) |
-| Linhas de código (frontend) | ~30,5k |
+| Modais no admin (v3.10) | 9 (Contato, Frete, Hero, Carrossel, Rodapé, Meta, Área Cliente, Refinos, Identidade, Banners) |
+| Cards no admin (v3.10) | 9 (grade de Configurações) |
+| Linhas de código (frontend) | ~31k |
 | Linhas de código (backend: schema + functions) | ~5k |
 | **Progresso geral** | **~99,9%** |
 
@@ -392,24 +402,30 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 
 - **`MELHORENVIO_SANDBOX=true`** — trocar pra produção antes de operar de verdade.
 - **Testar PWA cliente em iOS e Android reais.**
-- **Deletar Pixel Meta antigo (`9288...`)** — garantir que só o `1408966774044848` esteja ativo.
 - **`MELHORENVIO_ACCESS_TOKEN` expira em 30/09/2027** — renovar antes.
 
 ### 🟡 Média
 
 - **Otimização de performance** — compressão de imagens + lazy-load.
-- **Cron jobs `request-review` e `expire-loyalty-points` rodam no mesmo horário (06h UTC)** — separar pra logs mais limpos.
+- **Limpeza de código morto** — `shippingCost` write-only, `shipping-result` órfão, listener de CEP duplicado.
 
 ### 🟢 Baixa — polimento
 
-- **Emoji via `innerHTML`** fora da etiqueta do admin — padronizar com `String.fromCodePoint`.
-- **Documentar `melhorenvio_sender_doc` vs `customer_doc`** em comentário na Edge Function.
+- **Emojis em mensagens de WhatsApp ao dono** — mantidos por decisão (não poluem).
+- **Emojis residuais em comentários de código** — não afetam UI.
+
+### ✅ Resolvidas em v3.10
+
+- **Separar crons (06h UTC)** — `expire-loyalty-points` movido pra 06h30 UTC.
+- **Emoji via `innerHTML` na etiqueta do admin** — resolvido via limpeza geral (E1).
+- **Deletar Pixel Meta antigo (`9288...`)** — removido no Meta Business.
+- **Doc `sender_doc` vs `customer_doc`** — comentário adicionado em `generate-shipping-label`.
+- **Aviso no topo (dead code)** — coluna removida + bloco removido do admin.
 
 ---
 
 ## 9. Próximas features planejadas (não implementadas)
 
-- **Banner Carrossel Avançado (Fase 10.7)** — SQL já rodado; 8 tipos de slide (static, link, dynamic_shipping, shipping_achieved, installments, coupon, warning, flash_promo); condições por slide (min_cart_value, device, time_window, first_visit_only); rotação configurável (5s default)
 - Tiers de fidelidade (bronze/prata/ouro)
 - Sistema de indicação (indique e ganhe)
 - Notificações push (web push)
@@ -417,6 +433,9 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 - Relatórios avançados (coorte, LTV, repurchase)
 - Cupom de aniversário automático
 - Reviews com vídeo
+- Blog / Diário da Artesã
+
+> **Nota:** a Fase 10.7 (Banner Carrossel Avançado) saiu desta lista em v3.10 — foi implementada e refinada.
 
 ---
 
@@ -587,6 +606,9 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 20 | Auto-dessaturar cores saturadas (>40%) | Aceitar qualquer cor | Evita UX agressiva com cores saturadas; preserva accent vivo |
 | 21 | Cream Mode Dinâmico na conta (Fase 10.6) | Conta independente ou dark | Identidade visual contínua, mas conta sempre legível (light/pastel) |
 | 22 | Redesign admin com Inter + Lucide SVG (Fase 10.8) | Manter Cormorant/Montserrat + emojis | Painel administrativo é ferramenta — precisa de fonte neutra e ícones profissionais (legibilidade em dados) |
+| 23 | Light mode do admin com toggle manual (Fases L1-L3) | Seguir SO / Seguir tema da loja | Admin é ferramenta de trabalho — controle manual é melhor que SO/tema. Paleta light reaproveita do site (perfil.css). |
+| 24 | Aba Configurações com cards + modais por seção (P1-P3) | Rolo infinito / Tabs / Acordeão único | Elimina scroll infinito, cada seção é autossuficiente, cada modal salva só seu escopo. Consistente com padrão de "Biblioteca de Temas" (Fase 10.5). |
+| 25 | Limpeza geral de emojis com política de 3 níveis (E1-E4) | Remover tudo / Manter tudo | Ícone com função → SVG Lucide. Ícone decorativo (texto já comunica) → removido. Ícone emocional (💛) → mantido. Profissionaliza a UI sem perder a voz da marca. |
 
 ---
 
@@ -619,6 +641,12 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **06/out/2026** — **Fase 10.9 (Refinamento da 10.7):** Banner Carrossel — botão "Salvar banners" próprio, seletor de cor (bolinha), SVG Lucide na lista de slides, preview segue `--accent`.
+- **06/out/2026** — **Fases L1/L2/L3:** Light mode do admin — toggle manual no header, paleta clara, charts adaptados. 116 hardcoded de cor convertidos pra variáveis.
+- **06/out/2026** — **Fases P1/P2/P3:** Refactor da aba Configurações — 9 cards clicáveis, 9 modais independentes, `saveSettings()` fragmentado em 10 funções, remove "Salvar Configurações" geral.
+- **06/out/2026** — **Fases E1/E3/E4:** Limpeza geral de emojis — UI funcional → SVG Lucide, badges → SVG, empty states → SVG (💛 mantido), páginas legais limpas, defaults admin limpos, 5 emails limpos, triggers SQL ajustados.
+- **06/out/2026** — **B1/B3/B4:** Separar crons (expire-loyalty-points → 06h30 UTC), comentário `sender_doc` vs `customer_doc` na `generate-shipping-label`, Pixel Meta antigo deletado.
+- **06/out/2026** — **Remoção de dead code:** Coluna `banner_message` dropada + bloco "Aviso no topo" removido do admin.
 - **06/out/2026** — Fase 10.8 completa: Redesign do painel admin (Inter + Lucide SVG + ~50 emojis removidos + badges com dot + toasts SVG) + bump sw-admin CACHE_NAME v5→v6.
 - **05/out/2026** — Fase 10.6 completa: Cream Mode Dinâmico (conta com tint sutil do accent + fallback clássico em temas light) + botão "Loja" no produto.html + fix do banner de frete grátis seguir tema.
 - **04/out/2026** — Fase 10.5.2 completa: White Mode real (refactor global de CSS + variáveis semânticas + auto-dessaturar + detecção de luminância).
@@ -739,7 +767,7 @@ Idempotente (o segundo sobrescreve o primeiro), mas código morto.
 
 ---
 
-#### Emoji via `innerHTML`
+#### ✅ RESOLVIDO em 06/out/2026 — Emoji via `innerHTML`
 
 Arquivo: `admin.html` (seção "Etiqueta de Envio" no modal do pedido)
 
@@ -763,7 +791,7 @@ O campo `description` de `loyalty_points` é selecionado na query mas nunca rend
 
 ---
 
-#### Cron jobs no mesmo horário
+#### ✅ RESOLVIDO em 06/out/2026 — Cron jobs no mesmo horário
 
 `request-review` (0 6 * * *) + `expire-loyalty-points` (0 6 * * *)
 
@@ -773,7 +801,7 @@ Ambos rodam às **06h UTC (03h BRT)**. Não há conflito real (pg_cron executa e
 
 ---
 
-#### `melhorenvio_sender_doc` vs `customer_doc` — mesmo CPF
+#### ✅ RESOLVIDO em 06/out/2026 — `melhorenvio_sender_doc` vs `customer_doc` — mesmo CPF
 
 O `docs/secrets.md` e o `PROJETO-MESTRE.md` mencionam que, ao gerar etiqueta, o ME recusa se `sender_doc === customer_doc`. Isso aconteceu em testes locais onde o admin testava consigo mesmo. **Não é bug** — é proteção do ME contra auto-envio.
 
@@ -1393,6 +1421,50 @@ aparecia em alguns navegadores por causa do Service Worker servindo versão anti
 - `admin.html` (inline) — 100% do redesign
 - `sw-admin.js` — bump CACHE_NAME
 
+### 25.8 — Light mode (Fases L1-L3, 06/out/2026)
+
+**Objetivo:** dar ao admin uma versão clara, pra uso diurno sem forçar a vista.
+
+**Implementação:**
+- Classe `html.admin-light` no `<html>` (toggle manual)
+- Variáveis trocadas: `--bg`, `--bg-panel`, `--bg-card`, `--text`, `--gold`, etc
+- Toggle no `.main-header` (sol/lua)
+- Preferência em `localStorage` (`gemas_admin_theme`)
+- Charts (Chart.js) adaptados em runtime (tick + grid color)
+- 116 hardcoded de cor convertidos para variáveis em L3
+
+**Paleta light:**
+- Fundo: `#faf9f6` (marfim)
+- Cards: `#ffffff` (branco puro)
+- Sidebar: `#f5f3ee`
+- Texto: `#1a1610` (quase preto)
+- Dourado: `#8b6a15` (escuro, WCAG AA)
+- Sombra: `rgba(0,0,0,0.08)`
+
+**Exceções (não mudam):**
+- `.theme-preview` (preview de tema da loja — simula ambos)
+- `.banner-slide-preview.color-*` (cores por tipo)
+- Cores semânticas: `#51cf66`, `#ff5555`, `#ffc107`, `#4dabf7`
+
+**Arquivos:**
+- `admin.html` (CSS + JS do toggle)
+- `sw-admin.js` (bump v9→v10→v11)
+
+### 25.9 — Aba Configurações refatorada (P1-P3, 06/out/2026)
+
+**Objetivo:** eliminar scroll infinito. Cada seção vira card clicável → modal.
+
+**Estrutura final:**
+- 9 cards na aba: Contato & Redes, Frete, Hero, Carrossel, Rodapé, Meta Tags, Área do Cliente, Refinos, Identidade Visual, Banners Rotativos
+- 9 modais independentes (cada um salva seu escopo)
+- `saveSettings()` fragmentado em 10 funções (`saveContatoSettings`, `saveFreteSettings`, `saveHeroSettings`, etc)
+- `saveSettings()` geral removido (dead code)
+- `#conteudo-site-placeholder` removido
+
+**Estrutura antiga (dead code removido):**
+- Aviso no topo (coluna `banner_message` dropada)
+- Salvar Configurações geral
+
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 06/10/2026 — v3.9.*
+*Fim do documento. Atualizado em 06/10/2026 — v3.10.*
