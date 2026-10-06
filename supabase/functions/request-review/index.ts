@@ -93,7 +93,7 @@ function buildReviewRequestHTML(order: Order): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sua opinião é ouro 💎 | Use Gemas</title>
+    <title>Sua opinião é ouro | Use Gemas</title>
 </head>
 <body style="margin: 0; padding: 0; background: #f7f1e8; font-family: 'Helvetica Neue', Arial, sans-serif;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: #f7f1e8; padding: 30px 15px;">
@@ -110,7 +110,6 @@ function buildReviewRequestHTML(order: Order): string {
 
                     <tr>
                         <td style="padding: 40px 40px 20px 40px; text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 15px;">💎</div>
                             <h2 style="margin: 0 0 12px 0; color: #2f2620; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; font-weight: 700;">Como foi sua experiência?</h2>
                             <p style="margin: 0; color: #7a6b5a; font-size: 15px; line-height: 1.7;">Olá, ${firstName}.<br>Já faz uma semaninha que sua peça chegou. Conta pra gente como foi?</p>
                         </td>
@@ -127,8 +126,8 @@ function buildReviewRequestHTML(order: Order): string {
 
                     <tr>
                         <td style="padding: 35px 40px; text-align: center;">
-                            <p style="margin: 0 0 20px 0; color: #7a6b5a; font-size: 14px; line-height: 1.7;">Sua avaliação ajuda outras clientes a escolherem suas peças com confiança. E pra gente, é o maior presente que podemos receber. 💛</p>
-                            <a href="${reviewLink}" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%); color: #fff; text-decoration: none; padding: 14px 36px; border-radius: 30px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">⭐ Avaliar agora</a>
+                            <p style="margin: 0 0 20px 0; color: #7a6b5a; font-size: 14px; line-height: 1.7;">Sua avaliação ajuda outras clientes a escolherem suas peças com confiança. E pra gente, é o maior presente que podemos receber.</p>
+                            <a href="${reviewLink}" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%); color: #fff; text-decoration: none; padding: 14px 36px; border-radius: 30px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">Avaliar agora</a>
                         </td>
                     </tr>
 
@@ -262,7 +261,7 @@ serve(async (req: Request) => {
 
         for (const order of orders as Order[]) {
             try {
-                const subject = "💎 Sua opinião é muito importante — Use Gemas";
+                const subject = "Sua opinião é muito importante — Use Gemas";
                 const html = buildReviewRequestHTML(order);
 
                 const result = await sendEmailViaBrevo(order.customer_email!, subject, html);
