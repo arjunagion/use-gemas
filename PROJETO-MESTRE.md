@@ -409,6 +409,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 
 ## 9. Próximas features planejadas (não implementadas)
 
+- **Banner Carrossel Avançado (Fase 10.7)** — SQL já rodado; 8 tipos de slide (static, link, dynamic_shipping, shipping_achieved, installments, coupon, warning, flash_promo); condições por slide (min_cart_value, device, time_window, first_visit_only); rotação configurável (5s default)
 - Tiers de fidelidade (bronze/prata/ouro)
 - Sistema de indicação (indique e ganhe)
 - Notificações push (web push)
@@ -470,8 +471,8 @@ Pedido "enviado" → cron request-review (~7d) → Email → Cliente avalia
 │  (usegemas.com.br)│◄──────►│  ├─ Auth (email + Google)                    │
 │  HTML/CSS/JS     │        │  ├─ Postgres (RLS + 14 triggers + 10 RPCs)    │
 └────────┬─────────┘        │  ├─ Edge Functions (10)                       │
-         │                  │  ├─ Storage (2 buckets)                       │
-         │                  │  └─ Cron (5 jobs, pg_cron)                    │
+         │                  │  ├─ Storage (3 buckets)                       │
+         │                  │  └─ Cron (6 jobs, pg_cron)                    │
          │                  └──────────────┬───────────────────────────────┘
          │        ┌────────────────────────┼───────────────────┐
          ▼        ▼                        ▼                   ▼
@@ -536,19 +537,19 @@ Pedido "enviado" → cron request-review (~7d) → Email → Cliente avalia
 ## 13. Documentação por camada
 
 ### 13.1 Frontend
-- **8 HTMLs**: index (loja), produto, minha-conta, admin, avaliar, reset-password, política-troca, política-privacidade.
-- **5 CSS**: style (loja, dark), perfil (área cliente, cream), produto, avaliar, paginas-legais.
+- **9 HTMLs**: index (loja), admin, minha-conta, produto, avaliar, **avaliacoes (Central de Reviews)**, reset-password, política-troca, política-privacidade.
+- **6 CSS**: style (loja, dark), perfil (área cliente, cream), produto, avaliar, paginas-legais, **avaliacoes (Central pública)**.
 - **3 JS**: script.js (lógica principal), sw.js (PWA cliente), sw-admin.js (PWA admin).
 - **CDNs**: jsDelivr, Google Fonts, googletagmanager.
 - **Bibliotecas**: Supabase SDK @2, PhotoSwipe 5.4.4, Chart.js 4.4.1.
 
 ### 13.2 Backend (Supabase)
 - **Auth**: 2 providers (Email + Google), 8 redirect URLs.
-- **Postgres**: 13 tabelas, 40 policies, 24 funções, 14 triggers, 42 índices.
+- **Postgres**: 15 tabelas, 44 policies, 24 funções, 15 triggers, 46 índices.
 - **RPCs**: 10 (validate_coupon, apply_coupon_to_order, get_loyalty_*, etc.).
 - **Edge Functions**: 10 (código em `supabase/functions/`).
-- **Storage**: 2 buckets (review-images, product-images).
-- **Cron**: 5 jobs (pg_cron + pg_net).
+- **Storage**: 3 buckets (review-images, product-images, site-media) — 13 policies.
+- **Cron**: 6 jobs (pg_cron + pg_net).
 
 ### 13.3 Integrações
 APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Brevo (email), Google OAuth, GA4, Meta Pixel, Web3Forms, WhatsApp.
@@ -598,7 +599,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 3. Deletar Pixel Meta antigo (`9288...`).
 
 ### Depois (este mês)
-- **Fase 10.1 — Conteúdo configurável** (Hero + Carrossel + Rodapé + Meta tags via admin) — sem depoimentos
+- **Fase 10.7 — Banner Carrossel Avançado** (8 tipos de slide + condições + rotação) — SQL rodado em 05/out, prompts pendentes
 4. Aplicar o seletor de frete novo no `produto.html`.
 5. Atualizar `sitemap.xml` estático (ou automatizar com `sitemap-products`).
 6. Otimização de performance (compressão, lazy-load).
