@@ -1,6 +1,31 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// ==========================================================================
+// ⚠️ NOTA IMPORTANTE — Melhor Envio recusa sender_doc === customer_doc
+// ==========================================================================
+//
+// O Melhor Envio bloqueia a geração de etiqueta quando o CPF/CNPJ do
+// remetente (settings.melhorenvio_sender_doc) é IGUAL ao do destinatário
+// (order.customer_doc). É uma proteção contra auto-envio.
+//
+// COMO ISSO APARECE EM TESTE:
+// - Durante testes locais, ao testar o fluxo completo sozinho, você acaba
+//   usando o MESMO CPF no remetente e no destinatário.
+// - O ME retorna erro do tipo "não é possível enviar para o mesmo CPF"
+//   ou algo similar no step1 (/api/v2/me/cart).
+//
+// COMO CONTORNAR EM TESTE:
+// - Use CPFs diferentes no remetente e destinatário.
+// - Crie um pedido de teste com dados fictícios (nome, CPF, endereço
+//   diferentes do seu).
+// - OU use o modo sandbox do ME (MELHORENVIO_SANDBOX=true) — ainda assim,
+//   o bloqueio pode ocorrer.
+//
+// NÃO É BUG DO PROJETO — é uma regra do próprio ME.
+//
+// ==========================================================================
+
 const MELHORENVIO_ACCESS_TOKEN = Deno.env.get("MELHORENVIO_ACCESS_TOKEN");
 const MELHORENVIO_SANDBOX = Deno.env.get("MELHORENVIO_SANDBOX") === "true";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
