@@ -164,7 +164,12 @@
 
                 <div class="nav-cart-icon" onclick="toggleCart()" role="button" tabindex="0"
                     aria-label="Carrinho de compras">
-                    🛒 <span id="cart-count">0</span>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="cart-count">0</span>
                 </div>
             </div>
         </div>
@@ -178,7 +183,12 @@
 
     <!-- Error state (não encontrado) -->
     <div id="produto-error" class="produto-error" style="display: none;">
-        <span class="icon">🔍</span>
+        <span class="icon" aria-hidden="true">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </span>
         <h1>Produto não encontrado</h1>
         <p>O produto que você procura não existe ou não está mais disponível.</p>
         <a href="index.html#colecao" class="btn-primary">Ver coleção completa</a>
@@ -248,7 +258,10 @@
 
                     <!-- Botão avaliar (aparece se logado + comprou) -->
                     <button type="button" class="btn-avaliar-produto" id="btn-avaliar-produto" onclick="handleAvaliarClick()" style="display: none;">
-                        ⭐ Avaliar este produto
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        Avaliar este produto
                     </button>
 
                     <!-- Descrição + Composição -->
@@ -341,14 +354,24 @@
                 </div>
 
                 <button type="button" class="coupon-see-all-btn" id="coupon-see-all-btn" onclick="openCouponsModal()" style="display: none;">
-                    <span class="coupon-see-all-icon">🎟️</span>
+                    <span class="coupon-see-all-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                    </span>
                     <span>Ver meus cupons</span>
                     <span class="coupon-see-all-count" id="coupon-see-all-count" style="display: none;">0</span>
                 </button>
 
                 <div id="coupon-applied" class="coupon-applied" style="display: none;">
                     <div class="coupon-applied-info">
-                        <span class="coupon-applied-icon">🎟️</span>
+                        <span class="coupon-applied-icon" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                            </svg>
+                        </span>
                         <div>
                             <div class="coupon-applied-code" id="coupon-applied-code">CUPOM10</div>
                             <div class="coupon-applied-desc" id="coupon-applied-desc">10% de desconto</div>
@@ -585,7 +608,17 @@
     <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Aviso de cookies" aria-live="polite">
         <div class="cookie-banner-content">
             <div class="cookie-banner-text">
-                <strong>🍪 Cookies</strong>
+                <strong>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -3px; margin-right: 6px;">
+                        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+                        <path d="M8.5 8.5v.01"></path>
+                        <path d="M16 15.5v.01"></path>
+                        <path d="M12 12v.01"></path>
+                        <path d="M11 17v.01"></path>
+                        <path d="M7 14v.01"></path>
+                    </svg>
+                    Cookies
+                </strong>
                 <p>Usamos cookies pra melhorar sua experiência e entender como o site é usado. Você escolhe o que
                     aceitar.</p>
             </div>
@@ -603,7 +636,12 @@
     <!-- Banner de Instalação PWA -->
     <div id="pwa-install-banner" class="pwa-install-banner" role="dialog" aria-label="Instalar app Use Gemas" aria-live="polite">
         <div class="pwa-install-content">
-            <div class="pwa-install-icon">📱</div>
+            <div class="pwa-install-icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+            </div>
             <div class="pwa-install-text">
                 <strong>Instale o app Use Gemas</strong>
                 <p>Acesso rápido e sem sair do navegador</p>

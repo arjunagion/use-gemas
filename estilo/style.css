@@ -3818,6 +3818,9 @@ html.theme-light .checkout-form textarea {
 }
 
 .coupon-applied-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.3rem;
     line-height: 1;
     flex-shrink: 0;
@@ -4329,6 +4332,9 @@ html.theme-light .coupon-modal-card {
 }
 
 .pwa-install-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: 2rem;
     line-height: 1;
     flex-shrink: 0;

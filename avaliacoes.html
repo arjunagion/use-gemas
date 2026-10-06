@@ -127,7 +127,12 @@
 
                 <div class="nav-cart-icon" onclick="toggleCart()" role="button" tabindex="0"
                     aria-label="Carrinho de compras">
-                    🛒 <span id="cart-count">0</span>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="cart-count">0</span>
                 </div>
             </div>
         </div>
@@ -220,7 +225,17 @@
     <div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Aviso de cookies" aria-live="polite">
         <div class="cookie-banner-content">
             <div class="cookie-banner-text">
-                <strong>🍪 Cookies</strong>
+                <strong>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -3px; margin-right: 6px;">
+                        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+                        <path d="M8.5 8.5v.01"></path>
+                        <path d="M16 15.5v.01"></path>
+                        <path d="M12 12v.01"></path>
+                        <path d="M11 17v.01"></path>
+                        <path d="M7 14v.01"></path>
+                    </svg>
+                    Cookies
+                </strong>
                 <p>Usamos cookies pra melhorar sua experiência e entender como o site é usado. Você escolhe o que
                     aceitar.</p>
             </div>
@@ -238,7 +253,12 @@
     <!-- Banner de Instalação PWA -->
     <div id="pwa-install-banner" class="pwa-install-banner" role="dialog" aria-label="Instalar app Use Gemas" aria-live="polite">
         <div class="pwa-install-content">
-            <div class="pwa-install-icon">📱</div>
+            <div class="pwa-install-icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+            </div>
             <div class="pwa-install-text">
                 <strong>Instale o app Use Gemas</strong>
                 <p>Acesso rápido e sem sair do navegador</p>

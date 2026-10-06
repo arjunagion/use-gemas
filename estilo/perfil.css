@@ -378,6 +378,14 @@ button {
     text-align: center;
 }
 
+.tab-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    margin-right: 0.45rem;
+}
+
 /* ==========================================================================
    5. PAINÉIS / SEÇÕES
    ========================================================================== */
