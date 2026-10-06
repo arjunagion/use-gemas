@@ -114,7 +114,6 @@ async function getLoyaltyPointsSection(supabase: any, order: OrderRecord): Promi
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: linear-gradient(135deg, #fdf3d9 0%, #f7e6bd 100%); border: 1px solid rgba(184, 147, 90, 0.3); border-radius: 12px; padding: 24px 20px; text-align: center;">
                     <tr>
                         <td style="text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 12px;">💎</div>
                             <h3 style="margin: 0 0 8px 0; color: #2f2620; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 700;">
                                 Você ganhou ${earnedFormatted} pontos!
                             </h3>
@@ -239,7 +238,7 @@ function buildEmailHTML(
                                 </tr>
                                 <tr>
                                     <td style="color: #7a6b5a; font-size: 13px; padding: 4px 0;">Frete</td>
-                                    <td style="color: #2f2620; font-size: 13px; text-align: right; padding: 4px 0;">${order.shipping_cost === 0 ? "GRÁTIS ✨" : formatBRL(order.shipping_cost)}</td>
+                                    <td style="color: #2f2620; font-size: 13px; text-align: right; padding: 4px 0;">${order.shipping_cost === 0 ? "GRÁTIS" : formatBRL(order.shipping_cost)}</td>
                                 </tr>
                                 <tr>
                                     <td style="color: #2f2620; font-size: 16px; font-weight: 700; padding: 10px 0 0 0; border-top: 1px solid #ede4d3;">Total</td>
@@ -393,8 +392,8 @@ serve(async (req: Request) => {
         }
 
         const subject = newStatus === "pago"
-            ? "✓ Pagamento confirmado — Use Gemas"
-            : "📦 Sua peça foi enviada — Use Gemas";
+            ? "Pagamento confirmado — Use Gemas"
+            : "Sua peça foi enviada — Use Gemas";
 
         const emailHTML = buildEmailHTML(record, newStatus, pointsSection); // ← ALTERADO
 
