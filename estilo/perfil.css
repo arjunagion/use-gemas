@@ -2928,6 +2928,62 @@ button {
     }
 }
 
+/* ==========================================================================
+   FASE E3.1 — emoji → SVG Lucide (ajustes de encaixe dos ícones)
+   ========================================================================== */
+.perfil-empty .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cr-text-dim);
+    margin-bottom: 1rem;
+}
+
+.perfil-empty .icon svg {
+    display: block;
+    stroke: currentColor;
+}
+
+.perfil-pontos-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cr-gold-hover);
+    filter: drop-shadow(0 2px 6px rgba(var(--cr-gold-rgb), 0.3));
+}
+
+.perfil-pontos-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.notification-icon,
+.notif-carousel-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cr-gold, var(--gold));
+}
+
+.notification-icon svg,
+.notif-carousel-icon svg {
+    display: block;
+    stroke: currentColor;
+}
+
+.notifications-empty .icon {
+    color: var(--cr-text-dim);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.notifications-empty .icon svg {
+    display: block;
+}
+
 @media (max-width: 380px) {
     .perfil-pontos-value {
         font-size: 1.4rem;
