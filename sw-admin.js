@@ -6,7 +6,7 @@
 //   - Navegação HTML: network-first com fallback pro cache
 // ==========================================================================
 
-const CACHE_NAME = 'ug-admin-v8';
+const CACHE_NAME = 'ug-admin-v9';
 const CACHE_URLS = [
     '/admin.html',
     '/estilo/midias/favicon.png',
