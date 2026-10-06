@@ -4425,23 +4425,6 @@
                             </div>
                         </div>
 
-                        <!-- ==================== AVISO NO TOPO ==================== -->
-                        <div class="config-block">
-                            <h3 class="config-block-title">Aviso no topo do site</h3>
-
-                            <div class="form-group">
-                                <label for="cfg-banner-message">Mensagem (deixe vazio pra esconder)</label>
-                                <input type="text" id="cfg-banner-message" placeholder="Frete grátis acima de R$ 300" maxlength="120">
-                                <small class="config-hint">Aparece como uma faixa dourada fina no topo do site. Bom pra promoções e avisos rápidos.</small>
-                            </div>
-
-                            <div class="config-block-actions">
-                                <button type="button" class="btn-save-block" onclick="saveAvisoSettings()">
-                                    Salvar aviso
-                                </button>
-                            </div>
-                        </div>
-
                         <!-- ==================== FRETE (CARD → MODAL) ==================== -->
                         <div class="config-block">
                             <div class="config-block-header">
@@ -8810,35 +8793,6 @@
             }
         }
 
-        async function saveAvisoSettings() {
-            const btn = event?.target;
-            const originalText = btn ? btn.innerText : null;
-            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
-
-            try {
-                const banner_message = (document.getElementById('cfg-banner-message')?.value || '').trim() || null;
-
-                const { error } = await supabaseClient
-                    .from('settings')
-                    .update({ banner_message, updated_at: new Date().toISOString() })
-                    .eq('id', 1);
-
-                if (error) {
-                    console.error('[saveAvisoSettings] Erro:', error);
-                    showToast('Erro ao salvar aviso.', 'error');
-                    return;
-                }
-
-                if (currentSettings) currentSettings.banner_message = banner_message;
-                showToast('Aviso salvo!');
-            } catch (e) {
-                console.error('[saveAvisoSettings] Exceção:', e);
-                showToast('Erro inesperado.', 'error');
-            } finally {
-                if (btn) { btn.disabled = false; btn.innerText = originalText; }
-            }
-        }
-
         async function loadSettings() {
             const { data, error } = await supabaseClient
                 .from('settings')
@@ -8859,7 +8813,6 @@
                 'cfg-instagram': data?.instagram || '',
                 'cfg-shipping-fixed': data?.shipping_fixed != null ? Number(data.shipping_fixed).toFixed(2).replace('.', ',') : '20,00',
                 'cfg-free-shipping-min': data?.free_shipping_min != null ? Number(data.free_shipping_min).toFixed(2).replace('.', ',') : '0,00',
-                'cfg-banner-message': data?.banner_message || '',
                 'cfg-shipping-fixed-sp': data?.shipping_fixed_sp != null ? Number(data.shipping_fixed_sp).toFixed(2).replace('.', ',') : '0,00',
                 'cfg-shipping-fixed-sudeste': data?.shipping_fixed_sudeste != null ? Number(data.shipping_fixed_sudeste).toFixed(2).replace('.', ',') : '0,00',
                 'cfg-shipping-fixed-sul': data?.shipping_fixed_sul != null ? Number(data.shipping_fixed_sul).toFixed(2).replace('.', ',') : '0,00',
