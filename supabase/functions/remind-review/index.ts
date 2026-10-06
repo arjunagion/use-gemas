@@ -63,7 +63,7 @@ function buildReviewReminderHTML(order: Order): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ainda dá tempo de avaliar 💛 | Use Gemas</title>
+    <title>Ainda dá tempo de avaliar | Use Gemas</title>
 </head>
 <body style="margin: 0; padding: 0; background: #f7f1e8; font-family: 'Helvetica Neue', Arial, sans-serif;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: #f7f1e8; padding: 30px 15px;">
@@ -82,9 +82,8 @@ function buildReviewReminderHTML(order: Order): string {
                     <!-- Headline -->
                     <tr>
                         <td style="padding: 40px 40px 20px 40px; text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 15px;">💛</div>
                             <h2 style="margin: 0 0 12px 0; color: #2f2620; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; font-weight: 700;">Ainda dá tempo de avaliar</h2>
-                            <p style="margin: 0; color: #7a6b5a; font-size: 15px; line-height: 1.7;">Oi, ${firstName}.<br>Vi que você ainda não contou como foi sua experiência com a peça. Sua opinião faz toda diferença pra gente. 💛</p>
+                            <p style="margin: 0; color: #7a6b5a; font-size: 15px; line-height: 1.7;">Oi, ${firstName}.<br>Vi que você ainda não contou como foi sua experiência com a peça. Sua opinião faz toda diferença pra gente.</p>
                         </td>
                     </tr>
 
@@ -102,8 +101,8 @@ function buildReviewReminderHTML(order: Order): string {
                     <tr>
                         <td style="padding: 35px 40px; text-align: center;">
                             <p style="margin: 0 0 20px 0; color: #7a6b5a; font-size: 14px; line-height: 1.7;">Leva menos de 1 minuto. Sua avaliação ajuda outras clientes a escolherem com confiança.</p>
-                            <a href="${reviewLink}" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%); color: #fff; text-decoration: none; padding: 14px 36px; border-radius: 30px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">⭐ Avaliar agora</a>
-                            <p style="margin: 20px 0 0 0; color: #a89987; font-size: 11px;">Se você já avaliou, desconsidere este email. 💛</p>
+                            <a href="${reviewLink}" style="display: inline-block; background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%); color: #fff; text-decoration: none; padding: 14px 36px; border-radius: 30px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">Avaliar agora</a>
+                            <p style="margin: 20px 0 0 0; color: #a89987; font-size: 11px;">Se você já avaliou, desconsidere este email.</p>
                         </td>
                     </tr>
 
@@ -255,7 +254,7 @@ serve(async (req: Request) => {
 
         for (const order of eligibleOrders) {
             try {
-                const subject = "💛 Ainda dá tempo de avaliar sua compra — Use Gemas";
+                const subject = "Ainda dá tempo de avaliar sua compra — Use Gemas";
                 const html = buildReviewReminderHTML(order);
 
                 const result = await sendEmailViaBrevo(order.customer_email!, subject, html);
