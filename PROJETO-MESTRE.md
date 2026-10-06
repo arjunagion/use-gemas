@@ -1,7 +1,7 @@
-# PROJETO-MESTRE — Use Gemas (v3.8)
+# PROJETO-MESTRE — Use Gemas (v3.9)
 
-> **Documento de referência oficial — v3.8** — estado do código em **05/10/2026**.
-> **Novo em v3.8:** Fase 10.5 + 10.6 completas — Biblioteca de Temas com white mode real + cream mode dinâmico. Presets do sistema (11), temas custom (até 20), agendamento de troca, auto-dessaturar cores saturadas, detecção de luminância, variáveis semânticas em todo o CSS. Área do cliente ganha "cream mode dinâmico": tint sutil derivado do accent do tema (com fallback clássico em temas light).
+> **Documento de referência oficial — v3.9** — estado do código em **06/10/2026**.
+> **Novo em v3.9:** Fase 10.8 — Redesign do painel admin. Fonte Inter (substituindo Cormorant/Montserrat) + substituição de ~50 emojis por SVG icons (Lucide) + badges com dot colorido + toasts com SVG + reset do CACHE_NAME do SW admin (v5 → v6).
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -162,7 +162,8 @@
 | Avaliações (moderação + destaque + resposta) | ✅ |
 | **Feedbacks (canal privado, novo)** | ✅ |
 | Financeiro (Chart.js) | ✅ |
-| Configurações (frete, contato, banner) | ✅ |
+| **Redesign (Fase 10.8)** | Fonte Inter + SVG Lucide + zero emojis | ✅ |
+| Configurações (frete, contato, banner, tema, conteúdo do site, área do cliente, refinos, banners rotativos) | ✅ |
 
 ### 📦 Estoque / Pedidos
 
@@ -584,6 +585,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 19 | Biblioteca de Temas (Fase 10.5) | Hardcode só no CSS | Permite multi-nicho futuro (site modelo reutilizável) |
 | 20 | Auto-dessaturar cores saturadas (>40%) | Aceitar qualquer cor | Evita UX agressiva com cores saturadas; preserva accent vivo |
 | 21 | Cream Mode Dinâmico na conta (Fase 10.6) | Conta independente ou dark | Identidade visual contínua, mas conta sempre legível (light/pastel) |
+| 22 | Redesign admin com Inter + Lucide SVG (Fase 10.8) | Manter Cormorant/Montserrat + emojis | Painel administrativo é ferramenta — precisa de fonte neutra e ícones profissionais (legibilidade em dados) |
 
 ---
 
@@ -616,6 +618,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **06/out/2026** — Fase 10.8 completa: Redesign do painel admin (Inter + Lucide SVG + ~50 emojis removidos + badges com dot + toasts SVG) + bump sw-admin CACHE_NAME v5→v6.
 - **05/out/2026** — Fase 10.6 completa: Cream Mode Dinâmico (conta com tint sutil do accent + fallback clássico em temas light) + botão "Loja" no produto.html + fix do banner de frete grátis seguir tema.
 - **04/out/2026** — Fase 10.5.2 completa: White Mode real (refactor global de CSS + variáveis semânticas + auto-dessaturar + detecção de luminância).
 - **04/out/2026** — Fases 10.5 + 10.5.1: Biblioteca de Temas (11 presets + custom + agendamento + favoritos) + validação de contraste/saturação.
@@ -1317,4 +1320,78 @@ tema ativo. Isso cria identidade visual contínua sem quebrar legibilidade
 
 ---
 
-*Fim do documento. Gerado por varredura do repositório local em 05/10/2026 — v3.8.*
+## 25. Redesign do Painel Admin (Fase 10.8)
+
+### 25.1 Objetivo
+
+Transformar o painel administrativo em ferramenta profissional — fonte neutra
+pra dados, ícones monocromáticos SVG, zero emojis decorativos. Manter apenas a
+marca "USE GEMAS" em Cormorant no topo do sidebar (identidade visual).
+
+### 25.2 Mudança de tipografia
+
+| Antes | Depois |
+|---|---|
+| Cormorant Garamond (títulos) | **Inter** (títulos) |
+| Montserrat (corpo) | **Inter** (corpo) |
+| — | **Cormorant Garamond** (só sidebar-brand) |
+
+**Features ativadas no Inter:**
+- `font-feature-settings: 'tnum' on, 'lnum' on, 'cv11' on;` — números tabulares + vírgula de milhar
+- `-webkit-font-smoothing: antialiased;`
+
+### 25.3 Substituição de emojis por SVG (Lucide)
+
+**Categorias substituídas (~50 emojis):**
+
+| Categoria | Exemplos | Substituição |
+|---|---|---|
+| Sidebar nav (10) | 📊 📦 🛒 ⭐ 🎟️ 💎 💬 👥 💰 ⚙️ | SVG Lucide inline |
+| Botões de ação (~20) | ✏️ 🗑️ 🚫 ✅ ❌ 💛 📋 📊 ⬇️ 🎲 📦 | SVG Lucide inline |
+| Badges/status (8) | ⛔ ⚠️ ✅ 📦 🔍 | Texto + dot colorido CSS |
+| Toasts (3) | ✅ ℹ️ ⚠️ | SVG Lucide inline |
+| Extrato de pontos (4) | 💎 🎟️ ⏰ ⚙️ | SVG Lucide inline |
+| Categorias de feedback (4) | 💡 💛 ⚠️ 🐛 | Texto puro |
+| Placeholders busca (7) | 🔍 | Removido (texto puro) |
+| Títulos de seção (3) | 📦 📬 | Removido |
+| Accordions Configurações (8) | 🏠 🎠 🦶 🔍 🧑 ⚙️ 🎨 🎏 | Removido |
+
+**Biblioteca escolhida:** Lucide (ícones de linha, MIT, ~1000 ícones, monocromáticos via `currentColor`).
+
+### 25.4 Design dos badges
+
+Antes: emoji + texto (`⛔ Esgotado`)
+Depois: dot colorido CSS + texto (`● Esgotado`)
+
+```css
+.stock-badge::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+    background: var(--success); /* ou warning/danger */
+}
+```
+
+### 25.5 Fix de cache
+
+Bump do `CACHE_NAME` do `sw-admin.js` (`ug-admin-v5` → `v6`). O redesign não
+aparecia em alguns navegadores por causa do Service Worker servindo versão antiga.
+
+### 25.6 O que NÃO foi alterado
+
+- Marca "USE GEMAS" no topo do sidebar — **mantida em Cormorant** (identidade visual)
+- Emojis dinâmicos via `String.fromCodePoint` — **mantidos** (padrão do projeto)
+- Labels de formulário com emoji funcional — **mantidos**
+- Site público (`index.html`, `produto.html`, `minha-conta.html`) — **não afetado**
+
+### 25.7 Arquivos envolvidos
+
+- `admin.html` (inline) — 100% do redesign
+- `sw-admin.js` — bump CACHE_NAME
+
+---
+
+*Fim do documento. Gerado por varredura do repositório local em 06/10/2026 — v3.9.*
