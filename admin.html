@@ -4441,79 +4441,6 @@
                             <p class="config-block-summary" id="frete-summary">Carregando...</p>
                         </div>
 
-                        <!-- Inputs de Frete (movidos pro modal em P2) -->
-                        <div id="frete-modal-placeholder" style="display: none;">
-                        <div class="config-block">
-                            <h3 class="config-block-title">Frete</h3>
-
-                            <div class="form-group">
-                                <label>Modo de frete operando</label>
-                                <div class="shipping-mode-toggle">
-                                    <label class="shipping-mode-option">
-                                        <input type="radio" name="cfg-shipping-mode" value="me" id="cfg-shipping-mode-me">
-                                        <span>
-                                            <strong>Melhor Envio</strong>
-                                            <small>Cotação real por CEP (Correios + Jadlog)</small>
-                                        </span>
-                                    </label>
-                                    <label class="shipping-mode-option">
-                                        <input type="radio" name="cfg-shipping-mode" value="fixed" id="cfg-shipping-mode-fixed">
-                                        <span>
-                                            <strong>Frete fixo</strong>
-                                            <small>Valor único pra todas as regiões (modo reserva)</small>
-                                        </span>
-                                    </label>
-                                </div>
-                                <small class="config-hint">Define qual modo está ativo. O valor do frete fixo (abaixo) é usado quando o modo "Frete fixo" está selecionado ou como fallback automático se o ME falhar.</small>
-                            </div>
-
-                            <div class="form-row-2">
-                                <div class="form-group">
-                                    <label for="cfg-shipping-fixed">Frete fixo (R$)</label>
-                                    <input type="text" id="cfg-shipping-fixed" placeholder="20.00" inputmode="decimal">
-                                </div>
-                                <div class="form-group">
-                                    <label for="cfg-free-shipping-min">Frete grátis acima de (R$)</label>
-                                    <input type="text" id="cfg-free-shipping-min" placeholder="0" inputmode="decimal">
-                                </div>
-                            </div>
-
-                            <details class="region-freight-block">
-                                <summary>Frete fixo por região (opcional)</summary>
-                                <p class="config-hint" style="margin: 0.6rem 0;">
-                                    Se preenchido, sobrepõe o "Frete fixo" global pra CEPs daquela região.
-                                    Deixe 0 pra usar o valor global.
-                                </p>
-
-                                <div class="form-row-2">
-                                    <div class="form-group">
-                                        <label for="cfg-shipping-fixed-sp">SP (CEP 0-1)</label>
-                                        <input type="text" id="cfg-shipping-fixed-sp" placeholder="0" inputmode="decimal">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="cfg-shipping-fixed-sudeste">Sudeste — RJ/ES/MG (CEP 2-4)</label>
-                                        <input type="text" id="cfg-shipping-fixed-sudeste" placeholder="0" inputmode="decimal">
-                                    </div>
-                                </div>
-
-                                <div class="form-row-2">
-                                    <div class="form-group">
-                                        <label for="cfg-shipping-fixed-sul">Sul — PR/SC/RS (CEP 8-9)</label>
-                                        <input type="text" id="cfg-shipping-fixed-sul" placeholder="0" inputmode="decimal">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="cfg-shipping-fixed-centro-norte-ne">Centro-Oeste + Norte + Nordeste (CEP 5-7)</label>
-                                        <input type="text" id="cfg-shipping-fixed-centro-norte-ne" placeholder="0" inputmode="decimal">
-                                    </div>
-                                </div>
-                            </details>
-
-                            <small class="config-hint">Deixe <strong>0</strong> em "Frete grátis" para desativar essa
-                                regra. Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o
-                                valor.</small>
-                        </div>
-                        </div>
-
                         <!-- ==================== CONTEÚDO DO SITE (GRADE) ==================== -->
                         <div class="config-block">
                             <h3 class="config-block-title">Conteúdo do Site</h3>
@@ -4901,105 +4828,6 @@
                                 <div id="loyalty-rules-editor"></div>
                             </details>
 
-                            <!-- ==================== IDENTIDADE VISUAL ==================== -->
-                            <details class="content-section-details">
-                                <summary>Identidade Visual (biblioteca de temas)</summary>
-
-                                <div class="form-group">
-                                    <label>Tema ativo</label>
-                                    <div class="theme-active-card" id="theme-active-card">
-                                        <span class="theme-active-name" id="theme-active-name">Carregando...</span>
-                                        <button type="button" class="gallery-btn" onclick="openThemesLibrary()">
-                                            📚 Abrir biblioteca
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Tema agendado (opcional)</label>
-                                    <div id="theme-scheduled-info" class="theme-scheduled-info">
-                                        <span id="theme-scheduled-name">Nenhum tema agendado</span>
-                                        <button type="button" class="gallery-btn" onclick="openScheduleModal()" id="theme-schedule-btn">
-                                            📅 Agendar
-                                        </button>
-                                        <button type="button" class="gallery-btn" onclick="cancelScheduledTheme()" id="theme-cancel-schedule-btn" style="display: none;">
-                                            ✕ Cancelar agendamento
-                                        </button>
-                                    </div>
-                                </div>
-                            </details>
-
-                            <!-- ==================== BANNERS ROTATIVOS ==================== -->
-                            <details class="content-section-details">
-                                <summary>Banners Rotativos (carrossel topo do site)</summary>
-
-                                <p class="config-hint" style="margin: 0.8rem 0 1rem;">
-                                    Configure múltiplas mensagens que rotacionam no topo do site. Tipos dinâmicos
-                                    (frete, parcelamento) só aparecem quando aplicáveis.
-                                </p>
-
-                                <!-- Config global -->
-                                <div class="config-block-inner">
-                                    <h4 class="banner-section-title">Configuração do carrossel</h4>
-
-                                    <div class="form-row-2">
-                                        <div class="form-group">
-                                            <label for="cfg-banner-rotation">Duração de cada slide (segundos)</label>
-                                            <input type="number" id="cfg-banner-rotation" min="2" max="30" placeholder="5">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="cfg-banner-pause-hover">Pausar ao passar o mouse</label>
-                                            <select id="cfg-banner-pause-hover">
-                                                <option value="true">Sim</option>
-                                                <option value="false">Não</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-row-2">
-                                        <div class="form-group">
-                                            <label for="cfg-banner-dots">Mostrar bolinhas indicadoras</label>
-                                            <select id="cfg-banner-dots">
-                                                <option value="true">Sim</option>
-                                                <option value="false">Não</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="cfg-banner-swipe">Permitir deslizar (mobile)</label>
-                                            <select id="cfg-banner-swipe">
-                                                <option value="true">Sim</option>
-                                                <option value="false">Não</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Lista de slides -->
-                                <div class="config-block-inner">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                        <h4 class="banner-section-title" style="margin: 0;">Slides</h4>
-                                        <button type="button" class="btn-new-product" onclick="openBannerSlideEditor(null)">
-                                            <span>+</span> Adicionar slide
-                                        </button>
-                                    </div>
-
-                                    <div id="banner-slides-list" class="banner-slides-list">
-                                        <!-- Preenchido via JS -->
-                                    </div>
-
-                                    <!-- Botão de salvar banners (destaque) -->
-                                    <div style="display: flex; justify-content: flex-end; margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06);">
-                                        <button type="button" class="btn-new-product" onclick="saveBannerSlidesOnly()" id="btn-save-banners" style="padding: 0.85rem 2rem; min-width: 220px; justify-content: center;">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 0.4rem;">
-                                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                                <polyline points="7 3 7 8 15 8"></polyline>
-                                            </svg>
-                                            Salvar banners
-                                        </button>
-                                    </div>
-                                </div>
-                            </details>
                         </div>
 
                         </div>
@@ -8740,17 +8568,135 @@
         }
 
         // ==========================================================================
-        // MODAIS DE CONFIGURAÇÕES (a serem implementados em P2/P3)
+        // MODAIS DE CONFIGURAÇÕES (P2: Frete, Identidade Visual, Banners; P3: resto)
         // ==========================================================================
-        function openFreteModal() { console.log('[P2] Abrir modal Frete'); }
+        function openFreteModal() {
+            const modal = document.getElementById('frete-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeFreteModal() {
+            const modal = document.getElementById('frete-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        function openIdentidadeVisualModal() {
+            const modal = document.getElementById('identidade-visual-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeIdentidadeVisualModal() {
+            const modal = document.getElementById('identidade-visual-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        function openBannersRotativosModal() {
+            const modal = document.getElementById('banners-rotativos-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeBannersRotativosModal() {
+            const modal = document.getElementById('banners-rotativos-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
         function openHeroModal() { console.log('[P3] Abrir modal Hero'); }
         function openCarrosselModal() { console.log('[P3] Abrir modal Carrossel'); }
         function openRodapeModal() { console.log('[P3] Abrir modal Rodapé'); }
         function openMetaModal() { console.log('[P3] Abrir modal Meta Tags'); }
         function openAreaClienteModal() { console.log('[P3] Abrir modal Área do Cliente'); }
         function openRefinosModal() { console.log('[P3] Abrir modal Refinos'); }
-        function openIdentidadeVisualModal() { console.log('[P3] Abrir modal Identidade Visual'); }
-        function openBannersRotativosModal() { console.log('[P3] Abrir modal Banners Rotativos'); }
+
+        async function saveFreteSettings() {
+            const btn = document.getElementById('btn-save-frete');
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const normalizePrice = (value) => {
+                    let v = String(value || '').trim().replace(/\s/g, '');
+                    if (v.includes(',')) v = v.replace(/\./g, '').replace(',', '.');
+                    const num = parseFloat(v);
+                    return isNaN(num) ? 0 : num;
+                };
+
+                const shippingFixed = normalizePrice(document.getElementById('cfg-shipping-fixed')?.value || '0');
+                const freeShippingMin = normalizePrice(document.getElementById('cfg-free-shipping-min')?.value || '0');
+                const shippingFixedSp = normalizePrice(document.getElementById('cfg-shipping-fixed-sp')?.value || '0');
+                const shippingFixedSudeste = normalizePrice(document.getElementById('cfg-shipping-fixed-sudeste')?.value || '0');
+                const shippingFixedSul = normalizePrice(document.getElementById('cfg-shipping-fixed-sul')?.value || '0');
+                const shippingFixedCentroNorteNe = normalizePrice(document.getElementById('cfg-shipping-fixed-centro-norte-ne')?.value || '0');
+
+                const shippingModeEl = document.querySelector('input[name="cfg-shipping-mode"]:checked');
+                const shippingMode = shippingModeEl ? shippingModeEl.value : 'me';
+
+                if (isNaN(shippingFixed) || shippingFixed < 0) {
+                    showToast('Valor de frete inválido.', 'error');
+                    return;
+                }
+
+                if (isNaN(freeShippingMin) || freeShippingMin < 0) {
+                    showToast('Valor de frete grátis inválido.', 'error');
+                    return;
+                }
+
+                if (shippingMode === 'fixed' && (!shippingFixed || shippingFixed <= 0)) {
+                    showToast('Modo "Frete fixo" exige um valor maior que zero em "Frete fixo (R$)".', 'error');
+                    return;
+                }
+
+                const payload = {
+                    shipping_fixed: shippingFixed,
+                    shipping_mode: shippingMode,
+                    free_shipping_min: freeShippingMin,
+                    shipping_fixed_sp: shippingFixedSp,
+                    shipping_fixed_sudeste: shippingFixedSudeste,
+                    shipping_fixed_sul: shippingFixedSul,
+                    shipping_fixed_centro_norte_ne: shippingFixedCentroNorteNe,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update(payload)
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveFreteSettings] Erro:', error);
+                    showToast('Erro ao salvar frete.', 'error');
+                    return;
+                }
+
+                if (currentSettings) {
+                    currentSettings.shipping_fixed = shippingFixed;
+                    currentSettings.shipping_mode = shippingMode;
+                    currentSettings.free_shipping_min = freeShippingMin;
+                    currentSettings.shipping_fixed_sp = shippingFixedSp;
+                    currentSettings.shipping_fixed_sudeste = shippingFixedSudeste;
+                    currentSettings.shipping_fixed_sul = shippingFixedSul;
+                    currentSettings.shipping_fixed_centro_norte_ne = shippingFixedCentroNorteNe;
+                }
+
+                // Atualiza o resumo no card
+                const freteSummaryEl = document.getElementById('frete-summary');
+                if (freteSummaryEl) {
+                    const mode = shippingMode === 'fixed' ? 'Frete fixo' : 'Melhor Envio';
+                    freteSummaryEl.innerHTML = `
+                        Modo: <strong>${mode}</strong> ·
+                        Frete fixo: <strong>R$ ${shippingFixed.toFixed(2).replace('.', ',')}</strong> ·
+                        Frete grátis acima de: <strong>R$ ${freeShippingMin.toFixed(2).replace('.', ',')}</strong>
+                    `;
+                }
+
+                showToast('Frete salvo!');
+                closeFreteModal();
+            } catch (e) {
+                console.error('[saveFreteSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
 
         // ==========================================================================
         // SAVE LOCAL (fragmentado por bloco) — P1 traz Contato + Aviso
@@ -10786,6 +10732,200 @@
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeBannerSlideEditor()">Cancelar</button>
                 <button type="button" class="btn-save" id="bs-save-btn" onclick="saveBannerSlide()">Salvar slide</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: FRETE ==================== -->
+    <div id="frete-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeFreteModal()">&times;</button>
+            <h2 class="modal-title">Configurar frete</h2>
+
+            <div class="form-group">
+                <label>Modo de frete operando</label>
+                <div class="shipping-mode-toggle">
+                    <label class="shipping-mode-option">
+                        <input type="radio" name="cfg-shipping-mode" value="me" id="cfg-shipping-mode-me">
+                        <span>
+                            <strong>Melhor Envio</strong>
+                            <small>Cotação real por CEP (Correios + Jadlog)</small>
+                        </span>
+                    </label>
+                    <label class="shipping-mode-option">
+                        <input type="radio" name="cfg-shipping-mode" value="fixed" id="cfg-shipping-mode-fixed">
+                        <span>
+                            <strong>Frete fixo</strong>
+                            <small>Valor único pra todas as regiões (modo reserva)</small>
+                        </span>
+                    </label>
+                </div>
+                <small class="config-hint">Define qual modo está ativo. O valor do frete fixo (abaixo) é usado quando o modo "Frete fixo" está selecionado ou como fallback automático se o ME falhar.</small>
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="cfg-shipping-fixed">Frete fixo (R$)</label>
+                    <input type="text" id="cfg-shipping-fixed" placeholder="20.00" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label for="cfg-free-shipping-min">Frete grátis acima de (R$)</label>
+                    <input type="text" id="cfg-free-shipping-min" placeholder="0" inputmode="decimal">
+                </div>
+            </div>
+
+            <details class="region-freight-block">
+                <summary>Frete fixo por região (opcional)</summary>
+                <p class="config-hint" style="margin: 0.6rem 0;">
+                    Se preenchido, sobrepõe o "Frete fixo" global pra CEPs daquela região.
+                    Deixe 0 pra usar o valor global.
+                </p>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="cfg-shipping-fixed-sp">SP (CEP 0-1)</label>
+                        <input type="text" id="cfg-shipping-fixed-sp" placeholder="0" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label for="cfg-shipping-fixed-sudeste">Sudeste — RJ/ES/MG (CEP 2-4)</label>
+                        <input type="text" id="cfg-shipping-fixed-sudeste" placeholder="0" inputmode="decimal">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="cfg-shipping-fixed-sul">Sul — PR/SC/RS (CEP 8-9)</label>
+                        <input type="text" id="cfg-shipping-fixed-sul" placeholder="0" inputmode="decimal">
+                    </div>
+                    <div class="form-group">
+                        <label for="cfg-shipping-fixed-centro-norte-ne">Centro-Oeste + Norte + Nordeste (CEP 5-7)</label>
+                        <input type="text" id="cfg-shipping-fixed-centro-norte-ne" placeholder="0" inputmode="decimal">
+                    </div>
+                </div>
+            </details>
+
+            <small class="config-hint" style="margin-top: 0.8rem; display: block;">
+                Deixe <strong>0</strong> em "Frete grátis" para desativar essa regra.
+                Se preenchido, o site vai mostrar o frete como grátis quando o subtotal atingir o valor.
+            </small>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeFreteModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-frete" onclick="saveFreteSettings()">Salvar frete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: IDENTIDADE VISUAL ==================== -->
+    <div id="identidade-visual-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeIdentidadeVisualModal()">&times;</button>
+            <h2 class="modal-title">Identidade Visual</h2>
+
+            <div class="form-group">
+                <label>Tema ativo</label>
+                <div class="theme-active-card" id="theme-active-card">
+                    <span class="theme-active-name" id="theme-active-name">Carregando...</span>
+                    <button type="button" class="gallery-btn" onclick="openThemesLibrary()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -2px; margin-right: 4px;">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        Abrir biblioteca
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Tema agendado (opcional)</label>
+                <div id="theme-scheduled-info" class="theme-scheduled-info">
+                    <span id="theme-scheduled-name">Nenhum tema agendado</span>
+                    <button type="button" class="gallery-btn" onclick="openScheduleModal()" id="theme-schedule-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -2px; margin-right: 4px;">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Agendar
+                    </button>
+                    <button type="button" class="gallery-btn" onclick="cancelScheduledTheme()" id="theme-cancel-schedule-btn" style="display: none;">
+                        Cancelar agendamento
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeIdentidadeVisualModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: BANNERS ROTATIVOS ==================== -->
+    <div id="banners-rotativos-modal" class="modal-overlay">
+        <div class="modal-box banner-slide-modal-box">
+            <button class="modal-close" onclick="closeBannersRotativosModal()">&times;</button>
+            <h2 class="modal-title">Banners Rotativos</h2>
+
+            <p class="config-hint" style="margin: 0 0 1.2rem;">
+                Configure os slides que rotacionam no topo do site. Rotação automática
+                quando há mais de 1 ativo. Slides dinâmicos (frete grátis, parcelamento)
+                só aparecem quando aplicáveis.
+            </p>
+
+            <!-- Config global -->
+            <div class="config-block-inner">
+                <h4 class="banner-section-title">Configuração do carrossel</h4>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="cfg-banner-rotation">Duração de cada slide (segundos)</label>
+                        <input type="number" id="cfg-banner-rotation" min="2" max="30" placeholder="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="cfg-banner-pause-hover">Pausar ao passar o mouse</label>
+                        <select id="cfg-banner-pause-hover">
+                            <option value="true">Sim</option>
+                            <option value="false">Não</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="cfg-banner-dots">Mostrar bolinhas indicadoras</label>
+                        <select id="cfg-banner-dots">
+                            <option value="true">Sim</option>
+                            <option value="false">Não</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cfg-banner-swipe">Permitir deslizar (mobile)</label>
+                        <select id="cfg-banner-swipe">
+                            <option value="true">Sim</option>
+                            <option value="false">Não</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de slides -->
+            <div class="config-block-inner" style="margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 class="banner-section-title" style="margin: 0;">Slides</h4>
+                    <button type="button" class="btn-new-product" onclick="openBannerSlideEditor(null)">
+                        <span>+</span> Adicionar slide
+                    </button>
+                </div>
+
+                <div id="banner-slides-list" class="banner-slides-list"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeBannersRotativosModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-banners" onclick="saveBannerSlidesOnly()">
+                    Salvar banners
+                </button>
             </div>
         </div>
     </div>
