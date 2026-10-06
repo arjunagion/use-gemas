@@ -85,7 +85,7 @@ function buildExpiringCouponHTML(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seu cupom expira em breve 🎟️ | Use Gemas</title>
+    <title>Seu cupom expira em breve | Use Gemas</title>
 </head>
 <body style="margin: 0; padding: 0; background: #f7f1e8; font-family: 'Helvetica Neue', Arial, sans-serif;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background: #f7f1e8; padding: 30px 15px;">
@@ -102,7 +102,6 @@ function buildExpiringCouponHTML(
 
                     <tr>
                         <td style="padding: 40px 40px 20px 40px; text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 15px;">🎟️</div>
                             <h2 style="margin: 0 0 12px 0; color: #2f2620; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; font-weight: 700;">Seu cupom expira em breve</h2>
                             <p style="margin: 0; color: #7a6b5a; font-size: 15px; line-height: 1.7;">Olá, ${firstName}.<br>Passando pra avisar que seu cupom expira <strong>${daysText}</strong>.</p>
                         </td>
@@ -290,7 +289,7 @@ serve(async (req: Request) => {
                 for (const recipient of recipients) {
                     try {
                         const firstName = (recipient.customer_name || "").split(" ")[0] || "Olá";
-                        const subject = `🎟️ Seu cupom ${coupon.code} expira em ${daysLeft} dia${daysLeft > 1 ? 's' : ''}`;
+                        const subject = `Seu cupom ${coupon.code} expira em ${daysLeft} dia${daysLeft > 1 ? 's' : ''}`;
                         const html = buildExpiringCouponHTML(coupon, firstName, daysLeft);
 
                         const result = await sendEmailViaBrevo(recipient.customer_email, subject, html);
