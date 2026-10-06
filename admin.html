@@ -3936,6 +3936,18 @@
                 justify-content: center;
             }
         }
+
+        .area-cliente-modal-box {
+            max-width: 700px;
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+
+        .refinos-modal-box {
+            max-width: 700px;
+            max-height: 92vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 
@@ -4615,108 +4627,6 @@
                             </div>
                         </div>
 
-                        <!-- Editor legado (movido pros modais em P3) -->
-                        <div id="conteudo-site-placeholder" style="display: none;">
-                        <div class="config-block">
-                            <h3 class="config-block-title">Conteúdo do Site</h3>
-                            <p class="config-hint" style="margin-bottom: 1rem;">
-                                Edite os textos, mídias e meta tags que aparecem no site. As mudanças aplicam após salvar.
-                            </p>
-
-                            <!-- ==================== ÁREA DO CLIENTE ==================== -->
-                            <details class="content-section-details">
-                                <summary>Área do Cliente (minha-conta.html)</summary>
-
-                                <!-- Hero -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Hero</h4>
-
-                                <div class="form-group">
-                                    <label for="cfg-account-hero-badge">Badge (linha acima da saudação)</label>
-                                    <input type="text" id="cfg-account-hero-badge" maxlength="60" placeholder="Área do Cliente">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="cfg-account-hero-subtitle">Subtítulo</label>
-                                    <textarea id="cfg-account-hero-subtitle" rows="2" maxlength="220" placeholder="Aqui você acompanha seus pedidos..."></textarea>
-                                </div>
-
-                                <!-- Tabs -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Tabs (navegação)</h4>
-
-                                <div id="account-tabs-editor"></div>
-
-                                <!-- Status do pedido -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Labels de status do pedido</h4>
-
-                                <div id="account-status-editor"></div>
-
-                                <!-- Timeline -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Timeline do pedido</h4>
-
-                                <div id="account-timeline-editor"></div>
-
-                                <!-- Mensagens vazias -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Mensagens de estado vazio</h4>
-
-                                <div id="account-empty-editor"></div>
-
-                                <!-- Labels de pontos -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Labels de pontos/fidelidade</h4>
-
-                                <div id="account-loyalty-editor"></div>
-                            </details>
-
-                            <!-- ==================== REFINOS ==================== -->
-                            <details class="content-section-details">
-                                <summary>Refinos (menu, estoque, banner, fidelidade)</summary>
-
-                                <!-- Menu -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.2rem 0 0.6rem;">Menu de navegação</h4>
-
-                                <div id="nav-links-editor"></div>
-
-                                <button type="button" class="gallery-btn" onclick="addNavLink()" style="margin-top: 0.6rem;">
-                                    + Adicionar link
-                                </button>
-
-                                <!-- Estoque baixo -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.5rem 0 0.6rem;">Threshold de estoque baixo</h4>
-
-                                <div class="form-group">
-                                    <label for="cfg-low-stock-threshold">Mostrar "últimas X unidades" a partir de</label>
-                                    <input type="number" id="cfg-low-stock-threshold" min="0" max="50" placeholder="2">
-                                    <small class="config-hint">Usado em <code>admin.html</code> (badge amarelo) e <code>produto.html</code> ("Últimas X unidades").</small>
-                                </div>
-
-                                <!-- Banner de frete grátis -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.5rem 0 0.6rem;">Banner de frete grátis</h4>
-
-                                <div class="form-check">
-                                    <input type="checkbox" id="cfg-free-shipping-banner-enabled">
-                                    <label for="cfg-free-shipping-banner-enabled">Ativar banner "faltam X pro frete grátis"</label>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="cfg-free-shipping-banner-message">Mensagem do banner</label>
-                                    <input type="text" id="cfg-free-shipping-banner-message" maxlength="120" placeholder="Faltam {falta} pro frete grátis">
-                                    <small class="config-hint">Use <code>{falta}</code> pra inserir o valor que falta (ex: R$ 87,00).</small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="cfg-free-shipping-banner-threshold-pct">Mostrar quando faltar até (% do mínimo)</label>
-                                    <input type="number" id="cfg-free-shipping-banner-threshold-pct" min="1" max="100" placeholder="30">
-                                    <small class="config-hint">Ex: 30 = mostra o banner quando o subtotal já atingiu 70% do mínimo pro frete grátis.</small>
-                                </div>
-
-                                <!-- Fidelidade -->
-                                <h4 style="font-family: var(--font-title); font-size: 1.05rem; color: var(--gold); margin: 1.5rem 0 0.6rem;">Regras de fidelidade</h4>
-
-                                <div id="loyalty-rules-editor"></div>
-                            </details>
-
-                        </div>
-
-                        </div>
                     </div>
                 </section>
 
@@ -8666,8 +8576,107 @@
                 if (btn) { btn.disabled = false; btn.innerText = originalText; }
             }
         }
-        function openAreaClienteModal() { console.log('[P3] Abrir modal Área do Cliente'); }
-        function openRefinosModal() { console.log('[P3] Abrir modal Refinos'); }
+        function openAreaClienteModal() {
+            const modal = document.getElementById('area-cliente-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeAreaClienteModal() {
+            const modal = document.getElementById('area-cliente-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        function openRefinosModal() {
+            const modal = document.getElementById('refinos-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeRefinosModal() {
+            const modal = document.getElementById('refinos-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
+        async function saveAreaClienteSettings() {
+            const btn = document.getElementById('btn-save-area-cliente');
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const payload = {
+                    account_hero_badge: (document.getElementById('cfg-account-hero-badge')?.value || '').trim() || null,
+                    account_hero_subtitle: (document.getElementById('cfg-account-hero-subtitle')?.value || '').trim() || null,
+                    account_tabs: accountTabsState,
+                    account_status_labels: accountStatusState,
+                    account_timeline_labels: accountTimelineState,
+                    account_empty_states: accountEmptyStatesState,
+                    account_loyalty_labels: accountLoyaltyState,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update(payload)
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveAreaClienteSettings] Erro:', error);
+                    showToast('Erro ao salvar área do cliente.', 'error');
+                    return;
+                }
+
+                if (currentSettings) Object.assign(currentSettings, payload);
+                showToast('Área do cliente salva!');
+                closeAreaClienteModal();
+            } catch (e) {
+                console.error('[saveAreaClienteSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
+
+        async function saveRefinosSettings() {
+            const btn = document.getElementById('btn-save-refinos');
+            const originalText = btn ? btn.innerText : null;
+            if (btn) { btn.disabled = true; btn.innerText = 'Salvando...'; }
+
+            try {
+                const lowStockThreshold = parseInt(document.getElementById('cfg-low-stock-threshold')?.value || '2', 10) || 2;
+                const freeShippingBannerEnabled = document.getElementById('cfg-free-shipping-banner-enabled')?.checked || false;
+                const freeShippingBannerMessage = (document.getElementById('cfg-free-shipping-banner-message')?.value || '').trim() || null;
+                const freeShippingBannerThresholdPct = parseInt(document.getElementById('cfg-free-shipping-banner-threshold-pct')?.value || '30', 10) || 30;
+
+                const payload = {
+                    nav_links: navLinksState,
+                    low_stock_threshold: lowStockThreshold,
+                    free_shipping_banner_enabled: freeShippingBannerEnabled,
+                    free_shipping_banner_message: freeShippingBannerMessage,
+                    free_shipping_banner_threshold_pct: freeShippingBannerThresholdPct,
+                    loyalty_rules: loyaltyRulesState,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient
+                    .from('settings')
+                    .update(payload)
+                    .eq('id', 1);
+
+                if (error) {
+                    console.error('[saveRefinosSettings] Erro:', error);
+                    showToast('Erro ao salvar refinos.', 'error');
+                    return;
+                }
+
+                if (currentSettings) Object.assign(currentSettings, payload);
+                showToast('Refinos salvos!');
+                closeRefinosModal();
+            } catch (e) {
+                console.error('[saveRefinosSettings] Exceção:', e);
+                showToast('Erro inesperado.', 'error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = originalText; }
+            }
+        }
 
         async function saveFreteSettings() {
             const btn = document.getElementById('btn-save-frete');
@@ -8934,146 +8943,6 @@
                     Frete grátis acima de: <strong>R$ ${freeMin}</strong>
                 `;
             }
-        }
-
-        async function saveSettings() {
-            const btn = document.getElementById('config-save-btn');
-            if (!btn) return;
-
-            const originalText = btn.innerText;
-            btn.disabled = true;
-            btn.innerText = 'Salvando...';
-
-            const whatsapp = (document.getElementById('cfg-whatsapp')?.value || '').replace(/\D/g, '');
-            const instagram = (document.getElementById('cfg-instagram')?.value || '').trim().replace(/^@/, '');
-            const shippingFixed = normalizePrice(document.getElementById('cfg-shipping-fixed')?.value || '0');
-            const freeShippingMin = normalizePrice(document.getElementById('cfg-free-shipping-min')?.value || '0');
-            const bannerMessage = (document.getElementById('cfg-banner-message')?.value || '').trim();
-            const shippingFixedSp = normalizePrice(document.getElementById('cfg-shipping-fixed-sp')?.value || '0');
-            const shippingFixedSudeste = normalizePrice(document.getElementById('cfg-shipping-fixed-sudeste')?.value || '0');
-            const shippingFixedSul = normalizePrice(document.getElementById('cfg-shipping-fixed-sul')?.value || '0');
-            const shippingFixedCentroNorteNe = normalizePrice(document.getElementById('cfg-shipping-fixed-centro-norte-ne')?.value || '0');
-
-            // Conteúdo do Site
-            const heroTagline = (document.getElementById('cfg-hero-tagline')?.value || '').trim();
-            const heroTitle = (document.getElementById('cfg-hero-title')?.value || '').trim();
-            const heroSubtitle = (document.getElementById('cfg-hero-subtitle')?.value || '').trim();
-            const heroCtaText = (document.getElementById('cfg-hero-cta-text')?.value || '').trim();
-            const heroCtaLink = (document.getElementById('cfg-hero-cta-link')?.value || '').trim();
-            const heroVideoUrl = (document.getElementById('cfg-hero-video-url')?.value || '').trim() || null;
-            const carouselTitle = (document.getElementById('cfg-carousel-title')?.value || '').trim();
-            const footerBrand = (document.getElementById('cfg-footer-brand')?.value || '').trim();
-            const footerTagline = (document.getElementById('cfg-footer-tagline')?.value || '').trim();
-            const metaTitle = (document.getElementById('cfg-meta-title')?.value || '').trim();
-            const metaDescription = (document.getElementById('cfg-meta-description')?.value || '').trim();
-            const metaOgImageUrl = (document.getElementById('cfg-meta-og-image-url')?.value || '').trim() || null;
-            const accountHeroBadge = (document.getElementById('cfg-account-hero-badge')?.value || '').trim();
-            const accountHeroSubtitle = (document.getElementById('cfg-account-hero-subtitle')?.value || '').trim();
-
-            // Fase 10.3 — Refinos
-            const lowStockThreshold = parseInt(document.getElementById('cfg-low-stock-threshold')?.value || '2', 10) || 2;
-            const freeShippingBannerEnabled = document.getElementById('cfg-free-shipping-banner-enabled')?.checked || false;
-            const freeShippingBannerMessage = (document.getElementById('cfg-free-shipping-banner-message')?.value || '').trim();
-            const freeShippingBannerThresholdPct = parseInt(document.getElementById('cfg-free-shipping-banner-threshold-pct')?.value || '30', 10) || 30;
-
-            // Banners rotativos (Fase 10.7)
-            const bannerConfig = {
-                rotation_seconds: parseInt(document.getElementById('cfg-banner-rotation')?.value || 5, 10) || 5,
-                pause_on_hover: document.getElementById('cfg-banner-pause-hover')?.value === 'true',
-                show_dots: document.getElementById('cfg-banner-dots')?.value === 'true',
-                enable_swipe: document.getElementById('cfg-banner-swipe')?.value === 'true'
-            };
-
-            if (!whatsapp || whatsapp.length < 10) {
-                showToast('WhatsApp inválido (precisa de DDI + DDD + número).', 'error');
-                btn.disabled = false;
-                btn.innerText = originalText;
-                return;
-            }
-
-            if (isNaN(shippingFixed) || shippingFixed < 0) {
-                showToast('Valor de frete inválido.', 'error');
-                btn.disabled = false;
-                btn.innerText = originalText;
-                return;
-            }
-
-            if (isNaN(freeShippingMin) || freeShippingMin < 0) {
-                showToast('Valor de frete grátis inválido.', 'error');
-                btn.disabled = false;
-                btn.innerText = originalText;
-                return;
-            }
-
-            const shippingModeEl = document.querySelector('input[name="cfg-shipping-mode"]:checked');
-            const shippingMode = shippingModeEl ? shippingModeEl.value : 'me';
-
-            // Validação: modo 'fixed' exige shipping_fixed > 0
-            if (shippingMode === 'fixed' && (!shippingFixed || shippingFixed <= 0)) {
-                showToast('Modo "Frete fixo" exige um valor maior que zero em "Frete fixo (R$)".', 'error');
-                btn.disabled = false;
-                btn.innerText = originalText;
-                return;
-            }
-
-            const payload = {
-                whatsapp,
-                instagram,
-                shipping_fixed: shippingFixed,
-                shipping_mode: shippingMode,
-                free_shipping_min: freeShippingMin,
-                banner_message: bannerMessage,
-                shipping_fixed_sp: isNaN(shippingFixedSp) ? 0 : shippingFixedSp,
-                shipping_fixed_sudeste: isNaN(shippingFixedSudeste) ? 0 : shippingFixedSudeste,
-                shipping_fixed_sul: isNaN(shippingFixedSul) ? 0 : shippingFixedSul,
-                shipping_fixed_centro_norte_ne: isNaN(shippingFixedCentroNorteNe) ? 0 : shippingFixedCentroNorteNe,
-                hero_tagline: heroTagline || null,
-                hero_title: heroTitle || null,
-                hero_subtitle: heroSubtitle || null,
-                hero_cta_text: heroCtaText || null,
-                hero_cta_link: heroCtaLink || null,
-                hero_video_url: heroVideoUrl,
-                carousel_title: carouselTitle || null,
-                carousel_slides: carouselSlidesState,
-                footer_brand: footerBrand || null,
-                footer_tagline: footerTagline || null,
-                meta_title: metaTitle || null,
-                meta_description: metaDescription || null,
-                meta_og_image_url: metaOgImageUrl,
-                account_hero_badge: accountHeroBadge || null,
-                account_hero_subtitle: accountHeroSubtitle || null,
-                account_tabs: accountTabsState,
-                account_status_labels: accountStatusState,
-                account_timeline_labels: accountTimelineState,
-                account_empty_states: accountEmptyStatesState,
-                account_loyalty_labels: accountLoyaltyState,
-                nav_links: navLinksState,
-                low_stock_threshold: lowStockThreshold,
-                free_shipping_banner_enabled: freeShippingBannerEnabled,
-                free_shipping_banner_message: freeShippingBannerMessage || null,
-                free_shipping_banner_threshold_pct: freeShippingBannerThresholdPct,
-                loyalty_rules: loyaltyRulesState,
-                banner_slides: bannerSlidesState,
-                banner_config: bannerConfig,
-                updated_at: new Date().toISOString()
-            };
-
-            const { error } = await supabaseClient
-                .from('settings')
-                .update(payload)
-                .eq('id', 1);
-
-            btn.disabled = false;
-            btn.innerText = originalText;
-
-            if (error) {
-                console.error('Erro ao salvar config:', error);
-                showToast('Erro ao salvar configurações.', 'error');
-                return;
-            }
-
-            currentSettings = { ...currentSettings, ...payload };
-            showToast('Configurações salvas!');
         }
 
         // ==========================================================================
@@ -11142,6 +11011,104 @@
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeMetaModal()">Cancelar</button>
                 <button type="button" class="btn-save" id="btn-save-meta" onclick="saveMetaSettings()">Salvar meta tags</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: ÁREA DO CLIENTE ==================== -->
+    <div id="area-cliente-modal" class="modal-overlay">
+        <div class="modal-box area-cliente-modal-box">
+            <button class="modal-close" onclick="closeAreaClienteModal()">&times;</button>
+            <h2 class="modal-title">Área do Cliente</h2>
+
+            <!-- Hero -->
+            <h4 class="theme-editor-section-title">Hero</h4>
+
+            <div class="form-group">
+                <label for="cfg-account-hero-badge">Badge (linha acima da saudação)</label>
+                <input type="text" id="cfg-account-hero-badge" maxlength="60" placeholder="Área do Cliente">
+            </div>
+
+            <div class="form-group">
+                <label for="cfg-account-hero-subtitle">Subtítulo</label>
+                <textarea id="cfg-account-hero-subtitle" rows="2" maxlength="220" placeholder="Aqui você acompanha seus pedidos..."></textarea>
+            </div>
+
+            <!-- Tabs -->
+            <h4 class="theme-editor-section-title">Tabs (navegação)</h4>
+            <div id="account-tabs-editor"></div>
+
+            <!-- Status -->
+            <h4 class="theme-editor-section-title">Labels de status do pedido</h4>
+            <div id="account-status-editor"></div>
+
+            <!-- Timeline -->
+            <h4 class="theme-editor-section-title">Timeline do pedido</h4>
+            <div id="account-timeline-editor"></div>
+
+            <!-- Empty states -->
+            <h4 class="theme-editor-section-title">Mensagens de estado vazio</h4>
+            <div id="account-empty-editor"></div>
+
+            <!-- Loyalty labels -->
+            <h4 class="theme-editor-section-title">Labels de pontos/fidelidade</h4>
+            <div id="account-loyalty-editor"></div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeAreaClienteModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-area-cliente" onclick="saveAreaClienteSettings()">Salvar área do cliente</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: REFINOS ==================== -->
+    <div id="refinos-modal" class="modal-overlay">
+        <div class="modal-box refinos-modal-box">
+            <button class="modal-close" onclick="closeRefinosModal()">&times;</button>
+            <h2 class="modal-title">Refinos</h2>
+
+            <!-- Menu -->
+            <h4 class="theme-editor-section-title">Menu de navegação</h4>
+            <div id="nav-links-editor"></div>
+            <button type="button" class="gallery-btn" onclick="addNavLink()" style="margin-top: 0.6rem;">
+                + Adicionar link
+            </button>
+
+            <!-- Low stock -->
+            <h4 class="theme-editor-section-title">Threshold de estoque baixo</h4>
+            <div class="form-group">
+                <label for="cfg-low-stock-threshold">Mostrar "últimas X unidades" a partir de</label>
+                <input type="number" id="cfg-low-stock-threshold" min="0" max="50" placeholder="2">
+                <small class="config-hint">Usado em admin.html (badge amarelo) e produto.html ("Últimas X unidades").</small>
+            </div>
+
+            <!-- Free shipping banner -->
+            <h4 class="theme-editor-section-title">Banner de frete grátis</h4>
+
+            <div class="form-check">
+                <input type="checkbox" id="cfg-free-shipping-banner-enabled">
+                <label for="cfg-free-shipping-banner-enabled">Ativar banner "faltam X pro frete grátis"</label>
+            </div>
+
+            <div class="form-group">
+                <label for="cfg-free-shipping-banner-message">Mensagem do banner</label>
+                <input type="text" id="cfg-free-shipping-banner-message" maxlength="120" placeholder="Faltam {falta} pro frete grátis">
+                <small class="config-hint">Use {falta} pra inserir o valor que falta (ex: R$ 87,00).</small>
+            </div>
+
+            <div class="form-group">
+                <label for="cfg-free-shipping-banner-threshold-pct">Mostrar quando faltar até (% do mínimo)</label>
+                <input type="number" id="cfg-free-shipping-banner-threshold-pct" min="1" max="100" placeholder="30">
+                <small class="config-hint">Ex: 30 = mostra o banner quando o subtotal já atingiu 70% do mínimo pro frete grátis.</small>
+            </div>
+
+            <!-- Loyalty -->
+            <h4 class="theme-editor-section-title">Regras de fidelidade</h4>
+            <div id="loyalty-rules-editor"></div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeRefinosModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-refinos" onclick="saveRefinosSettings()">Salvar refinos</button>
             </div>
         </div>
     </div>
