@@ -9353,6 +9353,10 @@
         }
 
         function openThemesLibrary() {
+            // Fecha modais de configuração que possam estar abertos por trás
+            const identidadeModal = document.getElementById('identidade-visual-modal');
+            if (identidadeModal) identidadeModal.classList.remove('open');
+
             const modal = document.getElementById('themes-modal');
             if (!modal) return;
             renderThemesLibrary();
@@ -9880,6 +9884,10 @@
         }
 
         function openScheduleModal() {
+            // Fecha modais de configuração que possam estar abertos por trás
+            const identidadeModal = document.getElementById('identidade-visual-modal');
+            if (identidadeModal) identidadeModal.classList.remove('open');
+
             const modal = document.getElementById('theme-schedule-modal');
             const select = document.getElementById('schedule-theme-id');
             if (!modal || !select) return;
