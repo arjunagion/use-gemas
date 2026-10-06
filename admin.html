@@ -4403,25 +4403,28 @@
                 <section class="content-section" id="section-config">
                     <div class="config-wrapper">
 
-                        <div class="config-block">
-                            <h3 class="config-block-title">Contato & Redes</h3>
-
-                            <div class="form-group">
-                                <label for="cfg-whatsapp">WhatsApp (com DDI, só números)</label>
-                                <input type="text" id="cfg-whatsapp" placeholder="5511982053330" maxlength="20">
-                                <small class="config-hint">Ex: 5511982053330 (55 = Brasil, 11 = DDD, número).</small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="cfg-instagram">Instagram (sem @)</label>
-                                <input type="text" id="cfg-instagram" placeholder="use.gemas" maxlength="60">
-                                <small class="config-hint">Só o nome do perfil, sem @ e sem link.</small>
-                            </div>
-
-                            <div class="config-block-actions">
-                                <button type="button" class="btn-save-block" onclick="saveContatoSettings()">
-                                    Salvar contato
-                                </button>
+                        <!-- ==================== CONTATO & REDES (CARD → MODAL) ==================== -->
+                        <div class="config-block" style="padding: 0; border: none; background: transparent;">
+                            <div class="content-card" onclick="openContatoModal()" role="button" tabindex="0"
+                                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openContatoModal();}">
+                                <div class="content-card-icon" aria-hidden="true">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="18" cy="5" r="3"></circle>
+                                        <circle cx="6" cy="12" r="3"></circle>
+                                        <circle cx="18" cy="19" r="3"></circle>
+                                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                    </svg>
+                                </div>
+                                <div class="content-card-body">
+                                    <h4 class="content-card-title">Contato & Redes</h4>
+                                    <p class="content-card-desc" id="contato-summary">Carregando...</p>
+                                </div>
+                                <span class="content-card-arrow" aria-hidden="true">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </span>
                             </div>
                         </div>
 
@@ -8362,6 +8365,16 @@
         // ==========================================================================
         // MODAIS DE CONFIGURAÇÕES (P2: Frete, Identidade Visual, Banners; P3: resto)
         // ==========================================================================
+        function openContatoModal() {
+            const modal = document.getElementById('contato-modal');
+            if (modal) modal.classList.add('open');
+        }
+
+        function closeContatoModal() {
+            const modal = document.getElementById('contato-modal');
+            if (modal) modal.classList.remove('open');
+        }
+
         function openFreteModal() {
             const modal = document.getElementById('frete-modal');
             if (modal) modal.classList.add('open');
@@ -8798,6 +8811,14 @@
                     currentSettings.instagram = instagram;
                 }
                 showToast('Contato salvo!');
+
+                // Atualiza resumo no card
+                const contatoSummaryEl = document.getElementById('contato-summary');
+                if (contatoSummaryEl) {
+                    contatoSummaryEl.textContent = `WhatsApp: ${whatsapp} · Instagram: @${instagram}`;
+                }
+
+                closeContatoModal();
             } catch (e) {
                 console.error('[saveContatoSettings] Exceção:', e);
                 showToast('Erro inesperado.', 'error');
@@ -8896,6 +8917,14 @@
             document.getElementById('cfg-banner-swipe').value = String(bannerConfigState.enable_swipe !== false);
 
             renderBannerSlidesList();
+
+            // Preenche resumo do card de Contato
+            const contatoSummaryEl = document.getElementById('contato-summary');
+            if (contatoSummaryEl && data) {
+                const wpp = data.whatsapp || '—';
+                const insta = data.instagram || '—';
+                contatoSummaryEl.textContent = `WhatsApp: ${wpp} · Instagram: @${insta}`;
+            }
 
             // Preenche resumo do card de Frete
             const freteSummaryEl = document.getElementById('frete-summary');
@@ -10637,6 +10666,31 @@
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeBannerSlideEditor()">Cancelar</button>
                 <button type="button" class="btn-save" id="bs-save-btn" onclick="saveBannerSlide()">Salvar slide</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: CONTATO & REDES ==================== -->
+    <div id="contato-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeContatoModal()">&times;</button>
+            <h2 class="modal-title">Contato & Redes</h2>
+
+            <div class="form-group">
+                <label for="cfg-whatsapp">WhatsApp (com DDI, só números)</label>
+                <input type="text" id="cfg-whatsapp" placeholder="5511982053330" maxlength="20">
+                <small class="config-hint">Ex: 5511982053330 (55 = Brasil, 11 = DDD, número).</small>
+            </div>
+
+            <div class="form-group">
+                <label for="cfg-instagram">Instagram (sem @)</label>
+                <input type="text" id="cfg-instagram" placeholder="use.gemas" maxlength="60">
+                <small class="config-hint">Só o nome do perfil, sem @ e sem link.</small>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeContatoModal()">Cancelar</button>
+                <button type="button" class="btn-save" id="btn-save-contato" onclick="saveContatoSettings()">Salvar contato</button>
             </div>
         </div>
     </div>
