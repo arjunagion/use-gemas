@@ -4077,7 +4077,7 @@
             <p>Esta área é exclusiva para administradores da Use Gemas.</p>
             <a href="index.html" class="btn-primary">Voltar ao site</a>
             <br>
-            <button onclick="handleLogout()" class="btn-ghost">Sair da conta</button>
+            <button onclick="handleAdminSwitchAccount()" class="btn-ghost">Sair e entrar como admin</button>
         </div>
     </div>
 
@@ -5404,7 +5404,15 @@
         async function checkAdminAccess() {
             try {
                 const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-                if (userError || !user) { showScreen('screen-denied'); return; }
+
+                // Não logado → redireciona pro site com intenção de login + volta
+                if (userError || !user) {
+                    try {
+                        localStorage.setItem('gemas_login_redirect', 'admin');
+                    } catch (e) { /* ignora */ }
+                    window.location.href = 'index.html?login=1&redirect=admin';
+                    return;
+                }
 
                 const { data: adminData, error: adminError } = await supabaseClient
                     .from('admins')
@@ -5412,7 +5420,11 @@
                     .eq('user_id', user.id)
                     .maybeSingle();
 
-                if (adminError || !adminData) { showScreen('screen-denied'); return; }
+                // Logado mas NÃO é admin → tela de Acesso Restrito
+                if (adminError || !adminData) {
+                    showScreen('screen-denied');
+                    return;
+                }
 
                 const { data: profile } = await supabaseClient
                     .from('profiles').select('name').eq('id', user.id).single();
@@ -5470,6 +5482,18 @@
         async function handleLogout() {
             await supabaseClient.auth.signOut();
             window.location.href = 'index.html';
+        }
+
+        async function handleAdminSwitchAccount() {
+            try {
+                await supabaseClient.auth.signOut();
+            } catch (e) {
+                console.warn('[handleAdminSwitchAccount] Erro ao deslogar:', e);
+            }
+            try {
+                localStorage.setItem('gemas_login_redirect', 'admin');
+            } catch (e) { /* ignora */ }
+            window.location.href = 'index.html?login=1&redirect=admin';
         }
 
         // ==========================================================================

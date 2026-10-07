@@ -7,7 +7,7 @@
 // - Imagens de produto: cache-first com limite de 50 imagens
 // ==========================================================================
 
-const CACHE_VERSION = 'ug-cliente-v5';
+const CACHE_VERSION = 'ug-cliente-v6';
 const CACHE_STATIC = `${CACHE_VERSION}-static`;
 const CACHE_IMAGES = `${CACHE_VERSION}-images`;
 

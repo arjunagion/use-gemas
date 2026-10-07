@@ -2148,10 +2148,30 @@ async function handleLogin(event) {
     updateCartUI();
     updateUserSessionUI();
 
-    setTimeout(() => {
+    // Verifica se há redirect pendente (ex: veio do admin)
+    let redirectTarget = null;
+    try {
+        redirectTarget = localStorage.getItem('gemas_login_redirect');
+    } catch (e) { /* ignora */ }
+
+    setTimeout(async () => {
         closeAuthModal();
         if (emailInput) emailInput.value = '';
         if (passwordInput) passwordInput.value = '';
+
+        if (redirectTarget === 'admin') {
+            try { localStorage.removeItem('gemas_login_redirect'); } catch (e) {}
+
+            // Verifica se o usuário logado é admin antes de redirecionar
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const isAdmin = await checkIsAdmin(user?.id);
+
+            if (isAdmin) {
+                window.location.href = 'admin.html';
+                return;
+            }
+            // Não é admin: continua no site (o admin.html tratará ao ser acessado)
+        }
     }, 1000);
 }
 
@@ -6193,6 +6213,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Verifica se deve abrir modal de login automaticamente (?login=1)
     const loginUrlParams = new URLSearchParams(window.location.search);
     if (loginUrlParams.get('login') === '1') {
+        // Marca intenção de redirect (se veio do admin)
+        if (loginUrlParams.get('redirect') === 'admin') {
+            try { localStorage.setItem('gemas_login_redirect', 'admin'); } catch (e) {}
+        }
         window.history.replaceState({}, document.title, window.location.pathname);
         setTimeout(() => {
             openAuthModal('login');
