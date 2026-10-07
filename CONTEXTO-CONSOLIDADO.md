@@ -1,7 +1,8 @@
 # CONTEXTO CONSOLIDADO — Use Gemas
-> **Ponto de restauração:** 05/out/2026
+> **Ponto de restauração:** 07/out/2026
 > **Uso:** colar no início de uma nova sessão Deep pra reconstruir contexto
 > **Estado do projeto:** ~99,9% concluído
+> **Doc mestre:** PROJETO-MESTRE.md (v3.12 — fonte da verdade detalhada)
 
 ---
 
@@ -14,7 +15,6 @@
 **URL:** usegemas.com.br
 **Repo:** github.com/arjunagion/use-gemas
 **Supabase:** dytdnemwqbzgrekamwla.supabase.co
-**Doc mestre:** PROJETO-MESTRE.md (v3.8, ~99,9% fiel)
 
 ---
 
@@ -27,6 +27,7 @@
 **15 tabelas:** products, orders, reviews, notifications, coupons, coupon_usages, loyalty_points, settings, admins, profiles, favorites, checkout_data, shipping_quotes_cache, feedbacks, themes
 **44 policies · 24 funções SQL · 15 triggers · 46 índices · 6 cron jobs**
 **3 storage buckets:** review-images, product-images, site-media
+**Versões SW:** `sw.js` v12 · `sw-admin.js` v22
 
 ---
 
@@ -35,104 +36,72 @@
 1. `api.whatsapp.com` (nunca wa.me)
 2. `String.fromCodePoint` para emojis dinâmicos (nunca literal)
 3. Bump `?v=X.0` em CSS/JS a cada mudança
-4. RLS ativo em todas as tabelas
-5. `git add . && git commit && git push` sempre
-6. Arquivo completo > trecho (exceto cirúrgico)
-7. Nunca colar secrets no chat
-8. Análise ANTES de sugerir mudanças
-9. Prós/contras → confirmar → codar
-10. Edge Functions: CORS explícito + handler OPTIONS
-11. Cream mode na área do cliente (`--cr-*`)
-12. Análise antes de commitar
+4. Bump `CACHE_VERSION` do SW (cliente + admin) a cada mudança
+5. RLS ativo em todas as tabelas
+6. `git add . && git commit && git push` sempre
+7. Arquivo completo > trecho (exceto cirúrgico)
+8. Nunca colar secrets no chat
+9. Análise ANTES de sugerir mudanças
+10. Prós/contras → confirmar → codar
+11. Edge Functions: CORS explícito + handler OPTIONS
+12. Cream mode na área do cliente (`--cr-*`)
+13. **Emoji só onde faz sentido** (política 3 níveis): ícone funcional → SVG Lucide · decorativo → remover · afetivo (💛, 👋) → manter
+14. **Admin tem light mode + toggle manual** (classe `html.admin-light` + localStorage `gemas_admin_theme`)
+15. **Admin tem header fixo** com sombra ao rolar
+16. **Acesso ao admin** via botão "Painel" no site (só pra admin) + redirect inteligente + PWA
 
 ---
 
-## 4. FASES ENTREGUES (02/out → 05/out)
+## 4. FASES ENTREGUES (02/out → 07/out)
 
-### FASE 10.1 — Conteúdo do Site configurável
-- Hero (tagline, título, subtítulo, CTA, vídeo)
-- Carrossel (4 slides JSONB)
-- Rodapé (brand + tagline)
-- Meta tags (title, description, og:image)
-- Novo bucket `site-media` (50MB, mp4/mov/webm/jpeg/png/webp)
-- Fallback hardcoded em tudo
-- Admin: subseção "Conteúdo do Site" em Configurações
+### Fases 10.1 - 10.6 (02-05/out)
+- **10.1** Conteúdo do Site configurável (Hero, Carrossel, Rodapé, Meta Tags)
+- **10.2** Área do Cliente configurável (Hero, Tabs, Status, Timeline, Vazios, Pontos)
+- **10.3** Refinos (Menu, Estoque baixo, Banner frete grátis, Regras fidelidade)
+- **10.4** Central de Reviews + Feedbacks (home dinâmica + /avaliacoes.html + canal privado)
+- **10.5** Biblioteca de Temas (11 presets + custom + agendamento + WCAG)
+- **10.5.1** Auto-dessaturar + luminância
+- **10.5.2** White Mode real (variáveis semânticas + refactor global)
+- **10.6** Cream Mode Dinâmico na conta
 
-### FASE 10.2 — Área do Cliente configurável
-- Hero da conta (badge + subtítulo)
-- Tabs (4 labels + ícones)
-- Labels de status do pedido (5)
-- Timeline (4 steps + cancelado)
-- Mensagens de estado vazio (6 contextos)
-- Labels de pontos (8)
-- Fonte única da verdade: `settings` é lido por cliente E admin
-- `getStatusLabel()` lê de `settings.account_status_labels`
+### Fase 10.7 - 10.8 (05-06/out)
+- **10.7** Banner Carrossel Avançado (8 tipos de slide + condições + rotação)
+  - Refinado: botão "Salvar banners" próprio + cor bolinha + SVG Lucide + preview `--accent`
+- **10.8** Redesign do admin (Inter + Lucide SVG + badges com dot + toasts SVG)
 
-### FASE 10.3 — Refinos
-- Menu (nav_links JSONB)
-- Threshold de estoque baixo (default 2)
-- Banner frete grátis condicional (3 colunas)
-- Regras de fidelidade em `settings.loyalty_rules` (3 funções SQL reescritas)
-- Fix Service Worker (network-first + bump CACHE_VERSION)
-- Consolidação dos 2 banners (site-banner ↔ free-shipping-banner)
+### Fases v3.11 (06/out)
+- **Acesso admin sem URL:** botão "Painel" no site (só admin) + redirect inteligente + PWA instalado
+- **Light mode completo do site:** carrinho (CEP/cupom/frete), modal de produto (reviews + related), drawers
+- **Refino dos drawers:** header/footer com faixa destacada + sombra em camadas + cantos arredondados
+- **SVG nos emojis residuais:** notificações, extrato, cupons
+- **Light mode do admin (L1-L3):** toggle manual + paleta clara + charts adaptados
+- **Refactor da aba Configurações (P1-P3):** 9 cards clicáveis → 9 modais com save local
 
-### FASE 10.4 — Central de Reviews + Feedbacks
-- Coluna `featured` em `reviews`
-- Nova tabela `feedbacks` (canal privado)
-- Home mostra 6 reviews (featured + fallback)
-- Nova página `/avaliacoes.html`
-- Admin: curadoria (destacar) + aba Feedbacks
-- Reciclagem Web3Forms → feedback privado
-- Cards clicáveis com PhotoSwipe
-- JSON-LD AggregateRating
-
-### FASE 10.5 — Biblioteca de Temas
-- Nova tabela `themes`
-- 11 presets system (8 dark + 3 light)
-- Custom até 20 temas
-- Agendamento (cron `apply-scheduled-theme` 04h UTC)
-- Favoritos
-- Preview em tempo real
-- Validação WCAG de contraste
-
-### FASE 10.5.1 — Auto-dessaturar + Luminância
-- Auto-dessaturar cores saturadas (>40%) em 60%
-- Detecção de luminância (light/dark)
-- Classe `.theme-light` / `.theme-dark` no `<html>`
-
-### FASE 10.5.2 — White Mode real
-- Variáveis semânticas: `--navbar-bg`, `--modal-overlay-bg`, `--border-subtle`, `--border-strong`, `--shadow-color`, `--card-overlay`, `--input-bg`, `--btn-text-on-accent`, `--gold-rgb`
-- Refactor global de CSS:
-  - Navbar (+ scrolled)
-  - Drawers (cart, wishlist, notifications)
-  - Cards (product, testimonial, review, top-product)
-  - Modais (overlay, content, box, checkout, auth, coupons, feedback)
-  - `produto.css` (paleta própria migrada)
-  - `perfil.css` (accent compartilhado)
-
-### FASE 10.6 — Cream Mode Dinâmico
-- Área do cliente com tint sutil do accent (5%)
-- Texto derivado: `darken(accent, 55%)` — contraste AAA
-- Fallback pra cream clássico se tema light
-- `applyThemeAccentOnly()` reforçada com helpers HSL
-
-### FASE 10.7 — Banner Carrossel Avançado (PENDENTE de implementação)
-- **Status:** SQL rodado, prompts ainda não aplicados
-- 8 tipos de slide (static, link, dynamic_shipping, shipping_achieved, installments, coupon, warning, flash_promo)
-- Condições por slide (min_cart_value, device, time_start/end, first_visit_only)
-- Rotação configurável (5s default, pause on hover, dots, swipe)
-- Migração automática dos 2 banners atuais
-
-### Extras entregues
-- Redesign admin: fonte Inter + SVG Lucide (sidebar + botões + toasts + badges)
-- Botão "Loja" no `produto.html`
-- Fix banner frete grátis seguir tema
-- PROJETO-MESTRE v3.0 → v3.8
+### Fases v3.12 (07/out)
+- **Feature de promoção:** `promo_price` + `promo_ends_at` em products
+  - Admin: form + card + validação
+  - Site: badge "PROMO" + preço riscado + "Economize R$ X"
+  - RPC `get_product_by_ref` atualizada
+  - Carrinho: revalidação no boot
+  - Schema.org: `priceSpecification` (ListPrice)
+  - Feed XML: `g:sale_price`
+- **Admin header fixo:** `position: fixed` + sombra ao rolar + safe-area iPhone
+- **Favicon custom SVG:** Lucide `layout-dashboard` dourado
+- **Correções mobile admin:**
+  - Filtros (touch-action + mask scroll)
+  - Pontos (tabela → cards em mobile)
+  - Financeiro (box-sizing + overflow)
+  - Sidebar (scroll travado)
+  - Botões de ação (grid 2x2 em Cupons/Pontos)
+- **Bug fix site público:**
+  - Contraste do nome do review em light mode
+  - Scroll anormal nas tabs de `minha-conta.html`
 
 ---
 
-## 5. DECISÕES ARQUITETURAIS (ADRs 1-21)
+## 5. DECISÕES ARQUITETURAIS (ADRs 1-30)
 
+**Base:**
 1. Supabase (não Firebase)
 2. GitHub Pages (não Vercel/Netlify)
 3. Vanilla JS (não React/Vue)
@@ -154,50 +123,42 @@
 19. Biblioteca de Temas
 20. Auto-dessaturar cores saturadas
 21. Cream Mode Dinâmico
+22. Redesign admin (Inter + Lucide SVG)
+23. Light mode do admin com toggle manual
+24. Aba Configurações com cards + modais
+25. Limpeza de emojis em 3 níveis
+26. Acesso ao admin via botão "Painel" + redirect + PWA
+27. Drawers com header/footer destacados
+28. Preço promocional híbrido (`promo_price` + `promo_ends_at` opcional)
+29. Header fixo no admin (`position: fixed`)
+30. Favicon SVG custom
 
 ---
 
-## 6. BUGS NOTÁVEIS E FIXES
-
-- **Banner dourado não seguia tema:** `#site-banner` tinha gradient hardcoded. Fix: `var(--gold)`.
-- **Service Worker servindo CSS/JS antigos:** estratégia cache-first pra assets locais. Fix: network-first + bump CACHE_VERSION.
-- **Nomes de variáveis CSS dessincronizados:** `applyThemeToRoot` escrevia `--bg`, `--text`, `--bg-panel` mas CSS usava `--bg-main`, `--text-primary`, `--bg-elevated`. Fix: mapeamento correto.
-- **Cards de review com fundo claro + texto claro em light mode:** `.testimonial-card`, `.review-card` migrados pra `--bg-card`.
-- **Drawers com fundo claro + texto claro em light mode:** `.cart-drawer`, `.wishlist-drawer`, `.notifications-drawer` migrados.
-- **Navbar `scrolled` escurecia em light mode:** `.navbar.scrolled` sobrescrito com `html.theme-light`.
-- **Fontes "todas iguais" no editor de temas:** falta carregar do Google Fonts no admin. Fix: `ensureAdminFontLoaded()`.
-- **Cache do admin impedindo ver redesign:** `sw-admin.js` CACHE_NAME v5 → v6.
-
----
-
-## 7. PENDÊNCIAS ATIVAS
+## 6. PENDÊNCIAS ATIVAS
 
 **🔴 Bloqueadores reais (não-código):**
 - Fotos oficiais dos produtos
 - Tráfego pago
 
-**🟡 Fase 10.7 pendente (código):**
-- Banner Carrossel Avançado — SQL já rodado, prompts faltam
-
 **🟡 Polimento técnico (opcional):**
-- Trocar `MELHORENVIO_SANDBOX=true` → `false`
-- Deletar Pixel Meta antigo (9288...)
-- Separar cron jobs no mesmo horário (06h UTC)
-- Emojis via `innerHTML` fora da etiqueta
+- `MELHORENVIO_SANDBOX=true` → produção (faz quando tiver pedido real)
 - Testar PWA em iOS/Android reais
+- Doc `MELHORENVIO_ACCESS_TOKEN` expira 30/09/2027 (renovar antes)
+- Bugs mobile admin restantes (Cupons / Clientes / Avaliações / Feedbacks — não críticos)
+- Código morto: `shippingCost` write-only, `shipping-result` órfão, listener CEP duplicado
 
-**🟢 Emojis residuais no admin:**
-- 8 accordions em Configurações (Hero, Carrossel, Rodapé, Meta Tags, Área do Cliente, Refinos, Identidade Visual, Banners Rotativos)
-- Labels internos (MP4/MOV, etc)
+**🟢 Baixa prioridade:**
+- Emojis em mensagens de WhatsApp (mantidos por decisão)
+- Emojis em comentários de código (não afetam UI)
 
 ---
 
-## 8. PRÓXIMOS PASSOS PLANEJADOS
+## 7. PRÓXIMOS PASSOS PLANEJADOS
 
-**Curto prazo (opcional):**
-- Terminar Fase 10.7 (Banner Carrossel Avançado)
-- Limpar emojis residuais dos accordions
-- Fechar polimento técnico
+**Curto prazo:**
+- Terminar polimento mobile admin (Cupons, Clientes, Avaliações, Feedbacks)
+- Completar limpeza de código morto
 
 **Médio prazo (features estratégicas ~3h cada):**
 - Sistema de Indicação (indique e ganhe)
@@ -210,7 +171,7 @@
 
 ---
 
-## 9. ESTILO DE COMUNICAÇÃO
+## 8. ESTILO DE COMUNICAÇÃO
 
 - PT-BR direto, sem enrolação
 - Chamar o usuário de "Jeep"
@@ -222,20 +183,54 @@
 
 ---
 
-## 10. ÚLTIMA SESSÃO (05/out/2026)
+## 9. SISTEMAS-CHAVE (mapa rápido)
 
-**O que foi feito:**
-- Redesign completo do admin (Inter + SVG Lucide)
-- Substituição de ~50 emojis
-- Bump sw-admin CACHE_NAME v5 → v6
-- Auditoria pós-fix (limpeza confirmada)
+**Loja:**
+- Carrinho em `localStorage` (`gemas_cart_v1`) com revalidação
+- Frete dual-mode (ME + fixo por região)
+- Cupons com RPC de validação
+- Pontos com ledger + RPCs
+- Reviews com curadoria (featured + fallback)
+- Temas (11 presets + custom) com light mode + auto-dessaturar
+- Promoção (`promo_price` + `promo_ends_at`)
 
-**O que ficou pendente:**
-- Fase 10.7 (Banner Carrossel Avançado) — SQL rodado, prompts faltam
-- 8 emojis residuais nos accordions do admin
+**Admin:**
+- 9 cards em Configurações → 9 modais independentes
+- Light mode + toggle manual
+- Header fixo com sombra
+- Favicon custom (Lucide layout-dashboard)
+- Editor de banners rotativos (8 tipos de slide)
+- Biblioteca de temas
 
-**Última ação confirmada:** redesign admin visível em desktop (>1100px)
+**Cliente:**
+- Tabs com scroll horizontal (touch-action)
+- Notificações virtuais (reviews pendentes + cupons expirando)
+- Favoritos + carrinho + cupons + pontos
+- Cream Mode Dinâmico (tint do accent)
 
 ---
 
-*Fim do contexto consolidado — v1 — 05/out/2026*
+## 10. ÚLTIMA SESSÃO (06-07/out/2026)
+
+**06/out (v3.11):**
+- Refinamento da Fase 10.7
+- Limpeza de emojis E1-E4
+- Refactor da aba Configurações (P1/P2/P3)
+- Light mode admin (L1/L2/L3)
+- Bloco B (B1 crons, B3 comentário, B4 Pixel)
+- Acesso admin sem URL + PWA
+- Refino dos drawers
+- SVG nos emojis residuais
+
+**07/out (v3.12):**
+- Feature de promoção completa (P1-P4 + SQL RPC)
+- Favicon custom SVG
+- Header fixo no admin
+- Correções mobile admin (filtros, Pontos, Financeiro, sidebar)
+- Bug fix site público (contraste review + scroll tabs)
+
+**Última ação confirmada:** feature de promoção 100% testada e deployada (carrinho + Schema.org + feed XML).
+
+---
+
+*Fim do contexto consolidado — v2 — 07/out/2026*
