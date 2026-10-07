@@ -4452,6 +4452,268 @@
                 box-sizing: border-box;
             }
         }
+
+        /* ==========================================================================
+           LEMBRETES (v3.13)
+           ========================================================================== */
+        .reminders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .reminder-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .reminder-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .reminder-card.inactive {
+            opacity: 0.55;
+        }
+
+        .reminder-card.status-expired { border-left: 3px solid #c92a2a; }
+        .reminder-card.status-critical { border-left: 3px solid #ff5555; }
+        .reminder-card.status-warning { border-left: 3px solid #ff922b; }
+        .reminder-card.status-alert { border-left: 3px solid #ffc107; }
+        .reminder-card.status-ok { border-left: 3px solid var(--success); }
+
+        .reminder-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .reminder-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .reminder-title h4 {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 2px 0;
+        }
+
+        .reminder-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .reminder-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: var(--text-dim);
+        }
+
+        .status-expired .reminder-status-dot { background: #c92a2a; }
+        .status-critical .reminder-status-dot { background: #ff5555; }
+        .status-warning .reminder-status-dot { background: #ff922b; }
+        .status-alert .reminder-status-dot { background: #ffc107; }
+        .status-ok .reminder-status-dot { background: var(--success); }
+
+        .reminder-status-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .reminder-status-badge.status-expired { background: rgba(201, 42, 42, 0.15); color: #c92a2a; }
+        .reminder-status-badge.status-critical { background: rgba(255, 85, 85, 0.15); color: #ff5555; }
+        .reminder-status-badge.status-warning { background: rgba(255, 146, 43, 0.15); color: #ff922b; }
+        .reminder-status-badge.status-alert { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+        .reminder-status-badge.status-ok { background: rgba(81, 207, 102, 0.15); color: var(--success); }
+
+        .reminder-card-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: 0.6rem;
+        }
+
+        .reminder-category {
+            background: rgba(var(--gold-rgb), 0.1);
+            color: var(--gold);
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+        }
+
+        .reminder-days {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .reminder-notes {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            padding: 0.6rem 0.8rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 6px;
+            margin-bottom: 0.6rem;
+        }
+
+        .reminder-card-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            padding-top: 0.6rem;
+            border-top: 1px solid var(--divider-subtle);
+        }
+
+        .reminder-card-actions .action-btn {
+            flex: 0 1 auto;
+        }
+
+        .reminder-renew-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.5rem 0.9rem;
+            background: rgba(var(--gold-rgb), 0.1);
+            border: 1px solid rgba(var(--gold-rgb), 0.3);
+            border-radius: 6px;
+            color: var(--gold);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: all 0.25s ease;
+        }
+
+        .reminder-renew-link:hover {
+            background: rgba(var(--gold-rgb), 0.18);
+            border-color: var(--gold);
+        }
+
+        .dashboard-reminders-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.3rem 1.4rem;
+            margin-top: 1.5rem;
+        }
+
+        .dashboard-reminders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--divider-subtle);
+        }
+
+        .dashboard-reminders-header h3 {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .dashboard-reminders-link {
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .dashboard-reminders-link:hover {
+            background: rgba(var(--gold-rgb), 0.1);
+        }
+
+        .dashboard-reminders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .dashboard-reminder-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.6rem 0.8rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: background 0.2s ease;
+        }
+
+        .dashboard-reminder-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .dashboard-reminder-name {
+            flex: 1;
+            min-width: 0;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dashboard-reminder-days {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .reminder-card {
+                padding: 1rem 1.1rem;
+            }
+
+            .reminder-card-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.4rem;
+            }
+
+            .reminder-card-actions .action-btn,
+            .reminder-card-actions .reminder-renew-link {
+                width: 100%;
+                justify-content: center;
+                grid-column: span 1;
+            }
+
+            .reminder-renew-link {
+                grid-column: span 2;
+            }
+        }
     </style>
 </head>
 
@@ -4561,6 +4823,14 @@
                     </svg>
                     Financeiro
                 </a>
+                <a href="#" class="nav-item" data-section="lembretes">
+                    <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    Lembretes
+                    <span class="nav-badge" id="nav-badge-lembretes" style="display: none;">0</span>
+                </a>
                 <a href="#" class="nav-item" data-section="config">
                     <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="3"></circle>
@@ -4634,6 +4904,23 @@
                         <p>Use o menu lateral pra gerenciar <strong>Produtos</strong>, <strong>Pedidos</strong>,
                             <strong>Clientes</strong>, <strong>Financeiro</strong> e <strong>Configurações</strong>.
                         </p>
+                    </div>
+
+                    <!-- Card de lembretes no Dashboard -->
+                    <div class="dashboard-reminders-card" id="dashboard-reminders-card" style="display: none;">
+                        <div class="dashboard-reminders-header">
+                            <h3>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: -3px; margin-right: 6px;">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                                Lembretes
+                            </h3>
+                            <button type="button" class="dashboard-reminders-link" onclick="switchSection('lembretes')">
+                                Ver todos →
+                            </button>
+                        </div>
+                        <div class="dashboard-reminders-list" id="dashboard-reminders-list"></div>
                     </div>
                 </section>
 
@@ -4918,6 +5205,37 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                             Exportar período em CSV
                         </button>
+                    </div>
+                </section>
+
+                <!-- ==================== LEMBRETES ==================== -->
+                <section class="content-section" id="section-lembretes">
+                    <div class="section-header">
+                        <div class="section-actions">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" onclick="setReminderFilter('all', this)">Todos</button>
+                                <button class="filter-tab" onclick="setReminderFilter('expired', this)">Expirados</button>
+                                <button class="filter-tab" onclick="setReminderFilter('critical', this)">Críticos (≤7d)</button>
+                                <button class="filter-tab" onclick="setReminderFilter('warning', this)">Atenção (≤30d)</button>
+                            </div>
+                        </div>
+                        <div class="section-actions">
+                            <button class="btn-new-product" onclick="openReminderForm()">
+                                <span>+</span> Novo lembrete
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="reminders-container">
+                        <div class="empty-state">
+                            <span class="icon" aria-hidden="true">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                            </span>
+                            <p>Carregando lembretes...</p>
+                        </div>
                     </div>
                 </section>
 
@@ -5308,6 +5626,69 @@
                 <button type="button" class="btn-cancel" onclick="closeResponseModal()">Cancelar</button>
                 <button type="button" class="btn-save" onclick="saveResponse()">Salvar resposta</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: LEMBRETE ==================== -->
+    <div id="reminder-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeReminderForm()">&times;</button>
+            <h2 class="modal-title" id="reminder-form-title">Novo lembrete</h2>
+
+            <div id="reminder-form-feedback" class="modal-feedback"></div>
+
+            <form id="reminder-form" onsubmit="saveReminder(event)">
+                <input type="hidden" id="rem-id">
+
+                <div class="form-group">
+                    <label for="rem-name">Nome do serviço <span class="required">*</span></label>
+                    <input type="text" id="rem-name" required maxlength="80" placeholder="Ex: ME Access Token">
+                </div>
+
+                <div class="form-group">
+                    <label for="rem-description">Descrição (opcional)</label>
+                    <input type="text" id="rem-description" maxlength="200" placeholder="Ex: Token OAuth do Melhor Envio">
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="rem-category">Categoria</label>
+                        <select id="rem-category">
+                            <option value="shipping">Frete</option>
+                            <option value="email">Email</option>
+                            <option value="infra">Infra</option>
+                            <option value="auth">Auth</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="other" selected>Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="rem-expires">Expira em <span class="required">*</span></label>
+                        <input type="date" id="rem-expires" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rem-renew-url">URL de renovação (opcional)</label>
+                    <input type="url" id="rem-renew-url" maxlength="300" placeholder="https://...">
+                    <small class="config-hint">Link direto pra página onde você renova esse serviço.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="rem-notes">Anotações (opcional)</label>
+                    <textarea id="rem-notes" rows="3" maxlength="500" placeholder="Instruções, lembretes, etc."></textarea>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="rem-active" checked>
+                    <label for="rem-active">Ativo (aparece no painel)</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeReminderForm()">Cancelar</button>
+                    <button type="submit" class="btn-save" id="reminder-save-btn">Salvar lembrete</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -5736,7 +6117,7 @@
         }
 
         let toastTimeout = null;
-        function showToast(message, type = 'success') {
+        function showToast(message, type = 'success', duration = 3500) {
             const toast = document.getElementById('toast');
             if (!toast) return;
 
@@ -5750,7 +6131,7 @@
             toast.innerHTML = `${icons[type] || icons.info} <span>${message}</span>`;
             toast.classList.add('show');
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => toast.classList.remove('show'), 3500);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), duration);
         }
 
         function parseDateSafe(iso) {
@@ -5805,6 +6186,399 @@
         }
 
         // ==========================================================================
+        // Lembretes de serviços
+        // ==========================================================================
+        let allReminders = [];
+        let currentReminderFilter = 'all';
+        let pendingDeleteReminderId = null;
+
+        /**
+         * Calcula o status de urgência de um lembrete.
+         * Retorna { key, label, className, daysLeft }
+         */
+        function getReminderStatus(reminder) {
+            if (!reminder || !reminder.expires_at) {
+                return { key: 'unknown', label: 'Sem data', className: 'ok', daysLeft: null };
+            }
+
+            const now = new Date();
+            const expires = new Date(reminder.expires_at);
+            const diffMs = expires - now;
+            const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+            if (daysLeft < 0) {
+                return { key: 'expired', label: 'Expirado', className: 'expired', daysLeft };
+            }
+            if (daysLeft <= 7) {
+                return { key: 'critical', label: 'Crítico', className: 'critical', daysLeft };
+            }
+            if (daysLeft <= 30) {
+                return { key: 'warning', label: 'Atenção', className: 'warning', daysLeft };
+            }
+            if (daysLeft <= 90) {
+                return { key: 'alert', label: 'Alerta', className: 'alert', daysLeft };
+            }
+            return { key: 'ok', label: 'OK', className: 'ok', daysLeft };
+        }
+
+        function formatDaysLeft(daysLeft) {
+            if (daysLeft === null) return '';
+            if (daysLeft < 0) return `Expirou há ${Math.abs(daysLeft)} dia${Math.abs(daysLeft) === 1 ? '' : 's'}`;
+            if (daysLeft === 0) return 'Expira hoje';
+            if (daysLeft === 1) return 'Expira amanhã';
+            return `Expira em ${daysLeft} dias`;
+        }
+
+        async function loadReminders() {
+            const container = document.getElementById('reminders-container');
+            if (container) {
+                container.innerHTML = `<div class="empty-state"><p>Carregando lembretes...</p></div>`;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('service_reminders')
+                .select('*')
+                .order('expires_at', { ascending: true });
+
+            if (error) {
+                console.error('Erro ao carregar lembretes:', error);
+                if (container) {
+                    container.innerHTML = `<div class="empty-state"><p>Erro ao carregar lembretes.</p></div>`;
+                }
+                return;
+            }
+
+            allReminders = data || [];
+            updateReminderBadge();
+            renderReminders();
+            renderDashboardReminders();
+        }
+
+        function updateReminderBadge() {
+            const criticalCount = allReminders.filter(r => {
+                if (!r.active) return false;
+                const status = getReminderStatus(r);
+                return status.key === 'expired' || status.key === 'critical';
+            }).length;
+
+            const badge = document.getElementById('nav-badge-lembretes');
+            if (badge) {
+                badge.innerText = criticalCount;
+                badge.style.display = criticalCount > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        function setReminderFilter(filter, el) {
+            currentReminderFilter = filter;
+            document.querySelectorAll('#section-lembretes .filter-tab').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderReminders();
+        }
+
+        function renderReminders() {
+            const container = document.getElementById('reminders-container');
+            if (!container) return;
+
+            let filtered = allReminders.slice();
+
+            if (currentReminderFilter !== 'all') {
+                filtered = filtered.filter(r => {
+                    const status = getReminderStatus(r);
+                    if (currentReminderFilter === 'expired') return status.key === 'expired';
+                    if (currentReminderFilter === 'critical') return status.key === 'critical' || status.key === 'expired';
+                    if (currentReminderFilter === 'warning') return ['critical', 'warning', 'expired'].includes(status.key);
+                    return true;
+                });
+            }
+
+            filtered.sort((a, b) => {
+                if (a.active !== b.active) return a.active ? -1 : 1;
+                return new Date(a.expires_at) - new Date(b.expires_at);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon" aria-hidden="true">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                        </span>
+                        <p>${allReminders.length === 0 ? 'Nenhum lembrete cadastrado ainda.' : 'Nenhum lembrete com esse filtro.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '<div class="reminders-list">' + filtered.map(renderReminderCard).join('') + '</div>';
+        }
+
+        function renderReminderCard(r) {
+            const status = getReminderStatus(r);
+            const daysText = formatDaysLeft(status.daysLeft);
+            const dateText = r.expires_at
+                ? new Date(r.expires_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                : '—';
+
+            const categoryLabels = {
+                shipping: 'Frete',
+                email: 'Email',
+                infra: 'Infra',
+                auth: 'Auth',
+                marketing: 'Marketing',
+                other: 'Outro'
+            };
+            const categoryLabel = categoryLabels[r.category] || 'Outro';
+
+            const renewLink = r.renew_url
+                ? `<a href="${escapeHTML(r.renew_url)}" target="_blank" rel="noopener" class="reminder-renew-link">Renovar →</a>`
+                : '';
+
+            return `
+                <div class="reminder-card status-${status.className} ${r.active ? '' : 'inactive'}">
+                    <div class="reminder-card-header">
+                        <span class="reminder-status-dot" aria-hidden="true"></span>
+                        <div class="reminder-title">
+                            <h4>${escapeHTML(r.name)}</h4>
+                            ${r.description ? `<p class="reminder-desc">${escapeHTML(r.description)}</p>` : ''}
+                        </div>
+                        <span class="reminder-status-badge status-${status.className}">${escapeHTML(status.label)}</span>
+                    </div>
+                    <div class="reminder-card-meta">
+                        <span class="reminder-category">${escapeHTML(categoryLabel)}</span>
+                        <span class="reminder-days">${escapeHTML(daysText)}</span>
+                        <span class="reminder-date">${escapeHTML(dateText)}</span>
+                    </div>
+                    ${r.notes ? `<div class="reminder-notes">${escapeHTML(r.notes)}</div>` : ''}
+                    <div class="reminder-card-actions">
+                        ${renewLink}
+                        <button type="button" class="action-btn edit" onclick="openReminderForm('${r.id}')">Editar</button>
+                        <button type="button" class="action-btn warn" onclick="toggleReminderActive('${r.id}')">${r.active ? 'Desativar' : 'Ativar'}</button>
+                        <button type="button" class="action-btn danger" onclick="confirmDeleteReminder('${r.id}')">Excluir</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openReminderForm(id) {
+            const modal = document.getElementById('reminder-modal');
+            const form = document.getElementById('reminder-form');
+            const title = document.getElementById('reminder-form-title');
+            const feedback = document.getElementById('reminder-form-feedback');
+
+            form.reset();
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+            document.getElementById('rem-id').value = '';
+
+            if (id) {
+                const r = allReminders.find(x => x.id === id);
+                if (!r) return;
+
+                title.innerText = 'Editar lembrete';
+                document.getElementById('rem-id').value = r.id;
+                document.getElementById('rem-name').value = r.name || '';
+                document.getElementById('rem-description').value = r.description || '';
+                document.getElementById('rem-category').value = r.category || 'other';
+                document.getElementById('rem-renew-url').value = r.renew_url || '';
+                document.getElementById('rem-notes').value = r.notes || '';
+                document.getElementById('rem-active').checked = !!r.active;
+
+                if (r.expires_at) {
+                    const d = new Date(r.expires_at);
+                    document.getElementById('rem-expires').value = d.toISOString().split('T')[0];
+                }
+            } else {
+                title.innerText = 'Novo lembrete';
+                document.getElementById('rem-active').checked = true;
+            }
+
+            modal.classList.add('open');
+            setTimeout(() => document.getElementById('rem-name').focus(), 150);
+        }
+
+        function closeReminderForm() {
+            document.getElementById('reminder-modal').classList.remove('open');
+        }
+
+        async function saveReminder(event) {
+            event.preventDefault();
+
+            const feedback = document.getElementById('reminder-form-feedback');
+            const btn = document.getElementById('reminder-save-btn');
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            const id = document.getElementById('rem-id').value;
+            const name = document.getElementById('rem-name').value.trim();
+            const description = document.getElementById('rem-description').value.trim();
+            const category = document.getElementById('rem-category').value;
+            const expiresAt = document.getElementById('rem-expires').value;
+            const renewUrl = document.getElementById('rem-renew-url').value.trim();
+            const notes = document.getElementById('rem-notes').value.trim();
+            const active = document.getElementById('rem-active').checked;
+
+            if (!name || name.length < 2) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Informe um nome válido.';
+                return;
+            }
+
+            if (!expiresAt) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Informe a data de expiração.';
+                return;
+            }
+
+            const payload = {
+                name,
+                description: description || null,
+                category,
+                expires_at: new Date(expiresAt + 'T23:59:59-03:00').toISOString(),
+                renew_url: renewUrl || null,
+                notes: notes || null,
+                active
+            };
+
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Salvando...';
+
+            try {
+                let result;
+                if (id) {
+                    result = await supabaseClient.from('service_reminders').update(payload).eq('id', id).select().single();
+                } else {
+                    result = await supabaseClient.from('service_reminders').insert(payload).select().single();
+                }
+
+                if (result.error) {
+                    console.error('Erro ao salvar lembrete:', result.error);
+                    feedback.className = 'modal-feedback error';
+                    feedback.innerText = result.error.message || 'Erro ao salvar.';
+                    return;
+                }
+
+                closeReminderForm();
+                await loadReminders();
+                showToast(id ? 'Lembrete atualizado!' : 'Lembrete criado!');
+            } catch (e) {
+                console.error(e);
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Erro inesperado.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        async function toggleReminderActive(id) {
+            const r = allReminders.find(x => x.id === id);
+            if (!r) return;
+
+            const { error } = await supabaseClient
+                .from('service_reminders')
+                .update({ active: !r.active })
+                .eq('id', id);
+
+            if (error) {
+                showToast('Erro ao atualizar.', 'error');
+                return;
+            }
+
+            await loadReminders();
+            showToast(!r.active ? 'Lembrete reativado!' : 'Lembrete desativado.');
+        }
+
+        function confirmDeleteReminder(id) {
+            const r = allReminders.find(x => x.id === id);
+            if (!r) return;
+
+            pendingDeleteReminderId = id;
+            document.getElementById('confirm-title').innerText = 'Excluir lembrete?';
+            document.getElementById('confirm-text').innerHTML =
+                `Você está prestes a excluir <strong>${escapeHTML(r.name)}</strong>.<br><br>Essa ação não pode ser desfeita.`;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.innerText = 'Excluir';
+            confirmBtn.onclick = executeDeleteReminder;
+
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        async function executeDeleteReminder() {
+            if (!pendingDeleteReminderId) return;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            const originalText = confirmBtn.innerText;
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Excluindo...';
+
+            const { error } = await supabaseClient.from('service_reminders').delete().eq('id', pendingDeleteReminderId);
+
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = originalText;
+
+            if (error) {
+                showToast('Erro ao excluir.', 'error');
+                return;
+            }
+
+            closeConfirmModal();
+            pendingDeleteReminderId = null;
+            await loadReminders();
+            showToast('Lembrete excluído.');
+        }
+
+        function renderDashboardReminders() {
+            const card = document.getElementById('dashboard-reminders-card');
+            const list = document.getElementById('dashboard-reminders-list');
+            if (!card || !list) return;
+
+            const active = allReminders.filter(r => r.active);
+
+            if (active.length === 0) {
+                card.style.display = 'none';
+                return;
+            }
+
+            const sorted = active.slice().sort((a, b) => {
+                return new Date(a.expires_at) - new Date(b.expires_at);
+            }).slice(0, 5);
+
+            card.style.display = 'block';
+
+            list.innerHTML = sorted.map(r => {
+                const status = getReminderStatus(r);
+                const daysText = formatDaysLeft(status.daysLeft);
+                return `
+                    <div class="dashboard-reminder-row status-${status.className}">
+                        <span class="reminder-status-dot" aria-hidden="true"></span>
+                        <span class="dashboard-reminder-name">${escapeHTML(r.name)}</span>
+                        <span class="dashboard-reminder-days">${escapeHTML(daysText)}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function notifyCriticalReminders() {
+            const expired = allReminders.filter(r => r.active && getReminderStatus(r).key === 'expired');
+            const critical = allReminders.filter(r => r.active && getReminderStatus(r).key === 'critical');
+
+            if (expired.length > 0) {
+                const names = expired.map(r => r.name).join(', ');
+                showToast(`⚠️ ${expired.length} serviço(s) EXPIRADO(S): ${names}`, 'error', 8000);
+                return;
+            }
+
+            if (critical.length > 0) {
+                const names = critical.map(r => r.name).join(', ');
+                showToast(`⏰ ${critical.length} lembrete(s) crítico(s) (≤7 dias): ${names}`, 'error', 8000);
+            }
+        }
+
+        // ==========================================================================
         // Verificação Admin
         // ==========================================================================
         async function checkAdminAccess() {
@@ -5849,7 +6623,11 @@
                 await loadFeedbacks();
                 await loadCoupons();
                 await loadLoyaltySummary();
+                await loadReminders();
                 updateDashboardMetrics();
+
+                // Notifica lembretes críticos no boot do admin
+                setTimeout(() => notifyCriticalReminders(), 1500);
 
             } catch (e) {
                 console.error('Erro na verificação:', e);
@@ -5915,6 +6693,7 @@
             pontos: 'Pontos',
             clientes: 'Clientes',
             financeiro: 'Financeiro',
+            lembretes: 'Lembretes',
             config: 'Configurações'
         };
 
@@ -5932,6 +6711,7 @@
             if (sectionName === 'feedbacks') loadFeedbacks();
             if (sectionName === 'cupons') loadCoupons();
             if (sectionName === 'pontos') loadLoyaltySummary();
+            if (sectionName === 'lembretes') loadReminders();
             if (sectionName === 'config') loadSettings();
             if (sectionName === 'financeiro') {
                 if (!financeState.from) {
