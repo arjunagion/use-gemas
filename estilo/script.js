@@ -1357,6 +1357,32 @@ function updateDynamicLinks() {
 // ==========================================================================
 // PRODUTOS — Carregar do Supabase
 // ==========================================================================
+/**
+ * Verifica se um produto tem promoção ativa.
+ * promo ativa = promo_price != null E < price E (ends_at null OU > now())
+ */
+function isPromoActive(product) {
+    if (!product || product.promo_price == null) return false;
+    const promo = Number(product.promo_price);
+    const price = Number(product.price);
+    if (isNaN(promo) || isNaN(price)) return false;
+    if (promo <= 0 || promo >= price) return false;
+    if (product.promo_ends_at) {
+        const ends = new Date(product.promo_ends_at);
+        if (!isNaN(ends.getTime()) && ends <= new Date()) return false;
+    }
+    return true;
+}
+
+/**
+ * Retorna o preço efetivo (promo se ativa, senão o cheio).
+ */
+function getEffectivePrice(product) {
+    if (!product) return 0;
+    if (isPromoActive(product)) return Number(product.promo_price);
+    return Number(product.price);
+}
+
 async function loadProductsFromDb() {
     const grid = document.getElementById('products-grid');
     if (!grid) {
@@ -1511,6 +1537,12 @@ function renderProductsGrid() {
         </span>`;
         }
 
+        // Badge "PROMO" se houver promo ativa
+        const hasPromo = isPromoActive(p);
+        const promoBadge = hasPromo
+            ? `<span class="promo-badge">PROMO</span>`
+            : '';
+
         const ratingSummary = productReviewsSummary.get(p.ref);
         const ratingBadge = ratingSummary
             ? `<span class="product-rating-badge">${String.fromCodePoint(0x2B50)} ${ratingSummary.avg} (${ratingSummary.count})</span>`
@@ -1522,7 +1554,7 @@ function renderProductsGrid() {
                    Em produção
                </button>`
             : `<button class="btn-add-cart"
-                   onclick="addToCart('${escapeJs(p.name)}', '${escapeJs(p.ref)}', ${Number(p.price)})">
+                   onclick="addToCart('${escapeJs(p.name)}', '${escapeJs(p.ref)}', ${getEffectivePrice(p)})">
                    Adicionar ao Carrinho
                </button>`;
 
@@ -1539,6 +1571,7 @@ function renderProductsGrid() {
 
                 <div class="product-img" onclick="openProductModalFromCard(this.parentElement)">
                     ${mediaHTML}
+                    ${promoBadge}
                     ${stockBadge}
                     <button type="button" class="btn-favorite"
                         onclick="toggleFavorite(event, '${escapeJs(p.name)}', '${escapeJs(p.ref)}', ${Number(p.price)})"
@@ -1563,7 +1596,13 @@ function renderProductsGrid() {
                     <h3 onclick="openProductModalFromCard(this.parentElement.parentElement)" style="cursor: pointer;">${escapeHTML(p.name)}</h3>
                     <p class="gem-type">${escapeHTML(p.gem || '')}</p>
                     ${ratingBadge}
-                    <span class="price">${formatCurrency(p.price)}</span>
+                    ${hasPromo
+                        ? `<div class="price-block">
+                             <span class="price-promo">${formatCurrency(p.promo_price)}</span>
+                             <span class="price-original">${formatCurrency(p.price)}</span>
+                         </div>`
+                        : `<span class="price">${formatCurrency(p.price)}</span>`
+                    }
                     ${cartButtonHTML}
                 </div>
             </div>
@@ -2353,17 +2392,29 @@ function openProductModalFromCard(cardElement) {
 
     const gallery = galleryRaw ? galleryRaw.split(',').map(item => item.trim()) : [];
 
-    openProductModal(name, ref, price, gem, desc, materials, gallery, stock);
+    const product = productsFromDb.find(p => p.ref === ref);
+    openProductModal(name, ref, price, gem, desc, materials, gallery, stock, product || null);
 }
 
-async function openProductModal(name, ref, price, gemType, description, materials, gallery, stock = 1) {
+async function openProductModal(name, ref, price, gemType, description, materials, gallery, stock = 1, product = null) {
     const modal = document.getElementById('product-modal');
     if (!modal) return;
 
     document.getElementById('modal-title').innerText = name;
     document.getElementById('modal-ref').innerText = `REF: ${ref}`;
     document.getElementById('modal-gem').innerText = gemType;
-    document.getElementById('modal-price').innerText = formatCurrency(price);
+    const priceEl = document.getElementById('modal-price');
+    if (priceEl) {
+        if (product && isPromoActive(product)) {
+            priceEl.innerHTML = `
+                <span class="price-promo">${formatCurrency(product.promo_price)}</span>
+                <span class="price-original">${formatCurrency(product.price)}</span>
+                <span class="price-savings">Economize ${formatCurrency(Number(product.price) - Number(product.promo_price))}</span>
+            `;
+        } else {
+            priceEl.innerText = formatCurrency(price);
+        }
+    }
     document.getElementById('modal-desc').innerText = description;
     document.getElementById('modal-materials').innerText = materials;
 
@@ -2382,8 +2433,9 @@ async function openProductModal(name, ref, price, gemType, description, material
             addBtn.style.background = '';
             addBtn.style.color = '';
             addBtn.style.border = '';
+            const effectivePrice = product ? getEffectivePrice(product) : Number(price);
             addBtn.onclick = () => {
-                addToCart(name, ref, price);
+                addToCart(name, ref, effectivePrice);
                 closeProductModal();
             };
         } else {
@@ -2578,7 +2630,8 @@ function openRelatedProduct(ref) {
             product.description || '',
             product.materials || '',
             (product.gallery || '').split(',').map(s => s.trim()).filter(Boolean),
-            Number(product.stock) || 0
+            Number(product.stock) || 0,
+            product
         );
         if (modalContent) modalContent.classList.remove('fade-switch');
     }, 120);

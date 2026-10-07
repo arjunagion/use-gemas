@@ -5497,3 +5497,79 @@ html.theme-light .cart-footer,
 html.theme-light .wishlist-footer {
     box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.06);
 }
+
+/* ==========================================================================
+   PREÇO PROMOCIONAL (cards e modal)
+   ========================================================================== */
+.promo-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #ff5555 0%, #c92a2a 100%);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.3rem 0.65rem;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    z-index: 4;
+    box-shadow: 0 2px 8px rgba(255, 85, 85, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* Quando há badge PROMO + stock badge, o stock vai pra direita */
+.product-img .promo-badge + .low-stock-badge {
+    left: auto;
+    right: 12px;
+}
+
+.price-block {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+}
+
+.price-promo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: var(--font-title);
+}
+
+.price-original {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+    font-weight: 500;
+}
+
+/* No modal, o preço fica maior */
+.modal-price-tag .price-promo {
+    font-size: 1.5rem;
+}
+
+.modal-price-tag .price-original {
+    font-size: 1.1rem;
+}
+
+.price-savings {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--success);
+    font-weight: 600;
+    margin-top: 0.2rem;
+    letter-spacing: 0.3px;
+}
+
+/* Modo light — manter contraste */
+html.theme-light .price-promo {
+    color: var(--gold-dark);
+}
+
+html.theme-light .price-original {
+    color: var(--text-dim);
+}

@@ -279,11 +279,27 @@
 
 /* Price */
 .produto-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
     font-family: var(--font-title);
     font-size: 2.4rem;
     font-weight: 700;
     color: var(--gold);
     margin: 0.5rem 0;
+}
+
+.produto-price .price-promo {
+    font-size: 2.4rem;
+}
+
+.produto-price .price-original {
+    font-size: 1.4rem;
+}
+
+.produto-price .price-savings {
+    font-size: 0.9rem;
 }
 
 /* Stock badges */

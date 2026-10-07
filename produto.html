@@ -804,7 +804,16 @@
             document.getElementById('produto-ref').innerText = `REF: ${p.ref}`;
             document.getElementById('produto-title').innerText = p.name;
             document.getElementById('produto-gem').innerText = p.gem || '';
-            document.getElementById('produto-price').innerText = formatCurrency(p.price);
+            const priceEl = document.getElementById('produto-price');
+            if (isPromoActive(p)) {
+                priceEl.innerHTML = `
+                    <span class="price-promo">${formatCurrency(p.promo_price)}</span>
+                    <span class="price-original">${formatCurrency(p.price)}</span>
+                    <span class="price-savings">Economize ${formatCurrency(Number(p.price) - Number(p.promo_price))}</span>
+                `;
+            } else {
+                priceEl.innerText = formatCurrency(p.price);
+            }
             document.getElementById('produto-desc').innerText = p.description || 'Sem descrição.';
             document.getElementById('produto-materials').innerText = p.materials || 'Sem informações.';
 
@@ -1066,7 +1075,10 @@
                 return;
             }
 
-            addToCart(currentProduct.name, currentProduct.ref, Number(currentProduct.price));
+            const effectivePrice = isPromoActive(currentProduct)
+                ? Number(currentProduct.promo_price)
+                : Number(currentProduct.price);
+            addToCart(currentProduct.name, currentProduct.ref, effectivePrice);
         }
 
         function handleShareProduct() {
