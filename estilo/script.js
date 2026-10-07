@@ -5472,6 +5472,246 @@ async function revalidateStockBeforeCheckout() {
     return { ok: true };
 }
 
+async function loadLogoDataUrl() {
+    try {
+        const response = await fetch('/estilo/midias/logo.png');
+        if (!response.ok) {
+            throw new Error(`Falha ao carregar logo: HTTP ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        return await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.warn('[PDF] logo indisponível, gerando sem logo', error);
+        return null;
+    }
+}
+
+async function buildOrderPdf(order, items, settings) {
+    const { jsPDF } = await import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.esm.min.js');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 15;
+    const contentWidth = pageWidth - margin * 2;
+    const orderNumber = String(order.id).slice(0, 8);
+    const logoDataUrl = await loadLogoDataUrl();
+    const phone = String(settings?.whatsapp || '5511982053330').replace(/\D/g, '');
+    const createdAt = new Date(order.created_at || Date.now());
+    const dateLabel = Number.isNaN(createdAt.getTime())
+        ? new Date().toLocaleString('pt-BR')
+        : createdAt.toLocaleString('pt-BR');
+
+    const drawTableHeader = (y) => {
+        pdf.setFillColor(245, 241, 233);
+        pdf.rect(margin, y - 5, contentWidth, 8, 'F');
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9);
+        pdf.setTextColor(55, 45, 35);
+        pdf.text('Item', margin + 2, y);
+        pdf.text('Qtd.', 119, y, { align: 'center' });
+        pdf.text('Unitário', 158, y, { align: 'right' });
+        pdf.text('Subtotal', pageWidth - margin - 2, y, { align: 'right' });
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFont('helvetica', 'normal');
+    };
+
+    const drawContinuationHeader = () => {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
+        pdf.text(`Pedido ${orderNumber} — continuação`, margin, 18);
+        pdf.setFont('helvetica', 'normal');
+        drawTableHeader(29);
+    };
+
+    pdf.setTextColor(45, 38, 31);
+    if (logoDataUrl) {
+        try {
+            const logo = pdf.getImageProperties(logoDataUrl);
+            const logoHeight = 18;
+            const logoWidth = Math.min(32, logoHeight * (logo.width / logo.height));
+            pdf.addImage(logoDataUrl, 'PNG', margin, 14, logoWidth, logoHeight);
+        } catch (error) {
+            console.warn('[PDF] não foi possível incluir a logo', error);
+        }
+    }
+
+    const brandX = logoDataUrl ? 52 : margin;
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(21);
+    pdf.text('Use Gemas', brandX, 23);
+    pdf.setFontSize(10);
+    pdf.text(`Pedido ${orderNumber}`, brandX, 31);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(9);
+    pdf.text(dateLabel, pageWidth - margin, 23, { align: 'right' });
+    pdf.setDrawColor(190, 165, 125);
+    pdf.setLineWidth(0.5);
+    pdf.line(margin, 39, pageWidth - margin, 39);
+
+    let y = 48;
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(11);
+    pdf.text('Dados do cliente', margin, y);
+    y += 7;
+
+    const drawCustomerField = (label, value, x, fieldY, width) => {
+        if (!value) return 0;
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8);
+        pdf.text(`${label}:`, x, fieldY);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(9);
+        const lines = pdf.splitTextToSize(String(value), width);
+        pdf.text(lines, x + 19, fieldY);
+        return Math.max(5, lines.length * 4.2);
+    };
+
+    const email = order.customer_email || '';
+    const customerPhone = order.customer_phone || '';
+    const rightX = 108;
+    const rightWidth = pageWidth - margin - rightX;
+    y += Math.max(
+        drawCustomerField('Nome', order.customer_name || '—', margin, y, 72),
+        drawCustomerField('E-mail', email, rightX, y, rightWidth - 19)
+    );
+    if (customerPhone) {
+        y += drawCustomerField('Telefone', customerPhone, margin, y, contentWidth - 19);
+    }
+
+    const address = [
+        [order.street, order.number].filter(Boolean).join(', '),
+        order.complement,
+        order.neighborhood,
+        [order.city, order.state].filter(Boolean).join('/'),
+        order.cep ? `CEP ${order.cep}` : ''
+    ].filter(Boolean).join(' - ');
+    if (address) {
+        y += drawCustomerField('Endereço', address, margin, y, contentWidth - 19);
+    }
+
+    y += 5;
+    drawTableHeader(y);
+    y += 8;
+    pdf.setFontSize(9);
+
+    for (const item of items) {
+        const nameLines = pdf.splitTextToSize(String(item.name || 'Produto'), 91);
+        const rowHeight = Math.max(7, nameLines.length * 4.2 + 2);
+        if (y + rowHeight > pageHeight - 25) {
+            pdf.addPage();
+            drawContinuationHeader();
+            y = 37;
+        }
+
+        const quantity = Number(item.quantity) || 0;
+        const unitPrice = Number(item.price) || 0;
+        pdf.text(nameLines, margin + 2, y);
+        pdf.text(String(quantity), 119, y, { align: 'center' });
+        pdf.text(formatCurrency(unitPrice), 158, y, { align: 'right' });
+        pdf.text(formatCurrency(unitPrice * quantity), pageWidth - margin - 2, y, { align: 'right' });
+        y += rowHeight;
+        pdf.setDrawColor(225, 225, 225);
+        pdf.setLineWidth(0.2);
+        pdf.line(margin, y - 1, pageWidth - margin, y - 1);
+    }
+
+    const discount = Number(order.discount_amount) || 0;
+    const totalRows = discount > 0 ? 4 : 3;
+    const totalsHeight = totalRows * 7 + 5;
+    if (y + totalsHeight > pageHeight - 25) {
+        pdf.addPage();
+        drawContinuationHeader();
+        y = 37;
+    }
+
+    y += 4;
+    const drawTotal = (label, amount, highlight = false) => {
+        pdf.setFont('helvetica', highlight ? 'bold' : 'normal');
+        pdf.setFontSize(highlight ? 12 : 9);
+        if (highlight) pdf.setTextColor(116, 80, 34);
+        pdf.text(label, 130, y, { align: 'right' });
+        pdf.text(formatCurrency(Number(amount) || 0), pageWidth - margin - 2, y, { align: 'right' });
+        pdf.setTextColor(0, 0, 0);
+        y += highlight ? 9 : 7;
+    };
+
+    drawTotal('Subtotal', order.subtotal);
+    drawTotal('Frete', order.shipping_cost);
+    if (discount > 0) drawTotal('Desconto', -discount);
+    pdf.setDrawColor(190, 165, 125);
+    pdf.line(130, y - 3, pageWidth - margin, y - 3);
+    drawTotal('TOTAL', order.total, true);
+
+    const pageCount = pdf.getNumberOfPages();
+    for (let page = 1; page <= pageCount; page++) {
+        pdf.setPage(page);
+        pdf.setDrawColor(190, 165, 125);
+        pdf.setLineWidth(0.3);
+        pdf.line(margin, pageHeight - 16, pageWidth - margin, pageHeight - 16);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(90, 80, 68);
+        pdf.text('usegemas.com.br', margin, pageHeight - 10);
+        pdf.text(`WhatsApp: ${phone}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        pdf.text('Obrigado pela preferência!', pageWidth - margin, pageHeight - 10, { align: 'right' });
+        pdf.setTextColor(0, 0, 0);
+    }
+
+    return pdf;
+}
+
+function canSharePdf(file) {
+    const userAgent = navigator.userAgent || '';
+    const isIOS = /iPhone|iPad|iPod/i.test(userAgent)
+        || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isIOSChromeOrFirefox = isIOS && /CriOS|FxiOS/i.test(userAgent);
+    const isDesktop = !isIOS && !/Android/i.test(userAgent);
+
+    return !isDesktop
+        && !isIOSChromeOrFirefox
+        && !!(navigator.canShare && navigator.canShare({ files: [file] }));
+}
+
+async function shareOrderPdf(pdf, fileName) {
+    const blob = pdf.output('blob');
+    const file = new File([blob], fileName, { type: 'application/pdf' });
+    const diamond = String.fromCodePoint(0x1F48E);
+
+    try {
+        if (canSharePdf(file)) {
+            try {
+                await navigator.share({
+                    files: [file],
+                    title: `Pedido ${fileName}`,
+                    text: `Segue o PDF do seu pedido ${diamond}`
+                });
+                return true;
+            } catch (error) {
+                if (error.name === 'AbortError') return true;
+                console.warn('[Share] falhou, caindo no fallback', error);
+            }
+        }
+    } catch (error) {
+        console.warn('[Share] compartilhamento de arquivo indisponível', error);
+    }
+
+    pdf.save(fileName);
+    const phone = String(siteSettings?.whatsapp || '5511982053330').replace(/\D/g, '');
+    const orderNumber = fileName.replace(/^pedido-/, '').replace(/\.pdf$/i, '');
+    const message = encodeURIComponent(
+        `Olá! Acabei de fazer o pedido ${orderNumber} no site. Baixei o PDF e vou anexar aqui. ${diamond}`
+    );
+    window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${message}`, '_blank');
+    showToast('Baixei o PDF. Anexa ele no WhatsApp que abriu.');
+    return true;
+}
+
 // ==========================================================================
 // Salvar pedido no Supabase (SEM baixar estoque)
 // ==========================================================================
@@ -5610,6 +5850,16 @@ async function saveOrderToDb() {
         renderAppliedCoupon();
     }
 
+    let pdfShareHandled = false;
+    try {
+        const pdf = await buildOrderPdf(data, items, siteSettings);
+        const fileName = `pedido-${String(data.id).slice(0, 8)}.pdf`;
+        pdfShareHandled = await shareOrderPdf(pdf, fileName);
+    } catch (error) {
+        console.error('[PDF] não foi possível gerar ou compartilhar o pedido', error);
+    }
+
+    data.pdfShareHandled = pdfShareHandled;
     return data;
 }
 
@@ -5682,7 +5932,9 @@ async function handleCheckoutSubmit(event) {
         clearCartStorage();
         updateCartUI();
 
-        sendToWhatsApp(itemsSnapshot);
+        if (!order.pdfShareHandled) {
+            sendToWhatsApp(itemsSnapshot);
+        }
 
     } catch (e) {
         console.error('Erro no checkout:', e);
