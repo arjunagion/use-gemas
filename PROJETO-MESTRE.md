@@ -1,8 +1,8 @@
-# PROJETO-MESTRE — Use Gemas (v3.10)
+# PROJETO-MESTRE — Use Gemas (v3.11)
 
-> **Documento de referência oficial — v3.10** — estado do código em **06/10/2026**.
-> **Novo em v3.10:** Refinamento da Fase 10.7 (Banner Carrossel Avançado) + Limpeza geral de emojis em 4 fases (E1-E4) + Refactor completo da aba Configurações (modais por seção) + Light mode do painel admin (toggle manual).
-> **Herança de v3.9:** Fase 10.8 (Redesign do painel admin com Inter + Lucide SVG).
+> **Documento de referência oficial — v3.11** — estado do código em **06/10/2026**.
+> **Novo em v3.11:** Acesso ao admin sem URL (botão "Painel" no header + redirect inteligente + PWA instalado) + Light mode completo do site (carrinho, modal, reviews) + Refino dos drawers (Carrinho, Favoritos, Notificações) + SVG nos emojis residuais (cupons, notificações, extrato).
+> **Herança de v3.10:** Refinamento da Fase 10.7 + Limpeza E1-E4 + Refactor Configurações + Light mode do admin.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -68,10 +68,10 @@
 | Arquivo | Linhas | Tamanho | Propósito |
 |---|---|---|---|
 | `estilo/script.js` | 5.128 | 181,9 KB | Lógica principal da loja |
-| `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v2`) |
-| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v11`) |
+| `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v9`) |
+| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v12`) |
 
-> **Nota:** o `sw-admin.js` evoluiu v4 → v11 ao longo dos refinamentos. Cada bump foi para forçar cache fresh durante os testes.
+> **Nota:** os SWs evoluíram durante os refinamentos de v3.10/v3.11. Cada bump forçou cache fresh durante os testes.
 
 ### 1.4 Backend — `supabase/` (novo, versionado)
 
@@ -132,6 +132,9 @@
 | **Página pública `/avaliacoes.html`** | Listagem completa + filtros (5★, com foto, produto) + paginação | ✅ |
 | **Curadoria híbrida de reviews** | Admin marca reviews como "destacada"; fallback automático pras recentes | ✅ |
 | **Feedback privado (Web3Forms reciclado)** | Form na home → tabela `feedbacks` (status: new/read/archived) | ✅ |
+| **Acesso rápido ao admin (v3.11)** | Botão "Painel" no header (só pra admin logado) + redirect inteligente + PWA instalado | ✅ |
+| **Refino dos drawers (v3.11)** | Header/footer com faixa destacada + sombra em camadas + cantos arredondados | ✅ |
+| **Light mode completo do site (v3.11)** | Carrinho, modal de produto, reviews, related cards adaptados ao tema | ✅ |
 
 ### 👤 Área do Cliente (`minha-conta.html`)
 
@@ -367,6 +370,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Presets de tema (system) | 11 (8 dark + 3 light) |
 | Modais no admin (v3.10) | 9 (Contato, Frete, Hero, Carrossel, Rodapé, Meta, Área Cliente, Refinos, Identidade, Banners) |
 | Cards no admin (v3.10) | 9 (grade de Configurações) |
+| PWA instalado (v3.11) | 1 (admin) |
 | Linhas de código (frontend) | ~31k |
 | Linhas de código (backend: schema + functions) | ~5k |
 | **Progresso geral** | **~99,9%** |
@@ -411,7 +415,6 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 
 ### 🟢 Baixa — polimento
 
-- **Emojis em mensagens de WhatsApp ao dono** — mantidos por decisão (não poluem).
 - **Emojis residuais em comentários de código** — não afetam UI.
 
 ### ✅ Resolvidas em v3.10
@@ -421,6 +424,13 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 - **Deletar Pixel Meta antigo (`9288...`)** — removido no Meta Business.
 - **Doc `sender_doc` vs `customer_doc`** — comentário adicionado em `generate-shipping-label`.
 - **Aviso no topo (dead code)** — coluna removida + bloco removido do admin.
+
+### ✅ Resolvidas em v3.11
+
+- **Acesso ao admin sem digitar URL** — botão "Painel" no header do site (só pra admin) + redirect inteligente no `admin.html` + PWA admin instalado.
+- **Light mode do site incompleto** — carrinho (CEP + cupom + frete), modal de produto (reviews + related cards + media container) e drawers ajustados.
+- **Emojis residuais em cupons/notificações/extrato** — trocados por SVG Lucide.
+- **"Bug" do Melhor Envio (Gerar Etiqueta)** — não era bug; o ME bloqueia quando CEP/CPF de origem = destino (proteção contra auto-envio). Documentado na `generate-shipping-label`.
 
 ---
 
@@ -609,6 +619,8 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 23 | Light mode do admin com toggle manual (Fases L1-L3) | Seguir SO / Seguir tema da loja | Admin é ferramenta de trabalho — controle manual é melhor que SO/tema. Paleta light reaproveita do site (perfil.css). |
 | 24 | Aba Configurações com cards + modais por seção (P1-P3) | Rolo infinito / Tabs / Acordeão único | Elimina scroll infinito, cada seção é autossuficiente, cada modal salva só seu escopo. Consistente com padrão de "Biblioteca de Temas" (Fase 10.5). |
 | 25 | Limpeza geral de emojis com política de 3 níveis (E1-E4) | Remover tudo / Manter tudo | Ícone com função → SVG Lucide. Ícone decorativo (texto já comunica) → removido. Ícone emocional (💛) → mantido. Profissionaliza a UI sem perder a voz da marca. |
+| 26 | Acesso ao admin via botão "Painel" (v3.11) | URL direta / Link no rodapé | Não expõe a rota publicamente (segurança), reaproveita o fluxo de auth existente, funciona no mobile (PWA), e o redirect inteligente garante que nunca fica preso. |
+| 27 | Drawers com header/footer destacados (v3.11) | Manter header "flat" | A faixa destacada dá hierarquia visual (o que é título vs. conteúdo) e a sombra em camadas cria profundidade, tornando a "gaveta" mais legível como unidade. |
 
 ---
 
@@ -641,6 +653,10 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **06/out/2026** — **v3.11 - Acesso admin sem URL:** botão "Painel" no header (só pra admin logado) + redirect inteligente (`?login=1&redirect=admin`) + PWA admin instalado.
+- **06/out/2026** — **v3.11 - Refino dos drawers:** header/footer com faixa destacada (`--bg-elevated`) + sombra em camadas + cantos arredondados (20px) + borda lateral visível.
+- **06/out/2026** — **v3.11 - Light mode do site:** corrigidos hardcoded de cor no carrinho (CEP/cupom/frete), modal de produto (reviews summary, related cards, media container), radio de frete.
+- **06/out/2026** — **v3.11 - SVG nos emojis residuais:** notificações (`script.js`), extrato de pontos (`minha-conta.html`), cupons (cards + headers).
 - **06/out/2026** — **Fase 10.9 (Refinamento da 10.7):** Banner Carrossel — botão "Salvar banners" próprio, seletor de cor (bolinha), SVG Lucide na lista de slides, preview segue `--accent`.
 - **06/out/2026** — **Fases L1/L2/L3:** Light mode do admin — toggle manual no header, paleta clara, charts adaptados. 116 hardcoded de cor convertidos pra variáveis.
 - **06/out/2026** — **Fases P1/P2/P3:** Refactor da aba Configurações — 9 cards clicáveis, 9 modais independentes, `saveSettings()` fragmentado em 10 funções, remove "Salvar Configurações" geral.
@@ -1450,6 +1466,15 @@ aparecia em alguns navegadores por causa do Service Worker servindo versão anti
 - `admin.html` (CSS + JS do toggle)
 - `sw-admin.js` (bump v9→v10→v11)
 
+**Extensão v3.11 — Light mode do site:**
+Após o light mode do admin, o mesmo tratamento foi aplicado ao site:
+- Carrinho (inputs de CEP + cupom + caixas de frete)
+- Modal de produto (reviews summary, related cards, media container)
+- Drawers (Carrinho, Favoritos, Notificações)
+
+Todos os hardcoded `#18181c`, `rgba(255, 255, 255, X)` convertidos para
+variáveis semânticas (`--bg-card`, `--card-overlay`, `--border-subtle`).
+
 ### 25.9 — Aba Configurações refatorada (P1-P3, 06/out/2026)
 
 **Objetivo:** eliminar scroll infinito. Cada seção vira card clicável → modal.
@@ -1465,6 +1490,27 @@ aparecia em alguns navegadores por causa do Service Worker servindo versão anti
 - Aviso no topo (coluna `banner_message` dropada)
 - Salvar Configurações geral
 
+### 25.10 — Acesso ao admin (v3.11, 06/out/2026)
+
+**Objetivo:** eliminar a necessidade de digitar `/admin.html` na barra de URL.
+
+**Implementação:**
+- **Botão "Painel"** no header do site (visível só quando admin logado)
+- **Redirect inteligente:** `checkAdminAccess()` sem sessão → redireciona pro site com `?login=1&redirect=admin`; após logar como admin, volta pro painel
+- **Tela "Acesso Restrito"** quando logado como cliente (não-admin) → botão "Sair e entrar como admin"
+- **PWA admin** instalado (ícone na home screen / desktop)
+
+**Fluxo:**
+- Dia a dia: site → botão Painel → admin
+- Device novo: ícone PWA → redireciona pro login → volta pro admin
+- Sessão expirada: tenta abrir admin → redireciona pro login → volta
+- Logado como cliente: "Acesso Restrito" → botão "Sair e entrar como admin"
+
+**Arquivos:**
+- `estilo/script.js` (`checkIsAdmin()`, `updateUserSessionUI()`)
+- `estilo/style.css` (`.btn-admin-panel`)
+- `admin.html` (`checkAdminAccess()` + `handleAdminSwitchAccount()`)
+
 ---
 
-*Fim do documento. Atualizado em 06/10/2026 — v3.10.*
+*Fim do documento. Atualizado em 06/10/2026 — v3.11.*
