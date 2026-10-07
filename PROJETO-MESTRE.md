@@ -1,8 +1,8 @@
-# PROJETO-MESTRE — Use Gemas (v3.12)
+# PROJETO-MESTRE — Use Gemas (v3.13)
 
-> **Documento de referência oficial — v3.12** — estado do código em **07/10/2026**.
-> **Novo em v3.12:** Feature de promoção (preço promocional + badge + preço riscado + Schema.org + Feed XML) + Admin com header fixo (sombra ao rolar) + Favicon SVG customizado + Correções mobile admin (Pontos, Financeiro, filtros) + Bug fix site público (contraste review + scroll tabs).
-> **Herança de v3.11:** Acesso ao admin sem URL + Light mode completo do site + Refino dos drawers.
+> **Documento de referência oficial — v3.13** — estado do código em **07/10/2026**.
+> **Novo em v3.13:** Sistema de Lembretes de expiração (com contagem regressiva + toast no login) + Sistema de Acessos (índice de credenciais sem senha, integrado com Bitwarden) + Documentação do fluxo seguro de gestão de credenciais.
+> **Herança de v3.12:** Feature de promoção + Admin header fixo + Favicon custom + Correções mobile.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -69,7 +69,7 @@
 |---|---|---|---|
 | `estilo/script.js` | 5.128 | 181,9 KB | Lógica principal da loja |
 | `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v12`) |
-| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v22`) |
+| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v24`) |
 
 > **Nota:** os SWs evoluíram continuamente durante v3.10, v3.11 e v3.12. Cada bump forçou cache fresh durante os testes e refinamentos.
 
@@ -176,6 +176,8 @@
 | **Preço promocional no form de produto (v3.12)** | Campo promo + validação (promo < price) | ✅ |
 | **Header fixo com sombra (v3.12)** | `position: fixed` + sombra ao rolar | ✅ |
 | **Favicon SVG custom (v3.12)** | Ícone layout-dashboard dourado | ✅ |
+| **Sistema de Lembretes (v3.13)** | CRUD de expiração de serviços + contagem regressiva + toast no login | ✅ |
+| **Sistema de Acessos (v3.13)** | Índice de credenciais sem senha (só referência) + link direto pra login | ✅ |
 | **Banner Carrossel refinado (Fase 10.7)** | Botão "Salvar banners" próprio + seletor de cor (bolinha) + preview segue `--accent` | ✅ |
 | Configurações (frete, contato, banner, tema, conteúdo do site, área do cliente, refinos, banners rotativos) | ✅ |
 
@@ -245,7 +247,7 @@
 
 > ✅ O schema agora está **versionado** em `supabase/migrations/001_schema.sql` (2.113 linhas). Fonte da verdade segue sendo o Supabase.
 
-### 4.1 Tabelas (15 — com RLS habilitado em todas)
+### 4.1 Tabelas (17 — com RLS habilitado em todas)
 
 | Tabela | Colunas principais |
 |---|---|
@@ -264,12 +266,14 @@
 | `shipping_quotes_cache` | id, cep_origem, cep_destino, peso_kg, valor_declarado, quotes (JSONB), expires_at (24h), created_at |
 | `feedbacks` | id, user_id, customer_name, customer_email, rating, category, message, status (new/read/archived), created_at |
 | `themes` | id, name, description, source ('system'/'custom'), palette (JSONB), typography (JSONB), context ('site'/'account'/'both'), is_favorite, created_by, created_at, updated_at |
+| `service_reminders` | id, name, description, category, expires_at, renew_url, notes, active, created_at, updated_at |
+| `service_credentials` | id, service_name, login_url, email, notes, last_changed_at, active, created_at, updated_at |
 
 > **Nota v3.10:** a coluna `banner_message` foi **removida** (drop column) — substituída pelos `banner_slides` da Fase 10.7. O "Aviso no topo do site" do admin era dead code desde a migração para o carrossel.
 
 > **Nota v3.12:** `promo_price` (NUMERIC nullable) e `promo_ends_at` (TIMESTAMPTZ nullable) controlam a promoção. Promo ativa = `promo_price != null` E `promo_price < price` E (`promo_ends_at` null OU `promo_ends_at > now()`).
 
-### 4.2 Policies (44)
+### 4.2 Policies (46)
 
 Distribuídas entre as 13 tabelas (destaques):
 - **orders**: "Anyone can create orders", "Guests can view guest orders", "Users can view own orders", "Admins can view/update/delete all orders"
@@ -280,6 +284,8 @@ Distribuídas entre as 13 tabelas (destaques):
 - **settings**: `settings_read_all`, `settings_insert_admins`, `settings_update_admins`
 - **shipping_quotes_cache**: "Only service_role manages shipping cache"
 - **feedbacks**: "Anyone can create feedback" (anon + authenticated), "Admins can manage all feedbacks" (admin only)
+
+> **Nota v3.13:** +2 policies (RLS admin-only em `service_reminders` e `service_credentials`).
 
 ### 4.3 Funções SQL (24)
 
@@ -367,8 +373,8 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Arquivos CSS | 6 |
 | Arquivos JS | 3 |
 | Edge Functions | 10 |
-| Tabelas | 15 |
-| Policies | 44 |
+| Tabelas | 17 |
+| Policies | 46 |
 | Funções SQL | 24 |
 | Triggers | 15 |
 | Índices | 46 |
@@ -379,6 +385,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | RPCs | 10 |
 | Presets de tema (system) | 11 (8 dark + 3 light) |
 | Favicon admin (v3.12) | 1 SVG (Lucide layout-dashboard) |
+| Novos subsistemas admin (v3.13) | 2 (Lembretes + Acessos) |
 | Modais no admin (v3.10) | 9 (Contato, Frete, Hero, Carrossel, Rodapé, Meta, Área Cliente, Refinos, Identidade, Banners) |
 | Cards no admin (v3.10) | 9 (grade de Configurações) |
 | PWA instalado (v3.11) | 1 (admin) |
@@ -452,6 +459,11 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 - **Tabela de Pontos com overflow** — virou cards empilhados em mobile (data-label + CSS).
 - **Sidebar mobile deslocando o conteúdo** — `toggleSidebar()` agora trava o scroll do body + overlay com `width: 100vw`.
 - **Financeiro mobile com overflow** — `box-sizing: border-box` + `overflow-x: hidden` no container pai.
+
+### ✅ Resolvidas em v3.13
+
+- **Gestão de expiração de serviços** — Sistema de Lembretes cadastra datas + contagem regressiva + alerta de urgência + toast no login do admin.
+- **Gestão de credenciais** — Sistema de Acessos cataloga serviços (SEM senha) com link direto pra login + rastreio de última troca. Senhas ficam no Bitwarden (GDPR, servidor europeu).
 
 ---
 
@@ -581,6 +593,7 @@ Pedido "enviado" → cron request-review (~7d) → Email → Cliente avalia
 | GitHub | Repo + Pages |
 | **DeepSeek (Deep)** | Assistente de IA — revisão, arquitetura, SQL/Edge Functions, debug, mentoria (modelo: DeepSeek V4 Pro) |
 | **GitHub Copilot** | Assistente de IA no editor — aplicação de mudanças, autocomplete, refactor |
+| **Bitwarden (vault.bitwarden.eu)** | Cofre de senhas (GDPR, servidor europeu) |
 
 ---
 
@@ -645,6 +658,8 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 28 | Preço promocional híbrido (promo_price + promo_ends_at opcional) (v3.12) | Só promo simples / Com data obrigatória | Permite promoção permanente sem forçar data. Se quiser promoção-relâmpago, basta preencher `promo_ends_at`. Auto-expiração quando preenchido. |
 | 29 | Header fixo no admin (position: fixed) (v3.12) | position: sticky (quebrado por overflow-x ancestor) | Robustez contra futuros `overflow` nos ancestrais. Custo: `padding-top` calculado no `.main-body`. |
 | 30 | Favicon SVG custom (v3.12) | Manter PNG antigo | SVG fica nítido em Retina/mobile, é editável em texto, e reaproveita o ícone Lucide da sidebar (consistência visual). |
+| 31 | Sistema de Lembretes no admin (v3.13) | Lembrar de cor / Planilha / Calendário externo | Centraliza alertas de expiração no admin, com contagem regressiva visual + toast no login. Zero risco de esquecer renovação crítica. |
+| 32 | Sistema de Acessos SEM senha (v3.13) — senhas no Bitwarden | Guardar senhas no admin / Papel físico / Único doc | Guardar senha no admin é vetor de ataque (XSS, vazamento de repo, comprometimento de conta única). Bitwarden faz criptografia real. Admin só cataloga referência (URL, e-mail, nota). Separação cofre × índice = melhor dos dois mundos. |
 
 ---
 
@@ -677,6 +692,9 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **07/out/2026** — **v3.13 - Sistema de Lembretes:** CRUD de expiração de serviços + faixas de urgência (expirado/crítico/atenção/alerta/ok) + contagem regressiva + card no Dashboard + toast no login do admin + badge no sidebar.
+- **07/out/2026** — **v3.13 - Sistema de Acessos:** índice de credenciais (SEM senha) + link direto pra login + campo de última troca + busca + grid responsivo.
+- **07/out/2026** — **v3.13 - Bitwarden configurado:** cofre de senhas em `vault.bitwarden.eu` (GDPR, servidor europeu) — recomendado pra gestão de credenciais.
 - **07/out/2026** — **v3.12 - Feature de promoção completa:** `promo_price` + `promo_ends_at` (SQL) + admin (form + card + validação) + site (badge + preço riscado + economia) + RPC `get_product_by_ref` atualizada + carrinho com revalidação + Schema.org `priceSpecification` + feed XML `g:sale_price`.
 - **07/out/2026** — **v3.12 - Admin header fixo:** `position: fixed` + sombra ao rolar + safe-area-inset-top em iPhone.
 - **07/out/2026** — **v3.12 - Favicon custom:** SVG dourado (Lucide layout-dashboard) no admin.
@@ -1634,4 +1652,116 @@ atualizados automaticamente ao abrir o site.
 
 ---
 
-*Fim do documento. Atualizado em 07/10/2026 — v3.12.*
+## 27. Sistema de Lembretes (v3.13)
+
+### 27.1 Objetivo
+
+Centralizar alertas de expiração de serviços externos (tokens, domínios,
+planos, certificados) no admin. Zero risco de esquecer renovação crítica
+(ex: ME Access Token expira em 30/09/2027).
+
+### 27.2 Modelo de dados
+
+Tabela `service_reminders`:
+
+| Coluna | Tipo | Uso |
+|---|---|---|
+| `id` | UUID | PK |
+| `name` | TEXT | Nome do serviço |
+| `description` | TEXT | Descrição curta (opcional) |
+| `category` | TEXT | shipping/email/infra/auth/marketing/other |
+| `expires_at` | TIMESTAMPTZ | Data de expiração |
+| `renew_url` | TEXT | Link direto pra renovação |
+| `notes` | TEXT | Anotações livres |
+| `active` | BOOLEAN | Pode desativar sem deletar |
+
+Índice: `idx_service_reminders_expires_at` (parcial, WHERE active = true).
+
+RLS: admin-only (ALL).
+
+### 27.3 Faixas de urgência
+
+| Faixa | Cor | Dias restantes |
+|---|---|---|
+| ⚫ Expirado | Vermelho escuro | < 0 |
+| 🔴 Crítico | Vermelho vivo | 0-7 |
+| 🟠 Atenção | Laranja | 8-30 |
+| 🟡 Alerta | Amarelo | 31-90 |
+| 🟢 OK | Verde | > 90 |
+
+### 27.4 Onde aparece
+
+| Local | Comportamento |
+|---|---|
+| Sub-aba "Lembretes" no sidebar | CRUD completo + filtros |
+| Badge no sidebar | Contagem de críticos + expirados |
+| Card no Dashboard | 5 mais próximos com dot colorido |
+| Toast no login do admin | Se tem expirado → vermelho · se crítico → vermelho com contagem |
+| Filtros | Todos / Expirados / Críticos / Atenção |
+
+### 27.5 Arquivos envolvidos
+
+- `service_reminders` (banco) — tabela + RLS + índice
+- `admin.html` — sidebar + seção + modal + CRUD + card no Dashboard + toast
+
+---
+
+## 28. Sistema de Acessos (v3.13)
+
+### 28.1 Objetivo
+
+Centralizar referências de credenciais de serviços no admin — **SEM
+guardar senhas**. Senhas ficam no **Bitwarden** (cofre criptografado,
+servidor europeu `vault.bitwarden.eu`, GDPR).
+
+**Regra de ouro:** Bitwarden = cofre. Admin = catálogo.
+
+### 28.2 Modelo de dados
+
+Tabela `service_credentials`:
+
+| Coluna | Tipo | Uso |
+|---|---|---|
+| `id` | UUID | PK |
+| `service_name` | TEXT | Nome do serviço |
+| `login_url` | TEXT | URL de login |
+| `email` | TEXT | E-mail/usuário (**sem senha**) |
+| `notes` | TEXT | Anotações (ex: "senha no Bitwarden, 2FA no Google Auth") |
+| `last_changed_at` | TIMESTAMPTZ | Última troca de senha (opcional) |
+| `active` | BOOLEAN | Pode desativar |
+
+RLS: admin-only (ALL).
+
+### 28.3 Segurança
+
+**Por que NÃO guardar senhas no admin:**
+
+- `admin.html` é público (Ctrl+U mostra o código)
+- XSS no admin vazaria TODAS as credenciais de uma vez
+- Comprometimento de conta única daria acesso a mudar senhas dos serviços
+- Viola o ADR #12 (nunca commitar secrets)
+- Reinventa a roda — Bitwarden é especializado
+
+**Como funciona:**
+
+- Bitwarden guarda senhas criptografadas (AES-256)
+- Admin guarda referência (URL, e-mail, nota)
+- No dia a dia: admin abre URL → Bitwarden autofill → login OK
+
+### 28.4 Onde aparece
+
+| Local | Comportamento |
+|---|---|
+| Sub-aba "Acessos" no sidebar | CRUD completo + busca |
+| Grid responsivo | 3 col desktop, 1 col mobile |
+| Botão "Abrir login →" | Abre `login_url` em nova aba |
+
+### 28.5 Arquivos envolvidos
+
+- `service_credentials` (banco) — tabela + RLS
+- `admin.html` — sidebar + seção + modal + CRUD
+- Bitwarden (externo) — cofre de senhas
+
+---
+
+*Fim do documento. Atualizado em 07/10/2026 — v3.13.*
