@@ -1331,6 +1331,8 @@
             border-radius: 14px;
             padding: 1.5rem 1.5rem 1rem 1.5rem;
             margin-bottom: 1.2rem;
+            overflow: hidden;
+            max-width: 100%;
         }
 
         .finance-chart-header {
@@ -1349,6 +1351,15 @@
         .finance-chart-container {
             position: relative;
             height: 280px;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .finance-chart-container canvas {
+            max-width: 100% !important;
+            width: 100% !important;
+            height: 100% !important;
         }
 
         .finance-chart-grid {
@@ -2039,13 +2050,38 @@
                 align-items: stretch;
             }
 
+            .finance-presets {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+                touch-action: pan-x;
+                overscroll-behavior-x: contain;
+                padding-bottom: 0.3rem;
+            }
+
+            .finance-presets::-webkit-scrollbar {
+                display: none;
+            }
+
+            .finance-presets > * {
+                flex-shrink: 0;
+            }
+
             .finance-dates {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 0.6rem;
             }
 
             .finance-dates label {
                 justify-content: space-between;
+                width: 100%;
+            }
+
+            .finance-dates input[type="date"] {
+                flex: 1;
+                min-width: 0;
             }
 
             .finance-chart-grid {
@@ -2054,6 +2090,49 @@
 
             .finance-chart-container {
                 height: 240px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .metric-card {
+                padding: 1rem 0.9rem;
+            }
+
+            .metric-label {
+                font-size: 0.68rem;
+                letter-spacing: 0.8px;
+            }
+
+            .metric-value {
+                font-size: 1.4rem;
+            }
+
+            .top-product-row {
+                gap: 0.6rem;
+                padding: 0.6rem 0.75rem;
+            }
+
+            .top-product-rank {
+                font-size: 1.2rem;
+                min-width: 22px;
+            }
+
+            .top-product-name {
+                font-size: 0.9rem;
+            }
+
+            .top-product-ref {
+                font-size: 0.68rem;
+            }
+
+            .top-product-total {
+                font-size: 0.85rem;
             }
         }
 
@@ -8009,6 +8088,7 @@
             const isLight = document.documentElement.classList.contains('admin-light');
             const tickColor = isLight ? '#4a3d15' : '#888';
             const gridColor = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.05)';
+            const isMobile = window.innerWidth < 600;
 
             financeCharts.sales = new Chart(ctx, {
                 type: 'bar',
@@ -8040,12 +8120,20 @@
                             beginAtZero: true,
                             ticks: {
                                 color: tickColor,
-                                callback: (v) => 'R$ ' + v
+                                font: { size: isMobile ? 9 : 12 },
+                                callback: (v) => 'R$ ' + v,
+                                maxTicksLimit: isMobile ? 5 : 10
                             },
                             grid: { color: gridColor }
                         },
                         x: {
-                            ticks: { color: tickColor },
+                            ticks: {
+                                color: tickColor,
+                                font: { size: isMobile ? 9 : 12 },
+                                maxRotation: isMobile ? 60 : 0,
+                                autoSkip: true,
+                                maxTicksLimit: isMobile ? 6 : 12
+                            },
                             grid: { display: false }
                         }
                     }
@@ -8091,6 +8179,7 @@
             const isLight = document.documentElement.classList.contains('admin-light');
             const borderColor = isLight ? '#ffffff' : '#141418';
             const labelColor = isLight ? '#4a3d15' : '#c5c5c5';
+            const isMobile = window.innerWidth < 600;
 
             if (data.length === 0) {
                 financeCharts.category = null;
@@ -8117,8 +8206,12 @@
                             position: 'bottom',
                             labels: {
                                 color: labelColor,
-                                padding: 12,
-                                font: { family: "'Montserrat', sans-serif", size: 11 }
+                                padding: isMobile ? 8 : 12,
+                                font: {
+                                    family: "'Montserrat', sans-serif",
+                                    size: isMobile ? 10 : 11
+                                },
+                                boxWidth: isMobile ? 10 : 12
                             }
                         },
                         tooltip: {
