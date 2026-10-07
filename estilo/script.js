@@ -5492,9 +5492,31 @@ async function loadLogoDataUrl() {
     }
 }
 
+let _jsPdfPromise = null;
+function loadJsPdfFromCdn() {
+    if (window.jspdf?.jsPDF) return Promise.resolve();
+    if (_jsPdfPromise) return _jsPdfPromise;
+
+    _jsPdfPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => {
+            _jsPdfPromise = null;
+            reject(new Error('Falha ao carregar jsPDF do CDN'));
+        };
+        document.head.appendChild(script);
+    });
+    return _jsPdfPromise;
+}
+
 async function buildOrderPdf(order, items, settings) {
-    const jsPDFModule = await import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
-    const { jsPDF } = jsPDFModule.default || jsPDFModule;
+    await loadJsPdfFromCdn();
+    const jsPDF = window.jspdf?.jsPDF;
+    if (typeof jsPDF !== 'function') {
+        throw new Error('jsPDF não pôde ser carregado do CDN');
+    }
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
