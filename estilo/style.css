@@ -5325,3 +5325,65 @@ html.theme-light .notification-item:hover {
     background: #fafafa;
     border-color: rgba(0, 0, 0, 0.15);
 }
+
+/* ==========================================================================
+   BOTÃO PAINEL ADMINISTRATIVO (aparece só pra admin logado)
+   ========================================================================== */
+.btn-admin-panel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(var(--gold-rgb), 0.12);
+    border: 1px solid rgba(var(--gold-rgb), 0.4);
+    color: var(--gold);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+}
+
+.btn-admin-panel:hover {
+    background: rgba(var(--gold-rgb), 0.2);
+    border-color: var(--gold);
+    color: var(--gold-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--gold-rgb), 0.25);
+}
+
+.btn-admin-panel svg {
+    flex-shrink: 0;
+    display: block;
+}
+
+/* Modo light */
+html.theme-light .btn-admin-panel {
+    background: rgba(var(--gold-rgb), 0.08);
+    border-color: rgba(var(--gold-rgb), 0.5);
+    color: var(--gold-dark);
+}
+
+html.theme-light .btn-admin-panel:hover {
+    background: rgba(var(--gold-rgb), 0.15);
+    border-color: var(--gold-dark);
+    color: var(--gold-dark);
+}
+
+/* Mobile: esconde o label "Painel", deixa só o ícone */
+@media (max-width: 600px) {
+    .btn-admin-panel span {
+        display: none;
+    }
+    .btn-admin-panel {
+        padding: 0.5rem;
+        width: 36px;
+        height: 36px;
+        justify-content: center;
+    }
+}

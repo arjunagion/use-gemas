@@ -2203,6 +2203,33 @@ async function updateUserSessionUI() {
         userBtn.title = "Minha Conta";
         userBtn.setAttribute('aria-label', 'Ir para Minha Conta');
 
+        // Verifica se é admin e injeta botão Painel
+        const isAdmin = await checkIsAdmin(user.id);
+        const existingAdminBtn = document.getElementById('admin-panel-btn');
+
+        if (isAdmin) {
+            if (!existingAdminBtn) {
+                const adminBtn = document.createElement('a');
+                adminBtn.id = 'admin-panel-btn';
+                adminBtn.href = 'admin.html';
+                adminBtn.className = 'btn-admin-panel';
+                adminBtn.title = 'Painel Administrativo';
+                adminBtn.setAttribute('aria-label', 'Abrir Painel Administrativo');
+                adminBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="7" height="9"></rect>
+                        <rect x="14" y="3" width="7" height="5"></rect>
+                        <rect x="14" y="12" width="7" height="9"></rect>
+                        <rect x="3" y="16" width="7" height="5"></rect>
+                    </svg>
+                    <span>Painel</span>
+                `;
+                userBtn.parentNode.insertBefore(adminBtn, userBtn);
+            }
+        } else if (existingAdminBtn) {
+            existingAdminBtn.remove();
+        }
+
         // Carrega notificações (sininho)
         loadNotifications();
     } else {
@@ -2220,6 +2247,37 @@ async function updateUserSessionUI() {
         // Esconde o sininho de notificações
         const bellBtn = document.getElementById('nav-bell-btn');
         if (bellBtn) bellBtn.style.display = 'none';
+
+        // Remove botão Painel se existir (user deslogou)
+        const existing = document.getElementById('admin-panel-btn');
+        if (existing) existing.remove();
+    }
+}
+
+/**
+ * Verifica se o usuário logado é admin.
+ * A RLS da tabela `admins` permite o próprio user ler seu registro.
+ */
+async function checkIsAdmin(userId) {
+    if (!userId) return false;
+    try {
+        const { data, error } = await supabaseClient
+            .from('admins')
+            .select('user_id')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (error) {
+            // 42501 = RLS bloqueou (não é admin) — silenciar
+            if (error.code === '42501' || error.code === 'PGRST116') return false;
+            console.warn('[checkIsAdmin] Erro:', error.message);
+            return false;
+        }
+
+        return !!data;
+    } catch (e) {
+        console.warn('[checkIsAdmin] Exceção:', e);
+        return false;
     }
 }
 
