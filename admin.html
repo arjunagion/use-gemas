@@ -2074,11 +2074,14 @@
             .finance-presets {
                 flex-wrap: nowrap;
                 overflow-x: auto;
+                overflow-y: hidden;
                 scrollbar-width: none;
                 -webkit-overflow-scrolling: touch;
                 touch-action: pan-x;
                 overscroll-behavior-x: contain;
                 padding-bottom: 0.3rem;
+                -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 24px), transparent 100%);
+                mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 24px), transparent 100%);
             }
 
             .finance-presets::-webkit-scrollbar {
@@ -2098,11 +2101,15 @@
             .finance-dates label {
                 justify-content: space-between;
                 width: 100%;
+                gap: 0.8rem;
             }
 
             .finance-dates input[type="date"] {
                 flex: 1;
                 min-width: 0;
+                max-width: 100%;
+                font-size: 0.85rem;
+                padding: 0.5rem 0.6rem;
             }
 
             .finance-chart-grid {
@@ -2111,6 +2118,14 @@
 
             .finance-chart-container {
                 height: 240px;
+            }
+
+            .finance-chart-header h3 {
+                font-size: 1.1rem;
+                line-height: 1.3;
+                word-break: normal;
+                overflow-wrap: break-word;
+                hyphens: none;
             }
         }
 
@@ -2154,6 +2169,21 @@
 
             .top-product-total {
                 font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+
+            .metric-card {
+                padding: 1.1rem 1rem;
+            }
+
+            .metric-value {
+                font-size: 1.5rem;
             }
         }
 
