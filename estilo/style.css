@@ -995,6 +995,8 @@ html.theme-light .modal-content {
         scroll-snap-type: x mandatory;
         padding-bottom: 0.25rem;
         -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
+        overscroll-behavior-x: contain;
     }
 
     .related-grid::-webkit-scrollbar {
@@ -2055,6 +2057,8 @@ html.theme-light .form-group select:focus {
         gap: 0.8rem;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        touch-action: pan-x;
+        overscroll-behavior-x: contain;
     }
 
     .filter-container::-webkit-scrollbar {
@@ -3231,7 +3235,7 @@ html.theme-light .checkout-form textarea {
 
 .reviews-summary-count {
     font-size: 0.72rem;
-    color: #aaa;
+    color: var(--text-dim);
 }
 
 .reviews-dist {
@@ -3247,7 +3251,7 @@ html.theme-light .checkout-form textarea {
     align-items: center;
     gap: 0.5rem;
     font-size: 0.72rem;
-    color: #bbb;
+    color: var(--text-muted);
 }
 
 .reviews-dist-label {
@@ -3274,7 +3278,7 @@ html.theme-light .checkout-form textarea {
 .reviews-dist-pct {
     width: 36px;
     text-align: right;
-    color: #999;
+    color: var(--text-dim);
     flex-shrink: 0;
 }
 
@@ -3331,7 +3335,7 @@ html.theme-light .checkout-form textarea {
 }
 
 .review-item-author {
-    color: #f0f0f0;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
@@ -3341,20 +3345,20 @@ html.theme-light .checkout-form textarea {
 }
 
 .review-item-date {
-    color: #888;
+    color: var(--text-dim);
     margin-left: auto;
 }
 
 .review-item-title {
     font-weight: 600;
-    color: #eee;
+    color: var(--text-primary);
     font-size: 0.88rem;
     margin-bottom: 0.25rem;
 }
 
 .review-item-comment {
     font-size: 0.85rem;
-    color: #ccc;
+    color: var(--text-muted);
     line-height: 1.55;
     margin: 0;
 }
@@ -3396,7 +3400,7 @@ html.theme-light .checkout-form textarea {
     display: inline-flex;
     align-items: center;
     font-size: 0.72rem;
-    color: #aaa;
+    color: var(--text-dim);
 }
 
 .review-admin-response {
@@ -3418,7 +3422,7 @@ html.theme-light .checkout-form textarea {
 
 .review-admin-response p {
     font-size: 0.82rem;
-    color: #ccc;
+    color: var(--text-muted);
     line-height: 1.5;
     margin: 0;
 }

@@ -332,8 +332,16 @@ button {
     border-bottom: 1px solid var(--cr-border);
     margin-bottom: 2rem;
     overflow-x: auto;
+    overflow-y: hidden;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: none;
+}
+
+.perfil-tabs > * {
+    flex-shrink: 0;
 }
 
 .perfil-tabs::-webkit-scrollbar {
@@ -354,6 +362,7 @@ button {
     transition: all 0.25s ease;
     white-space: nowrap;
     margin-bottom: -1px;
+    touch-action: manipulation;
 }
 
 .perfil-tab:hover {
