@@ -1462,7 +1462,7 @@ html.theme-light .form-group select:focus {
     max-width: 100vw;
     height: 100vh;
     background: var(--bg-main);
-    border-left: 1px solid var(--border-subtle);
+    border-left: 1px solid var(--border-strong);
     z-index: 1001;
     display: flex;
     flex-direction: column;
@@ -1470,9 +1470,8 @@ html.theme-light .form-group select:focus {
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     box-shadow:
-        -4px 0 12px rgba(0, 0, 0, 0.15),
-        -12px 0 40px var(--shadow-color),
-        inset -1px 0 0 rgba(255, 255, 255, 0.03);
+        -8px 0 24px rgba(0, 0, 0, 0.18),
+        -20px 0 60px rgba(0, 0, 0, 0.12);
     transform: translateX(100%);
     transition: var(--transition-drawer);
     will-change: transform;
@@ -1489,12 +1488,14 @@ html.theme-light .form-group select:focus {
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    background: var(--bg-elevated);
+    padding: 1.3rem 1.5rem 1.1rem;
+    margin: -1.5rem -1.5rem 1.2rem;
     border-bottom: 1px solid var(--border-subtle);
-    padding: 0 0.5rem 1rem 0.5rem;
-    margin: 0 -0.5rem 1rem -0.5rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    border-top-left-radius: 20px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .cart-header h3,
@@ -1538,12 +1539,14 @@ html.theme-light .form-group select:focus {
 
 .cart-footer,
 .wishlist-footer {
+    background: var(--bg-elevated);
     border-top: 1px solid var(--border-subtle);
-    padding: 1rem 0.5rem 0 0.5rem;
-    margin: 1rem -0.5rem 0 -0.5rem;
-    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.06);
+    padding: 1.2rem 1.5rem 1.3rem;
+    margin: 1.2rem -1.5rem -1.5rem;
+    border-bottom-left-radius: 20px;
+    box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.08);
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .cart-item button {
@@ -3519,7 +3522,7 @@ html.theme-light .checkout-form textarea {
     max-width: 100vw;
     height: 100vh;
     background: var(--bg-main);
-    border-left: 1px solid var(--border-subtle);
+    border-left: 1px solid var(--border-strong);
     z-index: 1001;
     display: flex;
     flex-direction: column;
@@ -3527,9 +3530,8 @@ html.theme-light .checkout-form textarea {
     border-top-left-radius: 20px;
     border-bottom-left-radius: 20px;
     box-shadow:
-        -4px 0 12px rgba(0, 0, 0, 0.15),
-        -12px 0 40px var(--shadow-color),
-        inset -1px 0 0 rgba(255, 255, 255, 0.03);
+        -8px 0 24px rgba(0, 0, 0, 0.18),
+        -20px 0 60px rgba(0, 0, 0, 0.12);
     transform: translateX(100%);
     transition: var(--transition-drawer);
     will-change: transform;
@@ -3544,12 +3546,14 @@ html.theme-light .checkout-form textarea {
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    background: var(--bg-elevated);
+    padding: 1.3rem 1.5rem 1.1rem;
+    margin: -1.5rem -1.5rem 1.2rem;
     border-bottom: 1px solid var(--border-subtle);
-    padding: 0 0.5rem 1rem 0.5rem;
-    margin: 0 -0.5rem 0.8rem -0.5rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    border-top-left-radius: 20px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 
 .notifications-header h3 {
@@ -5457,4 +5461,35 @@ html.theme-light .wishlist-footer {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }
+
+    .cart-header,
+    .wishlist-header,
+    .notifications-header {
+        border-top-left-radius: 0;
+    }
+
+    .cart-footer,
+    .wishlist-footer {
+        border-bottom-left-radius: 0;
+    }
+}
+
+/* Drawers no light mode */
+html.theme-light .cart-drawer,
+html.theme-light .wishlist-drawer,
+html.theme-light .notifications-drawer {
+    box-shadow:
+        -8px 0 24px rgba(0, 0, 0, 0.1),
+        -20px 0 60px rgba(0, 0, 0, 0.08);
+}
+
+html.theme-light .cart-header,
+html.theme-light .wishlist-header,
+html.theme-light .notifications-header {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+html.theme-light .cart-footer,
+html.theme-light .wishlist-footer {
+    box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.06);
 }
