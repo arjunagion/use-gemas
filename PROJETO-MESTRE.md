@@ -1,8 +1,8 @@
-# PROJETO-MESTRE — Use Gemas (v3.11)
+# PROJETO-MESTRE — Use Gemas (v3.12)
 
-> **Documento de referência oficial — v3.11** — estado do código em **06/10/2026**.
-> **Novo em v3.11:** Acesso ao admin sem URL (botão "Painel" no header + redirect inteligente + PWA instalado) + Light mode completo do site (carrinho, modal, reviews) + Refino dos drawers (Carrinho, Favoritos, Notificações) + SVG nos emojis residuais (cupons, notificações, extrato).
-> **Herança de v3.10:** Refinamento da Fase 10.7 + Limpeza E1-E4 + Refactor Configurações + Light mode do admin.
+> **Documento de referência oficial — v3.12** — estado do código em **07/10/2026**.
+> **Novo em v3.12:** Feature de promoção (preço promocional + badge + preço riscado + Schema.org + Feed XML) + Admin com header fixo (sombra ao rolar) + Favicon SVG customizado + Correções mobile admin (Pontos, Financeiro, filtros) + Bug fix site público (contraste review + scroll tabs).
+> **Herança de v3.11:** Acesso ao admin sem URL + Light mode completo do site + Refino dos drawers.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
 > **Fonte da verdade:** o **Supabase** para backend; esta pasta/arquivo é **versionamento + referência**.
@@ -68,10 +68,10 @@
 | Arquivo | Linhas | Tamanho | Propósito |
 |---|---|---|---|
 | `estilo/script.js` | 5.128 | 181,9 KB | Lógica principal da loja |
-| `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v9`) |
-| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v12`) |
+| `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v12`) |
+| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v22`) |
 
-> **Nota:** os SWs evoluíram durante os refinamentos de v3.10/v3.11. Cada bump forçou cache fresh durante os testes.
+> **Nota:** os SWs evoluíram continuamente durante v3.10, v3.11 e v3.12. Cada bump forçou cache fresh durante os testes e refinamentos.
 
 ### 1.4 Backend — `supabase/` (novo, versionado)
 
@@ -104,6 +104,7 @@
 | Arquivo | Propósito |
 |---|---|
 | `favicon.png`, `logo.png` | Ícone/logo do site |
+| `favicon-admin.svg` | **NOVO** — favicon do painel admin (Lucide layout-dashboard, dourado) |
 | `og-capa.jpg` | Imagem Open Graph (1200×630) |
 | `icone-admin-192.png`, `icone-admin-512.png` | Ícones PWA (cliente e admin) |
 | `IMG_2501.mp4`, `IMG_2559.mp4`, `IMG_2563.mp4`, `IMG_2585.mp4` | Vídeos (hero/carrossel) |
@@ -132,6 +133,7 @@
 | **Página pública `/avaliacoes.html`** | Listagem completa + filtros (5★, com foto, produto) + paginação | ✅ |
 | **Curadoria híbrida de reviews** | Admin marca reviews como "destacada"; fallback automático pras recentes | ✅ |
 | **Feedback privado (Web3Forms reciclado)** | Form na home → tabela `feedbacks` (status: new/read/archived) | ✅ |
+| **Preço promocional (v3.12)** | Badge "PROMO" + preço riscado + economia + carrinho com preço promo | ✅ |
 | **Acesso rápido ao admin (v3.11)** | Botão "Painel" no header (só pra admin logado) + redirect inteligente + PWA instalado | ✅ |
 | **Refino dos drawers (v3.11)** | Header/footer com faixa destacada + sombra em camadas + cantos arredondados | ✅ |
 | **Light mode completo do site (v3.11)** | Carrinho, modal de produto, reviews, related cards adaptados ao tema | ✅ |
@@ -171,6 +173,9 @@
 | **Redesign (Fase 10.8)** | Fonte Inter + SVG Lucide + zero emojis | ✅ |
 | **Light mode (Fases L1-L3)** | Toggle manual no header (sol/lua) + paleta clara + charts adaptados | ✅ |
 | **Aba Configurações refatorada (P1-P3)** | 9 cards clicáveis → modais independentes com save local | ✅ |
+| **Preço promocional no form de produto (v3.12)** | Campo promo + validação (promo < price) | ✅ |
+| **Header fixo com sombra (v3.12)** | `position: fixed` + sombra ao rolar | ✅ |
+| **Favicon SVG custom (v3.12)** | Ícone layout-dashboard dourado | ✅ |
 | **Banner Carrossel refinado (Fase 10.7)** | Botão "Salvar banners" próprio + seletor de cor (bolinha) + preview segue `--accent` | ✅ |
 | Configurações (frete, contato, banner, tema, conteúdo do site, área do cliente, refinos, banners rotativos) | ✅ |
 
@@ -245,7 +250,7 @@
 | Tabela | Colunas principais |
 |---|---|
 | `admins` | user_id (PK), created_at |
-| `products` | id, ref (UNIQUE), name, price, category, gem, description, materials, gallery, stock, active, created_at, updated_at |
+| `products` | id, ref (UNIQUE), name, price, **promo_price**, **promo_ends_at**, category, gem, description, materials, gallery, stock, active, created_at, updated_at |
 | `orders` | id, user_id, customer_name/doc/phone/email, cep, street, number, complement, neighborhood, city, state, notes, items (JSONB), subtotal, shipping_cost, total, status, created_at, updated_at, shipped_at, review_requested_at, review_reminder_sent_at, guest_token, discount_amount, discount_code, shipping_method, shipping_service_id, shipping_carrier, shipping_estimated_days, shipping_quote_data (JSONB), tracking_code, tracking_url, melhorenvio_order_id, label_url, label_generated_at, label_status, label_error |
 | `reviews` | id, order_id, product_ref, user_id, customer_name, customer_email, rating, title, comment, photos, verified_purchase, admin_response, status, **featured**, created_at, updated_at |
 | `notifications` | id, user_id, type, title, message, link, metadata (JSONB), read_at, created_at |
@@ -261,6 +266,8 @@
 | `themes` | id, name, description, source ('system'/'custom'), palette (JSONB), typography (JSONB), context ('site'/'account'/'both'), is_favorite, created_by, created_at, updated_at |
 
 > **Nota v3.10:** a coluna `banner_message` foi **removida** (drop column) — substituída pelos `banner_slides` da Fase 10.7. O "Aviso no topo do site" do admin era dead code desde a migração para o carrossel.
+
+> **Nota v3.12:** `promo_price` (NUMERIC nullable) e `promo_ends_at` (TIMESTAMPTZ nullable) controlam a promoção. Promo ativa = `promo_price != null` E `promo_price < price` E (`promo_ends_at` null OU `promo_ends_at > now()`).
 
 ### 4.2 Policies (44)
 
@@ -281,6 +288,8 @@ Distribuídas entre as 13 tabelas (destaques):
 
 > **Nota (Fase 10.3):** as 3 funções de fidelidade (`credit_loyalty_points_on_paid`, `redeem_points_as_coupon`, `get_loyalty_balance`) leem `settings.loyalty_rules` em runtime, permitindo mudar regras (pontos/R$, valor de resgate, validade) sem deploy.
 
+> **Nota v3.12:** a RPC `get_product_by_ref` retorna os campos `promo_price` e `promo_ends_at` no objeto do produto desde 07/out/2026 (feature de promoção). A migração SQL correspondente foi aplicada em produção.
+
 **14 trigger functions**:
 `update_coupons_updated_at`, `update_products_updated_at`, `update_reviews_updated_at`, `normalize_coupon_code`, `generate_guest_token`, `set_guest_token`, `set_shipped_at`, `handle_new_user`, `notify_order_status_change`, `notify_review_status_change`, `credit_loyalty_points_on_paid`, `notify_points_earned`, `cleanup_old_notifications`, `expire_loyalty_points`
 
@@ -294,6 +303,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 
 - `idx_reviews_featured` (parcial, WHERE featured = true AND status = 'approved')
 - `idx_feedbacks_status_created`
+- `idx_products_promo` (parcial, WHERE promo_price IS NOT NULL)
 
 ### 4.6 Cron jobs (6 — pg_cron + pg_net)
 
@@ -368,6 +378,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Secrets custom | 6 |
 | RPCs | 10 |
 | Presets de tema (system) | 11 (8 dark + 3 light) |
+| Favicon admin (v3.12) | 1 SVG (Lucide layout-dashboard) |
 | Modais no admin (v3.10) | 9 (Contato, Frete, Hero, Carrossel, Rodapé, Meta, Área Cliente, Refinos, Identidade, Banners) |
 | Cards no admin (v3.10) | 9 (grade de Configurações) |
 | PWA instalado (v3.11) | 1 (admin) |
@@ -431,6 +442,16 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 - **Light mode do site incompleto** — carrinho (CEP + cupom + frete), modal de produto (reviews + related cards + media container) e drawers ajustados.
 - **Emojis residuais em cupons/notificações/extrato** — trocados por SVG Lucide.
 - **"Bug" do Melhor Envio (Gerar Etiqueta)** — não era bug; o ME bloqueia quando CEP/CPF de origem = destino (proteção contra auto-envio). Documentado na `generate-shipping-label`.
+
+### ✅ Resolvidas em v3.12
+
+- **Contraste do nome do review em light mode** — cores hardcoded (`#f0f0f0`, `#eee`, `#ccc`) trocadas por variáveis semânticas (`--text-primary`, `--text-muted`, `--text-dim`).
+- **Scroll anormal nas tabs de `minha-conta.html`** — adicionado `touch-action: pan-x` + `overscroll-behavior` nos containers horizontais.
+- **Filtros cortados no admin mobile** — `.filter-tabs` ganhou `touch-action: pan-x` + indicador de scroll (mask-image) + `flex-shrink: 0` nos filhos.
+- **Botões empilhados verticalmente (Cupons/Pontos)** — viraram grid 2x2 em mobile.
+- **Tabela de Pontos com overflow** — virou cards empilhados em mobile (data-label + CSS).
+- **Sidebar mobile deslocando o conteúdo** — `toggleSidebar()` agora trava o scroll do body + overlay com `width: 100vw`.
+- **Financeiro mobile com overflow** — `box-sizing: border-box` + `overflow-x: hidden` no container pai.
 
 ---
 
@@ -621,6 +642,9 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 25 | Limpeza geral de emojis com política de 3 níveis (E1-E4) | Remover tudo / Manter tudo | Ícone com função → SVG Lucide. Ícone decorativo (texto já comunica) → removido. Ícone emocional (💛) → mantido. Profissionaliza a UI sem perder a voz da marca. |
 | 26 | Acesso ao admin via botão "Painel" (v3.11) | URL direta / Link no rodapé | Não expõe a rota publicamente (segurança), reaproveita o fluxo de auth existente, funciona no mobile (PWA), e o redirect inteligente garante que nunca fica preso. |
 | 27 | Drawers com header/footer destacados (v3.11) | Manter header "flat" | A faixa destacada dá hierarquia visual (o que é título vs. conteúdo) e a sombra em camadas cria profundidade, tornando a "gaveta" mais legível como unidade. |
+| 28 | Preço promocional híbrido (promo_price + promo_ends_at opcional) (v3.12) | Só promo simples / Com data obrigatória | Permite promoção permanente sem forçar data. Se quiser promoção-relâmpago, basta preencher `promo_ends_at`. Auto-expiração quando preenchido. |
+| 29 | Header fixo no admin (position: fixed) (v3.12) | position: sticky (quebrado por overflow-x ancestor) | Robustez contra futuros `overflow` nos ancestrais. Custo: `padding-top` calculado no `.main-body`. |
+| 30 | Favicon SVG custom (v3.12) | Manter PNG antigo | SVG fica nítido em Retina/mobile, é editável em texto, e reaproveita o ícone Lucide da sidebar (consistência visual). |
 
 ---
 
@@ -653,6 +677,11 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **07/out/2026** — **v3.12 - Feature de promoção completa:** `promo_price` + `promo_ends_at` (SQL) + admin (form + card + validação) + site (badge + preço riscado + economia) + RPC `get_product_by_ref` atualizada + carrinho com revalidação + Schema.org `priceSpecification` + feed XML `g:sale_price`.
+- **07/out/2026** — **v3.12 - Admin header fixo:** `position: fixed` + sombra ao rolar + safe-area-inset-top em iPhone.
+- **07/out/2026** — **v3.12 - Favicon custom:** SVG dourado (Lucide layout-dashboard) no admin.
+- **07/out/2026** — **v3.12 - Correções mobile admin:** filtros, Pontos (tabela → cards), Financeiro (box-sizing), sidebar (scroll travado).
+- **07/out/2026** — **v3.12 - Bug fix site público:** contraste do nome do review em light mode + scroll das tabs de `minha-conta.html`.
 - **06/out/2026** — **v3.11 - Acesso admin sem URL:** botão "Painel" no header (só pra admin logado) + redirect inteligente (`?login=1&redirect=admin`) + PWA admin instalado.
 - **06/out/2026** — **v3.11 - Refino dos drawers:** header/footer com faixa destacada (`--bg-elevated`) + sombra em camadas + cantos arredondados (20px) + borda lateral visível.
 - **06/out/2026** — **v3.11 - Light mode do site:** corrigidos hardcoded de cor no carrinho (CEP/cupom/frete), modal de produto (reviews summary, related cards, media container), radio de frete.
@@ -1511,6 +1540,98 @@ variáveis semânticas (`--bg-card`, `--card-overlay`, `--border-subtle`).
 - `estilo/style.css` (`.btn-admin-panel`)
 - `admin.html` (`checkAdminAccess()` + `handleAdminSwitchAccount()`)
 
+### 25.11 — Header fixo + favicon custom (v3.12, 07/out/2026)
+
+**Header fixo:**
+- Troca de `position: sticky` → `position: fixed` no `.main-header`
+- Motivo: `sticky` quebra quando um ancestral tem `overflow-x: hidden` (necessário no `.main-body` pra evitar overflow horizontal mobile)
+- Compensação: `padding-top: 8rem` no `.main-body` (desktop) / `6.5rem` (mobile)
+- Sombra suave ao rolar (`class="scrolled"` via JS com `requestAnimationFrame`)
+- `padding-top: calc(Xrem + env(safe-area-inset-top, 0px))` pra iPhone com notch
+
+**Favicon custom:**
+- Arquivo `estilo/midias/favicon-admin.svg`
+- Ícone Lucide `layout-dashboard` (4 retângulos geométricos) dourado sobre fundo escuro
+- `<link rel="icon" type="image/svg+xml">` + fallback PNG
+- Adicionado ao `CACHE_URLS` do `sw-admin.js` (offline)
+
+**Arquivos:**
+- `admin.html` (CSS + JS do scroll)
+- `estilo/midias/favicon-admin.svg` (novo)
+- `sw-admin.js` (bump + precache)
+
 ---
 
-*Fim do documento. Atualizado em 06/10/2026 — v3.11.*
+## 26. Sistema de Promoção (v3.12)
+
+### 26.1 Objetivo
+
+Permitir cadastrar preços promocionais em produtos, com exibição
+automática de badge "PROMO" + preço riscado em toda a jornada do
+cliente (home, modal, produto, carrinho) e integração com Google
+Shopping (feed XML) + Schema.org (rich snippets).
+
+### 26.2 Modelo de dados
+
+Colunas em `products`:
+
+| Coluna | Tipo | Uso |
+|---|---|---|
+| `promo_price` | NUMERIC | Preço promocional (NULL = sem promo) |
+| `promo_ends_at` | TIMESTAMPTZ | Fim da promo (NULL = permanente) |
+
+Índice parcial: `idx_products_promo ON products(promo_price) WHERE promo_price IS NOT NULL`.
+
+### 26.3 Regra de promo ativa
+
+Promo ativa quando:
+
+```text
+promo_price != null
+AND promo_price < price
+AND (promo_ends_at IS NULL OR promo_ends_at > now())
+```
+
+Função `isPromoActive(product)` em `script.js` + `produto.html`.
+
+### 26.4 Onde aparece
+
+| Local | O que mostra |
+|---|---|
+| Home (card) | Badge "PROMO" + promo + riscado |
+| Home (modal) | Promo + riscado + "Economize R$ X" |
+| `produto.html` | Promo + riscado + "Economize R$ X" |
+| Carrinho | Preço promo (com revalidação no boot) |
+| Admin (card) | Badge "PROMO" + promo + riscado |
+| Schema.org | `offers.price` = promo + `priceSpecification` (ListPrice) |
+| Feed XML | `g:price` (cheio) + `g:sale_price` (promo) |
+
+### 26.5 Admin — UI
+
+Campo no form de produto:
+- "Preço cheio (R$)" — obrigatório
+- "Preço promocional (R$)" — opcional
+- "Promo termina em" — datetime-local opcional
+- Validação: promo deve ser MENOR que preço cheio
+
+### 26.6 Revalidação no carrinho
+
+`revalidateCartAfterRestore()` usa `getEffectivePrice(product)` em vez
+de `Number(product.price)`, então carrinhos com preço antigo são
+atualizados automaticamente ao abrir o site.
+
+### 26.7 Arquivos envolvidos
+
+- `products` (banco) — 2 colunas novas + 1 índice
+- `get_product_by_ref` (RPC) — retorna os 2 campos novos
+- `estilo/script.js` — `isPromoActive()`, `getEffectivePrice()`, render updates
+- `estilo/style.css` — classes `.promo-badge`, `.price-promo`, `.price-original`, `.price-savings`
+- `estilo/produto.css` — tamanhos do `.price-promo` na página de produto
+- `produto.html` — render + `handleAddToCart` com preço efetivo
+- `admin.html` — form (2 inputs) + card (badge)
+- `feed-xml/index.ts` (Edge Function) — `g:sale_price`
+- `sw.js` / `sw-admin.js` — bump de cache
+
+---
+
+*Fim do documento. Atualizado em 07/10/2026 — v3.12.*
