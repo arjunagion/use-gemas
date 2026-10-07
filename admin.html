@@ -4714,6 +4714,142 @@
                 grid-column: span 2;
             }
         }
+
+        /* ==========================================================================
+           ACESSOS (v3.14)
+           ========================================================================== */
+        .credentials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+        }
+
+        .credential-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem 1.3rem;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .credential-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .credential-card.inactive {
+            opacity: 0.55;
+        }
+
+        .credential-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+
+        .credential-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .credential-title h4 {
+            font-family: var(--font-body);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0 0 2px 0;
+        }
+
+        .credential-email {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin: 0;
+            word-break: break-all;
+        }
+
+        .credential-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .credential-meta strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .credential-notes {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            padding: 0.6rem 0.8rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 6px;
+        }
+
+        .credential-card-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            padding-top: 0.7rem;
+            margin-top: auto;
+            border-top: 1px solid var(--divider-subtle);
+        }
+
+        .credential-card-actions .action-btn {
+            flex: 0 1 auto;
+        }
+
+        .credential-login-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.5rem 0.9rem;
+            background: rgba(var(--gold-rgb), 0.1);
+            border: 1px solid rgba(var(--gold-rgb), 0.3);
+            border-radius: 6px;
+            color: var(--gold);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: all 0.25s ease;
+        }
+
+        .credential-login-link:hover {
+            background: rgba(var(--gold-rgb), 0.18);
+            border-color: var(--gold);
+        }
+
+        .credential-login-link svg {
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 600px) {
+            .credentials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .credential-card-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.4rem;
+            }
+
+            .credential-card-actions .action-btn,
+            .credential-card-actions .credential-login-link {
+                width: 100%;
+                justify-content: center;
+                grid-column: span 1;
+            }
+
+            .credential-login-link {
+                grid-column: span 2;
+            }
+        }
     </style>
 </head>
 
@@ -4830,6 +4966,13 @@
                     </svg>
                     Lembretes
                     <span class="nav-badge" id="nav-badge-lembretes" style="display: none;">0</span>
+                </a>
+                <a href="#" class="nav-item" data-section="acessos">
+                    <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    Acessos
                 </a>
                 <a href="#" class="nav-item" data-section="config">
                     <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -5235,6 +5378,33 @@
                                 </svg>
                             </span>
                             <p>Carregando lembretes...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== ACESSOS ==================== -->
+                <section class="content-section" id="section-acessos">
+                    <div class="section-header">
+                        <div class="section-actions">
+                            <input type="text" class="search-input" id="credentials-search"
+                                placeholder="Buscar por serviço, e-mail..." oninput="renderCredentials()">
+                        </div>
+                        <div class="section-actions">
+                            <button class="btn-new-product" onclick="openCredentialForm()">
+                                <span>+</span> Novo acesso
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="credentials-container">
+                        <div class="empty-state">
+                            <span class="icon" aria-hidden="true">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <p>Carregando acessos...</p>
                         </div>
                     </div>
                 </section>
@@ -5687,6 +5857,57 @@
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="closeReminderForm()">Cancelar</button>
                     <button type="submit" class="btn-save" id="reminder-save-btn">Salvar lembrete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: ACESSO ==================== -->
+    <div id="credential-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeCredentialForm()">&times;</button>
+            <h2 class="modal-title" id="credential-form-title">Novo acesso</h2>
+
+            <div id="credential-form-feedback" class="modal-feedback"></div>
+
+            <form id="credential-form" onsubmit="saveCredential(event)">
+                <input type="hidden" id="cred-id">
+
+                <div class="form-group">
+                    <label for="cred-service">Serviço <span class="required">*</span></label>
+                    <input type="text" id="cred-service" required maxlength="80" placeholder="Ex: Melhor Envio">
+                </div>
+
+                <div class="form-group">
+                    <label for="cred-email">E-mail / Usuário</label>
+                    <input type="text" id="cred-email" maxlength="120" placeholder="seu@email.com">
+                    <small class="config-hint">Apenas o e-mail (SEM senha — a senha fica no Bitwarden).</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cred-login-url">URL de login</label>
+                    <input type="url" id="cred-login-url" maxlength="300" placeholder="https://...">
+                </div>
+
+                <div class="form-group">
+                    <label for="cred-last-changed">Última troca de senha</label>
+                    <input type="date" id="cred-last-changed">
+                    <small class="config-hint">Opcional. Ajuda a lembrar quando trocar.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="cred-notes">Anotações</label>
+                    <textarea id="cred-notes" rows="3" maxlength="500" placeholder="Ex: 2FA no Google Authenticator, senha no Bitwarden"></textarea>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="cred-active" checked>
+                    <label for="cred-active">Ativo</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeCredentialForm()">Cancelar</button>
+                    <button type="submit" class="btn-save" id="credential-save-btn">Salvar acesso</button>
                 </div>
             </form>
         </div>
@@ -6579,6 +6800,262 @@
         }
 
         // ==========================================================================
+        // Acessos (índice de credenciais SEM senha)
+        // ==========================================================================
+        let allCredentials = [];
+        let pendingDeleteCredentialId = null;
+
+        async function loadCredentials() {
+            const container = document.getElementById('credentials-container');
+            if (container) {
+                container.innerHTML = `<div class="empty-state"><p>Carregando acessos...</p></div>`;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('service_credentials')
+                .select('*')
+                .order('service_name', { ascending: true });
+
+            if (error) {
+                console.error('Erro ao carregar acessos:', error);
+                if (container) {
+                    container.innerHTML = `<div class="empty-state"><p>Erro ao carregar acessos.</p></div>`;
+                }
+                return;
+            }
+
+            allCredentials = data || [];
+            renderCredentials();
+        }
+
+        function renderCredentials() {
+            const container = document.getElementById('credentials-container');
+            if (!container) return;
+
+            const searchTerm = (document.getElementById('credentials-search')?.value || '').trim().toLowerCase();
+
+            let filtered = allCredentials.slice();
+            if (searchTerm) {
+                filtered = filtered.filter(c =>
+                    (c.service_name || '').toLowerCase().includes(searchTerm) ||
+                    (c.email || '').toLowerCase().includes(searchTerm) ||
+                    (c.notes || '').toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon" aria-hidden="true">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <p>${allCredentials.length === 0 ? 'Nenhum acesso cadastrado ainda.' : 'Nenhum acesso encontrado.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '<div class="credentials-grid">' + filtered.map(renderCredentialCard).join('') + '</div>';
+        }
+
+        function renderCredentialCard(c) {
+            const lastChanged = c.last_changed_at
+                ? new Date(c.last_changed_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                : null;
+
+            const loginLink = c.login_url
+                ? `<a href="${escapeHTML(c.login_url)}" target="_blank" rel="noopener" class="credential-login-link">
+                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                       Abrir login →
+                   </a>`
+                : '';
+
+            return `
+                <div class="credential-card ${c.active ? '' : 'inactive'}">
+                    <div class="credential-card-header">
+                        <div class="credential-title">
+                            <h4>${escapeHTML(c.service_name)}</h4>
+                            ${c.email ? `<p class="credential-email">${escapeHTML(c.email)}</p>` : ''}
+                        </div>
+                    </div>
+
+                    ${lastChanged ? `<div class="credential-meta">Última troca de senha: <strong>${escapeHTML(lastChanged)}</strong></div>` : ''}
+                    ${c.notes ? `<div class="credential-notes">${escapeHTML(c.notes)}</div>` : ''}
+
+                    <div class="credential-card-actions">
+                        ${loginLink}
+                        <button type="button" class="action-btn edit" onclick="openCredentialForm('${c.id}')">Editar</button>
+                        <button type="button" class="action-btn warn" onclick="toggleCredentialActive('${c.id}')">${c.active ? 'Desativar' : 'Ativar'}</button>
+                        <button type="button" class="action-btn danger" onclick="confirmDeleteCredential('${c.id}')">Excluir</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openCredentialForm(id) {
+            const modal = document.getElementById('credential-modal');
+            const form = document.getElementById('credential-form');
+            const title = document.getElementById('credential-form-title');
+            const feedback = document.getElementById('credential-form-feedback');
+
+            form.reset();
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+            document.getElementById('cred-id').value = '';
+
+            if (id) {
+                const c = allCredentials.find(x => x.id === id);
+                if (!c) return;
+
+                title.innerText = 'Editar acesso';
+                document.getElementById('cred-id').value = c.id;
+                document.getElementById('cred-service').value = c.service_name || '';
+                document.getElementById('cred-email').value = c.email || '';
+                document.getElementById('cred-login-url').value = c.login_url || '';
+                document.getElementById('cred-notes').value = c.notes || '';
+                document.getElementById('cred-active').checked = !!c.active;
+
+                if (c.last_changed_at) {
+                    document.getElementById('cred-last-changed').value = c.last_changed_at.split('T')[0];
+                }
+            } else {
+                title.innerText = 'Novo acesso';
+                document.getElementById('cred-active').checked = true;
+            }
+
+            modal.classList.add('open');
+            setTimeout(() => document.getElementById('cred-service').focus(), 150);
+        }
+
+        function closeCredentialForm() {
+            document.getElementById('credential-modal').classList.remove('open');
+        }
+
+        async function saveCredential(event) {
+            event.preventDefault();
+
+            const feedback = document.getElementById('credential-form-feedback');
+            const btn = document.getElementById('credential-save-btn');
+            feedback.className = 'modal-feedback';
+            feedback.innerText = '';
+
+            const id = document.getElementById('cred-id').value;
+            const serviceName = document.getElementById('cred-service').value.trim();
+            const email = document.getElementById('cred-email').value.trim();
+            const loginUrl = document.getElementById('cred-login-url').value.trim();
+            const lastChanged = document.getElementById('cred-last-changed').value;
+            const notes = document.getElementById('cred-notes').value.trim();
+            const active = document.getElementById('cred-active').checked;
+
+            if (!serviceName || serviceName.length < 2) {
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Informe um nome de serviço válido.';
+                return;
+            }
+
+            const payload = {
+                service_name: serviceName,
+                email: email || null,
+                login_url: loginUrl || null,
+                last_changed_at: lastChanged ? new Date(lastChanged + 'T12:00:00-03:00').toISOString() : null,
+                notes: notes || null,
+                active
+            };
+
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Salvando...';
+
+            try {
+                let result;
+                if (id) {
+                    result = await supabaseClient.from('service_credentials').update(payload).eq('id', id).select().single();
+                } else {
+                    result = await supabaseClient.from('service_credentials').insert(payload).select().single();
+                }
+
+                if (result.error) {
+                    console.error('Erro ao salvar acesso:', result.error);
+                    feedback.className = 'modal-feedback error';
+                    feedback.innerText = result.error.message || 'Erro ao salvar.';
+                    return;
+                }
+
+                closeCredentialForm();
+                await loadCredentials();
+                showToast(id ? 'Acesso atualizado!' : 'Acesso criado!');
+            } catch (e) {
+                console.error(e);
+                feedback.className = 'modal-feedback error';
+                feedback.innerText = 'Erro inesperado.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        }
+
+        async function toggleCredentialActive(id) {
+            const c = allCredentials.find(x => x.id === id);
+            if (!c) return;
+
+            const { error } = await supabaseClient
+                .from('service_credentials')
+                .update({ active: !c.active })
+                .eq('id', id);
+
+            if (error) {
+                showToast('Erro ao atualizar.', 'error');
+                return;
+            }
+
+            await loadCredentials();
+            showToast(!c.active ? 'Acesso reativado!' : 'Acesso desativado.');
+        }
+
+        function confirmDeleteCredential(id) {
+            const c = allCredentials.find(x => x.id === id);
+            if (!c) return;
+
+            pendingDeleteCredentialId = id;
+            document.getElementById('confirm-title').innerText = 'Excluir acesso?';
+            document.getElementById('confirm-text').innerHTML =
+                `Você está prestes a excluir <strong>${escapeHTML(c.service_name)}</strong>.<br><br>Essa ação não pode ser desfeita.`;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            confirmBtn.innerText = 'Excluir';
+            confirmBtn.onclick = executeDeleteCredential;
+
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        async function executeDeleteCredential() {
+            if (!pendingDeleteCredentialId) return;
+
+            const confirmBtn = document.getElementById('confirm-btn');
+            const originalText = confirmBtn.innerText;
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Excluindo...';
+
+            const { error } = await supabaseClient.from('service_credentials').delete().eq('id', pendingDeleteCredentialId);
+
+            confirmBtn.disabled = false;
+            confirmBtn.innerText = originalText;
+
+            if (error) {
+                showToast('Erro ao excluir.', 'error');
+                return;
+            }
+
+            closeConfirmModal();
+            pendingDeleteCredentialId = null;
+            await loadCredentials();
+            showToast('Acesso excluído.');
+        }
+
+        // ==========================================================================
         // Verificação Admin
         // ==========================================================================
         async function checkAdminAccess() {
@@ -6624,6 +7101,7 @@
                 await loadCoupons();
                 await loadLoyaltySummary();
                 await loadReminders();
+                await loadCredentials();
                 updateDashboardMetrics();
 
                 // Notifica lembretes críticos no boot do admin
@@ -6694,6 +7172,7 @@
             clientes: 'Clientes',
             financeiro: 'Financeiro',
             lembretes: 'Lembretes',
+            acessos: 'Acessos',
             config: 'Configurações'
         };
 
@@ -6712,6 +7191,7 @@
             if (sectionName === 'cupons') loadCoupons();
             if (sectionName === 'pontos') loadLoyaltySummary();
             if (sectionName === 'lembretes') loadReminders();
+            if (sectionName === 'acessos') loadCredentials();
             if (sectionName === 'config') loadSettings();
             if (sectionName === 'financeiro') {
                 if (!financeState.from) {
