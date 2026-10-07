@@ -2945,25 +2945,98 @@
                 font-size: 1.6rem;
             }
 
+            /* Transformar tabela em cards empilhados */
             .points-table-wrapper {
-                overflow-x: auto;
+                background: transparent;
+                border: none;
+                border-radius: 0;
+                overflow: visible;
             }
 
             .points-table {
-                min-width: 700px;
+                min-width: 0;
+                width: 100%;
+                display: block;
+            }
+
+            .points-table thead {
+                display: none;
+            }
+
+            .points-table tbody {
+                display: block;
+            }
+
+            .points-table tr {
+                display: block;
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1rem 1.1rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .points-table tr:last-child {
+                margin-bottom: 0;
+            }
+
+            .points-table td {
+                display: block;
+                padding: 0.5rem 0;
+                border: none;
+                border-bottom: 1px solid var(--divider-subtle);
+                font-size: 0.9rem;
+            }
+
+            .points-table td:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+
+            .points-table td::before {
+                content: attr(data-label);
+                display: block;
+                font-size: 0.65rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: var(--text-dim);
+                font-weight: 700;
+                margin-bottom: 0.3rem;
+            }
+
+            /* Cliente (primeiro td) — sem label visível, é o "título" do card */
+            .points-table td[data-label="Cliente"]::before {
+                display: none;
+            }
+
+            .points-table td[data-label="Cliente"] {
+                padding-top: 0;
+            }
+
+            /* Ações — último td — sem label */
+            .points-table td[data-label="Ações"]::before {
+                display: none;
+            }
+
+            /* Métricas dentro do card ficam em linha */
+            .points-table .points-metrics {
+                flex-wrap: wrap;
+                gap: 0.6rem;
             }
 
             .points-actions-cell {
-                flex-wrap: wrap;
-                gap: 0.3rem;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+                white-space: normal;
+                margin-top: 0.6rem;
             }
 
             .points-actions-cell .action-btn {
-                flex: 1 1 calc(50% - 0.15rem);
-                min-width: 0;
+                width: 100%;
                 justify-content: center;
-                padding: 0.4rem 0.5rem;
-                font-size: 0.7rem;
+                padding: 0.5rem 0.6rem;
+                font-size: 0.72rem;
             }
 
             .extrato-filters {
@@ -2994,6 +3067,14 @@
         @media (max-width: 480px) {
             .points-summary-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .points-summary-card {
+                padding: 1rem 1.1rem;
+            }
+
+            .points-summary-value {
+                font-size: 1.5rem;
             }
 
             .adjust-quick-btns button {
@@ -10482,22 +10563,22 @@
                 const userId = c.user_id || '';
                 return `
                                     <tr>
-                                        <td>
+                                        <td data-label="Cliente">
                                             <div class="points-client-cell">
                                                 <div class="points-client-name">${escapeHTML(name)}</div>
                                                 ${email ? `<div class="points-client-email">${escapeHTML(email)}</div>` : ''}
                                             </div>
                                         </td>
-                                        <td><span class="points-balance">${balance.toLocaleString('pt-BR')}</span></td>
-                                        <td>
+                                        <td data-label="Saldo"><span class="points-balance">${balance.toLocaleString('pt-BR')}</span></td>
+                                        <td data-label="Ganho / Resgatado / Expirado">
                                             <div class="points-metrics">
                                                 <span class="points-metric positive">+${Number(c.total_earned || 0).toLocaleString('pt-BR')}</span>
                                                 <span class="points-metric negative">-${Number(c.total_redeemed || 0).toLocaleString('pt-BR')}</span>
                                                 <span class="points-metric expired">~${Number(c.total_expired || 0).toLocaleString('pt-BR')}</span>
                                             </div>
                                         </td>
-                                        <td>${escapeHTML(formatDateShort(c.last_activity_at))}</td>
-                                        <td>
+                                        <td data-label="Última atividade">${escapeHTML(formatDateShort(c.last_activity_at))}</td>
+                                        <td data-label="Ações">
                                             <div class="points-actions-cell">
                                                 <button class="action-btn edit" onclick="openExtratoModal('${escapeHTML(email)}')">Ver extrato</button>
                                                 <button class="action-btn warn" onclick="openAdjustModal('${escapeHTML(email)}', ${balance}, '${escapeHTML(userId)}')">Ajustar</button>
