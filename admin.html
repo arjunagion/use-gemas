@@ -804,10 +804,40 @@
         .stock-badge.zero::before { background: var(--danger); }
 
         .product-admin-price {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
             font-size: 1.3rem;
             font-weight: 700;
             color: var(--gold);
             font-family: var(--font-title);
+        }
+
+        .price-promo-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #ff5555 0%, #c92a2a 100%);
+            color: #ffffff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .price-promo {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .price-original {
+            color: var(--text-dim);
+            text-decoration: line-through;
+            font-size: 0.85em;
+            font-weight: 500;
         }
 
         .product-admin-meta {
@@ -5141,12 +5171,25 @@
 
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label for="prod-price">Preço (R$) <span class="required">*</span></label>
+                        <label for="prod-price">Preço cheio (R$) <span class="required">*</span></label>
                         <input type="text" id="prod-price" required placeholder="149.00" inputmode="decimal">
                     </div>
                     <div class="form-group">
                         <label for="prod-stock">Estoque <span class="required">*</span></label>
                         <input type="number" id="prod-stock" required min="0" step="1" value="1">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="prod-promo-price">Preço promocional (R$) — opcional</label>
+                        <input type="text" id="prod-promo-price" placeholder="Deixe vazio se não tem promo" inputmode="decimal">
+                        <small class="config-hint">Se preenchido e menor que o preço cheio, aparece a etiqueta "De X por Y".</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="prod-promo-ends">Promo termina em — opcional</label>
+                        <input type="datetime-local" id="prod-promo-ends">
+                        <small class="config-hint">Vazio = promo permanente até ser removida.</small>
                     </div>
                 </div>
 
@@ -6002,7 +6045,20 @@
             }
 
             container.innerHTML = '<div class="products-admin-grid">' +
-                filtered.map(p => `
+                filtered.map(p => {
+                    const hasPromo = p.promo_price != null
+                        && Number(p.promo_price) < Number(p.price)
+                        && (!p.promo_ends_at || new Date(p.promo_ends_at) > new Date());
+
+                    const priceHTML = hasPromo
+                        ? `<div class="product-admin-price">
+                               <span class="price-promo-badge">PROMO</span>
+                               <span class="price-promo">${formatBRL(p.promo_price)}</span>
+                               <span class="price-original">${formatBRL(p.price)}</span>
+                           </div>`
+                        : `<div class="product-admin-price">${formatBRL(p.price)}</div>`;
+
+                    return `
                     <div class="product-admin-card ${p.active ? '' : 'inactive'}">
                         <div class="product-admin-header">
                             <div style="flex: 1; min-width: 0;">
@@ -6011,7 +6067,7 @@
                             </div>
                             <span class="stock-badge ${getStockBadgeClass(p.stock)}">${getStockBadgeText(p.stock)}</span>
                         </div>
-                        <div class="product-admin-price">${formatBRL(p.price)}</div>
+                        ${priceHTML}
                         <div class="product-admin-meta">${getCategoryLabel(p.category)}</div>
                         <div class="product-admin-actions">
                             <button class="action-btn edit" onclick="openProductForm('${p.id}')">
@@ -6026,7 +6082,8 @@
                             </button>
                         </div>
                     </div>
-                `).join('') +
+                `;
+                }).join('') +
                 '</div>';
         }
 
@@ -6058,6 +6115,27 @@
                 document.getElementById('prod-category').value = p.category || 'microcroche';
                 document.getElementById('prod-price').value = p.price;
                 document.getElementById('prod-stock').value = p.stock;
+
+                // Preço promocional
+                document.getElementById('prod-promo-price').value = p.promo_price != null
+                    ? Number(p.promo_price).toFixed(2).replace('.', ',')
+                    : '';
+
+                // Data de fim da promo — converter ISO para datetime-local
+                if (p.promo_ends_at) {
+                    const d = new Date(p.promo_ends_at);
+                    if (!isNaN(d.getTime())) {
+                        // Formato esperado pelo input: YYYY-MM-DDTHH:MM
+                        const localIso = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+                            .toISOString().slice(0, 16);
+                        document.getElementById('prod-promo-ends').value = localIso;
+                    } else {
+                        document.getElementById('prod-promo-ends').value = '';
+                    }
+                } else {
+                    document.getElementById('prod-promo-ends').value = '';
+                }
+
                 document.getElementById('prod-gem').value = p.gem || '';
                 document.getElementById('prod-description').value = p.description || '';
                 document.getElementById('prod-materials').value = p.materials || '';
@@ -6077,6 +6155,8 @@
                 title.innerText = 'Novo Produto';
                 document.getElementById('prod-stock').value = 1;
                 document.getElementById('prod-active').checked = true;
+                document.getElementById('prod-promo-price').value = '';
+                document.getElementById('prod-promo-ends').value = '';
                 renderGalleryPreview();
             }
 
@@ -6375,6 +6455,30 @@
             const price = normalizePrice(priceRaw);
             if (isNaN(price) || price < 0) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Preço inválido.'; return; }
 
+            // Preço promocional (opcional)
+            const promoPriceRaw = document.getElementById('prod-promo-price').value.trim();
+            let promoPrice = null;
+            if (promoPriceRaw) {
+                promoPrice = normalizePrice(promoPriceRaw);
+                if (isNaN(promoPrice) || promoPrice <= 0) {
+                    feedback.className = 'modal-feedback error';
+                    feedback.innerText = 'Preço promocional inválido.';
+                    return;
+                }
+                if (promoPrice >= price) {
+                    feedback.className = 'modal-feedback error';
+                    feedback.innerText = 'Preço promocional deve ser MENOR que o preço cheio.';
+                    return;
+                }
+            }
+
+            // Data de fim da promo (opcional)
+            const promoEndsRaw = document.getElementById('prod-promo-ends').value;
+            let promoEndsAt = null;
+            if (promoEndsRaw) {
+                promoEndsAt = new Date(promoEndsRaw).toISOString();
+            }
+
             const stock = parseInt(stockRaw, 10);
             if (isNaN(stock) || stock < 0) { feedback.className = 'modal-feedback error'; feedback.innerText = 'Estoque inválido.'; return; }
 
@@ -6427,7 +6531,11 @@
                 }).filter(Boolean).join(',');
 
                 // 5. Salva o produto
-                const payload = { name, ref, category, price, stock, gem, description, materials, gallery, active };
+                const payload = {
+                    name, ref, category, price, stock, gem, description, materials, gallery, active,
+                    promo_price: promoPrice,
+                    promo_ends_at: promoEndsAt
+                };
                 let result;
                 if (id) {
                     result = await supabaseClient.from('products').update(payload).eq('id', id).select().single();
