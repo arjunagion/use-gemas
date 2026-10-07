@@ -609,8 +609,13 @@
             padding: 0.25rem;
             border-radius: 8px;
             overflow-x: auto;
+            overflow-y: hidden;
             flex-wrap: nowrap;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x;
+            overscroll-behavior-x: contain;
+            overscroll-behavior-y: none;
         }
 
         .filter-tabs::-webkit-scrollbar {
@@ -630,6 +635,7 @@
             transition: all 0.3s;
             letter-spacing: 0.5px;
             white-space: nowrap;
+            touch-action: manipulation;
         }
 
         .filter-tab.active {
@@ -1943,6 +1949,29 @@
 
             .section-actions {
                 width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.6rem;
+            }
+
+            .section-actions > .filter-tabs {
+                width: 100%;
+            }
+
+            /* Filtros com scroll horizontal visível em mobile */
+            .filter-tabs {
+                padding-right: 1.2rem;
+                -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 24px), transparent 100%);
+                mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 24px), transparent 100%);
+            }
+
+            .filter-tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* Filhos dos filtros não podem encolher */
+            .filter-tabs > * {
+                flex-shrink: 0;
             }
 
             .search-input {
@@ -2701,6 +2730,9 @@
             gap: 0.5rem;
             margin-bottom: 1.2rem;
             flex-wrap: wrap;
+            touch-action: pan-x;
+            overscroll-behavior-x: contain;
+            overscroll-behavior-y: none;
         }
 
         .extrato-filter-btn {
@@ -2915,6 +2947,21 @@
 
             .extrato-filters {
                 gap: 0.4rem;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 0.3rem;
+                -webkit-mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 24px), transparent 100%);
+                mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 24px), transparent 100%);
+            }
+
+            .extrato-filters::-webkit-scrollbar {
+                display: none;
+            }
+
+            .extrato-filters > * {
+                flex-shrink: 0;
             }
 
             .extrato-filter-btn {
