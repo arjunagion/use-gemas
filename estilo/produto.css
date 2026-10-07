@@ -774,7 +774,7 @@ html.theme-light .related-card {
 .related-media .no-media {
     width: 100%;
     height: 100%;
-    background: #222;
+    background: var(--bg-elevated);
 }
 
 .related-info {

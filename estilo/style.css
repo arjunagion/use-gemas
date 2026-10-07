@@ -801,7 +801,7 @@ html.theme-light .modal-content {
 .modal-media-container {
     position: relative;
     height: 500px;
-    background: #08080a;
+    background: var(--bg-elevated);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -935,8 +935,8 @@ html.theme-light .modal-content {
 }
 
 .related-card {
-    background: #18181c;
-    border: 1px solid rgba(212, 175, 55, 0.15);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
@@ -952,7 +952,7 @@ html.theme-light .modal-content {
     width: 100%;
     aspect-ratio: 1 / 1;
     overflow: hidden;
-    background: #101014;
+    background: var(--bg-elevated);
 }
 
 .related-card-media img,
@@ -966,7 +966,7 @@ html.theme-light .modal-content {
 .related-card-media-empty {
     width: 100%;
     height: 100%;
-    background: #101014;
+    background: var(--bg-elevated);
 }
 
 .related-card-name {
@@ -1618,8 +1618,8 @@ html.theme-light .form-group select:focus {
 }
 
 .shipping-box {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: var(--card-overlay);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1.2rem;
@@ -1649,9 +1649,9 @@ html.theme-light .form-group select:focus {
 .shipping-input {
     flex: 1;
     min-width: 0;
-    background: #18181c;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #f5f5f5;
+    background: var(--input-bg);
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
     padding: 0.6rem 0.8rem;
     border-radius: 6px;
     font-size: 0.9rem;
@@ -1848,7 +1848,7 @@ html.theme-light .form-group select:focus {
    11. RODAPÉ
    ========================================================================== */
 .footer {
-    background: #09090b;
+    background: var(--bg-elevated);
     border-top: 1px solid rgba(212, 175, 55, 0.15);
     padding: 4rem 0 2rem 0;
     margin-top: 4rem;
@@ -3174,8 +3174,8 @@ html.theme-light .checkout-form textarea {
     display: flex;
     gap: 1.2rem;
     align-items: center;
-    background: #18181c;
-    border: 1px solid rgba(212, 175, 55, 0.18);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 1rem 1.1rem;
     margin-bottom: 1.2rem;
@@ -3234,7 +3234,7 @@ html.theme-light .checkout-form textarea {
 .reviews-dist-bar {
     flex: 1;
     height: 6px;
-    background: #2a2a30;
+    background: var(--border-strong);
     border-radius: 3px;
     overflow: hidden;
 }
@@ -3710,8 +3710,8 @@ html.theme-light .checkout-form textarea {
 
 /* Wrapper principal */
 .cart-coupon-box {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: var(--card-overlay);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1.2rem;
@@ -3750,8 +3750,8 @@ html.theme-light .checkout-form textarea {
 .coupon-input {
     flex: 1;
     min-width: 0;
-    background: #18181c;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: var(--input-bg);
+    border: 1px solid var(--border-strong);
     color: var(--text-primary);
     padding: 0.6rem 0.8rem;
     border-radius: 6px;
@@ -4500,8 +4500,8 @@ html.theme-light .coupon-modal-card {
 
 /* Caixa principal */
 .cart-shipping-box {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: var(--card-overlay);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1.2rem;
@@ -4540,8 +4540,8 @@ html.theme-light .coupon-modal-card {
 .shipping-cep-input {
     flex: 1;
     min-width: 0;
-    background: #18181c;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: var(--input-bg);
+    border: 1px solid var(--border-strong);
     color: var(--text-primary);
     padding: 0.6rem 0.8rem;
     border-radius: 6px;
@@ -4656,7 +4656,7 @@ html.theme-light .coupon-modal-card {
     -webkit-appearance: none;
     width: 18px;
     height: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.25);
+    border: 2px solid var(--border-strong);
     border-radius: 50%;
     background: transparent;
     cursor: pointer;
