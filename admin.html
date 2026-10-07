@@ -423,15 +423,28 @@
 
         .main-header {
             padding: 1.8rem 2.5rem;
+            padding-top: calc(1.8rem + env(safe-area-inset-top, 0px));
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
             background: var(--bg);
-            position: sticky;
+            position: fixed;
             top: 0;
+            right: 0;
+            left: var(--sidebar-width);
             z-index: 50;
+            transition: box-shadow 0.25s ease, background 0.25s ease;
+        }
+
+        /* Header com sombra quando o conteúdo rola por baixo */
+        .main-header.scrolled {
+            box-shadow: 0 4px 20px var(--shadow-color);
+        }
+
+        html.admin-light .main-header.scrolled {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .main-header h1 {
@@ -498,6 +511,7 @@
 
         .main-body {
             padding: 2.5rem;
+            padding-top: 8rem;
             flex: 1;
         }
 
@@ -2007,7 +2021,9 @@
             }
 
             .main-header {
+                left: 0;
                 padding: 1.2rem 1.2rem;
+                padding-top: calc(1.2rem + env(safe-area-inset-top, 0px));
             }
 
             .main-header h1 {
@@ -2016,6 +2032,7 @@
 
             .main-body {
                 padding: 1.5rem 1.2rem;
+                padding-top: 6.5rem;
             }
 
             .metric-card {
@@ -11195,6 +11212,27 @@
         // INICIALIZAÇÃO
         // ==========================================================================
         document.addEventListener('DOMContentLoaded', () => {
+            // Sombra no header ao rolar
+            (function setupHeaderScroll() {
+                const header = document.querySelector('.main-header');
+                if (!header) return;
+
+                let ticking = false;
+                const updateHeaderShadow = () => {
+                    header.classList.toggle('scrolled', window.scrollY > 20);
+                    ticking = false;
+                };
+
+                window.addEventListener('scroll', () => {
+                    if (!ticking) {
+                        window.requestAnimationFrame(updateHeaderShadow);
+                        ticking = true;
+                    }
+                }, { passive: true });
+
+                updateHeaderShadow();
+            })();
+
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
