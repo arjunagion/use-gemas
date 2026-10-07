@@ -1,8 +1,8 @@
 # CONTEXTO CONSOLIDADO — Use Gemas
-> **Ponto de restauração:** 07/out/2026
+> **Ponto de restauração:** 07/out/2026 (noite)
 > **Uso:** colar no início de uma nova sessão Deep pra reconstruir contexto
 > **Estado do projeto:** ~99,9% concluído
-> **Doc mestre:** PROJETO-MESTRE.md (v3.12 — fonte da verdade detalhada)
+> **Doc mestre:** PROJETO-MESTRE.md (v3.13 — fonte da verdade detalhada)
 
 ---
 
@@ -24,10 +24,10 @@
 **6 CSSs:** style, perfil, produto, avaliar, paginas-legais, avaliacoes
 **3 JSs:** script, sw (cliente), sw-admin
 **10 Edge Functions:** calculate-shipping, generate-shipping-label, fetch-label-url, melhorenvio-webhook, notify-order-status, request-review, remind-review, notify-expiring-coupons, feed-xml, sitemap-products
-**15 tabelas:** products, orders, reviews, notifications, coupons, coupon_usages, loyalty_points, settings, admins, profiles, favorites, checkout_data, shipping_quotes_cache, feedbacks, themes
-**44 policies · 24 funções SQL · 15 triggers · 46 índices · 6 cron jobs**
+**17 tabelas:** products, orders, reviews, notifications, coupons, coupon_usages, loyalty_points, settings, admins, profiles, favorites, checkout_data, shipping_quotes_cache, feedbacks, themes, **service_reminders, service_credentials**
+**46 policies · 24+ funções SQL · 15+ triggers · 46+ índices · 6 cron jobs**
 **3 storage buckets:** review-images, product-images, site-media
-**Versões SW:** `sw.js` v12 · `sw-admin.js` v22
+**Versões SW:** `sw.js` v12 · `sw-admin.js` v24
 
 ---
 
@@ -45,93 +45,60 @@
 10. Prós/contras → confirmar → codar
 11. Edge Functions: CORS explícito + handler OPTIONS
 12. Cream mode na área do cliente (`--cr-*`)
-13. **Emoji só onde faz sentido** (política 3 níveis): ícone funcional → SVG Lucide · decorativo → remover · afetivo (💛, 👋) → manter
-14. **Admin tem light mode + toggle manual** (classe `html.admin-light` + localStorage `gemas_admin_theme`)
+13. **Emoji só onde faz sentido** (3 níveis): funcional → SVG Lucide · decorativo → remover · afetivo (💛, 👋) → manter
+14. **Admin tem light mode + toggle manual** (`html.admin-light` + localStorage `gemas_admin_theme`)
 15. **Admin tem header fixo** com sombra ao rolar
-16. **Acesso ao admin** via botão "Painel" no site (só pra admin) + redirect inteligente + PWA
+16. **Acesso ao admin** via botão "Painel" no site + redirect inteligente + PWA
 
 ---
 
 ## 4. FASES ENTREGUES (02/out → 07/out)
 
 ### Fases 10.1 - 10.6 (02-05/out)
-- **10.1** Conteúdo do Site configurável (Hero, Carrossel, Rodapé, Meta Tags)
-- **10.2** Área do Cliente configurável (Hero, Tabs, Status, Timeline, Vazios, Pontos)
-- **10.3** Refinos (Menu, Estoque baixo, Banner frete grátis, Regras fidelidade)
-- **10.4** Central de Reviews + Feedbacks (home dinâmica + /avaliacoes.html + canal privado)
-- **10.5** Biblioteca de Temas (11 presets + custom + agendamento + WCAG)
-- **10.5.1** Auto-dessaturar + luminância
-- **10.5.2** White Mode real (variáveis semânticas + refactor global)
-- **10.6** Cream Mode Dinâmico na conta
+- 10.1 Conteúdo do Site configurável
+- 10.2 Área do Cliente configurável
+- 10.3 Refinos (Menu, Estoque, Banner frete, Fidelidade)
+- 10.4 Central de Reviews + Feedbacks
+- 10.5 Biblioteca de Temas + White Mode + auto-dessaturar
+- 10.6 Cream Mode Dinâmico
 
-### Fase 10.7 - 10.8 (05-06/out)
-- **10.7** Banner Carrossel Avançado (8 tipos de slide + condições + rotação)
-  - Refinado: botão "Salvar banners" próprio + cor bolinha + SVG Lucide + preview `--accent`
-- **10.8** Redesign do admin (Inter + Lucide SVG + badges com dot + toasts SVG)
+### Fases 10.7 - 10.8 (05-06/out)
+- 10.7 Banner Carrossel Avançado (8 tipos + condições + rotação)
+- 10.8 Redesign do admin (Inter + Lucide SVG)
 
 ### Fases v3.11 (06/out)
-- **Acesso admin sem URL:** botão "Painel" no site (só admin) + redirect inteligente + PWA instalado
-- **Light mode completo do site:** carrinho (CEP/cupom/frete), modal de produto (reviews + related), drawers
-- **Refino dos drawers:** header/footer com faixa destacada + sombra em camadas + cantos arredondados
-- **SVG nos emojis residuais:** notificações, extrato, cupons
-- **Light mode do admin (L1-L3):** toggle manual + paleta clara + charts adaptados
-- **Refactor da aba Configurações (P1-P3):** 9 cards clicáveis → 9 modais com save local
+- Acesso admin sem URL (botão "Painel" + redirect + PWA)
+- Light mode completo do site
+- Refino dos drawers
+- SVG nos emojis residuais
+- Light mode admin (L1-L3)
+- Refactor aba Configurações (P1-P3)
 
 ### Fases v3.12 (07/out)
-- **Feature de promoção:** `promo_price` + `promo_ends_at` em products
-  - Admin: form + card + validação
-  - Site: badge "PROMO" + preço riscado + "Economize R$ X"
-  - RPC `get_product_by_ref` atualizada
-  - Carrinho: revalidação no boot
-  - Schema.org: `priceSpecification` (ListPrice)
-  - Feed XML: `g:sale_price`
-- **Admin header fixo:** `position: fixed` + sombra ao rolar + safe-area iPhone
-- **Favicon custom SVG:** Lucide `layout-dashboard` dourado
-- **Correções mobile admin:**
-  - Filtros (touch-action + mask scroll)
-  - Pontos (tabela → cards em mobile)
-  - Financeiro (box-sizing + overflow)
-  - Sidebar (scroll travado)
-  - Botões de ação (grid 2x2 em Cupons/Pontos)
-- **Bug fix site público:**
-  - Contraste do nome do review em light mode
-  - Scroll anormal nas tabs de `minha-conta.html`
+- Feature de promoção completa (P1-P4 + SQL RPC)
+- Admin header fixo
+- Favicon custom SVG
+- Correções mobile admin (filtros, Pontos, Financeiro, sidebar)
+- Bug fix site público (contraste review + scroll tabs)
+
+### Fases v3.13 (07/out — noite)
+- Sistema de Lembretes (expiração de serviços)
+- Sistema de Acessos (índice de credenciais sem senha)
+- Bitwarden configurado (vault.bitwarden.eu)
 
 ---
 
-## 5. DECISÕES ARQUITETURAIS (ADRs 1-30)
+## 5. DECISÕES ARQUITETURAIS (ADRs 1-32)
 
-**Base:**
-1. Supabase (não Firebase)
-2. GitHub Pages (não Vercel/Netlify)
-3. Vanilla JS (não React/Vue)
-4. Melhor Envio (não API Correios direta)
-5. Brevo (não SendGrid/Resend)
-6. Zoho Mail (não Gmail Business)
-7. PWA nativo (não app nativo)
-8. Sistema de pontos próprio (não Smile/Loyalme)
-9. CORS explícito em Edge Functions
-10. Ledger pra pontos (não saldo)
-11. Carrinho em localStorage (não servidor)
-12. Notificações virtuais calculadas (não todas reais)
-13. Frete dual-mode regionalizado (ME + fixo por região)
-14. Central de Reviews híbrida (featured + fallback)
-15. Conteúdo do Site configurável
-16. Labels do cliente em `settings` (fonte única)
-17. Regras de fidelidade em `settings`
-18. Consolidação de banners
-19. Biblioteca de Temas
-20. Auto-dessaturar cores saturadas
-21. Cream Mode Dinâmico
-22. Redesign admin (Inter + Lucide SVG)
-23. Light mode do admin com toggle manual
-24. Aba Configurações com cards + modais
-25. Limpeza de emojis em 3 níveis
-26. Acesso ao admin via botão "Painel" + redirect + PWA
-27. Drawers com header/footer destacados
-28. Preço promocional híbrido (`promo_price` + `promo_ends_at` opcional)
-29. Header fixo no admin (`position: fixed`)
-30. Favicon SVG custom
+**Base:** Supabase · GitHub Pages · Vanilla JS · Melhor Envio · Brevo · Zoho · PWA · Pontos próprios · CORS explícito · Ledger pontos · Carrinho localStorage · Notificações virtuais · Frete dual-mode · Reviews híbridas
+
+**Configuração:** Conteúdo configurável · Labels em settings · Regras fidelidade em settings · Consolidação banners · Biblioteca de Temas · Auto-dessaturar · Cream Dinâmico
+
+**Admin:** Redesign (Inter + Lucide) · Light mode toggle · Configurações com cards+modais · Limpeza emoji 3 níveis
+
+**Acesso:** Botão "Painel" + redirect + PWA · Drawers destacados · Promoção híbrida · Header fixo · Favicon SVG
+
+**Gestão (v3.13):** Sistema de Lembretes · Sistema de Acessos (sem senha) + Bitwarden
 
 ---
 
@@ -141,33 +108,61 @@
 - Fotos oficiais dos produtos
 - Tráfego pago
 
-**🟡 Polimento técnico (opcional):**
-- `MELHORENVIO_SANDBOX=true` → produção (faz quando tiver pedido real)
-- Testar PWA em iOS/Android reais
-- Doc `MELHORENVIO_ACCESS_TOKEN` expira 30/09/2027 (renovar antes)
-- Bugs mobile admin restantes (Cupons / Clientes / Avaliações / Feedbacks — não críticos)
-- Código morto: `shippingCost` write-only, `shipping-result` órfão, listener CEP duplicado
+**🟡 Alta prioridade (produção):**
+- `MELHORENVIO_SANDBOX=true` → `false` (quando tiver pedido real)
 
-**🟢 Baixa prioridade:**
-- Emojis em mensagens de WhatsApp (mantidos por decisão)
-- Emojis em comentários de código (não afetam UI)
+**🟡 Média (polimento):**
+- Bugs mobile admin: Cupons (botões empilhados), Pontos (tabela cortada), Banners modal (título+botão sobrepostos), Cards slide (layout quebrado)
+- Compressão de imagens (WebP)
+
+**🟢 Baixa (cosmético/documentação):**
+- Bugs mobile admin cosméticos (header "VER SITE", Chart.js labels, badge pedido full-width)
+- Código morto: `shippingCost` write-only, `shipping-result` órfão, listener CEP duplicado, `description` não usado em loyalty_points
+- Lazy-load nas galerias
+- Emojis em mensagens WhatsApp (decisão mantida)
+- Emojis em comentários de código
+- Sitemap estático vs dinâmico
+
+**📱 Testes:**
+- Testar PWA em iOS e Android reais
 
 ---
 
-## 7. PRÓXIMOS PASSOS PLANEJADOS
+## 7. PRÓXIMO TÓPICO — FEATURE #32 (em execução)
 
-**Curto prazo:**
-- Terminar polimento mobile admin (Cupons, Clientes, Avaliações, Feedbacks)
-- Completar limpeza de código morto
+### 🎯 PDF do Pedido no WhatsApp + Email "Pedido Recebido"
 
-**Médio prazo (features estratégicas ~3h cada):**
-- Sistema de Indicação (indique e ganhe)
-- Tiers de Fidelidade (Bronze/Prata/Ouro)
-- Notificações Push (PWA)
-- Blog / Diário da Artesã
+**Objetivo:** Jornada profissional com 2 canais:
+- **WhatsApp** — canal direto de venda (PDF anexado automaticamente)
+- **Email** — formalização/registro (cliente + dono recebem)
 
-**Longo prazo (produção):**
-- Fotos oficiais + tráfego pago
+**Decisões travadas:**
+1. **PDF: 1 página A4** (logo + tabela + totais)
+2. **Email: cliente + dono recebem** (dono tem link pro admin)
+3. **Trigger SQL** (AFTER INSERT em `orders` → chama Edge `notify-order-created`)
+
+**Jornada completa:**
+1. Cliente finaliza → pedido salvo no Supabase
+2. PDF gerado local (jsPDF, lazy-load ~200KB)
+3. Web Share API → cliente escolhe WhatsApp → PDF anexado (fallback: download manual + WhatsApp Web)
+4. Trigger SQL dispara → Edge Function notify-order-created
+5. Email "Pedido Recebido" chega pro cliente E pro dono
+6. [JÁ EXISTE] Admin marca "pago" → email "Pagamento confirmado"
+7. [JÁ EXISTE] Admin marca "enviado" → email "Pedido enviado"
+
+**Escopo técnico:**
+- jsPDF (lazy-load via `import()`)
+- Web Share API (`navigator.canShare` + `navigator.share`)
+- Edge Function `notify-order-created` (Brevo)
+- Trigger SQL (padrão `supabase_functions.http_request`)
+- Template HTML do email (cliente + dono)
+
+**Tempo estimado:** ~4h em 3 prompts (P1 → P2 → P3)
+
+**Detalhes técnicos:**
+- jsPDF import: `https://cdn.jsdelivr.net/npm/jspdf@latest/dist/jspdf.esm.min.js`
+- Detecção Web Share: `navigator.canShare && navigator.canShare({ files: [pdfFile] })`
+- Fallback: baixar PDF + abrir `api.whatsapp.com` com mensagem curta
 
 ---
 
@@ -186,51 +181,49 @@
 ## 9. SISTEMAS-CHAVE (mapa rápido)
 
 **Loja:**
-- Carrinho em `localStorage` (`gemas_cart_v1`) com revalidação
-- Frete dual-mode (ME + fixo por região)
-- Cupons com RPC de validação
-- Pontos com ledger + RPCs
-- Reviews com curadoria (featured + fallback)
-- Temas (11 presets + custom) com light mode + auto-dessaturar
+- Carrinho localStorage + revalidação
+- Frete dual-mode (ME + fixo regional)
+- Cupons + Pontos + Reviews (RPCs)
+- Temas (11 presets + custom + light mode)
 - Promoção (`promo_price` + `promo_ends_at`)
 
 **Admin:**
-- 9 cards em Configurações → 9 modais independentes
-- Light mode + toggle manual
-- Header fixo com sombra
-- Favicon custom (Lucide layout-dashboard)
-- Editor de banners rotativos (8 tipos de slide)
+- 9 cards em Configurações → 9 modais
+- Light mode + toggle
+- Header fixo
+- Favicon custom
+- Banners rotativos (8 tipos)
 - Biblioteca de temas
+- **Lembretes** (expiração de serviços)
+- **Acessos** (índice de credenciais sem senha)
 
 **Cliente:**
-- Tabs com scroll horizontal (touch-action)
-- Notificações virtuais (reviews pendentes + cupons expirando)
+- Tabs com scroll horizontal
+- Notificações virtuais
 - Favoritos + carrinho + cupons + pontos
-- Cream Mode Dinâmico (tint do accent)
+- Cream Mode Dinâmico
+
+**Externo:**
+- Bitwarden (vault.bitwarden.eu) — cofre de senhas
+- Brevo — email transacional
+- Melhor Envio — frete
+- Zoho Mail — caixa profissional
 
 ---
 
-## 10. ÚLTIMA SESSÃO (06-07/out/2026)
+## 10. ÚLTIMA SESSÃO (07/out/2026 — noite)
 
-**06/out (v3.11):**
-- Refinamento da Fase 10.7
-- Limpeza de emojis E1-E4
-- Refactor da aba Configurações (P1/P2/P3)
-- Light mode admin (L1/L2/L3)
-- Bloco B (B1 crons, B3 comentário, B4 Pixel)
-- Acesso admin sem URL + PWA
-- Refino dos drawers
-- SVG nos emojis residuais
+**O que foi feito:**
+- Sistema de Lembretes (SQL + admin + toast + card no Dashboard)
+- Bitwarden configurado (conta `.eu`)
+- Sistema de Acessos (SQL + admin)
+- MESTRE v3.12 → v3.13
+- CONTEXTO v2 → v3
 
-**07/out (v3.12):**
-- Feature de promoção completa (P1-P4 + SQL RPC)
-- Favicon custom SVG
-- Header fixo no admin
-- Correções mobile admin (filtros, Pontos, Financeiro, sidebar)
-- Bug fix site público (contraste review + scroll tabs)
+**Última ação confirmada:** sub-aba "Acessos" com 8 serviços cadastrados funcionando.
 
-**Última ação confirmada:** feature de promoção 100% testada e deployada (carrinho + Schema.org + feed XML).
+**Próximo passo:** iniciar feature #32 (PDF no WhatsApp + Email Pedido Recebido).
 
 ---
 
-*Fim do contexto consolidado — v2 — 07/out/2026*
+*Fim do contexto consolidado — v3 — 07/out/2026*
