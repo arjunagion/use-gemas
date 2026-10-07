@@ -17,6 +17,8 @@ interface Product {
     ref: string;
     name: string;
     price: number;
+    promo_price: number | null;
+    promo_ends_at: string | null;
     stock: number;
     active: boolean;
     category: string | null;
@@ -139,6 +141,10 @@ function buildFeedXml(products: Product[]): string {
                 .map((img) => `      <g:additional_image_link>${escapeXml(img)}</g:additional_image_link>`)
                 .join("\n");
 
+            const hasSalePrice = p.promo_price != null
+                && Number(p.promo_price) < Number(p.price)
+                && (!p.promo_ends_at || new Date(p.promo_ends_at) > new Date());
+
             return `    <item>
       <g:id>${escapeXml(p.ref)}</g:id>
       <g:title>${escapeXml(title)}</g:title>
@@ -147,7 +153,7 @@ function buildFeedXml(products: Product[]): string {
       <g:image_link>${escapeXml(imageLink)}</g:image_link>
 ${additionalImagesXml}
       <g:price>${formatPrice(p.price)}</g:price>
-      <g:availability>${availability}</g:availability>
+${hasSalePrice ? `      <g:sale_price>${formatPrice(Number(p.promo_price))}</g:sale_price>\n` : ''}      <g:availability>${availability}</g:availability>
       <g:condition>new</g:condition>
       <g:brand>Use Gemas</g:brand>
       <g:identifier_exists>no</g:identifier_exists>
@@ -215,7 +221,7 @@ serve(async (req: Request) => {
 
         const { data, error } = await supabase
             .from("products")
-            .select("ref, name, price, stock, active, category, gem, description, materials, gallery, created_at")
+            .select("ref, name, price, promo_price, promo_ends_at, stock, active, category, gem, description, materials, gallery, created_at")
             .eq("active", true)
             .order("created_at", { ascending: false });
 

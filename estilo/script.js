@@ -391,6 +391,8 @@ function injectProductSchema() {
         const firstMedia = gallery[0] || '';
         const isVideo = firstMedia.match(/\.(mov|mp4|webm|ogg)$/i);
 
+        const effectivePrice = isPromoActive(p) ? Number(p.promo_price) : Number(p.price);
+
         const schema = {
             "@type": "Product",
             "name": p.name,
@@ -403,7 +405,7 @@ function injectProductSchema() {
             },
             "offers": {
                 "@type": "Offer",
-                "price": Number(p.price).toFixed(2),
+                "price": effectivePrice.toFixed(2),
                 "priceCurrency": "BRL",
                 "availability": Number(p.stock) > 0
                     ? "https://schema.org/InStock"
@@ -457,6 +459,16 @@ function injectProductSchema() {
                 }
             }
         };
+
+        // Se tem promo ativa, adiciona priceSpecification (ListPrice)
+        if (isPromoActive(p)) {
+            schema.offers.priceSpecification = {
+                "@type": "UnitPriceSpecification",
+                "price": Number(p.price).toFixed(2),
+                "priceCurrency": "BRL",
+                "priceType": "https://schema.org/ListPrice"
+            };
+        }
 
         if (firstMedia && !isVideo) {
             schema.image = firstMedia.startsWith('http')
@@ -2962,9 +2974,7 @@ async function revalidateCartAfterRestore(savedItems) {
     // Busca estado atual dos produtos
     const { data: freshProducts, error } = await supabaseClient
         .from('products')
-        .select('ref, name, price, stock, active')
-        .in('ref', refs);
-
+            .select('ref, name, price, promo_price, promo_ends_at, stock, active')
     if (error) {
         console.error('Erro ao revalidar carrinho:', error);
         // Em caso de erro de rede, mantém o carrinho como tá
@@ -2996,8 +3006,8 @@ async function revalidateCartAfterRestore(savedItems) {
             continue;
         }
 
-        // 4. Preço mudou?
-        const newPrice = Number(product.price);
+        // 4. Preço efetivo (promo se ativa, senão o cheio)
+        const newPrice = getEffectivePrice(product);
         const priceChanged = Math.abs(newPrice - Number(item.price)) > 0.01;
 
         // 5. Quantidade > estoque? (ajusta pra o máximo disponível)

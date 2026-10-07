@@ -1170,6 +1170,8 @@
             const gallery = (product.gallery || '').split(',').map(s => s.trim()).filter(Boolean);
             const firstImage = gallery.find(src => !/\.(mp4|mov|webm|ogg)$/i.test(src));
 
+            const effectivePrice = isPromoActive(product) ? Number(product.promo_price) : Number(product.price);
+
             const schema = {
                 "@context": "https://schema.org",
                 "@type": "Product",
@@ -1180,7 +1182,7 @@
                 "brand": { "@type": "Brand", "name": "Use Gemas" },
                 "offers": {
                     "@type": "Offer",
-                    "price": Number(product.price).toFixed(2),
+                    "price": effectivePrice.toFixed(2),
                     "priceCurrency": "BRL",
                     "availability": Number(product.stock) > 0
                         ? "https://schema.org/InStock"
@@ -1189,6 +1191,16 @@
                     "seller": { "@type": "Organization", "name": "Use Gemas" }
                 }
             };
+
+            // Se tem promo ativa, adiciona priceSpecification (ListPrice)
+            if (isPromoActive(product)) {
+                schema.offers.priceSpecification = {
+                    "@type": "UnitPriceSpecification",
+                    "price": Number(product.price).toFixed(2),
+                    "priceCurrency": "BRL",
+                    "priceType": "https://schema.org/ListPrice"
+                };
+            }
 
             if (firstImage) {
                 schema.image = firstImage.startsWith('http')
