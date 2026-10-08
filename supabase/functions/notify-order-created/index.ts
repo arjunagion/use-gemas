@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
 const FROM_NAME = "Use Gemas";
 const FROM_EMAIL = "pedidos@usegemas.com.br";
-const OWNER_EMAIL = "pedidos@usegemas.com.br";
+const OWNER_EMAIL = "contato@usegemas.com.br";
 const BASE_URL = "https://usegemas.com.br";
 const ADMIN_URL = `${BASE_URL}/admin.html`;
 const WHATSAPP_URL = "https://api.whatsapp.com/send?phone=5511982053330";
