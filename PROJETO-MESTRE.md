@@ -1,7 +1,8 @@
-# PROJETO-MESTRE — Use Gemas (v3.13)
+# PROJETO-MESTRE — Use Gemas (v3.14)
 
-> **Documento de referência oficial — v3.13** — estado do código em **07/10/2026**.
-> **Novo em v3.13:** Sistema de Lembretes de expiração (com contagem regressiva + toast no login) + Sistema de Acessos (índice de credenciais sem senha, integrado com Bitwarden) + Documentação do fluxo seguro de gestão de credenciais.
+> **Documento de referência oficial — v3.14** — estado do código em **07/out/2026**.
+> **Novo em v3.14:** Feature #32 completa (PDF do Pedido no WhatsApp + Email "Pedido Recebido") + Edge Function `notify-order-created` (Brevo) + Trigger SQL via `pg_net` + **Bug crítico identificado** no trigger `notify-order-status` (usa `supabase_functions.http_request`, extensão não instalada).
+> **Herança de v3.13:** Sistema de Lembretes + Sistema de Acessos + Bitwarden.
 > **Herança de v3.12:** Feature de promoção + Admin header fixo + Favicon custom + Correções mobile.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
 > Regra de ouro: **zero suposição** — tudo que não está no repo está marcado como *"não encontrado no repositório"*.
@@ -31,6 +32,8 @@
 18. [Sistema de Frete — Dual Mode](#18-sistema-de-frete--dual-mode)
 19. [Central de Reviews (Fase 10.4)](#19-central-de-reviews-fase-104)
 20. [Conteúdo do Site configurável](#20-conteúdo-do-site-configurável)
+29. [Feature #32 — PDF do Pedido no WhatsApp + Email "Pedido Recebido"](#29-feature-32--pdf-do-pedido-no-whatsapp--email-pedido-recebido)
+30. [Bug Crítico — `supabase_functions` deprecada](#30-bug-crítico--supabase_functions-deprecada)
 
 ---
 
@@ -67,9 +70,9 @@
 
 | Arquivo | Linhas | Tamanho | Propósito |
 |---|---|---|---|
-| `estilo/script.js` | 5.128 | 181,9 KB | Lógica principal da loja |
-| `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v12`) |
-| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v24`) |
+| `estilo/script.js` | 6.685 | ~245,3 KB | Lógica principal da loja (cache `?v=104.0`) |
+| `sw.js` | 227 | 8,5 KB | Service Worker PWA cliente (`ug-cliente-v27`) |
+| `sw-admin.js` | 161 | 6,4 KB | Service Worker PWA admin (`ug-admin-v25`) |
 
 > **Nota:** os SWs evoluíram continuamente durante v3.10, v3.11 e v3.12. Cada bump forçou cache fresh durante os testes e refinamentos.
 
@@ -78,7 +81,8 @@
 | Arquivo/Pasta | Linhas | Propósito |
 |---|---|---|
 | `supabase/migrations/001_schema.sql` | 2.113 | Schema completo do banco (13 tabelas, 40 policies, 24 funções, 14 triggers, 42 índices, 5 crons) |
-| `supabase/functions/` (10 `index.ts`) | 2.828 | Código real das 10 Edge Functions |
+| `supabase/functions/` (11 `index.ts`) | ~3.149 | Código real das 11 Edge Functions |
+| `supabase/migrations/003_trigger_notify_order_created.sql` | 25 | Trigger de criação de pedido (⚠️ versão no repo ainda usa `supabase_functions`; produção usa `pg_net`) |
 | `supabase/docs/secrets.md` | 134 | Nomes dos secrets (sem valores) |
 | `supabase/docs/storage.md` | 101 | Buckets + policies (agora **3 buckets** — adicionado `site-media`) |
 | `supabase/docs/auth.md` | 91 | Providers + redirect URLs |
@@ -197,12 +201,23 @@
 
 ### 💎 Pontos/Fidelidade — ganho (trigger), saldo, resgate, extrato, admin → ✅
 
+### 📄 PDF do Pedido no WhatsApp (Feature #32)
+
+| Funcionalidade | Status |
+|---|---|
+| Geração de PDF (jsPDF 2.5.1 UMD) | ✅ |
+| PDF A4 com logo + tabela + totais | ✅ |
+| Web Share API (compartilhamento nativo) | ✅ |
+| Fallback: download + WhatsApp Web + toast | ✅ |
+| Detecção de iOS/Desktop pra escolher o método | ✅ |
+
 ### 📧 Emails Transacionais
 
 | Email | Dispara quando | Onde |
 |---|---|---|
 | Reset de senha | Supabase Auth | Supabase |
 | Status do pedido | Edge `notify-order-status` (Brevo) | `supabase/functions/notify-order-status` |
+| **Pedido recebido** (novo) | INSERT em `orders` | `supabase/functions/notify-order-created` |
 | Solicitação de review | cron `request-review` (~7d) | `supabase/functions/request-review` |
 | Lembrete de review | cron `remind-review` (~5d) | `supabase/functions/remind-review` |
 | Cupom expirando | cron `notify-expiring-coupons` (≤5d) | `supabase/functions/notify-expiring-coupons` |
@@ -299,9 +314,11 @@ Distribuídas entre as 13 tabelas (destaques):
 **14 trigger functions**:
 `update_coupons_updated_at`, `update_products_updated_at`, `update_reviews_updated_at`, `normalize_coupon_code`, `generate_guest_token`, `set_guest_token`, `set_shipped_at`, `handle_new_user`, `notify_order_status_change`, `notify_review_status_change`, `credit_loyalty_points_on_paid`, `notify_points_earned`, `cleanup_old_notifications`, `expire_loyalty_points`
 
-### 4.4 Triggers (15 — 14 no public + 1 no schema `auth`)
+### 4.4 Triggers (16 — 15 no public + 1 no schema `auth`)
 
-`trigger_normalize_coupon_code`, `trigger_coupons_updated_at`, `trigger_notify_points_earned`, `trigger_set_guest_token`, `trigger_set_shipped_at`, `trigger_credit_loyalty_points`, `trigger_notify_order_status_change`, `"notify-order-status"`, `trigger_products_updated_at`, `trigger_reviews_updated_at`, `trigger_notify_review_status_change` + `on_auth_user_created` (comentado, roda em `auth.users` via `handle_new_user`).
+`trigger_normalize_coupon_code`, `trigger_coupons_updated_at`, `trigger_notify_points_earned`, `trigger_set_guest_token`, `trigger_set_shipped_at`, `trigger_credit_loyalty_points`, `trigger_notify_order_status_change`, `"notify-order-status"`, `"notify-order-created"`, `trigger_products_updated_at`, `trigger_reviews_updated_at`, `trigger_notify_review_status_change` + `on_auth_user_created` (comentado, roda em `auth.users` via `handle_new_user`).
+
+> **v3.14 — `notify-order-created`:** em produção, o trigger `AFTER INSERT` chama a Edge Function por `pg_net` (`net.http_post`) usando `public.notify_order_created_via_pgnet()`. **Divergência:** a migration versionada `003_trigger_notify_order_created.sql` ainda define `supabase_functions.http_request` e não contém essa função wrapper; alinhar a migration em uma alteração SQL futura.
 
 ### 4.5 Índices (46)
 
@@ -322,7 +339,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | `notify-expiring-coupons` | 08h | GET `notify-expiring-coupons` |
 | `expire-loyalty-points` | 06h30 | `expire_loyalty_points()` (movido em v3.10) |
 
-### 4.7 Edge Functions (10 — código real em `supabase/functions/`)
+### 4.7 Edge Functions (11 — código real em `supabase/functions/`)
 
 | Function | Linhas | Responsabilidade |
 |---|---|---|
@@ -331,6 +348,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | `fetch-label-url` | 277 | Busca URL do PDF no ME |
 | `melhorenvio-webhook` | 181 | Recebe webhooks do ME (rastreio/status) |
 | `notify-order-status` | 441 | Email de status do pedido (Brevo) |
+| `notify-order-created` | 321 | Email "Pedido Recebido" (Brevo) — cliente + dono |
 | `request-review` | 308 | Email pedindo review (~7d) |
 | `remind-review` | 302 | Lembrete de review (~5d) |
 | `notify-expiring-coupons` | 341 | Avisa cupons expirando |
@@ -361,7 +379,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Backend | Supabase (Auth, Postgres, Edge Functions, Storage, Cron/pg_cron) |
 | Hospedagem | GitHub Pages (CNAME `usegemas.com.br`) |
 | CDNs | jsDelivr (Supabase SDK, PhotoSwipe, Chart.js), Google Fonts, googletagmanager |
-| Bibliotecas | Supabase JS SDK @2, PhotoSwipe 5.4.4, Chart.js 4.4.1 |
+| Bibliotecas | Supabase JS SDK @2, PhotoSwipe 5.4.4, Chart.js 4.4.1, jsPDF 2.5.1 UMD (lazy-load) |
 
 ---
 
@@ -372,11 +390,11 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Páginas HTML | 9 |
 | Arquivos CSS | 6 |
 | Arquivos JS | 3 |
-| Edge Functions | 10 |
+| Edge Functions | **11** |
 | Tabelas | 17 |
 | Policies | 46 |
 | Funções SQL | 24 |
-| Triggers | 15 |
+| Triggers | **16** |
 | Índices | 46 |
 | Cron jobs | 6 (com horários ajustados em v3.10) |
 | Storage buckets | 3 |
@@ -390,7 +408,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 | Cards no admin (v3.10) | 9 (grade de Configurações) |
 | PWA instalado (v3.11) | 1 (admin) |
 | Linhas de código (frontend) | ~31k |
-| Linhas de código (backend: schema + functions) | ~5k |
+| Linhas de código (backend: schema + functions) | ~5,3k |
 | **Progresso geral** | **~99,9%** |
 
 ---
@@ -419,6 +437,9 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 ### 🔥 Crítica — bloqueia operação
 
 - **Fotos oficiais dos produtos** — hoje há apenas imagens temporárias e vídeos placeholder.
+- **Trigger `notify-order-status` quebrado** — usa `supabase_functions.http_request` (extensão não instalada no projeto). Migrar pra `pg_net`.
+- **Verify JWT na Edge `notify-order-created`** — precisa ficar DESATIVADO (senão o trigger `pg_net` recebe 401). Sempre conferir após redeploy.
+- **Migration `003_trigger_notify_order_created.sql` divergente** — o arquivo versionado ainda usa `supabase_functions.http_request`; alinhar com a implementação de produção via `pg_net`.
 
 ### ⚠️ Alta — impacta UX ou negócio
 
@@ -491,11 +512,13 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 5. **RLS** — usar `auth.jwt() ->> 'email'` em vez de subquery em `auth.users`.
 6. **Service Workers** — filtrar `Range` (206) + `.catch()`; não cachear CDNs externas.
 7. **Postgres** — `MAX()` não funciona em UUID (usar `ARRAY_AGG`/`ORDER BY ... LIMIT 1`).
-8. **Edge Functions** — CORS explícito + handler `OPTIONS` no topo do `serve()`.
+8. **Edge Functions** — CORS explícito + handler `OPTIONS` no topo do `serve()`; Verify JWT desativado quando a chamada vem de trigger SQL.
 9. **Supabase errors** — 42501/403 = RLS, tratar silenciosamente.
 10. **Cream mode** — área do cliente usa `--cr-*` e helpers próprios (`formatBRL`, `showReviewToast`, `.btn-cream`/`.btn-review-cancel`).
 11. **Commits** — prefixo (`feat:`, `style:`, `fix:`, `refactor:`, `chore:`, `docs:`), commit + push.
 12. **Secrets** — nunca commitar valores; rotação: nova → testar → revogar antiga.
+13. **Triggers HTTP** — usar `pg_net` (`net.http_post`), NUNCA `supabase_functions.http_request` (extensão não instalada no projeto).
+14. **Verify JWT** — desativar nas Edge Functions chamadas por triggers SQL e conferir após cada redeploy.
 
 ---
 
@@ -531,8 +554,8 @@ Pedido "enviado" → cron request-review (~7d) → Email → Cliente avalia
 ┌─────────────────┐        ┌──────────────────────────────────────────────┐
 │  GitHub Pages    │  HTTPS │  Supabase                                    │
 │  (usegemas.com.br)│◄──────►│  ├─ Auth (email + Google)                    │
-│  HTML/CSS/JS     │        │  ├─ Postgres (RLS + 14 triggers + 10 RPCs)    │
-└────────┬─────────┘        │  ├─ Edge Functions (10)                       │
+│  HTML/CSS/JS     │        │  ├─ Postgres (RLS + 16 triggers + 10 RPCs)    │
+└────────┬─────────┘        │  ├─ Edge Functions (11)                       │
          │                  │  ├─ Storage (3 buckets)                       │
          │                  │  └─ Cron (6 jobs, pg_cron)                    │
          │                  └──────────────┬───────────────────────────────┘
@@ -608,9 +631,9 @@ Pedido "enviado" → cron request-review (~7d) → Email → Cliente avalia
 
 ### 13.2 Backend (Supabase)
 - **Auth**: 2 providers (Email + Google), 8 redirect URLs.
-- **Postgres**: 15 tabelas, 44 policies, 24 funções, 15 triggers, 46 índices.
+- **Postgres**: 15 tabelas, 44 policies, 24 funções, 16 triggers, 46 índices.
 - **RPCs**: 10 (validate_coupon, apply_coupon_to_order, get_loyalty_*, etc.).
-- **Edge Functions**: 10 (código em `supabase/functions/`).
+- **Edge Functions**: **11** (código em `supabase/functions/`).
 - **Storage**: 3 buckets (review-images, product-images, site-media) — 13 policies.
 - **Cron**: 6 jobs (pg_cron + pg_net).
 
@@ -660,6 +683,8 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 | 30 | Favicon SVG custom (v3.12) | Manter PNG antigo | SVG fica nítido em Retina/mobile, é editável em texto, e reaproveita o ícone Lucide da sidebar (consistência visual). |
 | 31 | Sistema de Lembretes no admin (v3.13) | Lembrar de cor / Planilha / Calendário externo | Centraliza alertas de expiração no admin, com contagem regressiva visual + toast no login. Zero risco de esquecer renovação crítica. |
 | 32 | Sistema de Acessos SEM senha (v3.13) — senhas no Bitwarden | Guardar senhas no admin / Papel físico / Único doc | Guardar senha no admin é vetor de ataque (XSS, vazamento de repo, comprometimento de conta única). Bitwarden faz criptografia real. Admin só cataloga referência (URL, e-mail, nota). Separação cofre × índice = melhor dos dois mundos. |
+| 33 | Trigger SQL via `pg_net` (não `supabase_functions`) (v3.14) | `supabase_functions.http_request` | Extensão não instalada no projeto; `pg_net` é o padrão atual e já estava instalado |
+| 34 | jsPDF UMD via `<script>` tag (não `import()`) (v3.14) | `import()` dinâmico | UMD não funciona com ESM; `<script>` é o método canônico |
 
 ---
 
@@ -676,22 +701,24 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 4. Aplicar o seletor de frete novo no `produto.html`.
 5. Atualizar `sitemap.xml` estático (ou automatizar com `sitemap-products`).
 6. Otimização de performance (compressão, lazy-load).
+7. Migrar trigger `notify-order-status` pra `pg_net` (mesmo fix do `notify-order-created`).
 
 ### Mais tarde (trimestre)
-7. Tiers de fidelidade.
-8. Notificações push.
-9. Relatórios avançados no admin.
-10. Cupom de aniversário automático.
+8. Tiers de fidelidade.
+9. Notificações push.
+10. Relatórios avançados no admin.
+11. Cupom de aniversário automático.
 
 ### Quando sobrar tempo
-11. Reviews com vídeo.
-12. Sistema de indicação.
-13. Limpeza de código morto (shippingCost write-only, etc.).
+12. Reviews com vídeo.
+13. Sistema de indicação.
+14. Limpeza de código morto (shippingCost write-only, etc.).
 
 ---
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **07/out/2026 — v3.14 — Feature #32 completa:** PDF do Pedido no WhatsApp (jsPDF 2.5.1 UMD + Web Share API + fallback download/WhatsApp Web) + Edge Function `notify-order-created` (Brevo — email cliente + dono com link admin) + Trigger SQL `AFTER INSERT ON orders` via `pg_net` (não `supabase_functions`). Bug crítico identificado: o trigger `notify-order-status` (do `001_schema.sql`) usa `supabase_functions.http_request` — extensão não instalada no projeto. Provavelmente também quebrado. Migrar pra `pg_net` na próxima sessão.
 - **07/out/2026** — **v3.13 - Sistema de Lembretes:** CRUD de expiração de serviços + faixas de urgência (expirado/crítico/atenção/alerta/ok) + contagem regressiva + card no Dashboard + toast no login do admin + badge no sidebar.
 - **07/out/2026** — **v3.13 - Sistema de Acessos:** índice de credenciais (SEM senha) + link direto pra login + campo de última troca + busca + grid responsivo.
 - **07/out/2026** — **v3.13 - Bitwarden configurado:** cofre de senhas em `vault.bitwarden.eu` (GDPR, servidor europeu) — recomendado pra gestão de credenciais.
@@ -907,7 +934,7 @@ Se um dia o Supabase precisar ser recriado do zero (disaster recovery / novo pro
 5. ⚠️ **Criar 9 policies de Storage** (5 review-images + 4 product-images)
 6. ⚠️ **Configurar Secrets:** `BREVO_API_KEY`, `MELHORENVIO_*` (4), `SERVICE_ROLE_KEY`
 7. ⚠️ **Configurar Auth:** 2 providers (Email + Google) + 8 redirect URLs
-8. ⚠️ **Deploy das 10 Edge Functions** (`supabase/functions/*`)
+8. ⚠️ **Deploy das 11 Edge Functions** (`supabase/functions/*`)
 9. ⚠️ **Configurar webhook** no Melhor Envio → `melhorenvio-webhook`
 10. ⚠️ **Inserir linha única** em `settings` (id=1) com defaults
 
@@ -1764,4 +1791,159 @@ RLS: admin-only (ALL).
 
 ---
 
-*Fim do documento. Atualizado em 07/10/2026 — v3.13.*
+## 29. Feature #32 — PDF do Pedido no WhatsApp + Email "Pedido Recebido"
+
+### 29.1 Objetivo
+
+Jornada profissional em 2 canais, executados automaticamente após o checkout:
+- **WhatsApp** — canal direto de venda (PDF do pedido compartilhado ou baixado para anexar)
+- **Email** — formalização/registro (cliente + dono recebem)
+
+### 29.2 Fluxo end-to-end
+
+1. Cliente finaliza checkout → `saveOrderToDb()` insere pedido no Supabase
+2. jsPDF gera o PDF local (A4, logo + tabela + totais)
+3. Web Share API compartilha o PDF (fallback: download + WhatsApp Web)
+4. Trigger SQL `notify-order-created` (`AFTER INSERT`) chama a Edge Function via `pg_net`
+5. Edge Function `notify-order-created` envia email via Brevo:
+   - Cliente (`record.customer_email`), se tiver email
+   - Dono (`contato@usegemas.com.br` — hardcoded, com link pro admin)
+
+### 29.3 Detalhes técnicos
+
+**P1 — PDF + Share (client-side, `script.js`):**
+- jsPDF **2.5.1 UMD** carregado via `<script>` tag (não `import()` — UMD não funciona com ESM)
+- Helper `loadJsPdfFromCdn()` com cache em `window.jspdf` (lazy-load: só carrega quando cliente finaliza)
+- `loadLogoDataUrl()` — converte `/estilo/midias/logo.png` pra dataURL via `fetch` + `FileReader`
+- `buildOrderPdf()` — monta o PDF A4 (logo + dados cliente + tabela itens + totais + footer)
+- `shareOrderPdf()` — tenta `navigator.share` com `canSharePdf()` (detecta iOS/Desktop); fallback: `pdf.save()` + `window.open('api.whatsapp.com/...')` + toast
+- **Não bloqueia o checkout** — `try/catch` isolado em `saveOrderToDb()`
+
+**P2 — Edge Function `notify-order-created` (Brevo):**
+- Recebe webhook `{ type, table, record, old_record }`
+- Valida `type === 'INSERT' && table === 'orders'`
+- Monta o HTML do email (header escuro + badge verde "PEDIDO RECEBIDO" + itens + totais + CTA WhatsApp)
+- CTA extra **"Abrir no admin"** só no email do dono
+- Envia pro cliente (se `customer_email`) e pro dono (`contato@usegemas.com.br`, sempre)
+- Retorna `{ success, sent: [], failed: [] }`
+- Remetente permanece `pedidos@usegemas.com.br` (`FROM_EMAIL`); destinatário do dono é `contato@usegemas.com.br` (`OWNER_EMAIL`)
+- **Verify JWT desativado** na configuração da Edge Function — conferir após cada redeploy
+
+**P3 — Trigger SQL (`pg_net`):**
+- Em produção, `CREATE TRIGGER "notify-order-created"` executa `AFTER INSERT ON orders`
+- Chama `public.notify_order_created_via_pgnet()`, que monta payload com `row_to_json(NEW)` e chama `net.http_post()`
+- **Não usa `supabase_functions.http_request`** em produção
+- **Divergência do repositório:** `supabase/migrations/003_trigger_notify_order_created.sql` ainda usa `supabase_functions.http_request` e não contém a função wrapper `public.notify_order_created_via_pgnet()`. A migration versionada precisa ser alinhada em uma alteração SQL futura; não executar a versão atual como se refletisse produção.
+
+### 29.4 Decisões travadas
+
+| Decisão | Escolha |
+|---|---|
+| PDF: 1 página A4 em pedidos comuns (com paginação para muitos itens) | ✅ |
+| Email: cliente + dono recebem | ✅ |
+| Trigger SQL (`AFTER INSERT` em orders) | ✅ |
+| `OWNER_EMAIL` = `contato@usegemas.com.br` (não `pedidos@`) | ✅ |
+| Trigger de produção via `pg_net` (não `supabase_functions`) | ✅ |
+| Verify JWT na Edge: **DESATIVADO** | ✅ |
+| jsPDF: UMD via `<script>` tag (não `import()`) | ✅ |
+
+### 29.5 Riscos conhecidos e mitigações
+
+| Risco | Mitigação |
+|---|---|
+| **Verify JWT pode voltar** após redeploy | Documentado — conferir após cada deploy |
+| Auto-envio (`pedidos@` → `pedidos@`) pode cair em blacklist do Brevo | Destinatário do dono é `contato@usegemas.com.br` |
+| Alias Zoho (`pedidos@`) não recebe no Zoho (só alias, sem caixa) | Usar `contato@` (tem caixa própria) |
+| `supabase_functions` não está instalada no projeto | Usar `pg_net` em produção e alinhar a migration versionada |
+
+### 29.6 Arquivos envolvidos
+
+**Criados:**
+- `supabase/functions/notify-order-created/index.ts`
+- `supabase/migrations/003_trigger_notify_order_created.sql` (⚠️ divergente da implementação de produção; ver 29.3)
+
+**Modificados:**
+- `estilo/script.js` (P1 — jsPDF + share + helpers)
+- `index.html`, `produto.html`, `avaliacoes.html` (bump `?v=104.0`)
+- `sw.js` (bump `ug-cliente-v27`)
+- `supabase/functions/notify-order-created/index.ts` (P2.1 — destinatário `OWNER_EMAIL` alterado para `contato@`)
+
+---
+
+## 30. Bug Crítico — `supabase_functions` deprecada
+
+### 30.1 O problema
+
+O `001_schema.sql` cria o trigger `notify-order-status` usando:
+```sql
+EXECUTE FUNCTION supabase_functions.http_request(...)
+```
+
+**Mas a extensão `supabase_functions` NÃO está instalada no projeto.** O `CREATE TRIGGER` passa, mas na hora do UPDATE em `orders`, o trigger falha sem log visível.
+
+### 30.2 Impacto
+
+- **Trigger `notify-order-status` (UPDATE em `orders`)** → **não dispara**
+- Como o email de "Pagamento confirmado" / "Pedido enviado" também é disparado pelo frontend quando o admin clica o botão no painel, o bug fica **escondido**
+- Se o UPDATE for feito direto no banco (via SQL, script etc.), ninguém será notificado por esse trigger
+
+### 30.3 Diagnóstico (como identificar)
+
+Sintoma: `pg_net` mostra requisições com `status_code = 401` OU não mostra nada.
+
+Verificar:
+```sql
+SELECT extname
+FROM pg_extension
+WHERE extname IN ('supabase_functions', 'pg_net');
+```
+
+Resultado esperado: **só `pg_net`**. Se `supabase_functions` não aparecer, o problema está confirmado.
+
+### 30.4 Correção
+
+Migrar o trigger `notify-order-status` pra `pg_net`, mesmo padrão do trigger `notify-order-created` em produção:
+
+```sql
+CREATE OR REPLACE FUNCTION public.notify_order_status_via_pgnet()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_payload jsonb;
+BEGIN
+    v_payload := jsonb_build_object(
+        'type', 'UPDATE',
+        'table', 'orders',
+        'record', row_to_json(NEW)::jsonb,
+        'old_record', row_to_json(OLD)::jsonb
+    );
+
+    PERFORM net.http_post(
+        url := 'https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/notify-order-status',
+        headers := '{"Content-Type": "application/json"}'::jsonb,
+        body := v_payload::text::jsonb
+    );
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS "notify-order-status" ON public.orders;
+
+CREATE TRIGGER "notify-order-status"
+    AFTER UPDATE ON public.orders
+    FOR EACH ROW EXECUTE FUNCTION public.notify_order_status_via_pgnet();
+```
+
+⚠️ **Não rodar agora** — deixar pra próxima sessão (é um fix separado da Feature #32).
+
+### 30.5 Regra nova do projeto
+
+**Todo trigger HTTP novo deve usar `pg_net`** (`net.http_post`), **não** `supabase_functions.http_request`.
+As regras de ouro nº 8, 13 e 14 refletem a exigência de CORS, Verify JWT desativado para chamadas por trigger e conferência após redeploy.
+
+---
+
+*Fim do documento. Atualizado em 07/10/2026 — v3.14.*
