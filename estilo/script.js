@@ -5183,6 +5183,12 @@ async function openCheckoutModal() {
 
         if (hasCheckoutInfo) {
             showToast('Calcule o frete antes de finalizar', 'error');
+            const shippingBox = document.getElementById('cart-shipping-box');
+            if (shippingBox) {
+                shippingBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                shippingBox.style.borderColor = '#ff5555';
+                setTimeout(() => shippingBox.style.borderColor = '', 2000);
+            }
             return;
         }
     }
@@ -5423,6 +5429,7 @@ function validateCheckoutForm() {
 
     if (firstInvalid) {
         firstInvalid.focus();
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
         showCheckoutFeedback('Por favor, corrija os campos destacados em vermelho.', 'error');
         return false;
     }
