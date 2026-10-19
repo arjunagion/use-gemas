@@ -1833,7 +1833,6 @@ Jornada profissional em 2 canais, executados automaticamente após o checkout:
 - Em produção, `CREATE TRIGGER "notify-order-created"` executa `AFTER INSERT ON orders`
 - Chama `public.notify_order_created_via_pgnet()`, que monta payload com `row_to_json(NEW)` e chama `net.http_post()`
 - **Não usa `supabase_functions.http_request`** em produção
-- **Divergência do repositório:** `supabase/migrations/003_trigger_notify_order_created.sql` ainda usa `supabase_functions.http_request` e não contém a função wrapper `public.notify_order_created_via_pgnet()`. A migration versionada precisa ser alinhada em uma alteração SQL futura; não executar a versão atual como se refletisse produção.
 
 ### 29.4 Decisões travadas
 
@@ -1860,7 +1859,7 @@ Jornada profissional em 2 canais, executados automaticamente após o checkout:
 
 **Criados:**
 - `supabase/functions/notify-order-created/index.ts`
-- `supabase/migrations/003_trigger_notify_order_created.sql` (⚠️ divergente da implementação de produção; ver 29.3)
+- `supabase/migrations/003_trigger_notify_order_created.sql` (trigger pg_net em produção)
 
 **Modificados:**
 - `estilo/script.js` (P1 — jsPDF + share + helpers)
@@ -1936,8 +1935,6 @@ CREATE TRIGGER "notify-order-status"
     AFTER UPDATE ON public.orders
     FOR EACH ROW EXECUTE FUNCTION public.notify_order_status_via_pgnet();
 ```
-
-⚠️ **Não rodar agora** — deixar pra próxima sessão (é um fix separado da Feature #32).
 
 ### 30.5 Regra nova do projeto
 
