@@ -1897,18 +1897,39 @@ CREATE TRIGGER trigger_notify_order_status_change
     AFTER UPDATE ON public.orders
     FOR EACH ROW EXECUTE FUNCTION public.notify_order_status_change();
 
--- ⚠️ Trigger HTTP — chama a Edge Function notify-order-status via pg_net
--- (Requer a extensão pg_net; se não existir, este trigger pode falhar)
+-- --------------------------------------------------------------------------
+-- notify-order-status (via pg_net)
+-- --------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.notify_order_status_via_pgnet()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_payload jsonb;
+BEGIN
+    v_payload := jsonb_build_object(
+        'type', 'UPDATE',
+        'table', 'orders',
+        'record', row_to_json(NEW)::jsonb,
+        'old_record', row_to_json(OLD)::jsonb
+    );
+
+    PERFORM net.http_post(
+        url := 'https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/notify-order-status',
+        headers := '{"Content-Type": "application/json"}'::jsonb,
+        body := v_payload::text::jsonb
+    );
+
+    RETURN NEW;
+END;
+$$;
+
 DROP TRIGGER IF EXISTS "notify-order-status" ON public.orders;
+
 CREATE TRIGGER "notify-order-status"
     AFTER UPDATE ON public.orders
-    FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request(
-        'https://dytdnemwqbzgrekamwla.supabase.co/functions/v1/notify-order-status',
-        'POST',
-        '{"Content-type":"application/json"}',
-        '{}',
-        '5000'
-    );
+    FOR EACH ROW EXECUTE FUNCTION public.notify_order_status_via_pgnet();
 
 -- --------------------------------------------------------------------------
 -- products

@@ -1,7 +1,8 @@
-# PROJETO-MESTRE — Use Gemas (v3.14)
+# PROJETO-MESTRE — Use Gemas (v3.15)
 
-> **Documento de referência oficial — v3.14** — estado do código em **07/out/2026**.
-> **Novo em v3.14:** Feature #32 completa (PDF do Pedido no WhatsApp + Email "Pedido Recebido") + Edge Function `notify-order-created` (Brevo) + Trigger SQL via `pg_net` + **Bug crítico identificado** no trigger `notify-order-status` (usa `supabase_functions.http_request`, extensão não instalada).
+> **Documento de referência oficial — v3.15** — estado do código em **19/out/2026**.
+> **Novo em v3.15:** Migração dos triggers HTTP (`notify-order-created` e `notify-order-status`) para `pg_net` — extensão `supabase_functions` removida do projeto.
+> **Herança de v3.14:** Feature #32 completa (PDF do Pedido no WhatsApp + Email "Pedido Recebido") + Edge Function `notify-order-created` (Brevo).
 > **Herança de v3.13:** Sistema de Lembretes + Sistema de Acessos + Bitwarden.
 > **Herança de v3.12:** Feature de promoção + Admin header fixo + Favicon custom + Correções mobile.
 > Gerado por varredura completa do repositório local (`use-gemas`), incluindo a pasta `supabase/`.
@@ -82,7 +83,7 @@
 |---|---|---|
 | `supabase/migrations/001_schema.sql` | 2.113 | Schema completo do banco (13 tabelas, 40 policies, 24 funções, 14 triggers, 42 índices, 5 crons) |
 | `supabase/functions/` (11 `index.ts`) | ~3.149 | Código real das 11 Edge Functions |
-| `supabase/migrations/003_trigger_notify_order_created.sql` | 25 | Trigger de criação de pedido (⚠️ versão no repo ainda usa `supabase_functions`; produção usa `pg_net`) |
+| `supabase/migrations/003_trigger_notify_order_created.sql` | 47 | Trigger de criação de pedido via `pg_net` (`net.http_post` + `notify_order_created_via_pgnet`) |
 | `supabase/docs/secrets.md` | 134 | Nomes dos secrets (sem valores) |
 | `supabase/docs/storage.md` | 101 | Buckets + policies (agora **3 buckets** — adicionado `site-media`) |
 | `supabase/docs/auth.md` | 91 | Providers + redirect URLs |
@@ -318,7 +319,7 @@ Distribuídas entre as 13 tabelas (destaques):
 
 `trigger_normalize_coupon_code`, `trigger_coupons_updated_at`, `trigger_notify_points_earned`, `trigger_set_guest_token`, `trigger_set_shipped_at`, `trigger_credit_loyalty_points`, `trigger_notify_order_status_change`, `"notify-order-status"`, `"notify-order-created"`, `trigger_products_updated_at`, `trigger_reviews_updated_at`, `trigger_notify_review_status_change` + `on_auth_user_created` (comentado, roda em `auth.users` via `handle_new_user`).
 
-> **v3.14 — `notify-order-created`:** em produção, o trigger `AFTER INSERT` chama a Edge Function por `pg_net` (`net.http_post`) usando `public.notify_order_created_via_pgnet()`. **Divergência:** a migration versionada `003_trigger_notify_order_created.sql` ainda define `supabase_functions.http_request` e não contém essa função wrapper; alinhar a migration em uma alteração SQL futura.
+> **v3.15 — triggers HTTP via `pg_net`:** `"notify-order-created"` (`AFTER INSERT`) usa `public.notify_order_created_via_pgnet()` e `"notify-order-status"` (`AFTER UPDATE`) usa `public.notify_order_status_via_pgnet()` — ambos chamam `net.http_post`. A extensão `supabase_functions` não é mais usada.
 
 ### 4.5 Índices (46)
 
@@ -437,9 +438,7 @@ Cobertura: `coupon_usages` (4), `coupons` (4), `loyalty_points` (6), `notificati
 ### 🔥 Crítica — bloqueia operação
 
 - **Fotos oficiais dos produtos** — hoje há apenas imagens temporárias e vídeos placeholder.
-- **Trigger `notify-order-status` quebrado** — usa `supabase_functions.http_request` (extensão não instalada no projeto). Migrar pra `pg_net`.
-- **Verify JWT na Edge `notify-order-created`** — precisa ficar DESATIVADO (senão o trigger `pg_net` recebe 401). Sempre conferir após redeploy.
-- **Migration `003_trigger_notify_order_created.sql` divergente** — o arquivo versionado ainda usa `supabase_functions.http_request`; alinhar com a implementação de produção via `pg_net`.
+- **Verify JWT deve estar DESATIVADO nas Edge Functions que recebem triggers (`notify-order-created`, `notify-order-status`)** — senão o trigger `pg_net` recebe 401 e o email não sai. Sempre conferir após redeploy.
 
 ### ⚠️ Alta — impacta UX ou negócio
 
@@ -718,6 +717,7 @@ APIs externas: Melhor Envio (cotação/etiqueta/webhook), ViaCEP (endereço), Br
 
 ## 16. Changelog resumido (últimos 15 dias)
 
+- **19/out/2026** — Fix Crítico: Migração dos triggers HTTP (created e status) para pg_net. Extensão supabase_functions removida do projeto.
 - **07/out/2026 — v3.14 — Feature #32 completa:** PDF do Pedido no WhatsApp (jsPDF 2.5.1 UMD + Web Share API + fallback download/WhatsApp Web) + Edge Function `notify-order-created` (Brevo — email cliente + dono com link admin) + Trigger SQL `AFTER INSERT ON orders` via `pg_net` (não `supabase_functions`). Bug crítico identificado: o trigger `notify-order-status` (do `001_schema.sql`) usa `supabase_functions.http_request` — extensão não instalada no projeto. Provavelmente também quebrado. Migrar pra `pg_net` na próxima sessão.
 - **07/out/2026** — **v3.13 - Sistema de Lembretes:** CRUD de expiração de serviços + faixas de urgência (expirado/crítico/atenção/alerta/ok) + contagem regressiva + card no Dashboard + toast no login do admin + badge no sidebar.
 - **07/out/2026** — **v3.13 - Sistema de Acessos:** índice de credenciais (SEM senha) + link direto pra login + campo de última troca + busca + grid responsivo.
@@ -1946,4 +1946,4 @@ As regras de ouro nº 8, 13 e 14 refletem a exigência de CORS, Verify JWT desat
 
 ---
 
-*Fim do documento. Atualizado em 07/10/2026 — v3.14.*
+*Fim do documento. Atualizado em 19/10/2026 — v3.15.*
