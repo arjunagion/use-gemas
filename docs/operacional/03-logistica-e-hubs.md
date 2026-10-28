@@ -70,4 +70,3 @@ CONFERÊNCIA DE RECEBIMENTO EM CAMPO:
 Assinatura do Entregador/Logística: _______________________________
 Assinatura do Vendedor Recipiente: ________________________________
 ===================================================================
-```
